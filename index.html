@@ -1586,9 +1586,9 @@
 
                     console.log(`✅ 現在地取得成功: ${lat.toFixed(6)}, ${lng.toFixed(6)} (精度: ${Math.round(accuracy)}m)`);
 
-                    // 地図の中心を現在地に移動
+                    // 地図の中心を現在地に移動（徒歩圏内の店舗が見えるレベルに拡大）
                     if (map) {
-                        map.setView([lat, lng], 12);
+                        map.setView([lat, lng], 14);
 
                         // 現在地マーカーを追加
                         const currentLocationIcon = L.divIcon({
