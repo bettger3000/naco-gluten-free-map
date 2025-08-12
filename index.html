@@ -2480,9 +2480,15 @@
         // Supabaseに訪問履歴を保存
         async function saveVisitHistoryToSupabase(storeId, status) {
             try {
-                console.log('💾 Supabaseに保存中...', storeId, status);
+                console.log('💾 Supabaseに保存中...', {
+                    storeId: storeId, 
+                    status: status, 
+                    currentUser: currentUser,
+                    storeIdType: typeof storeId
+                });
                 
                 // 既存レコードを削除してから挿入（UPSERT的な動作）
+                console.log('🗑️ 既存レコード削除試行中...');
                 const { error: deleteError } = await supabaseClient
                     .from('visit_history')
                     .delete()
@@ -2491,26 +2497,50 @@
 
                 if (deleteError) {
                     console.warn('⚠️ 既存レコード削除エラー:', deleteError);
+                } else {
+                    console.log('✅ 既存レコード削除完了');
                 }
 
+                // 挿入するデータを準備
+                const insertData = {
+                    user_email: currentUser,
+                    store_id: storeId,
+                    status: status,
+                    visited_date: status === 'visited' ? new Date().toISOString().split('T')[0] : null,
+                    notes: null
+                };
+                
+                console.log('📝 挿入データ:', insertData);
+
                 // 新しいレコードを挿入
+                console.log('➕ 新規レコード挿入試行中...');
                 const { data, error } = await supabaseClient
                     .from('visit_history')
-                    .insert([
-                        {
-                            user_email: currentUser,
-                            store_id: storeId,
-                            status: status,
-                            visited_date: status === 'visited' ? new Date().toISOString().split('T')[0] : null,
-                            notes: null
-                        }
-                    ]);
+                    .insert([insertData]);
+
+                console.log('📊 Supabase応答:', { data, error });
 
                 if (error) {
                     console.error('❌ Supabase保存エラー:', error);
+                    console.error('エラー詳細:', {
+                        message: error.message,
+                        code: error.code,
+                        details: error.details,
+                        hint: error.hint
+                    });
                     throw error;
                 } else {
                     console.log('✅ Supabase保存成功:', data);
+                    
+                    // 実際に保存されたか確認
+                    console.log('🔍 保存確認中...');
+                    const { data: checkData, error: checkError } = await supabaseClient
+                        .from('visit_history')
+                        .select('*')
+                        .eq('user_email', currentUser)
+                        .eq('store_id', storeId);
+                    
+                    console.log('✅ 保存確認結果:', { checkData, checkError });
                 }
             } catch (error) {
                 console.error('❌ 訪問履歴保存失敗:', error);
