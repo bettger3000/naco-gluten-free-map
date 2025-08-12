@@ -2587,7 +2587,7 @@
                 const { data: { user }, error } = await supabaseClient.auth.getUser();
                 
                 if (error) {
-                    console.warn('⚠️ 認証確認エラー、デモモードで続行:', error);
+                    console.warn('⚠️ 認証確認エラー、デモモードで続行:', error.message || error);
                     currentUser = 'demo_user@example.com';
                     return;
                 }
@@ -2600,7 +2600,7 @@
                     currentUser = 'demo_user@example.com';
                 }
             } catch (error) {
-                console.error('❌ 認証処理エラー:', error);
+                console.warn('⚠️ 認証情報エラー、デモモードで実行:', error.message || error);
                 currentUser = 'demo_user@example.com'; // フォールバック
             }
         }
@@ -2670,12 +2670,12 @@
                 btn.classList.toggle('active', btn.dataset.tab === tab);
             });
             
-            const mainContent = document.querySelector('.container');
+            const mainContent = document.querySelector('.main-content');
             const historyView = document.getElementById('visitHistoryView');
             
             // 要素の存在チェック
             if (!mainContent) {
-                console.error('❌ .container要素が見つかりません');
+                console.error('❌ .main-content要素が見つかりません');
                 return;
             }
             if (!historyView) {
