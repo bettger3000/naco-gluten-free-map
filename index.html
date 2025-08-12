@@ -402,6 +402,24 @@
             margin-bottom: var(--space-md);
         }
 
+        .store-header-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: var(--space-xs);
+        }
+
+        .store-distance {
+            background: rgba(0, 122, 255, 0.1);
+            color: #007AFF;
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+            font-size: 0.7rem;
+            font-weight: 500;
+            white-space: nowrap;
+            border: 1px solid rgba(0, 122, 255, 0.2);
+        }
+
         .store-name {
             font-size: 1.1rem;
             font-weight: 600;
@@ -411,7 +429,6 @@
         }
 
         .store-category {
-            background: var(--gradient-primary);
             color: white;
             padding: var(--space-xs) var(--space-sm);
             border-radius: var(--radius-xl);
@@ -419,6 +436,29 @@
             font-weight: 500;
             white-space: nowrap;
             margin-left: var(--space-sm);
+        }
+
+        /* カテゴリ別色設定（マップマーカーと統一） */
+        .store-category[data-category="カフェ"] {
+            background: #8B4513;
+        }
+        .store-category[data-category="和食"] {
+            background: #E74C3C;
+        }
+        .store-category[data-category="洋食"] {
+            background: #3498DB;
+        }
+        .store-category[data-category="パン屋"] {
+            background: #F39C12;
+        }
+        .store-category[data-category="スイーツ"] {
+            background: #E91E63;
+        }
+        .store-category[data-category="販売店"] {
+            background: #27AE60;
+        }
+        .store-category[data-category="その他"] {
+            background: #7F8C8D;
         }
 
         .store-info {
@@ -1732,6 +1772,9 @@
 
                     console.log(`✅ 現在地取得成功: ${lat.toFixed(6)}, ${lng.toFixed(6)} (精度: ${Math.round(accuracy)}m)`);
 
+                    // 現在地情報を保存
+                    currentUserLocation = { lat: lat, lng: lng };
+
                     // 地図の中心を現在地に移動（徒歩圏内の店舗が見えるレベルに拡大）
                     if (map) {
                         map.setView([lat, lng], 14);
@@ -1762,6 +1805,12 @@
                         locationMarker.openPopup();
                         
                         console.log('✅ 現在地マーカー追加完了');
+
+                        // 店舗リストを現在地から近い順で再表示
+                        if (stores && stores.length > 0) {
+                            displayStoreList(stores);
+                            console.log('🔄 店舗リストを現在地順で更新完了');
+                        }
                     }
                 },
                 function(error) {
@@ -1786,7 +1835,22 @@
             );
         }
 
-        // 店舗リスト表示
+        // 現在地情報を保存する変数
+        let currentUserLocation = null;
+
+        // 2点間の距離計算（Haversine公式）
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // 地球の半径（km）
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                    Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c; // 距離（km）
+        }
+
+        // 店舗リスト表示（現在地から近い順）
         function displayStoreList(storesData) {
             const container = document.getElementById('storeList');
             if (!container) return;
@@ -1798,7 +1862,19 @@
                 return;
             }
 
-            storesData.forEach(store => {
+            // 現在地から近い順にソート
+            let sortedStores = [...storesData];
+            if (currentUserLocation) {
+                sortedStores = sortedStores.sort((a, b) => {
+                    if (!a.latitude || !a.longitude || !b.latitude || !b.longitude) return 0;
+                    const distanceA = calculateDistance(currentUserLocation.lat, currentUserLocation.lng, a.latitude, a.longitude);
+                    const distanceB = calculateDistance(currentUserLocation.lat, currentUserLocation.lng, b.latitude, b.longitude);
+                    return distanceA - distanceB;
+                });
+                console.log('📍 現在地から近い順でソート完了');
+            }
+
+            sortedStores.forEach(store => {
                 try {
                     const card = createStoreCard(store);
                     container.appendChild(card);
@@ -1820,10 +1896,24 @@
             const storeGfOptions = store.gluten_free_options ? escapeHtml(store.gluten_free_options) : '';
             const storeHours = store.opening_hours ? escapeHtml(store.opening_hours) : '';
 
+            // 現在地からの距離を計算
+            let distanceText = '';
+            if (currentUserLocation && store.latitude && store.longitude) {
+                const distance = calculateDistance(currentUserLocation.lat, currentUserLocation.lng, store.latitude, store.longitude);
+                if (distance < 1) {
+                    distanceText = `${Math.round(distance * 1000)}m`;
+                } else {
+                    distanceText = `${distance.toFixed(1)}km`;
+                }
+            }
+
             card.innerHTML = `
                 <div class="store-header">
                     <h3 class="store-name">${storeName}</h3>
-                    <span class="store-category">${storeCategory}</span>
+                    <div class="store-header-right">
+                        <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
+                        ${distanceText ? `<span class="store-distance">📍 ${distanceText}</span>` : ''}
+                    </div>
                 </div>
                 <div class="store-info">
                     <div class="store-address">
