@@ -1480,12 +1480,19 @@
                     return;
                 }
 
+                // デフォルト位置（日本全体）
+                const defaultCenter = [35.6762, 139.6503];
+                const defaultZoom = 6;
+
                 map = L.map('map', {
-                    center: [35.6762, 139.6503],
-                    zoom: 6,
+                    center: defaultCenter,
+                    zoom: defaultZoom,
                     zoomControl: true,
                     scrollWheelZoom: true
                 });
+
+                // 現在地を取得して地図の中心に設定
+                getCurrentLocationAndCenter();
                 
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '© OpenStreetMap contributors',
@@ -1554,6 +1561,72 @@
             });
 
             console.log(`📍 ${markers.length}個のマーカーを地図に表示`);
+        }
+
+        // 現在地を取得して地図の中心に設定
+        function getCurrentLocationAndCenter() {
+            console.log('📍 現在地取得を試行中...');
+
+            if (!navigator.geolocation) {
+                console.log('❌ Geolocation API がサポートされていません');
+                return;
+            }
+
+            const options = {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 300000 // 5分間キャッシュ
+            };
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const accuracy = position.coords.accuracy;
+
+                    console.log(`✅ 現在地取得成功: ${lat.toFixed(6)}, ${lng.toFixed(6)} (精度: ${Math.round(accuracy)}m)`);
+
+                    // 地図の中心を現在地に移動
+                    if (map) {
+                        map.setView([lat, lng], 12);
+
+                        // 現在地マーカーを追加
+                        const currentLocationIcon = L.divIcon({
+                            html: `<div style="background: #007AFF; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3);"></div>`,
+                            iconSize: [22, 22],
+                            iconAnchor: [11, 11],
+                            className: 'current-location-marker'
+                        });
+
+                        L.marker([lat, lng], { 
+                            icon: currentLocationIcon,
+                            zIndexOffset: 1000 
+                        })
+                        .addTo(map)
+                        .bindPopup('📍 現在地')
+                        .openPopup();
+                    }
+                },
+                function(error) {
+                    let errorMessage = '';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = '位置情報の取得が拒否されました';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = '位置情報が取得できませんでした';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = '位置情報の取得がタイムアウトしました';
+                            break;
+                        default:
+                            errorMessage = '不明なエラーが発生しました';
+                            break;
+                    }
+                    console.log(`ℹ️ 現在地取得失敗: ${errorMessage}（デフォルト位置で表示）`);
+                },
+                options
+            );
         }
 
         // 店舗リスト表示
