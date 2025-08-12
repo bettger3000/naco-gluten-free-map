@@ -523,6 +523,47 @@
             gap: var(--space-sm);
         }
 
+        .popup-actions {
+            margin-top: var(--space-md);
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            gap: var(--space-sm);
+        }
+
+        .visit-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-xs);
+            padding: var(--space-sm);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            background: white;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .visit-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        .visit-btn.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-icon {
+            font-size: 1rem;
+        }
+
         .popup-row {
             display: flex;
             align-items: flex-start;
@@ -592,9 +633,173 @@
             }
         }
 
+        /* 底部導航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            justify-content: center;
+            padding: var(--space-sm) 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-sm) var(--space-lg);
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+            min-width: 80px;
+        }
+
+        .nav-btn.active {
+            color: var(--primary-color);
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            margin-bottom: var(--space-xs);
+        }
+
+        .nav-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* 訪問履歴ビュー */
+        .visit-history-view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            z-index: 1100;
+            overflow-y: auto;
+            padding-bottom: 80px; /* 底部導航の高さ分 */
+        }
+
+        .visit-history-view.hidden {
+            display: none;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--border-light);
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .history-count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+        }
+
+        .history-list {
+            padding: var(--space-md);
+        }
+
+        .history-item {
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin-bottom: var(--space-md);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+        }
+
+        .history-item:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-sm);
+        }
+
+        .history-store-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+
+        .history-category {
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: white;
+        }
+
+        .history-address {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: var(--space-xs);
+        }
+
+        .history-actions {
+            display: flex;
+            gap: var(--space-sm);
+            margin-top: var(--space-sm);
+        }
+
+        .history-action-btn {
+            padding: var(--space-xs) var(--space-sm);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            background: white;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .history-action-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--space-xl);
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: var(--space-md);
+        }
+
+        .empty-message {
+            font-size: 1rem;
+        }
+
         @media (max-width: 768px) {
             .header-content {
                 padding: 0 var(--space-lg);
+            }
+
+            .main-content {
+                margin-bottom: 80px; /* 底部導航の高さ分 */
             }
             
             .search-filter-content {
@@ -718,10 +923,48 @@
         </div>
     </div>
 
+    <!-- 底部导航 -->
+    <nav class="bottom-nav">
+        <button class="nav-btn active" data-tab="map">
+            <span class="nav-icon">🗺️</span>
+            <span class="nav-label">地図</span>
+        </button>
+        <button class="nav-btn" data-tab="want-to-go">
+            <span class="nav-icon">🤍</span>
+            <span class="nav-label">行きたい</span>
+        </button>
+        <button class="nav-btn" data-tab="visited">
+            <span class="nav-icon">✨</span>
+            <span class="nav-label">行った</span>
+        </button>
+    </nav>
+
+    <!-- 訪問履歴ビュー -->
+    <div id="visitHistoryView" class="visit-history-view hidden">
+        <div class="history-header">
+            <h2 id="historyTitle">行きたいお店</h2>
+            <div class="history-count" id="historyCount">0件</div>
+        </div>
+        <div class="history-list" id="historyList">
+            <!-- 動的に生成される -->
+        </div>
+    </div>
+
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Supabase JS -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
     <script>
+        // Supabase設定 - 正しいプロジェクト情報
+        const SUPABASE_URL = 'https://hxrmsjfvgctoaxpbukvo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4cm1zamZ2Z2N0b2F4cGJ1a3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MTI3NTAsImV4cCI6MjA3MDQ4ODc1MH0.tM1vDVVhYhh7OHlA1BTj071BfsIzeBG_HatijjtxwLw';
+        
+        // Supabaseクライアント初期化
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
         // カテゴリー色
         const categoryColors = {
             'カフェ': '#8B4513',
@@ -1740,6 +1983,8 @@
                         selectStoreCard(store.id);
                     });
 
+                    // マーカーにstoreIdを保存
+                    marker.storeId = store.id;
                     markers.push(marker);
                 } catch (error) {
                     console.error(`店舗「${store.name}」のマーカー作成エラー:`, error);
@@ -2004,6 +2249,16 @@
                             </div>
                         ` : ''}
                     </div>
+                    <div class="popup-actions">
+                        <button class="visit-btn want-to-go-btn" onclick="toggleVisitStatus(${store.id}, 'want_to_go')" data-store-id="${store.id}">
+                            <span class="btn-icon">🤍</span>
+                            <span class="btn-text">行きたい</span>
+                        </button>
+                        <button class="visit-btn visited-btn" onclick="toggleVisitStatus(${store.id}, 'visited')" data-store-id="${store.id}">
+                            <span class="btn-icon">✨</span>
+                            <span class="btn-text">行った</span>
+                        </button>
+                    </div>
                 </div>
             `;
         }
@@ -2112,13 +2367,524 @@
                 resetBtn.addEventListener('click', resetMapView);
             }
 
+            // 訪問履歴機能の初期化
+            initVisitHistory();
+            
+            // 底部導航の初期化
+            initBottomNav();
+            
             console.log('✅ イベントリスナー設定完了');
         }
 
+        // 訪問履歴グローバル変数
+        let userVisitHistory = new Map();
+        let currentUser = null;
+
+        // 訪問履歴機能初期化
+        async function initVisitHistory() {
+            console.log('📝 訪問履歴機能初期化開始');
+            
+            // 現在のユーザーを設定（Google認証確認）
+            await checkAuthentication();
+            
+            // Supabaseから訪問履歴を読み込み
+            await loadVisitHistoryFromSupabase();
+            
+            // ローカルストレージからのフォールバック読み込み
+            const saved = localStorage.getItem('visit_history');
+            if (saved && userVisitHistory.size === 0) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    userVisitHistory = new Map(Object.entries(parsed));
+                    console.log('💾 ローカル訪問履歴を復元:', userVisitHistory.size, '件');
+                } catch (e) {
+                    console.warn('⚠️ 訪問履歴の復元に失敗:', e);
+                    userVisitHistory = new Map();
+                }
+            }
+            
+            console.log('✅ 訪問履歴機能初期化完了');
+        }
+
+        // Supabaseから訪問履歴を読み込み
+        async function loadVisitHistoryFromSupabase() {
+            try {
+                console.log('🔄 Supabaseから訪問履歴を読み込み中...');
+                
+                const { data, error } = await supabaseClient
+                    .from('visit_history')
+                    .select('store_id, status')
+                    .eq('user_email', currentUser);
+
+                if (error) {
+                    console.error('❌ Supabase読み込みエラー:', error);
+                    throw error;
+                }
+
+                if (data) {
+                    userVisitHistory.clear();
+                    data.forEach(item => {
+                        userVisitHistory.set(`${item.store_id}`, item.status);
+                    });
+                    console.log('✅ Supabaseから訪問履歴を読み込み:', data.length, '件');
+                }
+            } catch (error) {
+                console.error('❌ 訪問履歴読み込み失敗:', error);
+                // エラーが発生してもローカルストレージから読み込みを試行
+            }
+        }
+
+        // 訪問ステータス切り替え
+        async function toggleVisitStatus(storeId, status) {
+            console.log('📝 訪問ステータス更新:', storeId, status);
+            
+            if (!currentUser) {
+                alert('ユーザー認証が必要です');
+                return;
+            }
+            
+            const key = `${storeId}`;
+            const currentStatus = userVisitHistory.get(key);
+            
+            if (currentStatus === status) {
+                // 同じステータスの場合は削除
+                userVisitHistory.delete(key);
+                await deleteVisitHistoryFromSupabase(storeId);
+                console.log('🗑️ 訪問ステータス削除:', storeId);
+            } else {
+                // 新しいステータスを設定
+                userVisitHistory.set(key, status);
+                await saveVisitHistoryToSupabase(storeId, status);
+                console.log('✅ 訪問ステータス設定:', storeId, status);
+            }
+            
+            // ローカルストレージにもバックアップ保存
+            const obj = Object.fromEntries(userVisitHistory);
+            localStorage.setItem('visit_history', JSON.stringify(obj));
+            
+            // UIを更新
+            updateVisitButtonsForStore(storeId);
+            
+            // 現在履歴ビューを表示している場合は更新
+            const historyView = document.getElementById('visitHistoryView');
+            if (historyView && !historyView.classList.contains('hidden')) {
+                const activeTab = document.querySelector('.nav-btn.active');
+                if (activeTab && activeTab.dataset.tab !== 'map') {
+                    updateHistoryView(activeTab.dataset.tab);
+                }
+            }
+            
+            console.log('💾 訪問履歴保存完了');
+        }
+
+        // Supabaseに訪問履歴を保存
+        async function saveVisitHistoryToSupabase(storeId, status) {
+            try {
+                console.log('💾 Supabaseに保存中...', storeId, status);
+                
+                // 既存レコードを削除してから挿入（UPSERT的な動作）
+                const { error: deleteError } = await supabaseClient
+                    .from('visit_history')
+                    .delete()
+                    .eq('user_email', currentUser)
+                    .eq('store_id', storeId);
+
+                if (deleteError) {
+                    console.warn('⚠️ 既存レコード削除エラー:', deleteError);
+                }
+
+                // 新しいレコードを挿入
+                const { data, error } = await supabaseClient
+                    .from('visit_history')
+                    .insert([
+                        {
+                            user_email: currentUser,
+                            store_id: storeId,
+                            status: status,
+                            visited_date: status === 'visited' ? new Date().toISOString().split('T')[0] : null,
+                            notes: null
+                        }
+                    ]);
+
+                if (error) {
+                    console.error('❌ Supabase保存エラー:', error);
+                    throw error;
+                } else {
+                    console.log('✅ Supabase保存成功:', data);
+                }
+            } catch (error) {
+                console.error('❌ 訪問履歴保存失敗:', error);
+                // エラーが発生してもローカルには保存されているので続行
+            }
+        }
+
+        // Supabaseから訪問履歴を削除
+        async function deleteVisitHistoryFromSupabase(storeId) {
+            try {
+                console.log('🗑️ Supabaseから削除中...', storeId);
+                
+                const { error } = await supabaseClient
+                    .from('visit_history')
+                    .delete()
+                    .eq('user_email', currentUser)
+                    .eq('store_id', storeId);
+
+                if (error) {
+                    console.error('❌ Supabase削除エラー:', error);
+                    throw error;
+                } else {
+                    console.log('✅ Supabase削除成功');
+                }
+            } catch (error) {
+                console.error('❌ 訪問履歴削除失敗:', error);
+                // エラーが発生してもローカルからは削除されているので続行
+            }
+        }
+
+        // 特定店舗の訪問ボタンUI更新
+        function updateVisitButtonsForStore(storeId) {
+            const status = userVisitHistory.get(`${storeId}`);
+            
+            // ポップアップ内のボタンを更新
+            const wantBtn = document.querySelector(`.want-to-go-btn[data-store-id="${storeId}"]`);
+            const visitedBtn = document.querySelector(`.visited-btn[data-store-id="${storeId}"]`);
+            
+            if (wantBtn) {
+                wantBtn.classList.toggle('active', status === 'want_to_go');
+            }
+            if (visitedBtn) {
+                visitedBtn.classList.toggle('active', status === 'visited');
+            }
+        }
+
+        // 認証確認
+        async function checkAuthentication() {
+            try {
+                console.log('🔐 認証状態を確認中...');
+                
+                const { data: { user }, error } = await supabaseClient.auth.getUser();
+                
+                if (error) {
+                    console.warn('⚠️ 認証確認エラー、デモモードで続行:', error);
+                    currentUser = 'demo_user@example.com';
+                    return;
+                }
+                
+                if (user && user.email) {
+                    currentUser = user.email;
+                    console.log('✅ 認証済みユーザー:', currentUser);
+                } else {
+                    console.log('⚠️ 未認証ユーザー、デモモードで続行');
+                    currentUser = 'demo_user@example.com';
+                }
+            } catch (error) {
+                console.error('❌ 認証処理エラー:', error);
+                currentUser = 'demo_user@example.com'; // フォールバック
+            }
+        }
+
+        // Google認証（オプション機能）
+        async function signInWithGoogle() {
+            try {
+                console.log('🔐 Google認証を開始...');
+                
+                const { data, error } = await supabaseClient.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: window.location.origin
+                    }
+                });
+                
+                if (error) {
+                    console.error('❌ Google認証エラー:', error);
+                    alert('認証に失敗しました。デモモードで続行します。');
+                } else {
+                    console.log('✅ Google認証成功');
+                }
+            } catch (error) {
+                console.error('❌ 認証処理エラー:', error);
+                alert('認証に失敗しました。デモモードで続行します。');
+            }
+        }
+
+        // ログアウト
+        async function signOut() {
+            try {
+                const { error } = await supabaseClient.auth.signOut();
+                if (error) {
+                    console.error('❌ ログアウトエラー:', error);
+                } else {
+                    console.log('✅ ログアウト成功');
+                    currentUser = 'demo_user';
+                    userVisitHistory.clear();
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('❌ ログアウト処理エラー:', error);
+            }
+        }
+
+        // 底部導航初期化
+        function initBottomNav() {
+            console.log('🔽 底部導航初期化開始');
+            
+            // 導航ボタンイベント
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tab = btn.dataset.tab;
+                    switchTab(tab);
+                });
+            });
+            
+            console.log('✅ 底部導航初期化完了');
+        }
+
+        // タブ切り替え
+        function switchTab(tab) {
+            console.log('🔄 タブ切り替え:', tab);
+            
+            // 導航ボタンのアクティブ状態更新
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === tab);
+            });
+            
+            const mainContent = document.querySelector('.container');
+            const historyView = document.getElementById('visitHistoryView');
+            
+            if (tab === 'map') {
+                // 地図表示
+                mainContent.style.display = 'block';
+                historyView.classList.add('hidden');
+            } else {
+                // 履歴表示
+                mainContent.style.display = 'none';
+                historyView.classList.remove('hidden');
+                updateHistoryView(tab);
+            }
+        }
+
+        // 履歴ビュー更新
+        function updateHistoryView(type) {
+            console.log('📝 履歴ビュー更新:', type);
+            
+            const titleEl = document.getElementById('historyTitle');
+            const countEl = document.getElementById('historyCount');
+            const listEl = document.getElementById('historyList');
+            
+            // タイトル設定
+            titleEl.textContent = type === 'want-to-go' ? '行きたいお店' : '行ったお店';
+            
+            // フィルタリング
+            const filteredStores = stores.filter(store => {
+                const status = userVisitHistory.get(`${store.id}`);
+                return status === (type === 'want-to-go' ? 'want_to_go' : 'visited');
+            });
+            
+            // 件数更新
+            countEl.textContent = `${filteredStores.length}件`;
+            
+            // リスト生成
+            if (filteredStores.length === 0) {
+                listEl.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">${type === 'want-to-go' ? '🤍' : '✨'}</div>
+                        <div class="empty-message">まだ${type === 'want-to-go' ? '行きたいお店' : '行ったお店'}がありません</div>
+                    </div>
+                `;
+            } else {
+                listEl.innerHTML = filteredStores.map(store => createHistoryItem(store, type)).join('');
+            }
+        }
+
+        // 履歴アイテム生成
+        function createHistoryItem(store, type) {
+            const categoryClass = getCategoryClass(store.category);
+            const categoryColor = categoryColors[store.category] || '#666';
+            
+            return `
+                <div class="history-item" data-store-id="${store.id}">
+                    <div class="history-item-header">
+                        <div class="history-store-name">${escapeHtml(store.name || '')}</div>
+                        <div class="history-category" style="background-color: ${categoryColor}">
+                            ${escapeHtml(store.category || '')}
+                        </div>
+                    </div>
+                    <div class="history-address">${escapeHtml(store.address || '')}</div>
+                    <div class="history-actions">
+                        <button class="history-action-btn" onclick="showStoreOnMap(${store.id})">
+                            地図で見る
+                        </button>
+                        <button class="history-action-btn" onclick="toggleVisitStatus(${store.id}, '${type === 'want-to-go' ? 'want_to_go' : 'visited'}')">
+                            削除
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 地図で店舗を表示
+        function showStoreOnMap(storeId) {
+            console.log('🗺️ 地図で店舗表示:', storeId);
+            
+            // 地図タブに切り替え
+            switchTab('map');
+            
+            // 店舗を探してフォーカス
+            const store = stores.find(s => s.id === storeId);
+            if (store && map) {
+                map.setView([store.latitude, store.longitude], 16);
+                
+                // マーカーのポップアップを開く
+                setTimeout(() => {
+                    const marker = markers.find(m => m.storeId === storeId);
+                    if (marker) {
+                        marker.openPopup();
+                    }
+                }, 300);
+            }
+        }
+
+        // Supabase接続テスト関数
+        async function testSupabaseConnection() {
+            console.log('🔍 Supabase接続テスト開始...');
+            
+            try {
+                // 1. visit_historyテーブルの存在と構造確認
+                console.log('1. visit_historyテーブル確認...');
+                const { data: visitHistory, error: visitError } = await supabaseClient
+                    .from('visit_history')
+                    .select('*')
+                    .limit(5);
+                    
+                if (visitError) {
+                    console.error('❌ visit_historyテーブルエラー:', visitError);
+                    
+                    // テーブルが存在しない場合、作成を試行
+                    console.log('🛠️ visit_historyテーブルが存在しない可能性があります');
+                } else {
+                    console.log('✅ visit_historyテーブル接続成功');
+                    console.log('📋 既存の訪問履歴データ:', visitHistory?.length, '件');
+                    if (visitHistory && visitHistory.length > 0) {
+                        console.log('📊 サンプルデータ:', visitHistory);
+                    }
+                }
+                
+                // 2. user_profilesテーブル確認
+                console.log('2. user_profilesテーブル確認...');
+                const { data: profiles, error: profileError } = await supabaseClient
+                    .from('user_profiles')
+                    .select('email, nickname')
+                    .limit(3);
+                    
+                if (profileError) {
+                    console.error('❌ user_profilesテーブルエラー:', profileError);
+                } else {
+                    console.log('✅ user_profilesテーブル接続成功:', profiles?.length, '件');
+                    console.log('👤 ユーザープロファイル:', profiles);
+                }
+                
+                // 3. storesテーブル確認
+                console.log('3. storesテーブル確認...');
+                const { data: stores, error: storeError } = await supabaseClient
+                    .from('stores')
+                    .select('id, name, category_id')
+                    .limit(5);
+                    
+                if (storeError) {
+                    console.error('❌ storesテーブルエラー:', storeError);
+                } else {
+                    console.log('✅ storesテーブル接続成功:', stores?.length, '件');
+                    console.log('🏪 店舗データサンプル:', stores);
+                }
+                
+                // 4. テーブルスキーマ情報の取得試行
+                console.log('4. データベース情報確認...');
+                const { data: schemaInfo, error: schemaError } = await supabaseClient
+                    .from('information_schema.tables')
+                    .select('table_name')
+                    .eq('table_schema', 'public')
+                    .in('table_name', ['visit_history', 'user_profiles', 'stores', 'store_categories']);
+                
+                if (!schemaError && schemaInfo) {
+                    console.log('📋 存在するテーブル:', schemaInfo.map(t => t.table_name));
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('❌ Supabase接続テスト失敗:', error);
+                return false;
+            }
+        }
+
+        // テストデータ挿入機能
+        async function insertTestVisitHistory() {
+            console.log('🧪 テスト訪問履歴データ挿入開始...');
+            
+            try {
+                const testUser = 'demo_user@example.com';
+                const testStoreId = 1; // みちのり亭のID
+                
+                // 1. user_profilesにテストユーザーを作成
+                const { error: userError } = await supabaseClient
+                    .from('user_profiles')
+                    .upsert({
+                        email: testUser,
+                        nickname: 'テストユーザー',
+                        is_active: true
+                    });
+                
+                if (userError) {
+                    console.error('❌ テストユーザー作成エラー:', userError);
+                } else {
+                    console.log('✅ テストユーザー作成成功');
+                }
+                
+                // 2. visit_historyにテストデータ挿入
+                const { data: insertData, error: insertError } = await supabaseClient
+                    .from('visit_history')
+                    .insert([
+                        {
+                            user_email: testUser,
+                            store_id: testStoreId,
+                            status: 'want_to_go',
+                            notes: 'テスト用の行きたい店データ'
+                        }
+                    ])
+                    .select();
+                
+                if (insertError) {
+                    console.error('❌ テストデータ挿入エラー:', insertError);
+                } else {
+                    console.log('✅ テストデータ挿入成功:', insertData);
+                }
+                
+                // 3. データ確認
+                const { data: checkData, error: checkError } = await supabaseClient
+                    .from('visit_history')
+                    .select('*')
+                    .eq('user_email', testUser);
+                
+                if (!checkError && checkData) {
+                    console.log('📊 挿入確認結果:', checkData);
+                }
+                
+            } catch (error) {
+                console.error('❌ テストデータ挿入失敗:', error);
+            }
+        }
+
+        // テスト関数をグローバルに公開
+        window.insertTestData = insertTestVisitHistory;
+
+        // テスト実行用のグローバル関数として公開
+        window.testSupabase = testSupabaseConnection;
+        
         // パフォーマンス測定
         console.log('🚀 埋め込みデータ版グルテンフリーマップ');
         console.log('⚡ 特徴: 即座表示、認証不要、確実動作');
         console.log('📊 店舗数:', embeddedStores.length, '店舗');
+        console.log('🧪 Supabaseテスト: コンソールで testSupabase() を実行');
+        console.log('🧪 テストデータ挿入: コンソールで insertTestData() を実行');
     </script>
 </body>
 </html>
