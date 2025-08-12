@@ -1861,40 +1861,22 @@
             console.log('✅ アプリ初期化完了 - 全機能利用可能');
         }
 
-        // データベース状態確認
+        // データベース状態確認（簡略版）
         async function checkDatabaseStatus() {
             try {
-                console.log('🔍 データベース状態確認中...');
-                
-                // 全訪問履歴レコードを確認
-                const { data: allRecords, error: allError } = await supabaseClient
+                // 基本接続確認のみ
+                const { data, error } = await supabaseClient
                     .from('visit_history')
-                    .select('*')
-                    .order('created_at', { ascending: false });
+                    .select('count', { count: 'exact' })
+                    .limit(1);
                 
-                if (allError) {
-                    console.error('❌ 全レコード取得エラー:', allError);
+                if (error) {
+                    console.warn('⚠️ データベース接続確認エラー:', error);
                 } else {
-                    console.log('📊 全訪問履歴レコード数:', allRecords?.length || 0);
-                    console.log('📊 全レコード:', allRecords);
+                    console.log('✅ データベース接続正常');
                 }
-                
-                // demo_userのレコードを確認
-                const { data: demoRecords, error: demoError } = await supabaseClient
-                    .from('visit_history')
-                    .select('*')
-                    .eq('user_email', 'demo_user@example.com')
-                    .order('created_at', { ascending: false });
-                
-                if (demoError) {
-                    console.error('❌ demo_userレコード取得エラー:', demoError);
-                } else {
-                    console.log('👤 demo_userレコード数:', demoRecords?.length || 0);
-                    console.log('👤 demo_userレコード:', demoRecords);
-                }
-                
             } catch (error) {
-                console.error('❌ データベース状態確認エラー:', error);
+                console.warn('⚠️ データベース確認エラー:', error);
             }
         }
 
@@ -2520,15 +2502,9 @@
         // Supabaseに訪問履歴を保存
         async function saveVisitHistoryToSupabase(storeId, status) {
             try {
-                console.log('💾 Supabaseに保存中...', {
-                    storeId: storeId, 
-                    status: status, 
-                    currentUser: currentUser,
-                    storeIdType: typeof storeId
-                });
+                console.log('💾 Supabaseに保存中...', storeId, status);
                 
                 // 既存レコードを削除してから挿入（UPSERT的な動作）
-                console.log('🗑️ 既存レコード削除試行中...');
                 const { error: deleteError } = await supabaseClient
                     .from('visit_history')
                     .delete()
@@ -2537,50 +2513,26 @@
 
                 if (deleteError) {
                     console.warn('⚠️ 既存レコード削除エラー:', deleteError);
-                } else {
-                    console.log('✅ 既存レコード削除完了');
                 }
 
-                // 挿入するデータを準備
-                const insertData = {
-                    user_email: currentUser,
-                    store_id: storeId,
-                    status: status,
-                    visited_date: status === 'visited' ? new Date().toISOString().split('T')[0] : null,
-                    notes: null
-                };
-                
-                console.log('📝 挿入データ:', insertData);
-
                 // 新しいレコードを挿入
-                console.log('➕ 新規レコード挿入試行中...');
                 const { data, error } = await supabaseClient
                     .from('visit_history')
-                    .insert([insertData]);
-
-                console.log('📊 Supabase応答:', { data, error });
+                    .insert([
+                        {
+                            user_email: currentUser,
+                            store_id: storeId,
+                            status: status,
+                            visited_date: status === 'visited' ? new Date().toISOString().split('T')[0] : null,
+                            notes: null
+                        }
+                    ]);
 
                 if (error) {
                     console.error('❌ Supabase保存エラー:', error);
-                    console.error('エラー詳細:', {
-                        message: error.message,
-                        code: error.code,
-                        details: error.details,
-                        hint: error.hint
-                    });
                     throw error;
                 } else {
-                    console.log('✅ Supabase保存成功:', data);
-                    
-                    // 実際に保存されたか確認
-                    console.log('🔍 保存確認中...');
-                    const { data: checkData, error: checkError } = await supabaseClient
-                        .from('visit_history')
-                        .select('*')
-                        .eq('user_email', currentUser)
-                        .eq('store_id', storeId);
-                    
-                    console.log('✅ 保存確認結果:', { checkData, checkError });
+                    console.log('✅ Supabase保存成功');
                 }
             } catch (error) {
                 console.error('❌ 訪問履歴保存失敗:', error);
@@ -2721,6 +2673,16 @@
             const mainContent = document.querySelector('.container');
             const historyView = document.getElementById('visitHistoryView');
             
+            // 要素の存在チェック
+            if (!mainContent) {
+                console.error('❌ .container要素が見つかりません');
+                return;
+            }
+            if (!historyView) {
+                console.error('❌ visitHistoryView要素が見つかりません');
+                return;
+            }
+            
             if (tab === 'map') {
                 // 地図表示
                 mainContent.style.display = 'block';
@@ -2740,6 +2702,16 @@
             const titleEl = document.getElementById('historyTitle');
             const countEl = document.getElementById('historyCount');
             const listEl = document.getElementById('historyList');
+            
+            // 要素の存在チェック
+            if (!titleEl || !countEl || !listEl) {
+                console.error('❌ 履歴ビュー要素が見つかりません:', {
+                    titleEl: !!titleEl,
+                    countEl: !!countEl,
+                    listEl: !!listEl
+                });
+                return;
+            }
             
             // タイトル設定
             titleEl.textContent = type === 'want-to-go' ? '行きたいお店' : '行ったお店';
