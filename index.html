@@ -1855,7 +1855,47 @@
             // 3. イベントリスナー設定
             setupEventListeners();
             
+            // 4. データベース状態確認
+            checkDatabaseStatus();
+            
             console.log('✅ アプリ初期化完了 - 全機能利用可能');
+        }
+
+        // データベース状態確認
+        async function checkDatabaseStatus() {
+            try {
+                console.log('🔍 データベース状態確認中...');
+                
+                // 全訪問履歴レコードを確認
+                const { data: allRecords, error: allError } = await supabaseClient
+                    .from('visit_history')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (allError) {
+                    console.error('❌ 全レコード取得エラー:', allError);
+                } else {
+                    console.log('📊 全訪問履歴レコード数:', allRecords?.length || 0);
+                    console.log('📊 全レコード:', allRecords);
+                }
+                
+                // demo_userのレコードを確認
+                const { data: demoRecords, error: demoError } = await supabaseClient
+                    .from('visit_history')
+                    .select('*')
+                    .eq('user_email', 'demo_user@example.com')
+                    .order('created_at', { ascending: false });
+                
+                if (demoError) {
+                    console.error('❌ demo_userレコード取得エラー:', demoError);
+                } else {
+                    console.log('👤 demo_userレコード数:', demoRecords?.length || 0);
+                    console.log('👤 demo_userレコード:', demoRecords);
+                }
+                
+            } catch (error) {
+                console.error('❌ データベース状態確認エラー:', error);
+            }
         }
 
         // 埋め込み店舗データ読み込み（即座）
