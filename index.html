@@ -539,6 +539,36 @@
             margin: var(--space-md);
             text-align: center;
         }
+
+        /* エレガントなマーカースタイル */
+        .elegant-marker .marker-icon:hover {
+            transform: scale(1.1) !important;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.25) !important;
+        }
+
+        .elegant-marker .marker-container {
+            cursor: pointer;
+        }
+
+        /* マーカーアニメーション */
+        @keyframes markerPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .elegant-marker:hover .marker-icon {
+            animation: markerPulse 0.6s ease-in-out;
+        }
+
+        /* モバイル対応のマーカーサイズ調整 */
+        @media (max-width: 768px) {
+            .elegant-marker .marker-icon {
+                width: 36px !important;
+                height: 36px !important;
+                font-size: 16px !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -614,16 +644,56 @@
             'その他': '#666666'
         };
 
-        // カテゴリー絵文字
-        const categoryEmojis = {
-            'カフェ': '☕',
-            '和食': '🍱',
-            '洋食': '🍽️',
-            'パン屋': '🥐',
-            'スイーツ': '🧁',
-            '販売店': '🛒',
-            'その他': '🏪'
+        // カテゴリー別デザイン設定（洗練されたターゲット向け）
+        const categoryConfig = {
+            'カフェ': { 
+                emoji: '☕', 
+                color: '#8B4513',
+                bgColor: '#F5E6D3',
+                borderColor: '#D4A574'
+            },
+            '和食': { 
+                emoji: '🍱', 
+                color: '#E74C3C',
+                bgColor: '#FCE4EC',
+                borderColor: '#F8BBD9'
+            },
+            '洋食': { 
+                emoji: '🍽️', 
+                color: '#3498DB',
+                bgColor: '#E3F2FD',
+                borderColor: '#BBDEFB'
+            },
+            'パン屋': { 
+                emoji: '🥐', 
+                color: '#D68910',
+                bgColor: '#FFF8E1',
+                borderColor: '#F9E79F'
+            },
+            'スイーツ': { 
+                emoji: '🧁', 
+                color: '#FF6B9D',
+                bgColor: '#FCE4EC',
+                borderColor: '#F8BBD9'
+            },
+            '販売店': { 
+                emoji: '🛒', 
+                color: '#2ECC71',
+                bgColor: '#E8F5E8',
+                borderColor: '#C8E6C9'
+            },
+            'その他': { 
+                emoji: '🏪', 
+                color: '#95A5A6',
+                bgColor: '#F7F9FC',
+                borderColor: '#D5DBDB'
+            }
         };
+
+        // 後方互換性のため
+        const categoryEmojis = Object.fromEntries(
+            Object.entries(categoryConfig).map(([key, value]) => [key, value.emoji])
+        );
 
         // 🚀 埋め込み店舗データ（即座表示）
         const embeddedStores = [
@@ -1535,15 +1605,42 @@
                 }
 
                 try {
-                    const iconColor = categoryColors[store.category] || categoryColors['その他'];
-                    const iconEmoji = categoryEmojis[store.category] || categoryEmojis['その他'];
+                    const config = categoryConfig[store.category] || categoryConfig['その他'];
 
                     const marker = L.marker([store.latitude, store.longitude], {
                         icon: L.divIcon({
-                            className: 'custom-marker',
-                            html: `<div class="custom-marker" style="background-color: ${iconColor}; width: 32px; height: 32px;">${iconEmoji}</div>`,
-                            iconSize: [32, 32],
-                            iconAnchor: [16, 16]
+                            className: 'elegant-marker',
+                            html: `
+                                <div class="marker-container">
+                                    <div class="marker-icon" style="
+                                        background: ${config.bgColor};
+                                        border: 3px solid ${config.borderColor};
+                                        color: ${config.color};
+                                        width: 40px;
+                                        height: 40px;
+                                        border-radius: 50%;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        font-size: 18px;
+                                        font-weight: bold;
+                                        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                                        transition: transform 0.2s ease;
+                                    ">${config.emoji}</div>
+                                    <div class="marker-pin" style="
+                                        width: 0;
+                                        height: 0;
+                                        border-left: 6px solid transparent;
+                                        border-right: 6px solid transparent;
+                                        border-top: 8px solid ${config.borderColor};
+                                        margin-left: 14px;
+                                        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+                                    "></div>
+                                </div>
+                            `,
+                            iconSize: [40, 48],
+                            iconAnchor: [20, 48],
+                            popupAnchor: [0, -48]
                         })
                     }).addTo(map);
 
