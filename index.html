@@ -976,6 +976,20 @@
             'その他': '#666666'
         };
 
+        // カテゴリークラス名生成
+        function getCategoryClass(category) {
+            const classMap = {
+                'カフェ': 'cafe',
+                '和食': 'japanese',
+                '洋食': 'western',
+                'パン屋': 'bakery',
+                'スイーツ': 'sweets',
+                '販売店': 'shop',
+                'その他': 'other'
+            };
+            return classMap[category] || 'other';
+        }
+
         // カテゴリー別デザイン設定（高コントラスト・視認性重視）
         const categoryConfig = {
             'カフェ': { 
