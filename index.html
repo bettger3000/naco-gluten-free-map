@@ -366,6 +366,9 @@
             bottom: 100px; /* オーバーレイパネルの上に配置 */
             right: var(--space-lg);
             z-index: 1000;
+            display: flex;
+            gap: 8px;
+            flex-direction: column;
         }
         
         @media (max-width: 1024px) {
@@ -384,6 +387,19 @@
             /* PC版ではモバイル現在地ボタンを非表示 */
             .mobile-location-control {
                 display: none;
+            }
+            
+            /* PC版のピンボタン配置 */
+            #locateBtn,
+            #pinModeBtn {
+                position: absolute;
+                bottom: var(--space-lg);
+                right: var(--space-lg);
+                z-index: 1000;
+            }
+            
+            #pinModeBtn {
+                bottom: calc(var(--space-lg) + 48px); /* 現在地ボタンの上 */
             }
         }
 
@@ -1814,37 +1830,6 @@
             filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
         }
         
-        /* 長押しインジケーター */
-        .long-press-indicator {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: 3px solid var(--primary);
-            background: rgba(255, 107, 157, 0.1);
-            pointer-events: none;
-            z-index: 1000;
-            animation: longPressRipple 0.8s ease-out;
-            transform: translate(-50%, -50%);
-        }
-        
-        @keyframes longPressRipple {
-            0% {
-                width: 30px;
-                height: 30px;
-                opacity: 0;
-                border-width: 6px;
-            }
-            20% {
-                opacity: 1;
-            }
-            100% {
-                width: 60px;
-                height: 60px;
-                opacity: 0.8;
-                border-width: 3px;
-            }
-        }
         
         /* アニメーション */
         @keyframes slideInFromRight {
@@ -1878,6 +1863,59 @@
             0% { transform: rotate(-45deg) scale(0) translateY(20px); opacity: 0; }
             50% { transform: rotate(-45deg) scale(1.2) translateY(-5px); opacity: 0.8; }
             100% { transform: rotate(-45deg) scale(1) translateY(0); opacity: 1; }
+        }
+        
+        /* ピン設置モードボタン */
+        .pin-mode-btn {
+            opacity: 0.6;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 249, 250, 0.85) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 107, 157, 0.2);
+            width: 36px;
+            height: 36px;
+            font-size: 16px;
+        }
+        
+        .pin-mode-btn:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+            border-color: rgba(255, 107, 157, 0.4);
+        }
+        
+        .pin-mode-btn.active {
+            opacity: 1;
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        .pin-mode-btn.active .pin-mode-icon {
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* ピン設置モードのヒント */
+        .pin-mode-hint {
+            position: absolute;
+            top: calc(var(--space-lg) * 3);
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(255, 107, 157, 0.95) 0%, rgba(196, 69, 105, 0.9) 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+            z-index: 1000;
+            animation: slideInFromTop 0.3s ease-out;
+            pointer-events: none;
         }
         
         /* モバイル用ピン設置ヒント */
@@ -2006,11 +2044,17 @@
                     </div>
                     <!-- その他のコントロール -->
                     <button class="map-control-btn" id="locateBtn" title="現在地を表示">📍</button>
+                    <button class="map-control-btn pin-mode-btn" id="pinModeBtn" title="ピン設置モード">
+                        <span class="pin-mode-icon">🎯</span>
+                    </button>
                 </div>
                 
                 <!-- モバイル専用現在地ボタン（右下角） -->
                 <div class="mobile-location-control mobile-only">
                     <button class="map-control-btn" id="mobileLocateBtn" title="現在地を表示">📍</button>
+                    <button class="map-control-btn pin-mode-btn" id="mobilePinModeBtn" title="ピン設置モード">
+                        <span class="pin-mode-icon">🎯</span>
+                    </button>
                 </div>
                 <div id="map"></div>
                 
@@ -2033,11 +2077,6 @@
                     </button>
                 </div>
                 
-                <!-- モバイル用ピン設置ヒント -->
-                <div id="mobilePinHint" class="mobile-pin-hint mobile-only hidden">
-                    <i class="fas fa-hand-pointer"></i>
-                    <span>地図を長押しでピン設置</span>
-                </div>
             </div>
         </div>
     </div>
@@ -4737,176 +4776,111 @@
             // 外部クリックでメニュー閉じる
             document.addEventListener('click', hideContextMenu);
             
-            // モバイル用ヒント表示（初回のみ）
-            if (!isDesktop() && !localStorage.getItem('pinHintShown')) {
-                const hint = document.getElementById('mobilePinHint');
-                if (hint) {
-                    hint.classList.remove('hidden');
-                    setTimeout(() => {
-                        hint.classList.add('hidden');
-                        localStorage.setItem('pinHintShown', 'true');
-                    }, 5000); // 5秒間表示
-                }
-            }
             
             console.log('✅ カスタムピン機能初期化完了');
         }
 
+        // ピン設置モード管理
+        let pinModeActive = false;
+        
         // マップイベントリスナー設定
         function setupMapEventListeners() {
-            // PC版: 右クリックでコンテキストメニュー
-            if (isDesktop()) {
-                map.on('contextmenu', function(e) {
-                    e.originalEvent.preventDefault();
-                    showContextMenu(e.latlng, e.originalEvent);
-                });
-                
-                // ダブルクリックで直接ピン設置
-                map.on('dblclick', function(e) {
-                    setCustomPin(e.latlng);
-                });
-            } else {
-                // モバイル版: 長押しでコンテキストメニュー
-                let longPressTimer;
-                let isLongPress = false;
-                let pressIndicator = null;
-                let touchStartPos = null;
-                let savedLatlng = null;
-                
-                console.log('📱 モバイル版ピン機能初期化');
-                
-                // タッチ開始
-                map.on('touchstart', function(e) {
-                    console.log('👆 touchstartイベント発生', e);
-                    
-                    isLongPress = false;
-                    
-                    // latlngを保存（preventDefaultする前に）
-                    savedLatlng = e.latlng;
-                    
-                    const touches = e.originalEvent ? e.originalEvent.touches : e.touches;
-                    
-                    if (touches && touches.length === 1) {
-                        const touch = touches[0];
-                        touchStartPos = { x: touch.clientX, y: touch.clientY };
-                        
-                        console.log('📍 タッチ位置:', touchStartPos, '緯度経度:', savedLatlng);
-                        
-                        // インジケーターを作成
-                        pressIndicator = document.createElement('div');
-                        pressIndicator.className = 'long-press-indicator';
-                        pressIndicator.style.left = touch.clientX + 'px';
-                        pressIndicator.style.top = touch.clientY + 'px';
-                        document.body.appendChild(pressIndicator);
-                        
-                        // 振動フィードバック
-                        if (window.navigator && window.navigator.vibrate) {
-                            window.navigator.vibrate(10);
-                        }
-                        
-                        longPressTimer = setTimeout(() => {
-                            console.log('✅ 長押し完了 - メニュー表示');
-                            isLongPress = true;
-                            
-                            // インジケーターを削除
-                            if (pressIndicator) {
-                                pressIndicator.remove();
-                                pressIndicator = null;
-                            }
-                            
-                            // 振動フィードバック
-                            if (window.navigator && window.navigator.vibrate) {
-                                window.navigator.vibrate([20, 10, 20]);
-                            }
-                            
-                            // 保存したlatlngを使用
-                            if (savedLatlng) {
-                                const fakeEvent = {
-                                    clientX: touch.clientX,
-                                    clientY: touch.clientY,
-                                    touches: [{ clientX: touch.clientX, clientY: touch.clientY }]
-                                };
-                                showContextMenu(savedLatlng, fakeEvent);
-                            } else {
-                                console.error('❗ latlngが取得できませんでした');
-                            }
-                        }, 600);
-                    }
-                    
-                    // ブラウザのデフォルト長押しメニューを防ぐ
-                    // （タイミングを遅らせて実行）
-                    setTimeout(() => {
-                        if (e.originalEvent) {
-                            e.originalEvent.preventDefault();
-                        }
-                    }, 100);
-                });
-                
-                // タッチ移動（指が動いたらキャンセル）
-                map.on('touchmove', function(e) {
-                    if (touchStartPos && e.originalEvent && e.originalEvent.touches.length === 1) {
-                        const touch = e.originalEvent.touches[0];
-                        const moveDistance = Math.sqrt(
-                            Math.pow(touch.clientX - touchStartPos.x, 2) + 
-                            Math.pow(touch.clientY - touchStartPos.y, 2)
-                        );
-                        
-                        // 10ピクセル以上動いたらキャンセル
-                        if (moveDistance > 10) {
-                            console.log('🚫 指が動いたのでキャンセル');
-                            clearTimeout(longPressTimer);
-                            if (pressIndicator) {
-                                pressIndicator.remove();
-                                pressIndicator = null;
-                            }
-                        }
-                    }
-                });
-                
-                // タッチ終了
-                map.on('touchend touchcancel', function(e) {
-                    console.log('🎬 touchend/touchcancelイベント');
-                    clearTimeout(longPressTimer);
-                    touchStartPos = null;
-                    savedLatlng = null;
-                    
-                    if (pressIndicator) {
-                        pressIndicator.remove();
-                        pressIndicator = null;
-                    }
-                    
-                    // 長押しが完了していなければ、通常のタップとして処理
-                    if (!isLongPress) {
-                        hideContextMenu();
-                    }
-                });
-                
-                // コンテキストメニューを無効化（iOS Safari対策）
-                document.addEventListener('contextmenu', function(e) {
-                    e.preventDefault();
-                    return false;
-                }, { passive: false });
-            }
+            console.log('🗺️ マップイベントリスナー設定中...');
             
-            // 通常のクリック/タップでメニューを閉じる
+            // PC版: クリックでピン設置
             map.on('click', function(e) {
-                hideContextMenu();
+                if (pinModeActive) {
+                    console.log('📍 ピン設置モードでクリック');
+                    setCustomPin(e.latlng);
+                    togglePinMode(); // 設置後は自動でモードOFF
+                } else {
+                    hideContextMenu();
+                }
             });
+            
+            console.log('✅ マップイベントリスナー設定完了');
         }
 
+        // ピンモード切り替え
+        function togglePinMode() {
+            pinModeActive = !pinModeActive;
+            
+            // ボタンの表示を更新
+            updatePinModeButtons();
+            
+            // ヒント表示
+            if (pinModeActive) {
+                showPinModeHint();
+            } else {
+                hidePinModeHint();
+            }
+            
+            console.log('🎯 ピンモード:', pinModeActive ? 'ON' : 'OFF');
+        }
+        
+        // ピンモードボタンの表示更新
+        function updatePinModeButtons() {
+            const buttons = document.querySelectorAll('.pin-mode-btn');
+            buttons.forEach(btn => {
+                if (pinModeActive) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+        
+        // ピンモードヒント表示
+        function showPinModeHint() {
+            // 既存のヒントを削除
+            const existingHint = document.querySelector('.pin-mode-hint');
+            if (existingHint) {
+                existingHint.remove();
+            }
+            
+            // 新しいヒントを作成
+            const hint = document.createElement('div');
+            hint.className = 'pin-mode-hint';
+            hint.textContent = '📍 地図をタップでピン設置';
+            
+            const mapContainer = document.querySelector('.map-container');
+            mapContainer.appendChild(hint);
+            
+            // 2秒後に自動で消す
+            setTimeout(() => {
+                if (hint && hint.parentNode) {
+                    hint.remove();
+                }
+            }, 2000);
+        }
+        
+        // ピンモードヒント非表示
+        function hidePinModeHint() {
+            const hint = document.querySelector('.pin-mode-hint');
+            if (hint) {
+                hint.remove();
+            }
+        }
+        
         // ピンUI要素のイベントリスナー設定
         function setupPinUIEventListeners() {
-            // 「ピンを設置」ボタン
-            const setPinBtn = document.getElementById('setPinBtn');
-            if (setPinBtn) {
-                setPinBtn.addEventListener('click', function(e) {
+            console.log('🎯 ピンUIイベントリスナー設定中...');
+            
+            // PC版ピンモードボタン
+            const pinModeBtn = document.getElementById('pinModeBtn');
+            if (pinModeBtn) {
+                pinModeBtn.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    const latlng = mapContextMenu.dataset.latlng ? 
-                        JSON.parse(mapContextMenu.dataset.latlng) : null;
-                    if (latlng) {
-                        setCustomPin(latlng);
-                    }
-                    hideContextMenu();
+                    togglePinMode();
+                });
+            }
+            
+            // モバイル版ピンモードボタン
+            const mobilePinModeBtn = document.getElementById('mobilePinModeBtn');
+            if (mobilePinModeBtn) {
+                mobilePinModeBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    togglePinMode();
                 });
             }
             
@@ -4918,6 +4892,8 @@
                     removeCustomPin();
                 });
             }
+            
+            console.log('✅ ピンUIイベントリスナー設定完了');
         }
 
         // コンテキストメニュー表示
