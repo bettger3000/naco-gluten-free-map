@@ -698,6 +698,38 @@
             padding-top: var(--space-sm);
         }
 
+        .show-details-btn {
+            margin-top: var(--space-md);
+            padding: var(--space-sm) var(--space-md);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-xs);
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .show-details-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .details-btn-icon {
+            transition: transform 0.2s ease;
+            font-size: 0.8rem;
+        }
+
+        .show-details-btn.expanded .details-btn-icon {
+            transform: rotate(180deg);
+        }
+
         .popup-actions {
             margin-top: var(--space-md);
             padding-top: var(--space-md);
@@ -2869,6 +2901,9 @@
             const storeWebsite = store.website ? escapeHtml(store.website) : '';
             const storeDescription = store.description ? escapeHtml(store.description) : '';
 
+            // 詳細情報があるかチェック
+            const hasDetails = storePhone || storeWebsite || storeDescription;
+
             return `
                 <div class="popup-content">
                     <div class="popup-basic-info">
@@ -2899,28 +2934,36 @@
                                 </div>
                             ` : ''}
                         </div>
+                        ${hasDetails ? `
+                            <button class="show-details-btn" onclick="togglePopupDetails(this)">
+                                <span class="details-btn-text">詳細を見る</span>
+                                <span class="details-btn-icon">▼</span>
+                            </button>
+                        ` : ''}
                     </div>
-                    <div class="popup-scrollable">
-                        <div class="popup-additional-info">
-                            ${storePhone ? `
-                                <div class="popup-row">
-                                    <span class="popup-icon">📞</span>
-                                    <span class="popup-text">${storePhone}</span>
-                                </div>
-                            ` : ''}
-                            ${storeWebsite ? `
-                                <div class="popup-row">
-                                    <span class="popup-icon">🌐</span>
-                                    <span class="popup-text"><a href="${storeWebsite}" target="_blank" rel="noopener">ウェブサイト</a></span>
-                                </div>
-                            ` : ''}
-                            ${storeDescription ? `
-                                <div class="popup-row">
-                                    <span class="popup-icon">💬</span>
-                                    <span class="popup-text">${storeDescription}</span>
-                                </div>
-                            ` : ''}
-                        </div>
+                    <div class="popup-scrollable" ${hasDetails ? 'style="display: none;"' : ''}>
+                        ${hasDetails ? `
+                            <div class="popup-additional-info">
+                                ${storePhone ? `
+                                    <div class="popup-row">
+                                        <span class="popup-icon">📞</span>
+                                        <span class="popup-text">${storePhone}</span>
+                                    </div>
+                                ` : ''}
+                                ${storeWebsite ? `
+                                    <div class="popup-row">
+                                        <span class="popup-icon">🌐</span>
+                                        <span class="popup-text"><a href="${storeWebsite}" target="_blank" rel="noopener">ウェブサイト</a></span>
+                                    </div>
+                                ` : ''}
+                                ${storeDescription ? `
+                                    <div class="popup-row">
+                                        <span class="popup-icon">💬</span>
+                                        <span class="popup-text">${storeDescription}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        ` : ''}
                         <div class="popup-actions">
                             <button class="visit-btn want-to-go-btn" onclick="toggleVisitStatus(${store.id}, 'want_to_go')" data-store-id="${store.id}">
                                 <span class="btn-icon">🤍</span>
@@ -3163,10 +3206,41 @@
             }
         }
 
+        // ポップアップ詳細表示切り替え
+        function togglePopupDetails(button) {
+            const popupContent = button.closest('.popup-content');
+            const scrollableSection = popupContent.querySelector('.popup-scrollable');
+            const buttonText = button.querySelector('.details-btn-text');
+            const buttonIcon = button.querySelector('.details-btn-icon');
+            
+            if (scrollableSection.style.display === 'none') {
+                // 詳細を表示
+                scrollableSection.style.display = 'block';
+                buttonText.textContent = '詳細を隠す';
+                buttonIcon.textContent = '▲';
+                button.classList.add('expanded');
+                
+                // スクロールを有効にする
+                setTimeout(() => {
+                    scrollableSection.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'nearest' 
+                    });
+                }, 100);
+            } else {
+                // 詳細を隠す
+                scrollableSection.style.display = 'none';
+                buttonText.textContent = '詳細を見る';
+                buttonIcon.textContent = '▼';
+                button.classList.remove('expanded');
+            }
+        }
+
         // グローバル関数として公開（onclick用）
         window.toggleVisitStatus = toggleVisitStatus;
         window.focusOnStore = focusOnStore;
         window.closePopup = closePopup;
+        window.togglePopupDetails = togglePopupDetails;
 
         // イベントリスナー設定
         function setupEventListeners() {
