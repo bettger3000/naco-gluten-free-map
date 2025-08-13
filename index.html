@@ -1573,6 +1573,18 @@
         .leaflet-top.leaflet-left {
             z-index: 400 !important;
         }
+        
+        /* モバイルでポップアップ位置調整 */
+        @media (max-width: 768px) {
+            .leaflet-popup {
+                margin-left: 50px !important; /* 左端から離す */
+            }
+            
+            /* カスタムポップアップクラス */
+            .custom-popup .leaflet-popup-content-wrapper {
+                margin-left: 10px;
+            }
+        }
 
         /* 底部导航 */
         .bottom-navigation {
@@ -2894,7 +2906,10 @@
                     }).addTo(map);
 
                     const popupContent = createPopupContent(store);
-                    marker.bindPopup(popupContent);
+                    marker.bindPopup(popupContent, {
+                        offset: [15, -10], // ポップアップを右に15px、上に10pxずらす
+                        className: 'custom-popup'
+                    });
 
                     marker.on('click', function() {
                         selectStoreCard(store.id);
