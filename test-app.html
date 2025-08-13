@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アプリテスト - グルテンフリーマップ</title>
+    <style>
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'メイリオ', sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-item {
+            margin: 15px 0;
+            padding: 10px;
+            border-left: 4px solid #ff6b9d;
+            background: #f9f9f9;
+        }
+        .test-item h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .test-link {
+            display: inline-block;
+            background: #ff6b9d;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 5px 5px 5px 0;
+        }
+        .test-link:hover {
+            background: #e55a8a;
+        }
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        .checklist li {
+            margin: 5px 0;
+            padding: 5px 0;
+        }
+        .checklist li:before {
+            content: "☐ ";
+            color: #ff6b9d;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🌸 グルテンフリーマップ - 最終テスト</h1>
+        
+        <div class="test-item">
+            <h3>📱 アプリケーションテスト</h3>
+            <a href="index-final.html" class="test-link" target="_blank">メインアプリを開く</a>
+            <a href="index-simple.html" class="test-link" target="_blank">シンプル版を開く</a>
+        </div>
+
+        <div class="test-item">
+            <h3>✅ チェックリスト</h3>
+            <ul class="checklist">
+                <li>ローディング画面が正常に表示され、適切なタイミングで消える</li>
+                <li>認証画面が美しく表示される</li>
+                <li>Googleログインボタンが動作する</li>
+                <li>アプリ画面がきれいに表示される</li>
+                <li>タイトル「グルテンフリーマップ」が正しく表示される</li>
+                <li>日本地図が正常に表示される</li>
+                <li>店舗データが読み込まれ、リストに表示される</li>
+                <li>マップに店舗マーカーが表示される</li>
+                <li>店舗カードをクリックするとマップが移動する</li>
+                <li>マーカーをクリックするとポップアップが表示される</li>
+                <li>検索機能が動作する</li>
+                <li>カテゴリフィルターが動作する</li>
+                <li>現在地ボタンが動作する</li>
+                <li>全体表示ボタンが動作する</li>
+                <li>レスポンシブデザインが正常に動作する</li>
+            </ul>
+        </div>
+
+        <div class="test-item">
+            <h3>🎯 主要機能</h3>
+            <p><strong>認証:</strong> 許可されたGoogleアカウントのみアクセス可能</p>
+            <p><strong>データ:</strong> Supabaseから店舗データを取得（エラー時はサンプルデータ）</p>
+            <p><strong>マップ:</strong> Leaflet.jsを使用した日本全国の店舗表示</p>
+            <p><strong>検索:</strong> 店名・住所での絞り込み</p>
+            <p><strong>フィルター:</strong> カテゴリ別絞り込み</p>
+        </div>
+
+        <div class="test-item">
+            <h3>📊 対応ブラウザ</h3>
+            <p>Chrome, Safari, Firefox, Edge (最新版)</p>
+        </div>
+
+        <div class="test-item">
+            <h3>📧 許可されたメールアドレス</h3>
+            <ul>
+                <li>bettger1000@gmail.com</li>
+                <li>nono511shu123@gmail.com</li>
+                <li>kanakugi.makoto@gmail.com</li>
+            </ul>
+        </div>
+
+        <div class="test-item">
+            <h3>🔧 開発者メモ</h3>
+            <p>本日修正した項目:</p>
+            <ul>
+                <li>ローディング画面の無限ループ問題を解決</li>
+                <li>認証フローの簡素化と安定化</li>
+                <li>Supabaseエラー時のフォールバック機能追加</li>
+                <li>表示の問題（タイトルグラデーション）を修正</li>
+                <li>エラーハンドリングの強化</li>
+                <li>HTMLエスケープによるセキュリティ向上</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // ページ読み込み時に現在時刻を表示
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const timeString = now.toLocaleString('ja-JP');
+            document.title = `アプリテスト - ${timeString}`;
+        });
+    </script>
+</body>
+</html>

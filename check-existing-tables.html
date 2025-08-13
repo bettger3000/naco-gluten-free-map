@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase既存テーブル調査</title>
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #ff6b9d;
+            padding-bottom: 10px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .table-info {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 4px solid #007bff;
+        }
+        button {
+            background: #ff6b9d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #ff5a8d;
+        }
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Supabase 既存テーブル調査ツール</h1>
+        
+        <div id="status" class="status info">
+            Supabase接続準備中...
+        </div>
+
+        <div>
+            <button onclick="checkAllTables()">📋 全テーブル一覧を取得</button>
+            <button onclick="checkSpecificTables()">🎯 特定テーブルを確認</button>
+            <button onclick="checkTableStructure()">🏗️ テーブル構造を確認</button>
+            <button onclick="checkExistingData()">📊 既存データを確認</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        // Supabase設定
+        const SUPABASE_URL = 'https://hxrmsjfvgctoaxpbukvo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4cm1zamZ2Z2N0b2F4cGJ1a3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MTI3NTAsImV4cCI6MjA3MDQ4ODc1MH0.tM1vDVVhYhh7OHlA1BTj071BfsIzeBG_HatijjtxwLw';
+        
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // 状態更新
+        function updateStatus(message, type = 'info') {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+
+        // 結果表示
+        function showResults(html) {
+            document.getElementById('results').innerHTML = html;
+        }
+
+        // 全テーブル一覧を取得
+        async function checkAllTables() {
+            updateStatus('🔄 全テーブル一覧を取得中...', 'info');
+            
+            try {
+                // 方法1: 直接的なテーブル名の推測
+                const possibleTables = [
+                    'stores', 'store_categories', 'visit_history', 'user_profiles',
+                    'reviews', 'store_images', 'glutenfree_stores', 'glutenfree_shops',
+                    'shops', 'categories', 'users', 'visits', 'favorites'
+                ];
+                
+                let html = '<h2>📋 テーブル存在確認結果</h2>';
+                html += '<table><tr><th>テーブル名</th><th>状態</th><th>レコード数</th></tr>';
+                
+                for (const tableName of possibleTables) {
+                    try {
+                        const { data, error, count } = await supabaseClient
+                            .from(tableName)
+                            .select('*', { count: 'exact', head: true });
+                        
+                        if (!error) {
+                            html += `<tr>
+                                <td><strong>${tableName}</strong></td>
+                                <td>✅ 存在</td>
+                                <td>${count || 0}件</td>
+                            </tr>`;
+                        } else {
+                            html += `<tr>
+                                <td>${tableName}</td>
+                                <td>❌ 存在しない</td>
+                                <td>-</td>
+                            </tr>`;
+                        }
+                    } catch (e) {
+                        console.error(`Error checking ${tableName}:`, e);
+                    }
+                }
+                
+                html += '</table>';
+                showResults(html);
+                updateStatus('✅ テーブル確認完了', 'success');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                updateStatus('❌ エラーが発生しました', 'error');
+            }
+        }
+
+        // 特定テーブルの詳細確認
+        async function checkSpecificTables() {
+            updateStatus('🔄 主要テーブルを確認中...', 'info');
+            
+            try {
+                let html = '<h2>🎯 主要テーブル詳細</h2>';
+                
+                // storesテーブル
+                const { data: stores, error: storeError } = await supabaseClient
+                    .from('stores')
+                    .select('*')
+                    .limit(3);
+                
+                if (!storeError && stores) {
+                    html += '<div class="table-info">';
+                    html += '<h3>✅ storesテーブル</h3>';
+                    html += `<p>レコード数: ${stores.length}件</p>`;
+                    html += '<pre>' + JSON.stringify(stores, null, 2) + '</pre>';
+                    html += '</div>';
+                } else {
+                    html += '<div class="table-info">';
+                    html += '<h3>❌ storesテーブル</h3>';
+                    html += `<p>エラー: ${storeError?.message || '存在しません'}</p>`;
+                    html += '</div>';
+                }
+                
+                // glutenfree_storesテーブル（別名の可能性）
+                const { data: gfStores, error: gfError } = await supabaseClient
+                    .from('glutenfree_stores')
+                    .select('*')
+                    .limit(3);
+                
+                if (!gfError && gfStores) {
+                    html += '<div class="table-info">';
+                    html += '<h3>✅ glutenfree_storesテーブル</h3>';
+                    html += `<p>レコード数: ${gfStores.length}件</p>`;
+                    html += '<pre>' + JSON.stringify(gfStores, null, 2) + '</pre>';
+                    html += '</div>';
+                }
+                
+                showResults(html);
+                updateStatus('✅ 詳細確認完了', 'success');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                updateStatus('❌ エラーが発生しました', 'error');
+            }
+        }
+
+        // テーブル構造を確認
+        async function checkTableStructure() {
+            updateStatus('🔄 テーブル構造を確認中...', 'info');
+            
+            try {
+                // まず存在するテーブルを特定
+                const { data: stores, error: storeError } = await supabaseClient
+                    .from('stores')
+                    .select('*')
+                    .limit(1);
+                
+                let html = '<h2>🏗️ テーブル構造</h2>';
+                
+                if (!storeError && stores && stores.length > 0) {
+                    html += '<div class="table-info">';
+                    html += '<h3>storesテーブルの構造</h3>';
+                    html += '<table><tr><th>カラム名</th><th>型</th><th>サンプル値</th></tr>';
+                    
+                    for (const key in stores[0]) {
+                        html += `<tr>
+                            <td>${key}</td>
+                            <td>${typeof stores[0][key]}</td>
+                            <td>${stores[0][key]}</td>
+                        </tr>`;
+                    }
+                    
+                    html += '</table></div>';
+                }
+                
+                showResults(html);
+                updateStatus('✅ 構造確認完了', 'success');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                updateStatus('❌ エラーが発生しました', 'error');
+            }
+        }
+
+        // 既存データの確認
+        async function checkExistingData() {
+            updateStatus('🔄 既存データを確認中...', 'info');
+            
+            try {
+                let html = '<h2>📊 既存データ</h2>';
+                
+                // 名古屋エリアの店舗を検索
+                const { data: nagoyaStores, error: nagoyaError } = await supabaseClient
+                    .from('stores')
+                    .select('*')
+                    .or('city.eq.名古屋市,address.ilike.%名古屋%,name.ilike.%名古屋%')
+                    .limit(10);
+                
+                if (!nagoyaError && nagoyaStores && nagoyaStores.length > 0) {
+                    html += '<div class="table-info">';
+                    html += '<h3>名古屋エリアの店舗</h3>';
+                    html += '<table><tr><th>ID</th><th>店舗名</th><th>住所</th></tr>';
+                    
+                    nagoyaStores.forEach(store => {
+                        html += `<tr>
+                            <td>${store.id}</td>
+                            <td>${store.name}</td>
+                            <td>${store.address || '-'}</td>
+                        </tr>`;
+                    });
+                    
+                    html += '</table></div>';
+                } else {
+                    html += '<p>名古屋エリアの店舗データは見つかりませんでした。</p>';
+                }
+                
+                showResults(html);
+                updateStatus('✅ データ確認完了', 'success');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                updateStatus('❌ エラーが発生しました', 'error');
+            }
+        }
+
+        // 初期化
+        window.addEventListener('load', () => {
+            updateStatus('✅ Supabase接続準備完了', 'success');
+        });
+    </script>
+</body>
+</html>

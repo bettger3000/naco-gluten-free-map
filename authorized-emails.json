@@ -1,0 +1,8 @@
+{
+  "comment": "承認済みメールアドレスリスト（このファイルは公開しないでください）",
+  "authorized": [
+    "member1@gmail.com",
+    "member2@gmail.com",
+    "member3@gmail.com"
+  ]
+}

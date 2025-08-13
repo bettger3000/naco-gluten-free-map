@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>グルテンフリーマップ | ビヨフリ倶楽部</title>
+    
+    <!-- アイコン設定 -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23ff6b9d'/%3E%3Ctext x='32' y='40' text-anchor='middle' font-size='24' fill='white'%3E🌸%3C/text%3E%3C/svg%3E">
+    
+    <!-- フォント -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        :root {
+            --primary: #ff6b9d;
+            --primary-dark: #e55a8a;
+            --secondary: #40e0d0;
+            --accent: #ffd700;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-glass: rgba(255, 255, 255, 0.9);
+            --bg-overlay: rgba(0, 0, 0, 0.1);
+            
+            --text-primary: #1a1a1a;
+            --text-secondary: #64748b;
+            --text-light: #94a3b8;
+            
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            
+            --gradient-primary: linear-gradient(135deg, #ff6b9d 0%, #40e0d0 100%);
+            --gradient-secondary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-bg: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+            
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-2xl: 1.5rem;
+            
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-2xl: 3rem;
+            
+            --font-display: 'Inter', 'Noto Sans JP', sans-serif;
+            --font-body: 'Noto Sans JP', 'Inter', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--gradient-bg);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* メインアプリ */
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-header {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-light);
+            padding: var(--space-lg) var(--space-xl);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .app-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .title-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-md);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* 検索とフィルター */
+        .search-filter-container {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-light);
+            padding: var(--space-lg) var(--space-xl);
+        }
+
+        .search-filter-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: var(--space-lg);
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: var(--space-md) var(--space-lg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
+        }
+
+        .filter-chips {
+            display: flex;
+            gap: var(--space-sm);
+            flex-wrap: wrap;
+        }
+
+        .filter-chip {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: var(--space-sm) var(--space-md);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .filter-chip:hover,
+        .filter-chip.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: var(--space-xl);
+            padding: var(--space-xl);
+        }
+
+        .map-container {
+            position: relative;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            background: var(--bg-primary);
+        }
+
+        #map {
+            width: 100%;
+            height: 600px;
+            border-radius: var(--radius-xl);
+        }
+
+        .map-controls {
+            position: absolute;
+            top: var(--space-lg);
+            left: var(--space-lg);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .map-control-btn {
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border: none;
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-md);
+        }
+
+        .map-control-btn:hover {
+            background: var(--bg-primary);
+            transform: translateY(-1px);
+        }
+
+        /* 店舗リスト */
+        .store-sidebar {
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--border-light);
+            background: var(--bg-secondary);
+        }
+
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-sm);
+        }
+
+        .sidebar-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .store-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-sm);
+        }
+
+        .store-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .store-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .store-card:hover,
+        .store-card.selected {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .store-card:hover::before,
+        .store-card.selected::before {
+            transform: scaleY(1);
+        }
+
+        .store-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: var(--space-md);
+        }
+
+        .store-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .store-category {
+            background: var(--gradient-primary);
+            color: white;
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-xl);
+            font-size: 0.75rem;
+            font-weight: 500;
+            white-space: nowrap;
+            margin-left: var(--space-sm);
+        }
+
+        .store-info {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .store-address {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .store-gf-type {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            font-size: 0.875rem;
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        .store-hours {
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: var(--space-lg);
+            }
+            
+            .store-sidebar {
+                order: -1;
+                max-height: 300px;
+            }
+            
+            #map {
+                height: 500px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 0 var(--space-lg);
+            }
+            
+            .search-filter-content {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 0 var(--space-lg);
+            }
+            
+            .main-content {
+                padding: var(--space-lg);
+                gap: var(--space-lg);
+            }
+            
+            .filter-chips {
+                justify-content: center;
+            }
+        }
+
+        /* カスタムマーカー */
+        .custom-marker {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: var(--shadow-md);
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+        .custom-marker:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* リーフレットポップアップカスタム */
+        .leaflet-popup-content-wrapper {
+            border-radius: var(--radius-lg) !important;
+            box-shadow: var(--shadow-xl) !important;
+        }
+
+        .leaflet-popup-content {
+            margin: var(--space-lg) !important;
+            font-family: var(--font-body) !important;
+            line-height: 1.6 !important;
+        }
+
+        .popup-content {
+            min-width: 250px;
+        }
+
+        .popup-header {
+            margin-bottom: var(--space-md);
+            padding-bottom: var(--space-sm);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .popup-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        .popup-category {
+            background: var(--gradient-primary);
+            color: white;
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .popup-info {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+
+        .popup-row {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-sm);
+            font-size: 0.875rem;
+        }
+
+        .popup-icon {
+            color: var(--text-light);
+            min-width: 16px;
+        }
+
+        .popup-text {
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .loading-indicator {
+            text-align: center;
+            padding: var(--space-xl);
+            color: var(--text-secondary);
+        }
+
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin: var(--space-md);
+            text-align: center;
+        }
+
+        .success-message {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin: var(--space-md);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- ヘッダー -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="app-title">
+                    <div class="title-icon">🌸</div>
+                    <span>グルテンフリーマップ</span>
+                </div>
+                <div class="user-info">
+                    <span>ビヨフリ倶楽部 presents by naco</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- 検索・フィルター -->
+        <div class="search-filter-container">
+            <div class="search-filter-content">
+                <div class="search-box">
+                    <input type="text" id="searchInput" class="search-input" placeholder="店名・エリアで検索">
+                </div>
+                <div class="filter-chips">
+                    <button class="filter-chip active" data-category="">すべて</button>
+                    <button class="filter-chip" data-category="カフェ">☕ カフェ</button>
+                    <button class="filter-chip" data-category="レストラン">🍽️ レストラン</button>
+                    <button class="filter-chip" data-category="パン屋">🥐 パン屋</button>
+                    <button class="filter-chip" data-category="スイーツ">🧁 スイーツ</button>
+                    <button class="filter-chip" data-category="販売店">🛒 販売店</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- メインコンテンツ -->
+        <div class="main-content">
+            <!-- マップ -->
+            <div class="map-container">
+                <div class="map-controls">
+                    <button class="map-control-btn" id="locateBtn" title="現在地を表示">📍</button>
+                    <button class="map-control-btn" id="resetViewBtn" title="全体表示">🗾</button>
+                </div>
+                <div id="map"></div>
+            </div>
+
+            <!-- 店舗リスト -->
+            <div class="store-sidebar">
+                <div class="sidebar-header">
+                    <h2 class="sidebar-title">グルテンフリー店舗</h2>
+                    <p class="sidebar-subtitle">全国<span id="storeCount">0</span>店舗</p>
+                </div>
+                <div id="storeList" class="store-list">
+                    <div class="loading-indicator">店舗データを読み込み中...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // グローバル変数
+        let map;
+        let stores = [];
+        let markers = [];
+
+        // サンプルデータ（実際のデータベースから取得したデータ）
+        const sampleStores = [
+            {
+                id: 1,
+                name: 'みちのり弁当（Gluten-Free Michinori Bento）',
+                category: 'レストラン',
+                address: '名古屋市西区浄心１丁目４−６',
+                latitude: 35.1938,
+                longitude: 136.8901,
+                gluten_free_options: '完全GF',
+                opening_hours: '11時00分～19時00分',
+                phone: '052-5086-615',
+                website: 'https://gf-michinori.jp/',
+                description: '📍グルテンフリーのお弁当専門店です。\nテイクアウトのみでご提供しております🍱'
+            },
+            {
+                id: 2,
+                name: 'Biople 名古屋タカシマヤゲートタワーモール店',
+                category: '販売店',
+                address: '名古屋市中村区名駅１丁目１−３ JRゲートタワー タカシマヤ モール B1F',
+                latitude: 35.1722,
+                longitude: 136.882,
+                gluten_free_options: '部分GF',
+                opening_hours: '9時00分～21時00分',
+                phone: '052-5666-112',
+                website: 'https://store.biople.jp/',
+                description: 'ナチュラル＆オーガニックのセルフケアアイテムを幅広く取り扱うセレクトショップです。'
+            },
+            {
+                id: 3,
+                name: 'I\'m donut？（アイムドーナツ？）グルテンフリー',
+                category: 'スイーツ',
+                address: '東京都渋谷区神宮前５丁目５３−４',
+                latitude: 35.6611,
+                longitude: 139.7077,
+                gluten_free_options: '完全GF',
+                opening_hours: '11:00-19:00',
+                description: '本物ドーナツそっくりのふわふわさでとてもよかったです！'
+            },
+            {
+                id: 4,
+                name: 'SO TARTE 代々木上原店',
+                category: 'カフェ',
+                address: '東京都渋谷区上原１丁目１８−７ 第五大貴ビル',
+                latitude: 35.6685,
+                longitude: 139.6801,
+                gluten_free_options: '部分GF',
+                opening_hours: '10:00-18:00',
+                phone: '036-4079-260',
+                website: 'https://sotarte.jp/'
+            },
+            {
+                id: 5,
+                name: 'グルテンフリー＆米粉ベーグル屋 はるのはな',
+                category: 'パン屋',
+                address: '名古屋市千種区萱場２丁目１３−２２',
+                latitude: 35.1824,
+                longitude: 136.9452,
+                gluten_free_options: '完全GF',
+                opening_hours: '11:00-15:00',
+                website: 'https://haruno-hana.com/shop/'
+            }
+        ];
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        // アプリ初期化
+        async function initializeApp() {
+            try {
+                await initMap();
+                await loadStores();
+                setupEventListeners();
+            } catch (error) {
+                console.error('アプリ初期化エラー:', error);
+                showError('アプリの初期化に失敗しました。');
+            }
+        }
+
+        // マップ初期化
+        function initMap() {
+            return new Promise((resolve, reject) => {
+                try {
+                    console.log('マップを初期化中...');
+                    
+                    // マップ要素の確認
+                    const mapElement = document.getElementById('map');
+                    if (!mapElement) {
+                        throw new Error('マップ要素が見つかりません');
+                    }
+
+                    // 日本中心の座標
+                    map = L.map('map', {
+                        center: [35.6762, 139.6503],
+                        zoom: 6,
+                        zoomControl: true,
+                        scrollWheelZoom: true
+                    });
+                    
+                    // タイルレイヤーの追加
+                    const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap contributors',
+                        maxZoom: 18
+                    });
+
+                    tileLayer.on('tileerror', function(e) {
+                        console.warn('タイル読み込みエラー:', e);
+                    });
+
+                    tileLayer.addTo(map);
+
+                    // マップ読み込み完了イベント
+                    map.whenReady(function() {
+                        console.log('マップ初期化完了');
+                        
+                        // マップ制御イベント
+                        document.getElementById('locateBtn').addEventListener('click', getCurrentLocation);
+                        document.getElementById('resetViewBtn').addEventListener('click', resetMapView);
+                        
+                        resolve();
+                    });
+
+                    // タイムアウト設定（5秒）
+                    setTimeout(() => {
+                        console.log('マップ初期化タイムアウト - 強制的に続行');
+                        resolve();
+                    }, 5000);
+
+                } catch (error) {
+                    console.error('マップ初期化エラー:', error);
+                    reject(error);
+                }
+            });
+        }
+
+        // 現在地取得
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        map.setView([lat, lng], 14);
+                        
+                        L.marker([lat, lng])
+                            .addTo(map)
+                            .bindPopup('現在地')
+                            .openPopup();
+                    },
+                    (error) => {
+                        console.error('位置情報取得エラー:', error);
+                        alert('位置情報を取得できませんでした。');
+                    }
+                );
+            }
+        }
+
+        // マップ表示リセット
+        function resetMapView() {
+            map.setView([35.6762, 139.6503], 6);
+        }
+
+        // 店舗データ読み込み
+        async function loadStores() {
+            try {
+                console.log('店舗データを読み込み中...');
+                
+                // サンプルデータを使用
+                stores = sampleStores;
+                
+                console.log('読み込んだ店舗数:', stores.length);
+
+                displayStores(stores);
+                displayStoreList(stores);
+                updateStoreCount(stores.length);
+                
+                showSuccess(`${stores.length}件の店舗データを読み込みました`);
+                
+            } catch (error) {
+                console.error('店舗データ読み込みエラー:', error);
+                showError('店舗データの読み込みに失敗しました。');
+            }
+        }
+
+        // マップに店舗表示
+        function displayStores(storesData) {
+            // 既存マーカー削除
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+
+            storesData.forEach(store => {
+                if (!store.latitude || !store.longitude || 
+                    store.latitude === null || store.longitude === null) {
+                    console.warn(`店舗「${store.name}」の座標が無効です`);
+                    return;
+                }
+
+                const iconColor = getCategoryColor(store.category);
+                const iconEmoji = getCategoryEmoji(store.category);
+
+                const marker = L.marker([store.latitude, store.longitude], {
+                    icon: L.divIcon({
+                        className: 'custom-marker',
+                        html: `<div class="custom-marker" style="background-color: ${iconColor}; width: 32px; height: 32px;">${iconEmoji}</div>`,
+                        iconSize: [32, 32],
+                        iconAnchor: [16, 16]
+                    })
+                }).addTo(map);
+
+                const popupContent = createPopupContent(store);
+                marker.bindPopup(popupContent);
+
+                marker.on('click', function() {
+                    selectStoreCard(store.id);
+                });
+
+                markers.push(marker);
+            });
+        }
+
+        // 店舗リスト表示
+        function displayStoreList(storesData) {
+            const container = document.getElementById('storeList');
+            container.innerHTML = '';
+
+            storesData.forEach(store => {
+                const card = createStoreCard(store);
+                container.appendChild(card);
+            });
+        }
+
+        // 店舗カード作成
+        function createStoreCard(store) {
+            const card = document.createElement('div');
+            card.className = 'store-card';
+            card.dataset.storeId = store.id;
+
+            card.innerHTML = `
+                <div class="store-header">
+                    <h3 class="store-name">${store.name}</h3>
+                    <span class="store-category">${store.category}</span>
+                </div>
+                <div class="store-info">
+                    <div class="store-address">
+                        <span class="popup-icon">📍</span>
+                        <span>${store.address}</span>
+                    </div>
+                    ${store.gluten_free_options ? `
+                        <div class="store-gf-type">
+                            <span>✨</span>
+                            <span>${store.gluten_free_options}</span>
+                        </div>
+                    ` : ''}
+                    ${store.opening_hours ? `
+                        <div class="store-hours">
+                            <span class="popup-icon">🕒</span>
+                            <span>${store.opening_hours}</span>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            card.addEventListener('click', function() {
+                if (store.latitude && store.longitude) {
+                    map.setView([store.latitude, store.longitude], 15);
+                    const marker = markers.find(m => m.getLatLng().lat === store.latitude && m.getLatLng().lng === store.longitude);
+                    if (marker) {
+                        marker.openPopup();
+                    }
+                }
+                selectStoreCard(store.id);
+            });
+
+            return card;
+        }
+
+        // ポップアップコンテンツ作成
+        function createPopupContent(store) {
+            return `
+                <div class="popup-content">
+                    <div class="popup-header">
+                        <h3 class="popup-title">${store.name}</h3>
+                        <span class="popup-category">${store.category}</span>
+                    </div>
+                    <div class="popup-info">
+                        <div class="popup-row">
+                            <span class="popup-icon">📍</span>
+                            <span class="popup-text">${store.address}</span>
+                        </div>
+                        ${store.gluten_free_options ? `
+                            <div class="popup-row">
+                                <span class="popup-icon">✨</span>
+                                <span class="popup-text">${store.gluten_free_options}</span>
+                            </div>
+                        ` : ''}
+                        ${store.opening_hours ? `
+                            <div class="popup-row">
+                                <span class="popup-icon">🕒</span>
+                                <span class="popup-text">${store.opening_hours}</span>
+                            </div>
+                        ` : ''}
+                        ${store.phone ? `
+                            <div class="popup-row">
+                                <span class="popup-icon">📞</span>
+                                <span class="popup-text">${store.phone}</span>
+                            </div>
+                        ` : ''}
+                        ${store.website ? `
+                            <div class="popup-row">
+                                <span class="popup-icon">🌐</span>
+                                <span class="popup-text"><a href="${store.website}" target="_blank">ウェブサイト</a></span>
+                            </div>
+                        ` : ''}
+                        ${store.description ? `
+                            <div class="popup-row">
+                                <span class="popup-icon">💬</span>
+                                <span class="popup-text">${store.description}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // 店舗カード選択
+        function selectStoreCard(storeId) {
+            document.querySelectorAll('.store-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            const selectedCard = document.querySelector(`[data-store-id="${storeId}"]`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+                selectedCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        // 店舗数更新
+        function updateStoreCount(count) {
+            document.getElementById('storeCount').textContent = count;
+        }
+
+        // カテゴリー色取得
+        function getCategoryColor(category) {
+            const colors = {
+                'カフェ': '#8B4513',
+                'レストラン': '#FF6347',
+                'パン屋': '#DEB887',
+                'スイーツ': '#FF69B4',
+                '販売店': '#4169E1',
+                'その他': '#666666'
+            };
+            return colors[category] || '#666666';
+        }
+
+        // カテゴリー絵文字取得
+        function getCategoryEmoji(category) {
+            const emojis = {
+                'カフェ': '☕',
+                'レストラン': '🍽️',
+                'パン屋': '🥐',
+                'スイーツ': '🧁',
+                '販売店': '🛒',
+                'その他': '🏪'
+            };
+            return emojis[category] || '🏪';
+        }
+
+        // フィルタリング
+        function filterStores() {
+            const searchText = document.getElementById('searchInput').value.toLowerCase();
+            const activeChip = document.querySelector('.filter-chip.active');
+            const selectedCategory = activeChip.dataset.category;
+
+            const filteredStores = stores.filter(store => {
+                const matchesCategory = !selectedCategory || store.category === selectedCategory;
+                const matchesSearch = !searchText ||
+                    store.name.toLowerCase().includes(searchText) ||
+                    store.address.toLowerCase().includes(searchText) ||
+                    (store.description && store.description.toLowerCase().includes(searchText));
+
+                return matchesCategory && matchesSearch;
+            });
+
+            displayStores(filteredStores);
+            displayStoreList(filteredStores);
+            updateStoreCount(filteredStores.length);
+        }
+
+        // メッセージ表示
+        function showSuccess(message) {
+            const container = document.getElementById('storeList');
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.textContent = message;
+            container.insertBefore(successDiv, container.firstChild);
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 3000);
+        }
+
+        function showError(message) {
+            const container = document.getElementById('storeList');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            container.innerHTML = '';
+            container.appendChild(errorDiv);
+        }
+
+        // イベントリスナー設定
+        function setupEventListeners() {
+            // 検索
+            document.getElementById('searchInput').addEventListener('input', filterStores);
+
+            // フィルターチップ
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    filterStores();
+                });
+            });
+        }
+    </script>
+</body>
+</html>

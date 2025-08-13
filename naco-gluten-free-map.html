@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>グルテンフリーマップ | ビヨフリ倶楽部</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Supabase -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
+    <style>
+        :root {
+            --primary-pink: #ff7eb3;
+            --secondary-pink: #ffb3d1;
+            --accent-coral: #ff9a9e;
+            --accent-peach: #fecfef;
+            --accent-teal: #7dd3c0;
+            --accent-purple: #c084fc;
+            --soft-cream: #fff5f7;
+            --warm-white: #fffbfc;
+            --text-dark: #1f2937;
+            --text-gray: #6b7280;
+            --text-light: #9ca3af;
+            --white: #ffffff;
+            --gradient-header: linear-gradient(135deg, #ffc0e3 0%, #a8edea 100%);
+            --gradient-bright: linear-gradient(135deg, #ffeef5 0%, #fff 100%);
+            --gradient-sunny: linear-gradient(135deg, #ffeaa7 0%, #ffb3d1 50%, #ff7eb3 100%);
+            --shadow-soft: 0 4px 14px rgba(0, 0, 0, 0.08);
+            --shadow-medium: 0 10px 25px rgba(0, 0, 0, 0.12);
+            --shadow-gentle: 0 2px 8px rgba(0, 0, 0, 0.06);
+            --border-radius: 16px;
+            --border-radius-small: 12px;
+            --border-radius-large: 24px;
+            --border-radius-full: 100px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', 'Noto Sans JP', -apple-system, sans-serif;
+            background: var(--gradient-bright);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ログイン画面 */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: var(--gradient-sunny);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .login-card {
+            background: var(--white);
+            border-radius: var(--border-radius-large);
+            padding: 60px 50px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            box-shadow: var(--shadow-medium);
+            animation: fadeInUp 0.8s ease-out;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        .login-logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            animation: gentleFloat 3s ease-in-out infinite;
+            filter: drop-shadow(0 6px 16px rgba(255, 126, 179, 0.3));
+        }
+
+        .naco-character {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: contain;
+        }
+
+        .login-title {
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: var(--primary-pink);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .login-subtitle-org {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            opacity: 0.8;
+        }
+
+        .login-subtitle {
+            color: var(--text-gray);
+            margin-bottom: 45px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .email-input {
+            width: 100%;
+            padding: 20px 28px;
+            border: 2px solid var(--secondary-pink);
+            border-radius: 50px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+            background: var(--soft-cream);
+        }
+
+        .email-input:focus {
+            outline: none;
+            border-color: var(--primary-pink);
+            background: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-gentle);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary-pink), var(--accent-coral));
+            color: var(--white);
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(255, 126, 179, 0.3);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .error-msg {
+            color: #e74c3c;
+            margin-top: 20px;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        /* メインアプリ */
+        .app-container {
+            display: none;
+            min-height: 100vh;
+        }
+
+        /* ヘッダー */
+        .app-header {
+            background: var(--gradient-header);
+            padding: 20px 20px 80px;
+            position: relative;
+            z-index: 100;
+        }
+
+        .header-subtitle {
+            color: var(--white);
+            font-size: 0.9rem;
+            margin-top: 4px;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .app-logo {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .app-logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-logo-title {
+            color: var(--white);
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .app-logo-subtitle {
+            color: var(--white);
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+
+        .app-logo-character {
+            width: 45px;
+            height: 45px;
+            animation: gentleFloat 4s ease-in-out infinite;
+            filter: drop-shadow(0 3px 8px rgba(255, 126, 179, 0.25));
+        }
+
+        .app-logo-character img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-email {
+            color: var(--text-gray);
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .menu-btn {
+            padding: 10px;
+            background: var(--soft-cream);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            border: 2px solid var(--secondary-pink);
+        }
+
+        .menu-btn:hover {
+            background: var(--primary-pink);
+            color: var(--white);
+            transform: scale(1.05);
+            box-shadow: var(--shadow-gentle);
+            border-color: var(--primary-pink);
+        }
+
+        /* 検索バー */
+        .search-section {
+            padding: 20px;
+            background: var(--white);
+            margin: -60px 20px 20px;
+            border-radius: var(--border-radius-large);
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            z-index: 101;
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 55px 16px 50px;
+            border: none;
+            border-radius: var(--border-radius-full);
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: #f3f4f6;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-gray);
+            font-size: 1.1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(255, 126, 179, 0.1);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, var(--primary-pink), var(--accent-coral));
+            border: none;
+            border-radius: 50%;
+            width: 46px;
+            height: 46px;
+            cursor: pointer;
+            color: var(--white);
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(255, 126, 179, 0.3);
+        }
+
+        .search-btn:hover {
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        /* フィルタータブ */
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            padding: 0 20px 20px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .filter-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-chip {
+            padding: 10px 18px;
+            background: var(--white);
+            border: 1.5px solid #e5e7eb;
+            border-radius: var(--border-radius-full);
+            white-space: nowrap;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            flex-shrink: 0;
+            font-family: 'Outfit', sans-serif;
+            position: relative;
+            overflow: hidden;
+            color: var(--text-gray);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-chip::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent, rgba(255, 126, 179, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .filter-chip.active {
+            background: linear-gradient(135deg, var(--primary-pink), var(--accent-coral));
+            color: var(--white);
+            border-color: var(--primary-pink);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 126, 179, 0.25);
+        }
+
+        .filter-chip:hover::before {
+            opacity: 1;
+        }
+
+        .filter-chip:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(255, 126, 179, 0.2);
+            border-color: var(--primary-pink);
+        }
+
+        /* マップコンテナ */
+        .map-container {
+            margin: 0 20px 100px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(255, 126, 179, 0.12);
+            position: relative;
+            height: 500px;
+            background: var(--white);
+            border: 1px solid rgba(255, 179, 209, 0.3);
+        }
+
+        /* カスタムマーカースタイル */
+        .custom-marker {
+            width: 36px;
+            height: 36px;
+            position: relative;
+        }
+
+        .marker-cafe {
+            background: linear-gradient(135deg, #7dd3c0, #5eead4);
+        }
+
+        .marker-restaurant {
+            background: linear-gradient(135deg, #ff9a9e, #ff7eb3);
+        }
+
+        .marker-bakery {
+            background: linear-gradient(135deg, #fbbf24, #fde047);
+        }
+
+        .marker-sweets {
+            background: linear-gradient(135deg, #c084fc, #e879f9);
+        }
+
+        .marker-shop {
+            background: linear-gradient(135deg, #60a5fa, #93c5fd);
+        }
+
+        .marker-other {
+            background: linear-gradient(135deg, #fb923c, #fdba74);
+        }
+
+        .custom-marker-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .custom-marker-inner::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 10px solid white;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        /* 現在地ボタン */
+        .location-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--primary-pink), var(--accent-coral));
+            border: 3px solid var(--white);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(255, 126, 179, 0.35);
+            z-index: 999;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            color: var(--white);
+        }
+
+        .location-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 126, 179, 0.45);
+        }
+
+        /* ボトムナビゲーション */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 179, 209, 0.2);
+            padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+            display: flex;
+            justify-content: space-around;
+            z-index: 1000;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-gray);
+            font-family: 'Outfit', sans-serif;
+            border-radius: 16px;
+            position: relative;
+        }
+
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            width: 4px;
+            height: 4px;
+            background: var(--primary-pink);
+            border-radius: 50%;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-item.active {
+            color: var(--primary-pink);
+            background: linear-gradient(135deg, rgba(255, 179, 209, 0.15), rgba(255, 126, 179, 0.1));
+        }
+
+        .nav-item.active::after {
+            transform: translateX(-50%) scale(1);
+        }
+
+        .nav-item:hover {
+            background: var(--soft-pink);
+        }
+
+        .nav-icon {
+            font-size: 1.4rem;
+        }
+
+        .nav-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* 店舗リスト */
+        .stores-grid {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            margin-bottom: 100px;
+        }
+
+        .stores-grid.active {
+            display: grid;
+        }
+
+        .store-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(255, 126, 179, 0.08);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid var(--soft-cream);
+        }
+
+        .store-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(255, 126, 179, 0.18);
+            border-color: var(--secondary-pink);
+        }
+
+        .store-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .store-category {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: white;
+        }
+
+        .category-cafe {
+            background: #4ade80;
+            box-shadow: 0 2px 6px rgba(74, 222, 128, 0.15);
+        }
+
+        .category-restaurant {
+            background: #ef4444;
+            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.15);
+        }
+
+        .category-bakery {
+            background: #f59e0b;
+            box-shadow: 0 2px 6px rgba(245, 158, 11, 0.15);
+        }
+
+        .category-sweets {
+            background: #ec4899;
+            box-shadow: 0 2px 6px rgba(236, 72, 153, 0.15);
+        }
+
+        .category-shop {
+            background: #3b82f6;
+            box-shadow: 0 2px 6px rgba(59, 130, 246, 0.15);
+        }
+
+        .category-other {
+            background: #6b7280;
+            box-shadow: 0 2px 6px rgba(107, 114, 128, 0.15);
+        }
+
+        .store-address {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .store-description {
+            color: var(--text-gray);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .store-distance {
+            color: var(--primary-pink);
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* アニメーション */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes gentleFloat {
+            0%, 100% {
+                transform: translateY(0px) rotate(-2deg);
+            }
+            25% {
+                transform: translateY(-6px) rotate(1deg);
+            }
+            50% {
+                transform: translateY(-3px) rotate(-1deg);
+            }
+            75% {
+                transform: translateY(-8px) rotate(2deg);
+            }
+        }
+
+        @keyframes softBounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-8px);
+            }
+            60% {
+                transform: translateY(-4px);
+            }
+        }
+
+        /* レスポンシブ */
+        @media (min-width: 768px) {
+            .user-email {
+                display: block;
+            }
+            
+            .map-container {
+                height: 500px;
+            }
+            
+            .login-card {
+                padding: 60px 50px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .map-container {
+                height: 600px;
+            }
+        }
+
+        /* ローディング */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: var(--text-gray);
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--light-pink);
+            border-top: 2px solid var(--primary-pink);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- ログイン画面 -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-card">
+            <div class="login-logo">
+                <img src="nacoキャラクター.png" alt="nacoキャラクター" class="naco-character">
+            </div>
+            <h1 class="login-title">グルテンフリーマップ</h1>
+            <p class="login-subtitle-org">🌸 ビヨフリ倶楽部 🌸</p>
+            <p class="login-subtitle">全国のグルテンフリー対応店舗を<br>楽しく安心して探せる専用マップ</p>
+            <button onclick="login()" class="login-btn">✨ Googleでログイン</button>
+            <p id="errorMsg" class="error-msg">このメールアドレスは登録されていません</p>
+        </div>
+    </div>
+
+    <!-- メインアプリ -->
+    <div id="app" class="app-container">
+        <!-- ヘッダー -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="app-logo">
+                    <div class="app-logo-character">
+                        <img src="nacoキャラクター.png" alt="nacoキャラクター">
+                    </div>
+                    <div class="app-logo-text">
+                        <div class="app-logo-title">
+                            グルテンフリーマップ
+                        </div>
+                        <div class="app-logo-subtitle">ビヨグル倶楽部 presents by naco</div>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 検索バー -->
+        <div class="search-section">
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" class="search-input" placeholder="店名・住所で検索...">
+                <button class="search-btn" onclick="search()">検索</button>
+            </div>
+        </div>
+
+        <!-- フィルタータブ -->
+        <div class="filter-tabs">
+            <button class="filter-chip active" onclick="filterCategory('')">🌐 すべて</button>
+            <button class="filter-chip" onclick="filterCategory('和食')">🍚 和食</button>
+            <button class="filter-chip" onclick="filterCategory('洋食')">🍝 洋食</button>
+            <button class="filter-chip" onclick="filterCategory('カフェ')">☕ カフェ</button>
+            <button class="filter-chip" onclick="filterCategory('パン屋')">🥖 パン屋</button>
+            <button class="filter-chip" onclick="filterCategory('スイーツ')">🍰 スイーツ</button>
+            <button class="filter-chip" onclick="filterCategory('販売店')">🛍️ 販売店</button>
+        </div>
+
+        <!-- マップ -->
+        <div id="mapContainer" class="map-container">
+            <div id="map"></div>
+            <button class="location-btn" onclick="getCurrentLocation()">📍</button>
+        </div>
+
+        <!-- 店舗グリッド -->
+        <div id="storesGrid" class="stores-grid">
+            <div class="loading">
+                <div class="spinner"></div>
+                店舗情報を読み込み中...
+            </div>
+        </div>
+
+        <!-- ボトムナビゲーション -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" onclick="showView('map')">
+                <span class="nav-icon">🗺️</span>
+                <span class="nav-label">マップ</span>
+            </button>
+            <button class="nav-item" onclick="showView('list')">
+                <span class="nav-icon">📋</span>
+                <span class="nav-label">リスト</span>
+            </button>
+            <button class="nav-item" onclick="showView('want')">
+                <span class="nav-icon">💝</span>
+                <span class="nav-label">行きたい</span>
+            </button>
+            <button class="nav-item" onclick="showView('visited')">
+                <span class="nav-icon">✅</span>
+                <span class="nav-label">行った</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // ⚠️ 以下の設定を実際のSupabase情報に置き換えてください
+        const SUPABASE_URL = 'https://hxrmsjfvgctoaxpbukvo.supabase.co'; // https://xxxxx.supabase.co
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4cm1zamZ2Z2N0b2F4cGJ1a3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MTI3NTAsImV4cCI6MjA3MDQ4ODc1MH0.tM1vDVVhYhh7OHlA1BTj071BfsIzeBG_HatijjtxwLw'; // eyJxxx...
+
+        // 承認済みメールアドレス（実際のメンバーのメールに置き換え）
+        const AUTHORIZED_EMAILS = [
+            'bettger1000@gmail.com',
+            'nono511shu123@gmail.com',
+        
+            // ここに実際のメンバーのメールアドレスを追加
+        ];
+
+        // Supabaseクライアント初期化
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // グローバル変数
+        let map;
+        let currentUser = null;
+        let allStores = [];
+        let filteredStores = [];
+        let markers = [];
+        let userPosition = null;
+
+        // 初期化
+        window.addEventListener('DOMContentLoaded', async function() {
+            // 認証状態確認
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user) {
+                const userEmail = session.user.email;
+                if (AUTHORIZED_EMAILS.includes(userEmail)) {
+                    currentUser = userEmail;
+                    showApp();
+                } else {
+                    await supabase.auth.signOut();
+                    alert('承認されていないメールアドレスです');
+                }
+            }
+            
+            // 認証状態の変更監視
+            supabase.auth.onAuthStateChange(async (event, session) => {
+                if (event === 'SIGNED_IN' && session?.user) {
+                    const userEmail = session.user.email;
+                    if (AUTHORIZED_EMAILS.includes(userEmail)) {
+                        currentUser = userEmail;
+                        showApp();
+                    } else {
+                        await supabase.auth.signOut();
+                        alert('承認されていないメールアドレスです');
+                    }
+                } else if (event === 'SIGNED_OUT') {
+                    currentUser = null;
+                    document.getElementById('loginScreen').style.display = 'flex';
+                    document.getElementById('app').style.display = 'none';
+                }
+            });
+        });
+
+        // Google認証ログイン
+        async function login() {
+            try {
+                console.log('ログイン開始');
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: window.location.href,
+                        queryParams: {
+                            access_type: 'offline',
+                            prompt: 'consent'
+                        }
+                    }
+                });
+                
+                console.log('OAuth応答:', data, error);
+                
+                if (error) throw error;
+            } catch (error) {
+                console.error('ログインエラー:', error);
+                const errorMsg = document.getElementById('errorMsg');
+                if (errorMsg) {
+                    errorMsg.textContent = 'ログインに失敗しました: ' + error.message;
+                    errorMsg.style.display = 'block';
+                    setTimeout(() => {
+                        errorMsg.style.display = 'none';
+                    }, 3000);
+                }
+            }
+        }
+
+        // アプリ表示
+        function showApp() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            
+            initMap();
+            loadStores();
+        }
+
+        // マップ初期化
+        function initMap() {
+            map = L.map('map').setView([35.6762, 139.6503], 6);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+        }
+
+        // 店舗データ読み込み
+        async function loadStores() {
+            try {
+                const { data, error } = await supabase
+                    .from('stores')
+                    .select(`
+                        *,
+                        store_categories(name, icon, color)
+                    `);
+
+                if (error) throw error;
+
+                allStores = data;
+                filteredStores = allStores;
+                displayStores();
+            } catch (error) {
+                console.error('店舗データ読み込みエラー:', error);
+                const storesGrid = document.getElementById('storesGrid');
+                if (storesGrid) {
+                    storesGrid.innerHTML = '<div class="loading">データの読み込みに失敗しました</div>';
+                }
+            }
+        }
+
+        // 店舗表示
+        function displayStores() {
+            // マーカークリア
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+
+            // マーカー追加
+            filteredStores.forEach(store => {
+                // 座標が無効な場合はスキップ
+                if (!store.latitude || !store.longitude || 
+                    store.latitude === null || store.longitude === null) {
+                    console.warn(`店舗「${store.name}」の座標が無効です`);
+                    return;
+                }
+                
+                // カテゴリに応じたマーカークラスを決定
+                const categoryName = store.store_categories?.name || 'その他';
+                let markerClass = 'marker-other';
+                if (categoryName.includes('カフェ')) markerClass = 'marker-cafe';
+                else if (categoryName.includes('和食') || categoryName.includes('洋食')) markerClass = 'marker-restaurant';
+                else if (categoryName.includes('パン')) markerClass = 'marker-bakery';
+                else if (categoryName.includes('スイーツ')) markerClass = 'marker-sweets';
+                else if (categoryName.includes('販売')) markerClass = 'marker-shop';
+                
+                // カスタムアイコンを作成
+                const customIcon = L.divIcon({
+                    className: 'custom-div-icon',
+                    html: `
+                        <div class="custom-marker">
+                            <div class="custom-marker-inner ${markerClass}">
+                                ${store.store_categories?.icon || '🍽️'}
+                            </div>
+                        </div>
+                    `,
+                    iconSize: [36, 44],
+                    iconAnchor: [18, 44],
+                    popupAnchor: [0, -44]
+                });
+                
+                const marker = L.marker([store.latitude, store.longitude], { icon: customIcon }).addTo(map);
+                
+                const popupContent = `
+                    <div style="min-width: 200px;">
+                        <h3>${store.name}</h3>
+                        <p><strong>${store.store_categories?.name || 'カテゴリなし'}</strong></p>
+                        <p>${store.address}</p>
+                        <p>${store.description}</p>
+                        <p><strong>グルテンフリー:</strong> ${store.gluten_free_options}</p>
+                    </div>
+                `;
+                
+                marker.bindPopup(popupContent);
+                markers.push(marker);
+            });
+
+            // グリッド表示
+            displayStoresGrid();
+        }
+
+        // 店舗グリッド表示
+        function displayStoresGrid() {
+            const grid = document.getElementById('storesGrid');
+            
+            if (filteredStores.length === 0) {
+                grid.innerHTML = '<div class="loading">該当する店舗が見つかりません</div>';
+                return;
+            }
+
+            const html = filteredStores.map(store => {
+                const distance = userPosition && store.latitude && store.longitude ? 
+                    calculateDistance(userPosition.latitude, userPosition.longitude, store.latitude, store.longitude) : null;
+                
+                // カテゴリー名からクラス名を生成
+                const categoryName = store.store_categories?.name || 'その他';
+                const categoryClass = getCategoryClass(categoryName);
+                
+                return `
+                    <div class="store-card" onclick="showStoreOnMap(${store.id})">
+                        <h3 class="store-name">${store.name}</h3>
+                        <span class="store-category ${categoryClass}">${store.store_categories?.icon || '🏪'} ${categoryName}</span>
+                        <div class="store-address">${store.address}</div>
+                        <div class="store-description">${store.description}</div>
+                        ${distance ? `<div class="store-distance">📍 ${distance.toFixed(1)}km</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            grid.innerHTML = html;
+        }
+
+        // displayStoreCardsのエイリアス（エラー対策）
+        function displayStoreCards() {
+            displayStoresGrid();
+        }
+
+        // 地図上の店舗表示
+        function showStoreOnMap(storeId) {
+            const store = allStores.find(s => s.id === storeId);
+            if (store) {
+                map.setView([store.latitude, store.longitude], 15);
+                
+                const marker = markers.find(m => 
+                    m.getLatLng().lat === store.latitude && m.getLatLng().lng === store.longitude
+                );
+                if (marker) {
+                    marker.openPopup();
+                }
+                
+                showView('map');
+            }
+        }
+
+        // カテゴリフィルター
+        function filterCategory(category) {
+            // アクティブ状態更新
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // フィルタリング
+            if (category === '') {
+                filteredStores = allStores;
+            } else {
+                filteredStores = allStores.filter(store => 
+                    store.store_categories?.name === category
+                );
+            }
+
+            displayStores();
+        }
+
+        // ビュー切り替え
+        function showView(view) {
+            // ナビ更新
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.nav-item').classList.add('active');
+
+            const mapContainer = document.getElementById('mapContainer');
+            const storesGrid = document.getElementById('storesGrid');
+
+            if (view === 'map') {
+                mapContainer.style.display = 'block';
+                storesGrid.classList.remove('active');
+            } else if (view === 'list') {
+                mapContainer.style.display = 'none';
+                storesGrid.classList.add('active');
+            }
+            // TODO: want, visitedビューの実装
+        }
+
+        // 現在地取得
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    userPosition = position.coords;
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    map.setView([lat, lng], 13);
+                    
+                    L.marker([lat, lng], {
+                        icon: L.divIcon({
+                            className: 'current-location',
+                            html: '📍',
+                            iconSize: [30, 30]
+                        })
+                    }).addTo(map);
+
+                    // 距離でソート
+                    filteredStores.sort((a, b) => {
+                        const distA = calculateDistance(lat, lng, a.latitude, a.longitude);
+                        const distB = calculateDistance(lat, lng, b.latitude, b.longitude);
+                        return distA - distB;
+                    });
+
+                    displayStoresGrid();
+                }, error => {
+                    alert('位置情報の取得に失敗しました');
+                });
+            } else {
+                alert('このブラウザは位置情報に対応していません');
+            }
+        }
+
+        // カテゴリーからCSSクラス名を取得
+        function getCategoryClass(categoryName) {
+            const categoryMap = {
+                'カフェ': 'category-cafe',
+                'レストラン': 'category-restaurant', 
+                'パン屋': 'category-bakery',
+                'スイーツ': 'category-sweets',
+                '販売店': 'category-shop',
+                'その他': 'category-other'
+            };
+            return categoryMap[categoryName] || 'category-other';
+        }
+
+        // 距離計算
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // 地球の半径（km）
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        // 検索機能
+        function search() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (query === '') {
+                filteredStores = allStores;
+            } else {
+                filteredStores = allStores.filter(store =>
+                    store.name.toLowerCase().includes(query) ||
+                    store.address.toLowerCase().includes(query) ||
+                    store.description.toLowerCase().includes(query) ||
+                    store.gluten_free_options.toLowerCase().includes(query)
+                );
+            }
+
+            displayStores();
+        }
+
+        // Enterキーで検索
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        search();
+                    }
+                });
+            }
+        });
+
+        // メニュー機能
+        function toggleMenu() {
+            alert('メニュー機能は開発中です');
+        }
+        
+        // ログアウト機能
+        async function logout() {
+            await supabase.auth.signOut();
+        }
+    </script>
+</body>
+</html>

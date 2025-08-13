@@ -284,23 +284,49 @@
         /* メインコンテンツ */
         .main-content {
             flex: 1;
-            display: flex;
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            max-width: 1400px;
             width: 100%;
-            height: calc(100vh - 120px); /* ヘッダーと検索エリアを引く */
-            position: relative;
+            margin: 0 auto;
+            gap: var(--space-xl);
+            padding: var(--space-xl);
+            min-height: 600px;
+            box-sizing: border-box;
         }
 
+        /* PC画面で確実にサイドバイサイド表示 */
+        @media (min-width: 1025px) {
+            .main-content {
+                display: grid !important;
+                grid-template-columns: 400px 1fr !important;
+                gap: var(--space-xl) !important;
+            }
+            
+            .store-sidebar {
+                grid-column: 1;
+                max-height: none;
+            }
+            
+            .map-container {
+                grid-column: 2;
+                min-height: 600px;
+            }
+        }
 
         .map-container {
             position: relative;
-            width: 100%;
-            height: 100%;
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
             background: var(--bg-primary);
         }
 
         #map {
             width: 100%;
-            height: 100%;
+            height: 600px;
+            min-height: 600px;
+            border-radius: var(--radius-xl);
             background-color: #f0f0f0;
         }
 
@@ -393,56 +419,6 @@
             border-color: var(--primary);
             box-shadow: var(--shadow-md);
             transform: translateY(-2px);
-        }
-        
-        /* 店舗カード内のアクションボタン */
-        .store-card-actions {
-            display: flex;
-            gap: var(--space-sm);
-            margin-top: var(--space-md);
-            padding-top: var(--space-md);
-            border-top: 1px solid var(--border-light);
-        }
-        
-        .action-btn {
-            flex: 1;
-            padding: var(--space-xs) var(--space-sm);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            background: white;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--space-xs);
-        }
-        
-        .action-btn:hover {
-            background: var(--bg-secondary);
-        }
-        
-        .action-btn.want-to-go {
-            color: var(--primary);
-            border-color: var(--primary);
-        }
-        
-        .action-btn.visited {
-            color: var(--success);
-            border-color: var(--success);
-        }
-        
-        .action-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-        
-        .action-btn.visited.active {
-            background: var(--success);
-            border-color: var(--success);
         }
 
         .store-card:hover::before,
@@ -668,102 +644,67 @@
         }
 
         /* レスポンシブ */
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: var(--space-lg);
+            }
+            
+            .store-sidebar {
+                max-height: 300px;
+                order: 2;
+            }
 
-        /* オーバーレイ式店舗リストパネル */
-        .overlay-panel {
+            .map-container {
+                order: 1;
+            }
+            
+            #map {
+                height: 500px;
+            }
+        }
+
+        /* 底部導航 */
+        .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
             background: white;
-            border-top-left-radius: var(--radius-2xl);
-            border-top-right-radius: var(--radius-2xl);
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
-            z-index: 1100;
-            transform: translateY(calc(100% - 60px));
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            max-height: 90vh;
+            border-top: 1px solid var(--border-light);
             display: flex;
-            flex-direction: column;
+            justify-content: center;
+            padding: var(--space-sm) 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1200;
         }
-        
-        .overlay-panel.half-open {
-            transform: translateY(50%);
-        }
-        
-        .overlay-panel.full-open {
-            transform: translateY(0);
-        }
-        
-        .panel-handle {
-            padding: var(--space-md) var(--space-lg);
-            cursor: grab;
-            touch-action: pan-y;
+
+        .nav-btn {
             display: flex;
             flex-direction: column;
             align-items: center;
-            background: white;
-            border-top-left-radius: var(--radius-2xl);
-            border-top-right-radius: var(--radius-2xl);
-        }
-        
-        .panel-handle:active {
-            cursor: grabbing;
-        }
-        
-        .handle-bar {
-            width: 40px;
-            height: 4px;
-            background: var(--border);
-            border-radius: 2px;
-            margin-bottom: var(--space-sm);
-        }
-        
-        .panel-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-        }
-        
-        .panel-tabs {
-            display: flex;
-            gap: var(--space-md);
-            padding: 0 var(--space-lg) var(--space-sm);
-            border-bottom: 1px solid var(--border-light);
-        }
-        
-        .panel-tab {
-            padding: var(--space-sm) var(--space-md);
-            border: none;
+            justify-content: center;
+            padding: var(--space-sm) var(--space-lg);
             background: none;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
+            border: none;
             cursor: pointer;
-            position: relative;
-            transition: color 0.2s;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+            min-width: 80px;
         }
-        
-        .panel-tab.active {
-            color: var(--primary);
+
+        .nav-btn.active {
+            color: var(--primary-color);
         }
-        
-        .panel-tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--primary);
+
+        .nav-icon {
+            font-size: 1.2rem;
+            margin-bottom: var(--space-xs);
         }
-        
-        .panel-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: var(--space-sm);
+
+        .nav-label {
+            font-size: 0.75rem;
+            font-weight: 500;
         }
 
         /* 訪問履歴ビュー */
@@ -889,7 +830,7 @@
             }
 
             .main-content {
-                height: calc(100vh - 100px); /* モバイルではヘッダーの高さ調整 */
+                margin-bottom: 80px; /* 底部導航の高さ分 */
             }
             
             .search-filter-content {
@@ -990,7 +931,18 @@
 
         <!-- メインコンテンツ -->
         <div class="main-content">
-            <!-- マップ（全画面） -->
+            <!-- 店舗リスト -->
+            <div class="store-sidebar">
+                <div class="sidebar-header">
+                    <h2 class="sidebar-title">グルテンフリー店舗</h2>
+                    <p class="sidebar-subtitle">全国<span id="storeCount">0</span>店舗</p>
+                </div>
+                <div id="storeList" class="store-list">
+                    <!-- 店舗リストがここに表示される -->
+                </div>
+            </div>
+
+            <!-- マップ -->
             <div class="map-container">
                 <div class="map-controls">
                     <button class="map-control-btn" id="locateBtn" title="現在地を表示">📍</button>
@@ -1001,25 +953,32 @@
         </div>
     </div>
 
-    <!-- オーバーレイ式店舗リストパネル -->
-    <div id="overlayPanel" class="overlay-panel">
-        <div class="panel-handle" id="panelHandle">
-            <div class="handle-bar"></div>
-            <div class="panel-title">
-                <span>グルテンフリー店舗</span>
-                <span id="panelStoreCount">全国62店舗</span>
-            </div>
+    <!-- 底部导航 -->
+    <nav class="bottom-nav">
+        <button class="nav-btn active" data-tab="map">
+            <span class="nav-icon">🗺️</span>
+            <span class="nav-label">地図</span>
+        </button>
+        <button class="nav-btn" data-tab="want-to-go">
+            <span class="nav-icon">🤍</span>
+            <span class="nav-label">行きたい</span>
+        </button>
+        <button class="nav-btn" data-tab="visited">
+            <span class="nav-icon">✨</span>
+            <span class="nav-label">行った</span>
+        </button>
+    </nav>
+
+    <!-- 訪問履歴ビュー -->
+    <div id="visitHistoryView" class="visit-history-view hidden">
+        <div class="history-header">
+            <h2 id="historyTitle">行きたいお店</h2>
+            <div class="history-count" id="historyCount">0件</div>
         </div>
-        <div class="panel-tabs">
-            <button class="panel-tab active" data-tab="all">すべて</button>
-            <button class="panel-tab" data-tab="want-to-go">行きたい</button>
-            <button class="panel-tab" data-tab="visited">行った</button>
-        </div>
-        <div class="panel-content" id="panelContent">
-            <!-- 店舗リストがここに表示される -->
+        <div class="history-list" id="historyList">
+            <!-- 動的に生成される -->
         </div>
     </div>
-
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -1972,8 +1931,7 @@
             stores = embeddedStores;
             
             displayStores(stores);
-            // オーバーレイパネルに初期表示
-            updatePanelContent('all');
+            displayStoreList(stores);
             updateStoreCount(stores.length);
             
             console.log(`✅ ${stores.length}店舗のデータを即座に表示完了`);
@@ -2412,11 +2370,7 @@
             });
 
             displayStores(filteredStores);
-            // オーバーレイパネルを更新
-            const activeTab = document.querySelector('.panel-tab.active');
-            if (activeTab) {
-                updatePanelContent(activeTab.dataset.tab);
-            }
+            displayStoreList(filteredStores);
             updateStoreCount(filteredStores.length);
         }
 
@@ -2448,10 +2402,6 @@
             div.textContent = text;
             return div.innerHTML;
         }
-        
-        // グローバル関数として公開（onclick用）
-        window.toggleVisitStatus = toggleVisitStatus;
-        window.focusOnStore = focusOnStore;
 
         // イベントリスナー設定
         function setupEventListeners() {
@@ -2486,8 +2436,8 @@
             // 訪問履歴機能の初期化
             initVisitHistory();
             
-            // オーバーレイパネルの初期化
-            initOverlayPanel();
+            // 底部導航の初期化
+            initBottomNav();
             
             console.log('✅ イベントリスナー設定完了');
         }
@@ -2740,280 +2690,22 @@
             }
         }
 
-        // オーバーレイパネル初期化
-        function initOverlayPanel() {
-            console.log('📦 オーバーレイパネル初期化開始');
+        // 底部導航初期化
+        function initBottomNav() {
+            console.log('🔽 底部導航初期化開始');
             
-            const panel = document.getElementById('overlayPanel');
-            const handle = document.getElementById('panelHandle');
-            const panelContent = document.getElementById('panelContent');
-            
-            if (!panel || !handle) {
-                console.error('オーバーレイパネル要素が見つかりません');
-                return;
-            }
-            
-            let isDragging = false;
-            let startY = 0;
-            let currentTranslateY = 0;
-            let panelState = 'collapsed'; // collapsed, half, full
-            
-            // パネル位置設定
-            function setPanelPosition(state) {
-                panelState = state;
-                panel.classList.remove('half-open', 'full-open');
-                
-                if (state === 'half') {
-                    panel.classList.add('half-open');
-                } else if (state === 'full') {
-                    panel.classList.add('full-open');
-                }
-            }
-            
-            // ドラッグ開始
-            handle.addEventListener('touchstart', (e) => {
-                isDragging = true;
-                startY = e.touches[0].clientY;
-                panel.style.transition = 'none';
-            });
-            
-            handle.addEventListener('mousedown', (e) => {
-                isDragging = true;
-                startY = e.clientY;
-                panel.style.transition = 'none';
-            });
-            
-            // ドラッグ中
-            document.addEventListener('touchmove', (e) => {
-                if (!isDragging) return;
-                
-                const deltaY = e.touches[0].clientY - startY;
-                const newTranslateY = Math.max(0, Math.min(window.innerHeight - 60, currentTranslateY + deltaY));
-                panel.style.transform = `translateY(${newTranslateY}px)`;
-            });
-            
-            document.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
-                
-                const deltaY = e.clientY - startY;
-                const newTranslateY = Math.max(0, Math.min(window.innerHeight - 60, currentTranslateY + deltaY));
-                panel.style.transform = `translateY(${newTranslateY}px)`;
-            });
-            
-            // ドラッグ終了
-            function handleDragEnd() {
-                if (!isDragging) return;
-                isDragging = false;
-                panel.style.transition = '';
-                
-                const panelRect = panel.getBoundingClientRect();
-                const panelTop = panelRect.top;
-                const windowHeight = window.innerHeight;
-                
-                if (panelTop < windowHeight * 0.2) {
-                    setPanelPosition('full');
-                } else if (panelTop < windowHeight * 0.6) {
-                    setPanelPosition('half');
-                } else {
-                    setPanelPosition('collapsed');
-                }
-            }
-            
-            document.addEventListener('touchend', handleDragEnd);
-            document.addEventListener('mouseup', handleDragEnd);
-            
-            // タップで展開
-            handle.addEventListener('click', (e) => {
-                if (isDragging) return;
-                
-                if (panelState === 'collapsed') {
-                    setPanelPosition('half');
-                } else if (panelState === 'half') {
-                    setPanelPosition('full');
-                } else {
-                    setPanelPosition('collapsed');
-                }
-            });
-            
-            // タブ切り替え
-            document.querySelectorAll('.panel-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    updatePanelContent(tab.dataset.tab);
+            // 導航ボタンイベント
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tab = btn.dataset.tab;
+                    switchTab(tab);
                 });
             });
             
-            // 初期表示
-            updatePanelContent('all');
-            
-            console.log('✅ オーバーレイパネル初期化完了');
+            console.log('✅ 底部導航初期化完了');
         }
 
-        // パネルコンテンツ更新
-        function updatePanelContent(tab) {
-            console.log('📋 パネルコンテンツ更新:', tab);
-            
-            const panelContent = document.getElementById('panelContent');
-            if (!panelContent) return;
-            
-            let filteredStores = [...stores];
-            
-            if (tab === 'want-to-go') {
-                filteredStores = stores.filter(store => {
-                    const status = userVisitHistory.get(`${store.id}`);
-                    return status === 'want_to_go';
-                });
-            } else if (tab === 'visited') {
-                filteredStores = stores.filter(store => {
-                    const status = userVisitHistory.get(`${store.id}`);
-                    return status === 'visited';
-                });
-            }
-            
-            // 店舗数更新
-            const countEl = document.getElementById('panelStoreCount');
-            if (countEl) {
-                if (tab === 'all') {
-                    countEl.textContent = `全国${filteredStores.length}店舗`;
-                } else if (tab === 'want-to-go') {
-                    countEl.textContent = `行きたい${filteredStores.length}店舗`;
-                } else if (tab === 'visited') {
-                    countEl.textContent = `行った${filteredStores.length}店舗`;
-                }
-            }
-            
-            displayPanelStoreList(filteredStores, panelContent);
-        }
-        
-        // パネル用店舗リスト表示
-        function displayPanelStoreList(storesData, container) {
-            if (!container) return;
-            
-            container.innerHTML = '';
-            
-            if (storesData.length === 0) {
-                container.innerHTML = '<div class="loading-indicator">表示する店舗がありません</div>';
-                return;
-            }
-            
-            // 現在地から近い順にソート
-            let sortedStores = [...storesData];
-            if (currentUserLocation) {
-                sortedStores = sortedStores.sort((a, b) => {
-                    if (!a.latitude || !a.longitude || !b.latitude || !b.longitude) return 0;
-                    const distanceA = calculateDistance(currentUserLocation.lat, currentUserLocation.lng, a.latitude, a.longitude);
-                    const distanceB = calculateDistance(currentUserLocation.lat, currentUserLocation.lng, b.latitude, b.longitude);
-                    return distanceA - distanceB;
-                });
-            }
-            
-            sortedStores.forEach(store => {
-                try {
-                    const card = createPanelStoreCard(store);
-                    container.appendChild(card);
-                } catch (error) {
-                    console.error(`店舗「${store.name}」のカード作成エラー:`, error);
-                }
-            });
-        }
-        
-        // パネル用店舗カード作成
-        function createPanelStoreCard(store) {
-            const card = document.createElement('div');
-            card.className = 'store-card';
-            card.dataset.storeId = store.id;
-            
-            const status = userVisitHistory.get(`${store.id}`);
-            const isWantToGo = status === 'want_to_go';
-            const isVisited = status === 'visited';
-            
-            // 現在地からの距離を計算
-            let distanceText = '';
-            if (currentUserLocation && store.latitude && store.longitude) {
-                const distance = calculateDistance(currentUserLocation.lat, currentUserLocation.lng, store.latitude, store.longitude);
-                if (distance < 1) {
-                    distanceText = `${Math.round(distance * 1000)}m`;
-                } else {
-                    distanceText = `${distance.toFixed(1)}km`;
-                }
-            }
-            
-            const categoryConfig = {
-                'カフェ': { icon: '☕', color: '#8B4513' },
-                '和食': { icon: '🍱', color: '#006400' },
-                '洋食': { icon: '🍽️', color: '#FF6347' },
-                'パン屋': { icon: '🥐', color: '#FFA500' },
-                'スイーツ': { icon: '🧁', color: '#FF69B4' },
-                '販売店': { icon: '🛒', color: '#4169E1' },
-                'その他': { icon: '🏪', color: '#808080' }
-            };
-            
-            const config = categoryConfig[store.category] || categoryConfig['その他'];
-            
-            card.innerHTML = `
-                <div class="store-header">
-                    <div class="store-name">${escapeHtml(store.name || '')}</div>
-                    ${distanceText ? `<div class="store-distance">${distanceText}</div>` : ''}
-                </div>
-                <div class="store-meta">
-                    <span class="category-badge" style="background: ${config.color}15; color: ${config.color}; border: 1px solid ${config.color}30;">
-                        ${config.icon} ${escapeHtml(store.category || '')}
-                    </span>
-                </div>
-                <div class="store-info">
-                    <div class="info-item">
-                        <span class="info-icon">📍</span>
-                        <span class="info-text">${escapeHtml(store.address || '')}</span>
-                    </div>
-                    ${store.gluten_free_options ? `
-                        <div class="info-item">
-                            <span class="info-icon">🌾</span>
-                            <span class="info-text">${escapeHtml(store.gluten_free_options)}</span>
-                        </div>
-                    ` : ''}
-                </div>
-                <div class="store-card-actions">
-                    <button class="action-btn want-to-go ${isWantToGo ? 'active' : ''}" 
-                            onclick="toggleVisitStatus(${store.id}, 'want_to_go')">
-                        🤍 行きたい
-                    </button>
-                    <button class="action-btn visited ${isVisited ? 'active' : ''}" 
-                            onclick="toggleVisitStatus(${store.id}, 'visited')">
-                        ✨ 行った
-                    </button>
-                    <button class="action-btn" onclick="focusOnStore(${store.id})">
-                        🗺️ 地図
-                    </button>
-                </div>
-            `;
-            
-            return card;
-        }
-        
-        // 店舗にフォーカス
-        function focusOnStore(storeId) {
-            const store = stores.find(s => s.id === storeId);
-            if (store && map) {
-                map.setView([store.latitude, store.longitude], 16);
-                
-                // パネルを閉じる
-                const panel = document.getElementById('overlayPanel');
-                if (panel) {
-                    panel.classList.remove('half-open', 'full-open');
-                }
-                
-                // マーカーのポップアップを開く
-                setTimeout(() => {
-                    const marker = markers.find(m => m.storeId === storeId);
-                    if (marker) {
-                        marker.openPopup();
-                    }
-                }, 300);
-            }
-        }
-        
-        // タブ切り替え（古い関数、互換性のため残す）
+        // タブ切り替え
         function switchTab(tab) {
             console.log('🔄 タブ切り替え:', tab);
             

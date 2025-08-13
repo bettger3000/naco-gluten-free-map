@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google認証テスト</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .login-btn {
+            padding: 15px 30px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .user-info {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Google認証テスト</h1>
+    
+    <div id="loginSection">
+        <button onclick="loginWithGoogle()" class="login-btn">Googleでログイン</button>
+        <div id="error" class="error"></div>
+    </div>
+    
+    <div id="userSection" style="display:none;">
+        <div class="user-info">
+            <h3>ログイン成功</h3>
+            <p>メールアドレス: <span id="userEmail"></span></p>
+            <p>ユーザーID: <span id="userId"></span></p>
+            <button onclick="logout()">ログアウト</button>
+        </div>
+    </div>
+
+    <script>
+        // Supabase設定
+        const SUPABASE_URL = 'https://hxrmsjfvgctoaxpbukvo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4cm1zamZ2Z2N0b2F4cGJ1a3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MTI3NTAsImV4cCI6MjA3MDQ4ODc1MH0.tM1vDVVhYhh7OHlA1BTj071BfsIzeBG_HatijjtxwLw';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // 承認済みメールアドレス
+        const AUTHORIZED_EMAILS = [
+            'bettger1000@gmail.com',
+            'nono511shu123@gmail.com'
+        ];
+
+        async function loginWithGoogle() {
+            console.log('ログイン開始');
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = '';
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: window.location.href,
+                        queryParams: {
+                            access_type: 'offline',
+                            prompt: 'consent'
+                        }
+                    }
+                });
+                
+                console.log('OAuth応答:', data, error);
+                
+                if (error) {
+                    throw error;
+                }
+            } catch (error) {
+                console.error('ログインエラー:', error);
+                errorDiv.textContent = 'ログインエラー: ' + error.message;
+            }
+        }
+
+        async function logout() {
+            console.log('ログアウト開始');
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+                console.error('ログアウトエラー:', error);
+            }
+        }
+
+        function showUser(user) {
+            console.log('ユーザー表示:', user);
+            
+            // メールアドレスチェック
+            if (!AUTHORIZED_EMAILS.includes(user.email)) {
+                document.getElementById('error').textContent = 'このメールアドレスは承認されていません: ' + user.email;
+                logout();
+                return;
+            }
+            
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('userSection').style.display = 'block';
+            document.getElementById('userEmail').textContent = user.email;
+            document.getElementById('userId').textContent = user.id;
+        }
+
+        function showLogin() {
+            console.log('ログイン画面表示');
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('userSection').style.display = 'none';
+        }
+
+        // 初期化
+        window.addEventListener('load', async function() {
+            console.log('ページ読み込み完了');
+            
+            // 現在のセッション確認
+            const { data: { session }, error } = await supabase.auth.getSession();
+            console.log('現在のセッション:', session, error);
+            
+            if (session?.user) {
+                showUser(session.user);
+            } else {
+                showLogin();
+            }
+            
+            // 認証状態変化の監視
+            supabase.auth.onAuthStateChange((event, session) => {
+                console.log('認証状態変化:', event, session);
+                
+                if (event === 'SIGNED_IN' && session?.user) {
+                    showUser(session.user);
+                } else if (event === 'SIGNED_OUT') {
+                    showLogin();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
