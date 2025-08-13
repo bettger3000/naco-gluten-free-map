@@ -307,20 +307,11 @@
         .map-controls {
             position: absolute;
             top: var(--space-lg);
-            right: var(--space-lg);
+            left: var(--space-lg);
             z-index: 1000;
             display: flex;
             flex-direction: column;
             gap: var(--space-sm);
-        }
-        
-        /* モバイル版では左上配置を維持 */
-        @media (max-width: 1024px) {
-            .map-controls {
-                top: var(--space-lg);
-                left: var(--space-lg);
-                right: auto;
-            }
         }
 
         .map-control-btn {
@@ -337,68 +328,6 @@
         .map-control-btn:hover {
             background: var(--bg-primary);
             transform: translateY(-1px);
-        }
-        
-        /* ズームコントロール */
-        .zoom-controls {
-            display: flex;
-            flex-direction: column;
-            background: var(--bg-glass);
-            backdrop-filter: blur(10px);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            box-shadow: var(--shadow-md);
-            margin-bottom: var(--space-sm);
-        }
-        
-        .zoom-btn {
-            background: transparent;
-            border-radius: 0;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--text-primary);
-            min-width: 40px;
-            min-height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-            box-shadow: none;
-        }
-        
-        .zoom-btn:first-child {
-            border-bottom: 1px solid var(--border-light);
-        }
-        
-        .zoom-btn:hover {
-            background: var(--bg-primary);
-        }
-        
-        /* モバイル専用現在地ボタン */
-        .mobile-location-control {
-            position: absolute;
-            bottom: 100px; /* オーバーレイパネルの上に配置 */
-            right: var(--space-lg);
-            z-index: 1000;
-        }
-        
-        @media (max-width: 1024px) {
-            /* モバイル版ではズームコントロールを非表示（デフォルトのLeafletズームを使用） */
-            .zoom-controls {
-                display: none;
-            }
-            
-            /* PC版では現在地ボタンを非表示 */
-            #locateBtn {
-                display: none;
-            }
-        }
-        
-        @media (min-width: 1025px) {
-            /* PC版ではモバイル現在地ボタンを非表示 */
-            .mobile-location-control {
-                display: none;
-            }
         }
 
         /* 店舗リスト */
@@ -845,215 +774,6 @@
             line-height: 1;
         }
         
-        /* PC用サイドバー */
-        .store-sidebar {
-            background: var(--bg-primary);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-lg);
-            display: none; /* デフォルトは非表示 */
-            flex-direction: column;
-            overflow: hidden;
-            height: 100vh; /* 画面全体の高さに固定 */
-            max-height: 100vh;
-        }
-        
-        .sidebar-header {
-            padding: var(--space-lg);
-            border-bottom: 1px solid var(--border-light);
-            background: var(--bg-secondary);
-            flex-shrink: 0; /* ヘッダーは高さ固定 */
-        }
-        
-        .sidebar-title-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--space-md);
-        }
-        
-        .sidebar-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin: 0;
-        }
-        
-        .sidebar-count {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-        
-        /* PC用検索ボックス */
-        .sidebar-search {
-            margin-bottom: var(--space-lg);
-        }
-        
-        .sidebar-search-input {
-            width: 100%;
-            padding: var(--space-sm) var(--space-md);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            font-size: 0.875rem;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            transition: border-color 0.3s ease;
-        }
-        
-        .sidebar-search-input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        
-        /* PC用フィルターチップ */
-        .sidebar-filter-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--space-xs);
-            margin-bottom: var(--space-md);
-        }
-        
-        .sidebar-chip {
-            padding: var(--space-sm) var(--space-md);
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: var(--text-secondary);
-            white-space: nowrap;
-            font-weight: 500;
-        }
-        
-        .sidebar-chip:hover {
-            background: var(--bg-primary);
-            border-color: var(--primary);
-            color: var(--text-primary);
-            transform: translateY(-1px);
-        }
-        
-        .sidebar-chip.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .store-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: var(--space-sm);
-            min-height: 0; /* flex子要素のスクロール有効化 */
-            scrollbar-width: thin; /* Firefox用スクロールバー */
-            scrollbar-color: var(--primary) var(--bg-secondary); /* Firefox用カラー */
-        }
-        
-        /* Webkit系ブラウザ用スクロールバー */
-        .store-list::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .store-list::-webkit-scrollbar-track {
-            background: var(--bg-secondary);
-            border-radius: 3px;
-        }
-        
-        .store-list::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 3px;
-        }
-        
-        .store-list::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-dark);
-        }
-        
-        /* サイドバー用店舗カード */
-        .store-card {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-lg);
-            padding: var(--space-lg);
-            margin-bottom: var(--space-md);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .store-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--primary);
-            transform: scaleY(0);
-            transition: transform 0.3s ease;
-        }
-        
-        .store-card:hover,
-        .store-card.selected {
-            border-color: var(--primary);
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
-        }
-        
-        .store-card:hover::before,
-        .store-card.selected::before {
-            transform: scaleY(1);
-        }
-        
-        /* レスポンシブ表示制御 */
-        .pc-only {
-            display: none;
-        }
-        
-        .mobile-only {
-            display: block;
-        }
-        
-        @media (min-width: 1025px) {
-            .pc-only {
-                display: flex;
-            }
-            
-            .mobile-only {
-                display: none;
-            }
-            
-            /* PC版では検索フィルターを非表示（サイドバーに統合） */
-            .search-filter-container {
-                display: none;
-            }
-            
-            .main-content {
-                display: grid !important;
-                grid-template-columns: 400px 1fr !important;
-                gap: var(--space-xl) !important;
-                height: 100vh !important;
-                padding: var(--space-xl) !important;
-                box-sizing: border-box;
-                align-items: stretch;
-            }
-            
-            .map-container {
-                border-radius: var(--radius-xl);
-                overflow: hidden;
-                box-shadow: var(--shadow-lg);
-                height: 100%;
-                display: flex;
-                flex-direction: column;
-            }
-            
-            #map {
-                height: 100% !important;
-                border-radius: var(--radius-xl);
-                flex: 1;
-            }
-        }
-        
         .panel-handle:active {
             cursor: grabbing;
         }
@@ -1337,59 +1057,19 @@
 
         <!-- メインコンテンツ -->
         <div class="main-content">
-            <!-- 店舗リスト（PC用サイドバー） -->
-            <div class="store-sidebar pc-only">
-                <div class="sidebar-header">
-                    <div class="sidebar-title-row">
-                        <h2 class="sidebar-title">店舗リスト</h2>
-                        <span class="sidebar-count"><span id="storeCount">62</span>件</span>
-                    </div>
-                    
-                    <!-- PC用検索ボックス -->
-                    <div class="sidebar-search">
-                        <input type="text" id="sidebarSearchInput" class="sidebar-search-input" placeholder="店名・エリアで検索">
-                    </div>
-                    
-                    <!-- PC用フィルターチップ -->
-                    <div class="sidebar-filter-chips">
-                        <button class="sidebar-chip active" data-category="">すべて</button>
-                        <button class="sidebar-chip" data-category="カフェ">☕ カフェ</button>
-                        <button class="sidebar-chip" data-category="和食">🍱 和食</button>
-                        <button class="sidebar-chip" data-category="洋食">🍽️ 洋食</button>
-                        <button class="sidebar-chip" data-category="パン屋">🥐 パン屋</button>
-                        <button class="sidebar-chip" data-category="スイーツ">🧁 スイーツ</button>
-                        <button class="sidebar-chip" data-category="販売店">🛒 販売店</button>
-                    </div>
-                </div>
-                <div id="storeList" class="store-list">
-                    <!-- 店舗リストがここに表示される -->
-                </div>
-            </div>
-            
-            <!-- マップ -->
+            <!-- マップ（全画面） -->
             <div class="map-container">
                 <div class="map-controls">
-                    <!-- ズームコントロール -->
-                    <div class="zoom-controls">
-                        <button class="map-control-btn zoom-btn" id="zoomInBtn" title="拡大">+</button>
-                        <button class="map-control-btn zoom-btn" id="zoomOutBtn" title="縮小">−</button>
-                    </div>
-                    <!-- その他のコントロール -->
                     <button class="map-control-btn" id="locateBtn" title="現在地を表示">📍</button>
                     <button class="map-control-btn" id="resetViewBtn" title="全体表示">🗾</button>
-                </div>
-                
-                <!-- モバイル専用現在地ボタン（右下角） -->
-                <div class="mobile-location-control mobile-only">
-                    <button class="map-control-btn" id="mobileLocateBtn" title="現在地を表示">📍</button>
                 </div>
                 <div id="map"></div>
             </div>
         </div>
     </div>
 
-    <!-- オーバーレイ式店舗リストパネル（モバイル用） -->
-    <div id="overlayPanel" class="overlay-panel mobile-only">
+    <!-- オーバーレイ式店舗リストパネル -->
+    <div id="overlayPanel" class="overlay-panel">
         <div class="panel-handle" id="panelHandle">
             <div class="handle-bar"></div>
             <div class="panel-title">
@@ -2371,15 +2051,8 @@
             stores = embeddedStores;
             
             displayStores(stores);
-            
-            // デバイス別UI更新
-            if (isDesktop()) {
-                // PC用サイドバーに表示
-                displayStoreList(stores);
-            } else {
-                // モバイル用オーバーレイパネルに初期表示
-                updatePanelContent('all');
-            }
+            // オーバーレイパネルに初期表示
+            updatePanelContent('all');
             
             console.log(`✅ ${stores.length}店舗のデータを即座に表示完了`);
         }
@@ -2402,7 +2075,7 @@
                 map = L.map('map', {
                     center: defaultCenter,
                     zoom: defaultZoom,
-                    zoomControl: !isDesktop(), // PC版では無効、モバイル版では有効
+                    zoomControl: true,
                     scrollWheelZoom: true
                 });
 
@@ -2801,25 +2474,10 @@
         function filterStores() {
             if (!stores.length) return;
 
-            // 検索テキストを取得（PC用またはモバイル用）
-            let searchText = '';
-            if (isDesktop()) {
-                const sidebarSearchInput = document.getElementById('sidebarSearchInput');
-                searchText = sidebarSearchInput ? sidebarSearchInput.value.toLowerCase() : '';
-            } else {
-                const searchInput = document.getElementById('searchInput');
-                searchText = searchInput ? searchInput.value.toLowerCase() : '';
-            }
-            
-            // カテゴリフィルターを取得（PC用またはモバイル用）
-            let selectedCategory = '';
-            if (isDesktop()) {
-                const activeChip = document.querySelector('.sidebar-chip.active');
-                selectedCategory = activeChip ? activeChip.dataset.category : '';
-            } else {
-                const activeChip = document.querySelector('.filter-chip.active');
-                selectedCategory = activeChip ? activeChip.dataset.category : '';
-            }
+            const searchInput = document.getElementById('searchInput');
+            const searchText = searchInput ? searchInput.value.toLowerCase() : '';
+            const activeChip = document.querySelector('.filter-chip.active');
+            const selectedCategory = activeChip ? activeChip.dataset.category : '';
 
             const filteredStores = stores.filter(store => {
                 const matchesCategory = !selectedCategory || store.category === selectedCategory;
@@ -2832,17 +2490,10 @@
             });
 
             displayStores(filteredStores);
-            
-            // デバイス別UI更新
-            if (isDesktop()) {
-                // PC用サイドバーを更新
-                displayStoreList(filteredStores);
-            } else {
-                // モバイル用オーバーレイパネルを更新
-                const activeTab = document.querySelector('.panel-tab.active');
-                if (activeTab) {
-                    updatePanelContent(activeTab.dataset.tab);
-                }
+            // オーバーレイパネルを更新
+            const activeTab = document.querySelector('.panel-tab.active');
+            if (activeTab) {
+                updatePanelContent(activeTab.dataset.tab);
             }
         }
 
@@ -2875,133 +2526,6 @@
             return div.innerHTML;
         }
         
-        // デバイス判定
-        function isDesktop() {
-            return window.innerWidth >= 1025;
-        }
-        
-        // PC用サイドバー店舗リスト表示
-        function displayStoreList(storesData) {
-            const container = document.getElementById('storeList');
-            if (!container || !isDesktop()) return;
-            
-            container.innerHTML = '';
-            
-            // 店舗数更新
-            const storeCountElement = document.getElementById('storeCount');
-            if (storeCountElement) {
-                storeCountElement.textContent = storesData.length;
-            }
-            
-            if (storesData.length === 0) {
-                container.innerHTML = '<div class="loading-indicator">表示する店舗がありません</div>';
-                return;
-            }
-            
-            // 現在地から近い順にソート
-            let sortedStores = [...storesData];
-            if (currentUserLocation) {
-                sortedStores = sortedStores.sort((a, b) => {
-                    if (!a.latitude || !a.longitude || !b.latitude || !b.longitude) return 0;
-                    const distanceA = calculateDistance(currentUserLocation.lat, currentUserLocation.lng, a.latitude, a.longitude);
-                    const distanceB = calculateDistance(currentUserLocation.lat, currentUserLocation.lng, b.latitude, b.longitude);
-                    return distanceA - distanceB;
-                });
-            }
-            
-            sortedStores.forEach(store => {
-                try {
-                    const card = createStoreCard(store);
-                    container.appendChild(card);
-                } catch (error) {
-                    console.error(`店舗「${store.name}」のカード作成エラー:`, error);
-                }
-            });
-        }
-        
-        // PC用店舗カード作成
-        function createStoreCard(store) {
-            const card = document.createElement('div');
-            card.className = 'store-card';
-            card.dataset.storeId = store.id;
-            
-            const storeName = escapeHtml(store.name || '');
-            const storeAddress = escapeHtml(store.address || '');
-            const storeCategory = escapeHtml(store.category || '');
-            const storeGfOptions = store.gluten_free_options ? escapeHtml(store.gluten_free_options) : '';
-            
-            // 現在地からの距離を計算
-            let distanceText = '';
-            if (currentUserLocation && store.latitude && store.longitude) {
-                const distance = calculateDistance(currentUserLocation.lat, currentUserLocation.lng, store.latitude, store.longitude);
-                if (distance < 1) {
-                    distanceText = `${Math.round(distance * 1000)}m`;
-                } else {
-                    distanceText = `${distance.toFixed(1)}km`;
-                }
-            }
-            
-            card.innerHTML = `
-                <div class="store-header">
-                    <h3 class="store-name">${storeName}</h3>
-                    <div class="store-header-right">
-                        <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
-                        ${distanceText ? `<span class="store-distance">📍 ${distanceText}</span>` : ''}
-                    </div>
-                </div>
-                <div class="store-info">
-                    <div class="store-address">
-                        <span class="popup-icon">📍</span>
-                        <span>${storeAddress}</span>
-                    </div>
-                    ${storeGfOptions ? `
-                        <div class="store-gf-type">
-                            <span>✨</span>
-                            <span>${storeGfOptions}</span>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-            
-            card.addEventListener('click', function() {
-                selectStoreCard(store.id);
-                focusOnStore(store.id);
-            });
-            
-            return card;
-        }
-        
-        // 店舗カード選択
-        function selectStoreCard(storeId) {
-            if (!isDesktop()) return;
-            
-            document.querySelectorAll('.store-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            
-            const selectedCard = document.querySelector(`[data-store-id="${storeId}"]`);
-            if (selectedCard) {
-                selectedCard.classList.add('selected');
-                selectedCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-        }
-        
-        // ウィンドウリサイズ処理
-        function handleResize() {
-            // レスポンシブ切り替え時の処理
-            if (isDesktop()) {
-                // デスクトップに切り替わった場合
-                if (stores && stores.length > 0) {
-                    displayStoreList(stores);
-                }
-            } else {
-                // モバイルに切り替わった場合
-                if (!document.querySelector('.overlay-panel').classList.contains('initialized')) {
-                    initOverlayPanel();
-                }
-            }
-        }
-        
         // グローバル関数として公開（onclick用）
         window.toggleVisitStatus = toggleVisitStatus;
         window.focusOnStore = focusOnStore;
@@ -3010,31 +2534,16 @@
         function setupEventListeners() {
             console.log('🎛️ イベントリスナー設定開始');
 
-            // 検索（モバイル用）
+            // 検索
             const searchInput = document.getElementById('searchInput');
             if (searchInput) {
                 searchInput.addEventListener('input', filterStores);
             }
-            
-            // PC用検索
-            const sidebarSearchInput = document.getElementById('sidebarSearchInput');
-            if (sidebarSearchInput) {
-                sidebarSearchInput.addEventListener('input', filterStores);
-            }
 
-            // フィルターチップ（モバイル用）
+            // フィルターチップ
             document.querySelectorAll('.filter-chip').forEach(chip => {
                 chip.addEventListener('click', () => {
                     document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-                    chip.classList.add('active');
-                    filterStores();
-                });
-            });
-            
-            // PC用フィルターチップ
-            document.querySelectorAll('.sidebar-chip').forEach(chip => {
-                chip.addEventListener('click', () => {
-                    document.querySelectorAll('.sidebar-chip').forEach(c => c.classList.remove('active'));
                     chip.classList.add('active');
                     filterStores();
                 });
@@ -3045,51 +2554,17 @@
             if (locateBtn) {
                 locateBtn.addEventListener('click', getCurrentLocation);
             }
-            
-            const mobileLocateBtn = document.getElementById('mobileLocateBtn');
-            if (mobileLocateBtn) {
-                mobileLocateBtn.addEventListener('click', getCurrentLocation);
-            }
 
             const resetBtn = document.getElementById('resetViewBtn');
             if (resetBtn) {
                 resetBtn.addEventListener('click', resetMapView);
             }
-            
-            // ズームコントロール
-            const zoomInBtn = document.getElementById('zoomInBtn');
-            if (zoomInBtn) {
-                zoomInBtn.addEventListener('click', () => {
-                    if (map) {
-                        map.zoomIn();
-                    }
-                });
-            }
-            
-            const zoomOutBtn = document.getElementById('zoomOutBtn');
-            if (zoomOutBtn) {
-                zoomOutBtn.addEventListener('click', () => {
-                    if (map) {
-                        map.zoomOut();
-                    }
-                });
-            }
 
             // 訪問履歴機能の初期化
             initVisitHistory();
             
-            // デバイス別UI初期化
-            if (isDesktop()) {
-                // PC用サイドバー初期化
-                console.log('🖥️ PC環境を検出 - サイドバー初期化');
-            } else {
-                // モバイル用オーバーレイパネル初期化
-                console.log('📱 モバイル環境を検出 - オーバーレイパネル初期化');
-                initOverlayPanel();
-            }
-            
-            // ウィンドウリサイズ時のレスポンシブ対応
-            window.addEventListener('resize', handleResize);
+            // オーバーレイパネルの初期化
+            initOverlayPanel();
             
             console.log('✅ イベントリスナー設定完了');
         }
