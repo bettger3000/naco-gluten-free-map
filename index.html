@@ -1696,18 +1696,21 @@
             top: calc(var(--space-lg) * 4.5);
             left: 50%;
             transform: translateX(-50%);
-            background: white;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
-            padding: var(--space-md);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.9) 100%);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 16px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.12),
+                0 2px 8px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            padding: 14px 18px;
             display: flex;
             align-items: center;
-            gap: var(--space-md);
+            gap: 12px;
             z-index: 1000;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            animation: slideInFromTop 0.3s ease-out;
-            min-width: 200px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            animation: slideInFromTop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            min-width: 240px;
         }
         
         .pin-info {
@@ -1724,14 +1727,16 @@
         
         .pin-label {
             font-size: 0.9rem;
-            font-weight: 500;
+            font-weight: 600;
             color: var(--text-primary);
+            letter-spacing: 0.2px;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
         }
         
         .pin-control-btn {
-            background: #ff4757;
-            border: none;
-            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
             width: 32px;
             height: 32px;
             display: flex;
@@ -1739,51 +1744,60 @@
             justify-content: center;
             color: white;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 4px 12px rgba(196, 69, 105, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
         
         .pin-control-btn:hover {
-            background: #ff3838;
-            transform: scale(1.1);
+            background: linear-gradient(135deg, #ff8bb5 0%, #d65581 100%);
+            transform: translateY(-1px) scale(1.05);
+            box-shadow: 
+                0 6px 16px rgba(196, 69, 105, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
         }
         
         .pin-control-btn i {
             font-size: 0.9rem;
         }
         
-        /* カスタムピンマーカーのスタイル - オレンジグラデーション */
+        /* 高品質カスタムピンマーカー - 洗練されたデザイン */
         .custom-pin-marker {
-            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FF6B35 100%);
-            width: 36px;
-            height: 46px;
-            border-radius: 50% 50% 50% 0;
-            transform: rotate(-45deg);
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(145deg, #FF6B9D 0%, #C44569 100%);
+            border-radius: 50%;
             position: relative;
-            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
-            animation: pinBounce 0.6s ease-out;
-            border: 3px solid white;
+            box-shadow: 
+                0 4px 12px rgba(196, 69, 105, 0.25),
+                0 2px 6px rgba(196, 69, 105, 0.15),
+                inset 0 -2px 6px rgba(255, 255, 255, 0.2);
+            animation: pinBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            border: 2px solid rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
         }
         
         .custom-pin-marker::before {
             content: '';
             position: absolute;
-            top: 6px;
-            left: 6px;
-            width: 20px;
-            height: 20px;
-            background: white;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
             border-radius: 50%;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.5);
         }
         
         .custom-pin-marker::after {
-            content: '🎯';
+            content: '📍';
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) rotate(45deg);
-            font-size: 16px;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
         }
         
         /* アニメーション */
@@ -1930,7 +1944,7 @@
                 <div id="pinControlPanel" class="pin-control-panel hidden">
                     <div class="pin-info">
                         <i class="fas fa-bullseye custom-pin-icon"></i>
-                        <span class="pin-label">🎯 目的地設定中</span>
+                        <span class="pin-label">📍 目的地設定中</span>
                     </div>
                     <button class="pin-control-btn" id="removePinBtn" title="ピンを削除">
                         <i class="fas fa-times"></i>
@@ -4758,9 +4772,9 @@
             const customIcon = L.divIcon({
                 className: 'custom-pin-marker',
                 html: '',
-                iconSize: [36, 46],
-                iconAnchor: [18, 46],
-                popupAnchor: [0, -46]
+                iconSize: [32, 32],
+                iconAnchor: [16, 16],
+                popupAnchor: [0, -32]
             });
             
             // ピンマーカーを作成
