@@ -1178,7 +1178,42 @@
             color: var(--text-primary);
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: var(--space-sm);
+        }
+        
+        .panel-title-left {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .search-toggle-btn {
+            background: transparent;
+            border: none;
+            padding: var(--space-xs);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            position: relative;
+            font-size: 1.2rem;
+            transition: transform 0.2s ease;
+        }
+        
+        .search-toggle-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .search-toggle-btn.active {
+            transform: rotate(90deg);
+        }
+        
+        .filter-indicator {
+            position: absolute;
+            top: 0;
+            right: 0;
+            color: var(--error);
+            font-size: 0.6rem;
         }
         
         .panel-tabs {
@@ -1221,9 +1256,17 @@
         
         /* モバイル版検索・フィルター */
         .mobile-search-filter {
-            padding: var(--space-md) var(--space-lg);
+            padding: 0 var(--space-lg);
             border-bottom: 1px solid var(--border-light);
             background: var(--bg-secondary);
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+        
+        .mobile-search-filter.show {
+            max-height: 200px;
+            padding: var(--space-md) var(--space-lg);
         }
         
         .mobile-search-box {
@@ -1556,7 +1599,13 @@
         <div class="panel-handle" id="panelHandle">
             <div class="handle-bar"></div>
             <div class="panel-title">
-                <span id="panelStoreCount">店舗リスト 62件</span>
+                <div class="panel-title-left">
+                    <span id="panelStoreCount">店舗リスト 62件</span>
+                    <button class="search-toggle-btn" id="searchToggleBtn" title="検索・フィルター">
+                        <span class="search-icon">🔍</span>
+                        <span class="filter-indicator" id="filterIndicator" style="display: none;">●</span>
+                    </button>
+                </div>
                 <div class="panel-controls">
                     <div class="state-indicators">
                         <span class="state-dot active" id="stateDot1"></span>
@@ -1574,7 +1623,7 @@
         </div>
         
         <!-- モバイル版検索・フィルター -->
-        <div class="mobile-search-filter">
+        <div class="mobile-search-filter" id="mobileSearchFilter" style="display: none;">
             <div class="mobile-search-box">
                 <input type="text" id="mobileSearchInput" class="mobile-search-input" placeholder="店名・エリアで検索">
             </div>
@@ -3026,6 +3075,27 @@
             if (isDesktop()) {
                 displayStoreList(filteredStores);
             }
+            
+            // モバイル用フィルターインジケーター更新
+            if (!isDesktop()) {
+                const filterIndicator = document.getElementById('filterIndicator');
+                const panelStoreCount = document.getElementById('panelStoreCount');
+                
+                // フィルターが適用されているかチェック
+                const hasFilter = searchText || selectedCategory;
+                
+                if (filterIndicator) {
+                    filterIndicator.style.display = hasFilter ? 'inline' : 'none';
+                }
+                
+                if (panelStoreCount) {
+                    if (hasFilter) {
+                        panelStoreCount.textContent = `フィルター中 ${filteredStores.length}件`;
+                    } else {
+                        panelStoreCount.textContent = `店舗リスト ${stores.length}件`;
+                    }
+                }
+            }
             // 注意: モバイル版は直接updatePanelContent()を呼ぶため、ここでは処理しない
         }
 
@@ -3597,6 +3667,34 @@
                 }
             }
             
+            
+            // 検索トグルボタン
+            const searchToggleBtn = document.getElementById('searchToggleBtn');
+            const mobileSearchFilter = document.getElementById('mobileSearchFilter');
+            
+            if (searchToggleBtn && mobileSearchFilter) {
+                searchToggleBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    
+                    // 検索エリアの表示/非表示を切り替え
+                    if (mobileSearchFilter.classList.contains('show')) {
+                        mobileSearchFilter.classList.remove('show');
+                        searchToggleBtn.classList.remove('active');
+                        searchToggleBtn.querySelector('.search-icon').textContent = '🔍';
+                        // スタイル属性も更新
+                        setTimeout(() => {
+                            mobileSearchFilter.style.display = 'none';
+                        }, 300);
+                    } else {
+                        mobileSearchFilter.style.display = 'block';
+                        setTimeout(() => {
+                            mobileSearchFilter.classList.add('show');
+                        }, 10);
+                        searchToggleBtn.classList.add('active');
+                        searchToggleBtn.querySelector('.search-icon').textContent = '✕';
+                    }
+                });
+            }
             
             // 2ボタンコントロール（上下矢印）
             document.getElementById('panelDownBtn').addEventListener('click', (e) => {
