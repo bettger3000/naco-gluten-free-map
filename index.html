@@ -1555,6 +1555,77 @@
                 font-size: 16px !important;
             }
         }
+
+        /* 底部导航 */
+        .bottom-navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid var(--border-light);
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            padding: var(--space-xs) 0;
+            z-index: 1000;
+            height: 70px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            max-width: 120px;
+            background: none;
+            border: none;
+            padding: var(--space-xs);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-xs);
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: var(--radius-sm);
+        }
+
+        .nav-btn:hover {
+            background: var(--bg-light);
+            color: var(--primary);
+        }
+
+        .nav-btn.active {
+            color: var(--primary);
+            background: var(--bg-light);
+        }
+
+        .nav-btn i {
+            font-size: 1.2rem;
+        }
+
+        /* 底部导航のためのコンテンツ下マージン */
+        .main-content {
+            margin-bottom: 70px;
+        }
+
+        .store-overlay-panel {
+            bottom: 70px;
+        }
+
+        /* デスクトップでは底部导航を非表示 */
+        @media (min-width: 1024px) {
+            .bottom-navigation {
+                display: none;
+            }
+            
+            .main-content {
+                margin-bottom: 0;
+            }
+            
+            .store-overlay-panel {
+                bottom: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1697,6 +1768,32 @@
         </div>
     </div>
 
+    <!-- 訪問履歴ビュー -->
+    <div id="visitHistoryView" class="visit-history-view hidden">
+        <div class="history-header">
+            <h2 id="historyTitle">行きたいお店</h2>
+            <div id="historyCount" class="history-count">0件</div>
+        </div>
+        <div id="historyList" class="history-list">
+            <!-- 履歴リストがここに表示される -->
+        </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="bottom-navigation">
+        <button class="nav-btn active" data-tab="map">
+            <i class="fas fa-map-marked-alt"></i>
+            <span>マップ</span>
+        </button>
+        <button class="nav-btn" data-tab="want-to-go">
+            <i class="fas fa-heart"></i>
+            <span>行きたい</span>
+        </button>
+        <button class="nav-btn" data-tab="visited">
+            <i class="fas fa-check-circle"></i>
+            <span>行った</span>
+        </button>
+    </div>
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -3423,7 +3520,32 @@
             // ウィンドウリサイズ時のレスポンシブ対応
             window.addEventListener('resize', handleResize);
             
+            // 底部导航イベントリスナー
+            setupBottomNavigation();
+            
             console.log('✅ イベントリスナー設定完了');
+        }
+
+        // 底部导航設定
+        function setupBottomNavigation() {
+            console.log('📱 底部导航初期化開始');
+            
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tab = btn.dataset.tab;
+                    console.log('📱 ナビゲーションタブ切り替え:', tab);
+                    
+                    // アクティブ状態更新
+                    navButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    // タブ切り替え実行
+                    switchTab(tab);
+                });
+            });
+            
+            console.log('✅ 底部导航初期化完了');
         }
 
         // 訪問履歴グローバル変数
