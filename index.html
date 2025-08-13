@@ -1646,6 +1646,186 @@
                 bottom: 0;
             }
         }
+
+        /* =====================================
+           カスタムピン機能のスタイリング
+           ===================================== */
+        
+        /* マップコンテキストメニュー */
+        .map-context-menu {
+            position: absolute;
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            padding: var(--space-xs);
+            z-index: 1001;
+            min-width: 180px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .context-menu-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            width: 100%;
+            padding: var(--space-sm) var(--space-md);
+            background: none;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .context-menu-item:hover {
+            background: var(--bg-light);
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+        
+        .context-menu-item i {
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+        
+        /* ピン操作パネル */
+        .pin-control-panel {
+            position: absolute;
+            top: calc(var(--space-lg) * 4.5);
+            right: var(--space-md);
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: var(--space-md);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideInFromRight 0.3s ease-out;
+        }
+        
+        .pin-info {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .custom-pin-icon {
+            color: #2196F3;
+            font-size: 1.2rem;
+            animation: pinPulse 2s ease-in-out infinite;
+        }
+        
+        .pin-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .pin-control-btn {
+            background: #ff4757;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .pin-control-btn:hover {
+            background: #ff3838;
+            transform: scale(1.1);
+        }
+        
+        .pin-control-btn i {
+            font-size: 0.9rem;
+        }
+        
+        /* カスタムピンマーカーのスタイル */
+        .custom-pin-marker {
+            background: #2196F3;
+            width: 30px;
+            height: 30px;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            position: relative;
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+            animation: pinBounce 0.6s ease-out;
+        }
+        
+        .custom-pin-marker::before {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: 18px;
+            height: 18px;
+            background: white;
+            border-radius: 50%;
+        }
+        
+        .custom-pin-marker::after {
+            content: '📍';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(45deg);
+            font-size: 12px;
+        }
+        
+        /* アニメーション */
+        @keyframes slideInFromRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes pinPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        @keyframes pinBounce {
+            0% { transform: rotate(-45deg) scale(0) translateY(20px); opacity: 0; }
+            50% { transform: rotate(-45deg) scale(1.2) translateY(-5px); opacity: 0.8; }
+            100% { transform: rotate(-45deg) scale(1) translateY(0); opacity: 1; }
+        }
+        
+        /* モバイル対応 */
+        @media (max-width: 1024px) {
+            .pin-control-panel {
+                top: var(--space-lg);
+                right: var(--space-sm);
+                left: var(--space-sm);
+                justify-content: space-between;
+            }
+            
+            .map-context-menu {
+                min-width: 160px;
+            }
+            
+            .context-menu-item {
+                padding: var(--space-md);
+            }
+        }
+        
+        /* ユーティリティクラス */
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -1719,6 +1899,25 @@
                     <button class="map-control-btn" id="mobileLocateBtn" title="現在地を表示">📍</button>
                 </div>
                 <div id="map"></div>
+                
+                <!-- カスタムピン用コンテキストメニュー -->
+                <div id="mapContextMenu" class="map-context-menu hidden">
+                    <button class="context-menu-item" id="setPinBtn">
+                        <i class="fas fa-map-pin"></i>
+                        <span>ここにピンを設置</span>
+                    </button>
+                </div>
+                
+                <!-- ピン操作パネル -->
+                <div id="pinControlPanel" class="pin-control-panel hidden">
+                    <div class="pin-info">
+                        <i class="fas fa-map-pin custom-pin-icon"></i>
+                        <span class="pin-label">目的地ピン</span>
+                    </div>
+                    <button class="pin-control-btn" id="removePinBtn" title="ピンを削除">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -2703,6 +2902,12 @@
         let map;
         let stores = [];
         let markers = [];
+        
+        // カスタムピン機能用変数
+        let customPinMarker = null;
+        let customPinLocation = null;
+        let mapContextMenu = null;
+        let pinControlPanel = null;
 
         // DOM読み込み完了後に即座に初期化
         document.addEventListener('DOMContentLoaded', function() {
@@ -2803,6 +3008,9 @@
                 map.whenReady(() => {
                     console.log('🗺️ 地図準備完了 - マーカー表示');
                     displayStores(stores);
+                    
+                    // カスタムピン機能を初期化
+                    initCustomPinFeature();
                 });
 
                 console.log('✅ 地図初期化完了');
@@ -4387,6 +4595,418 @@
 
         // テスト実行用のグローバル関数として公開
         window.testSupabase = testSupabaseConnection;
+
+        // =======================================
+        // カスタムピン機能の実装
+        // =======================================
+
+        // カスタムピン機能初期化
+        function initCustomPinFeature() {
+            console.log('📍 カスタムピン機能を初期化中...');
+            
+            // UI要素を取得
+            mapContextMenu = document.getElementById('mapContextMenu');
+            pinControlPanel = document.getElementById('pinControlPanel');
+            
+            // マップのイベントリスナーを設定
+            setupMapEventListeners();
+            
+            // UI要素のイベントリスナーを設定
+            setupPinUIEventListeners();
+            
+            // 外部クリックでメニュー閉じる
+            document.addEventListener('click', hideContextMenu);
+            
+            console.log('✅ カスタムピン機能初期化完了');
+        }
+
+        // マップイベントリスナー設定
+        function setupMapEventListeners() {
+            // PC版: 右クリックでコンテキストメニュー
+            if (isDesktop()) {
+                map.on('contextmenu', function(e) {
+                    e.originalEvent.preventDefault();
+                    showContextMenu(e.latlng, e.originalEvent);
+                });
+                
+                // ダブルクリックで直接ピン設置
+                map.on('dblclick', function(e) {
+                    setCustomPin(e.latlng);
+                });
+            } else {
+                // モバイル版: 長押しでコンテキストメニュー
+                let longPressTimer;
+                let isLongPress = false;
+                
+                map.on('mousedown touchstart', function(e) {
+                    isLongPress = false;
+                    longPressTimer = setTimeout(() => {
+                        isLongPress = true;
+                        const latlng = e.latlng;
+                        showContextMenu(latlng, e.originalEvent);
+                    }, 800); // 800ms長押し
+                });
+                
+                map.on('mouseup touchend mousemove touchmove', function(e) {
+                    clearTimeout(longPressTimer);
+                    if (e.type === 'mousemove' || e.type === 'touchmove') {
+                        clearTimeout(longPressTimer);
+                    }
+                });
+            }
+            
+            // 通常のクリック/タップでメニューを閉じる
+            map.on('click', function(e) {
+                hideContextMenu();
+            });
+        }
+
+        // ピンUI要素のイベントリスナー設定
+        function setupPinUIEventListeners() {
+            // 「ピンを設置」ボタン
+            const setPinBtn = document.getElementById('setPinBtn');
+            if (setPinBtn) {
+                setPinBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const latlng = mapContextMenu.dataset.latlng ? 
+                        JSON.parse(mapContextMenu.dataset.latlng) : null;
+                    if (latlng) {
+                        setCustomPin(latlng);
+                    }
+                    hideContextMenu();
+                });
+            }
+            
+            // 「ピンを削除」ボタン
+            const removePinBtn = document.getElementById('removePinBtn');
+            if (removePinBtn) {
+                removePinBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    removeCustomPin();
+                });
+            }
+        }
+
+        // コンテキストメニュー表示
+        function showContextMenu(latlng, event) {
+            if (!mapContextMenu) return;
+            
+            // 既存のピンがある場合は削除確認
+            if (customPinMarker) {
+                removeCustomPin();
+            }
+            
+            // 座標を保存
+            mapContextMenu.dataset.latlng = JSON.stringify(latlng);
+            
+            // マウス/タッチ位置にメニューを表示
+            let x = event.clientX || event.touches?.[0]?.clientX || 0;
+            let y = event.clientY || event.touches?.[0]?.clientY || 0;
+            
+            // 画面端の調整
+            const menuWidth = 180;
+            const menuHeight = 50;
+            if (x + menuWidth > window.innerWidth) {
+                x = window.innerWidth - menuWidth - 10;
+            }
+            if (y + menuHeight > window.innerHeight) {
+                y = y - menuHeight - 10;
+            }
+            
+            mapContextMenu.style.left = x + 'px';
+            mapContextMenu.style.top = y + 'px';
+            mapContextMenu.classList.remove('hidden');
+            
+            console.log('📍 コンテキストメニュー表示:', latlng);
+        }
+
+        // コンテキストメニュー非表示
+        function hideContextMenu() {
+            if (mapContextMenu) {
+                mapContextMenu.classList.add('hidden');
+            }
+        }
+
+        // カスタムピン設置
+        function setCustomPin(latlng) {
+            console.log('📍 カスタムピン設置:', latlng);
+            
+            // 既存のピンを削除
+            if (customPinMarker) {
+                map.removeLayer(customPinMarker);
+            }
+            
+            // カスタムピンアイコンを作成
+            const customIcon = L.divIcon({
+                className: 'custom-pin-marker',
+                html: '',
+                iconSize: [30, 30],
+                iconAnchor: [15, 30],
+                popupAnchor: [0, -30]
+            });
+            
+            // ピンマーカーを作成
+            customPinMarker = L.marker(latlng, { icon: customIcon }).addTo(map);
+            customPinLocation = latlng;
+            
+            // ピン操作パネルを表示
+            if (pinControlPanel) {
+                pinControlPanel.classList.remove('hidden');
+            }
+            
+            // 店舗リストを距離順でソート・更新
+            sortStoresByCustomPin();
+            
+            console.log('✅ カスタムピン設置完了');
+        }
+
+        // カスタムピン削除
+        function removeCustomPin() {
+            console.log('🗑️ カスタムピン削除');
+            
+            if (customPinMarker) {
+                map.removeLayer(customPinMarker);
+                customPinMarker = null;
+            }
+            
+            customPinLocation = null;
+            
+            // ピン操作パネルを非表示
+            if (pinControlPanel) {
+                pinControlPanel.classList.add('hidden');
+            }
+            
+            // 店舗リストを現在地基準に戻す
+            if (isDesktop()) {
+                displayStoreList(stores);
+            } else {
+                const activeTab = document.querySelector('.panel-tab.active');
+                if (activeTab) {
+                    updatePanelContent(activeTab.dataset.tab);
+                }
+            }
+            
+            console.log('✅ カスタムピン削除完了');
+        }
+
+        // カスタムピンから距離順で店舗をソート
+        function sortStoresByCustomPin() {
+            if (!customPinLocation) return;
+            
+            console.log('📏 カスタムピンからの距離でソート中...');
+            
+            // 距離を計算して店舗をソート
+            const sortedStores = [...stores].sort((a, b) => {
+                if (!a.latitude || !a.longitude || !b.latitude || !b.longitude) return 0;
+                
+                const distanceA = calculateDistance(
+                    customPinLocation.lat, 
+                    customPinLocation.lng, 
+                    a.latitude, 
+                    a.longitude
+                );
+                const distanceB = calculateDistance(
+                    customPinLocation.lat, 
+                    customPinLocation.lng, 
+                    b.latitude, 
+                    b.longitude
+                );
+                
+                return distanceA - distanceB;
+            });
+            
+            // PC版・モバイル版それぞれでリスト更新
+            if (isDesktop()) {
+                displayStoreListWithCustomDistance(sortedStores);
+            } else {
+                const activeTab = document.querySelector('.panel-tab.active');
+                if (activeTab) {
+                    updatePanelContentWithCustomDistance(activeTab.dataset.tab, sortedStores);
+                }
+            }
+            
+            console.log('✅ 距離順ソート完了');
+        }
+
+        // PC用: カスタムピンからの距離付き店舗リスト表示
+        function displayStoreListWithCustomDistance(sortedStores) {
+            const container = document.getElementById('storeList');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            sortedStores.forEach(store => {
+                if (!store.latitude || !store.longitude) return;
+                
+                const distance = calculateDistance(
+                    customPinLocation.lat,
+                    customPinLocation.lng,
+                    store.latitude,
+                    store.longitude
+                );
+                
+                const distanceText = distance < 1 ? 
+                    `${Math.round(distance * 1000)}m` : 
+                    `${distance.toFixed(1)}km`;
+                
+                const card = document.createElement('div');
+                card.className = 'store-card';
+                card.innerHTML = createStoreCardHTML(store, `📍 ${distanceText}`);
+                
+                card.addEventListener('click', () => focusOnStore(store.id));
+                container.appendChild(card);
+            });
+            
+            // 件数更新
+            updateStoreCount(sortedStores.length);
+        }
+
+        // モバイル用: カスタムピンからの距離でパネル更新
+        function updatePanelContentWithCustomDistance(tab, sortedStores) {
+            const panelContent = document.getElementById('panelContent');
+            if (!panelContent) return;
+            
+            // タブフィルターを適用
+            let filteredStores = [...sortedStores];
+            if (tab === 'want-to-go') {
+                filteredStores = filteredStores.filter(store => {
+                    const status = userVisitHistory.get(`${store.id}`);
+                    return status === 'want_to_go';
+                });
+            } else if (tab === 'visited') {
+                filteredStores = filteredStores.filter(store => {
+                    const status = userVisitHistory.get(`${store.id}`);
+                    return status === 'visited';
+                });
+            }
+            
+            // 件数更新
+            const countEl = document.getElementById('panelStoreCount');
+            if (countEl) {
+                if (tab === 'all') {
+                    countEl.textContent = `📍 目的地から ${filteredStores.length}件`;
+                } else if (tab === 'want-to-go') {
+                    countEl.textContent = `📍 行きたい ${filteredStores.length}件`;
+                } else if (tab === 'visited') {
+                    countEl.textContent = `📍 行った ${filteredStores.length}件`;
+                }
+            }
+            
+            displayPanelStoreListWithDistance(filteredStores, panelContent);
+        }
+
+        // パネル用: 距離付き店舗リスト表示
+        function displayPanelStoreListWithDistance(storesData, container) {
+            if (!container || !customPinLocation) return;
+            
+            container.innerHTML = '';
+            
+            if (storesData.length === 0) {
+                container.innerHTML = '<div class="loading-indicator">表示する店舗がありません</div>';
+                return;
+            }
+            
+            storesData.forEach(store => {
+                if (!store.latitude || !store.longitude) return;
+                
+                const distance = calculateDistance(
+                    customPinLocation.lat,
+                    customPinLocation.lng,
+                    store.latitude,
+                    store.longitude
+                );
+                
+                const distanceText = distance < 1 ? 
+                    `${Math.round(distance * 1000)}m` : 
+                    `${distance.toFixed(1)}km`;
+                
+                const card = document.createElement('div');
+                card.className = 'panel-store-card';
+                card.innerHTML = createPanelStoreCardHTML(store, `📍 ${distanceText}`);
+                
+                card.addEventListener('click', () => {
+                    focusOnStore(store.id);
+                    // モバイル版ではパネルを閉じる
+                    if (!isDesktop()) {
+                        setPanelPosition('collapsed');
+                    }
+                });
+                
+                container.appendChild(card);
+            });
+        }
+
+        // PC用店舗カードHTML生成（距離表示付き）
+        function createStoreCardHTML(store, distanceText = '') {
+            const storeName = escapeHtml(store.name || '');
+            const storeAddress = escapeHtml(store.address || '');
+            const storeCategory = escapeHtml(store.category || '');
+            const storeGfOptions = store.gluten_free_options ? escapeHtml(store.gluten_free_options) : '';
+            
+            return `
+                <div class="store-header">
+                    <h3 class="store-name">${storeName}</h3>
+                    <div class="store-header-right">
+                        <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
+                        ${distanceText ? `<span class="store-distance">${distanceText}</span>` : ''}
+                    </div>
+                </div>
+                <div class="store-info">
+                    <div class="store-address">
+                        <i class="fas fa-map-marker-alt"></i>
+                        ${storeAddress}
+                    </div>
+                    ${storeGfOptions ? `<div class="store-gf-options">✨ ${storeGfOptions}</div>` : ''}
+                </div>
+            `;
+        }
+
+        // パネル用店舗カードHTML生成（距離表示付き）
+        function createPanelStoreCardHTML(store, distanceText = '') {
+            const storeName = escapeHtml(store.name || '');
+            const storeAddress = escapeHtml(store.address || '');
+            const storeCategory = escapeHtml(store.category || '');
+            const storeGfOptions = store.gluten_free_options ? escapeHtml(store.gluten_free_options) : '';
+            
+            // 訪問ステータスをチェック
+            const visitStatus = userVisitHistory.get(`${store.id}`);
+            const isWantToGo = visitStatus === 'want_to_go';
+            const isVisited = visitStatus === 'visited';
+            
+            return `
+                <div class="store-header">
+                    <div class="store-name">${storeName}</div>
+                    ${distanceText ? `<div class="store-distance">${distanceText}</div>` : ''}
+                </div>
+                <div class="store-meta">
+                    <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
+                </div>
+                <div class="store-info">
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>${storeAddress}</span>
+                    </div>
+                    ${storeGfOptions ? `
+                    <div class="info-item">
+                        <i class="fas fa-star"></i>
+                        <span>${storeGfOptions}</span>
+                    </div>` : ''}
+                </div>
+                <div class="store-card-actions">
+                    <button class="action-btn want-to-go ${isWantToGo ? 'active' : ''}" 
+                            onclick="toggleVisitStatus(${store.id}, 'want_to_go')">
+                        🤍 行きたい
+                    </button>
+                    <button class="action-btn visited ${isVisited ? 'active' : ''}" 
+                            onclick="toggleVisitStatus(${store.id}, 'visited')">
+                        ✨ 行った
+                    </button>
+                    <button class="action-btn" onclick="focusOnStore(${store.id})">
+                        🗺️ 地図
+                    </button>
+                </div>
+            `;
+        }
         
         // パフォーマンス測定
         console.log('🚀 埋め込みデータ版グルテンフリーマップ');
