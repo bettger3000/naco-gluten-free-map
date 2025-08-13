@@ -1268,11 +1268,13 @@
         
         .panel-content {
             flex: 1 1 0;
-            overflow-y: scroll !important;
+            overflow-y: auto !important;
             padding: var(--space-sm);
             min-height: 0;
             max-height: 100%;
             -webkit-overflow-scrolling: touch;
+            /* デバッグ用: スクロール確認 */
+            position: relative;
         }
         
         .mobile-search-filter.show {
