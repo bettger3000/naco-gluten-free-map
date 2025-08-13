@@ -707,71 +707,47 @@
             border-top-right-radius: var(--radius-2xl);
         }
         
-        .panel-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-        }
-        
         .panel-controls {
             display: flex;
-            align-items: center;
             gap: var(--space-sm);
+            margin-bottom: var(--space-sm);
         }
         
-        .state-indicators {
+        .panel-control-btn {
             display: flex;
-            gap: 4px;
-            margin-right: var(--space-sm);
-        }
-        
-        .state-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--border);
-            transition: all 0.2s ease;
-        }
-        
-        .state-dot.active {
-            background: var(--primary);
-            transform: scale(1.2);
-        }
-        
-        .panel-control-btn.compact {
-            display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            width: 28px;
-            height: 28px;
-            padding: 0;
+            gap: 2px;
+            padding: var(--space-xs) var(--space-md);
             background: var(--bg-secondary);
             border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
+            border-radius: var(--radius-md);
             cursor: pointer;
             transition: all 0.2s ease;
+            min-width: 60px;
         }
         
-        .panel-control-btn.compact:hover {
+        .panel-control-btn:hover {
             background: var(--bg-primary);
             transform: translateY(-1px);
             box-shadow: var(--shadow-sm);
         }
         
-        .panel-control-btn.compact:disabled {
-            background: var(--bg-secondary);
-            color: var(--text-light);
-            cursor: not-allowed;
-            opacity: 0.5;
+        .panel-control-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
         }
         
-        .panel-control-btn.compact .control-icon {
-            font-size: 0.9rem;
+        .control-icon {
+            font-size: 1.2rem;
+            font-weight: 700;
             line-height: 1;
+        }
+        
+        .control-label {
+            font-size: 0.7rem;
+            font-weight: 500;
         }
         
         .panel-handle:active {
@@ -1072,22 +1048,23 @@
     <div id="overlayPanel" class="overlay-panel">
         <div class="panel-handle" id="panelHandle">
             <div class="handle-bar"></div>
+            <div class="panel-controls">
+                <button class="panel-control-btn" id="panelCloseBtn" data-position="collapsed">
+                    <span class="control-icon">▼</span>
+                    <span class="control-label">閉じる</span>
+                </button>
+                <button class="panel-control-btn active" id="panelHalfBtn" data-position="half">
+                    <span class="control-icon">◐</span>
+                    <span class="control-label">半開き</span>
+                </button>
+                <button class="panel-control-btn" id="panelFullBtn" data-position="full">
+                    <span class="control-icon">▲</span>
+                    <span class="control-label">全画面</span>
+                </button>
+            </div>
             <div class="panel-title">
                 <span>グルテンフリー店舗</span>
                 <span id="panelStoreCount">全国62店舗</span>
-                <div class="panel-controls">
-                    <div class="state-indicators">
-                        <span class="state-dot active" id="stateDot1"></span>
-                        <span class="state-dot" id="stateDot2"></span>
-                        <span class="state-dot" id="stateDot3"></span>
-                    </div>
-                    <button class="panel-control-btn compact" id="panelDownBtn">
-                        <span class="control-icon">🔽</span>
-                    </button>
-                    <button class="panel-control-btn compact" id="panelUpBtn">
-                        <span class="control-icon">🔼</span>
-                    </button>
-                </div>
             </div>
         </div>
         <div class="panel-tabs">
@@ -2843,28 +2820,19 @@
                 panelState = state;
                 panel.classList.remove('half-open', 'full-open');
                 
-                // 状態インジケーターを更新
-                document.querySelectorAll('.state-dot').forEach(dot => {
-                    dot.classList.remove('active');
+                // ボタンのアクティブ状態を更新
+                document.querySelectorAll('.panel-control-btn').forEach(btn => {
+                    btn.classList.remove('active');
                 });
                 
-                const downBtn = document.getElementById('panelDownBtn');
-                const upBtn = document.getElementById('panelUpBtn');
-                
                 if (state === 'collapsed') {
-                    document.getElementById('stateDot1').classList.add('active');
-                    downBtn.disabled = true;
-                    upBtn.disabled = false;
+                    document.getElementById('panelCloseBtn').classList.add('active');
                 } else if (state === 'half') {
                     panel.classList.add('half-open');
-                    document.getElementById('stateDot2').classList.add('active');
-                    downBtn.disabled = false;
-                    upBtn.disabled = false;
+                    document.getElementById('panelHalfBtn').classList.add('active');
                 } else if (state === 'full') {
                     panel.classList.add('full-open');
-                    document.getElementById('stateDot3').classList.add('active');
-                    downBtn.disabled = false;
-                    upBtn.disabled = true;
+                    document.getElementById('panelFullBtn').classList.add('active');
                 }
             }
             
@@ -2920,27 +2888,20 @@
             document.addEventListener('touchend', handleDragEnd);
             document.addEventListener('mouseup', handleDragEnd);
             
-            // 2ボタンコントロール（上下矢印）
-            document.getElementById('panelDownBtn').addEventListener('click', (e) => {
+            // 3ボタンコントロール
+            document.getElementById('panelCloseBtn').addEventListener('click', (e) => {
                 e.stopPropagation();
-                
-                // 一段階下げる
-                if (panelState === 'full') {
-                    setPanelPosition('half');
-                } else if (panelState === 'half') {
-                    setPanelPosition('collapsed');
-                }
+                setPanelPosition('collapsed');
             });
             
-            document.getElementById('panelUpBtn').addEventListener('click', (e) => {
+            document.getElementById('panelHalfBtn').addEventListener('click', (e) => {
                 e.stopPropagation();
-                
-                // 一段階上げる
-                if (panelState === 'collapsed') {
-                    setPanelPosition('half');
-                } else if (panelState === 'half') {
-                    setPanelPosition('full');
-                }
+                setPanelPosition('half');
+            });
+            
+            document.getElementById('panelFullBtn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                setPanelPosition('full');
             });
             
             // タブ切り替え
