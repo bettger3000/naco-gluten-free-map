@@ -1720,77 +1720,8 @@
             color: var(--primary);
         }
         
-        /* ピン操作パネル */
-        .pin-control-panel {
-            position: absolute;
-            top: calc(var(--space-lg) * 4.5);
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.9) 100%);
-            backdrop-filter: blur(20px) saturate(180%);
-            border-radius: 16px;
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.12),
-                0 2px 8px rgba(0, 0, 0, 0.08),
-                inset 0 1px 0 rgba(255, 255, 255, 0.8);
-            padding: 14px 18px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 1000;
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            animation: slideInFromTop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            min-width: 240px;
-        }
         
-        .pin-info {
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-        }
         
-        .custom-pin-icon {
-            color: #FF6B6B;
-            font-size: 1.2rem;
-            animation: pinPulse 2s ease-in-out infinite;
-        }
-        
-        .pin-label {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            letter-spacing: 0.2px;
-            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
-        }
-        
-        .pin-control-btn {
-            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 12px;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 
-                0 4px 12px rgba(196, 69, 105, 0.25),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-        }
-        
-        .pin-control-btn:hover {
-            background: linear-gradient(135deg, #ff8bb5 0%, #d65581 100%);
-            transform: translateY(-1px) scale(1.05);
-            box-shadow: 
-                0 6px 16px rgba(196, 69, 105, 0.35),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
-        }
-        
-        .pin-control-btn i {
-            font-size: 0.9rem;
-        }
         
         /* 高品質カスタムピンマーカー - 洗練されたデザイン */
         .custom-pin-marker {
@@ -1872,9 +1803,15 @@
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 249, 250, 0.85) 100%);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 107, 157, 0.2);
-            width: 36px;
-            height: 36px;
-            font-size: 16px;
+            border-radius: 8px;
+            padding: 4px 6px;
+            min-width: 28px;
+            height: 28px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
         }
         
         .pin-mode-btn:hover {
@@ -2044,17 +1981,11 @@
                     </div>
                     <!-- その他のコントロール -->
                     <button class="map-control-btn" id="locateBtn" title="現在地を表示">📍</button>
-                    <button class="map-control-btn pin-mode-btn" id="pinModeBtn" title="ピン設置モード">
-                        <span class="pin-mode-icon">🎯</span>
-                    </button>
                 </div>
                 
                 <!-- モバイル専用現在地ボタン（右下角） -->
                 <div class="mobile-location-control mobile-only">
                     <button class="map-control-btn" id="mobileLocateBtn" title="現在地を表示">📍</button>
-                    <button class="map-control-btn pin-mode-btn" id="mobilePinModeBtn" title="ピン設置モード">
-                        <span class="pin-mode-icon">🎯</span>
-                    </button>
                 </div>
                 <div id="map"></div>
                 
@@ -2066,16 +1997,6 @@
                     </button>
                 </div>
                 
-                <!-- ピン操作パネル -->
-                <div id="pinControlPanel" class="pin-control-panel hidden">
-                    <div class="pin-info">
-                        <i class="fas fa-bullseye custom-pin-icon"></i>
-                        <span class="pin-label">📍 目的地設定中</span>
-                    </div>
-                    <button class="pin-control-btn" id="removePinBtn" title="ピンを削除">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
                 
             </div>
         </div>
@@ -2091,6 +2012,9 @@
                     <button class="search-toggle-btn" id="searchToggleBtn" title="検索・フィルター">
                         <span class="search-icon">🔍</span>
                         <span class="filter-indicator" id="filterIndicator" style="display: none;">●</span>
+                    </button>
+                    <button class="pin-mode-btn" id="pinModeBtn" title="ピン設置モード">
+                        <span class="pin-icon">📍</span>
                     </button>
                 </div>
                 <div class="panel-controls">
@@ -3066,7 +2990,6 @@
         let customPinMarker = null;
         let customPinLocation = null;
         let mapContextMenu = null;
-        let pinControlPanel = null;
 
         // DOM読み込み完了後に即座に初期化
         document.addEventListener('DOMContentLoaded', function() {
@@ -4765,7 +4688,6 @@
             
             // UI要素を取得
             mapContextMenu = document.getElementById('mapContextMenu');
-            pinControlPanel = document.getElementById('pinControlPanel');
             
             // マップのイベントリスナーを設定
             setupMapEventListeners();
@@ -4875,23 +4797,7 @@
                 });
             }
             
-            // モバイル版ピンモードボタン
-            const mobilePinModeBtn = document.getElementById('mobilePinModeBtn');
-            if (mobilePinModeBtn) {
-                mobilePinModeBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    togglePinMode();
-                });
-            }
             
-            // 「ピンを削除」ボタン
-            const removePinBtn = document.getElementById('removePinBtn');
-            if (removePinBtn) {
-                removePinBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    removeCustomPin();
-                });
-            }
             
             console.log('✅ ピンUIイベントリスナー設定完了');
         }
@@ -4988,9 +4894,21 @@
             customPinMarker = L.marker(latlng, { icon: customIcon }).addTo(map);
             customPinLocation = latlng;
             
-            // ピン操作パネルを表示
-            if (pinControlPanel) {
-                pinControlPanel.classList.remove('hidden');
+            // ピンをダブルクリックで削除できるようにする
+            customPinMarker.on('dblclick', function() {
+                removeCustomPin();
+            });
+            
+            // ピンにツールチップを追加
+            customPinMarker.bindTooltip('ダブルクリックで削除', {
+                permanent: false,
+                direction: 'top',
+                offset: [0, -20]
+            });
+            
+            // ピンモードを無効にする
+            if (pinModeActive) {
+                togglePinMode();
             }
             
             // 店舗リストを距離順でソート・更新
@@ -5010,10 +4928,6 @@
             
             customPinLocation = null;
             
-            // ピン操作パネルを非表示
-            if (pinControlPanel) {
-                pinControlPanel.classList.add('hidden');
-            }
             
             // 店舗リストを現在地基準に戻す
             if (isDesktop()) {
