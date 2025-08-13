@@ -1023,10 +1023,6 @@
                 display: none;
             }
             
-            /* PC版では検索フィルターを非表示（サイドバーに統合） */
-            .search-filter-container {
-                display: none;
-            }
             
             .main-content {
                 display: grid !important;
@@ -1317,8 +1313,8 @@
             </div>
         </header>
 
-        <!-- 検索・フィルター -->
-        <div class="search-filter-container">
+        <!-- 検索・フィルター（PC専用、モバイルでは非表示） -->
+        <div class="search-filter-container pc-only">
             <div class="search-filter-content">
                 <div class="search-box">
                     <input type="text" id="searchInput" class="search-input" placeholder="店名・エリアで検索">
@@ -2801,25 +2797,16 @@
         function filterStores() {
             if (!stores.length) return;
 
-            // 検索テキストを取得（PC用またはモバイル用）
-            let searchText = '';
-            if (isDesktop()) {
-                const sidebarSearchInput = document.getElementById('sidebarSearchInput');
-                searchText = sidebarSearchInput ? sidebarSearchInput.value.toLowerCase() : '';
-            } else {
-                const searchInput = document.getElementById('searchInput');
-                searchText = searchInput ? searchInput.value.toLowerCase() : '';
-            }
+            // PC版のみでフィルタリング実行（モバイル版はパネル内で処理）
+            if (!isDesktop()) return;
             
-            // カテゴリフィルターを取得（PC用またはモバイル用）
-            let selectedCategory = '';
-            if (isDesktop()) {
-                const activeChip = document.querySelector('.sidebar-chip.active');
-                selectedCategory = activeChip ? activeChip.dataset.category : '';
-            } else {
-                const activeChip = document.querySelector('.filter-chip.active');
-                selectedCategory = activeChip ? activeChip.dataset.category : '';
-            }
+            // 検索テキストを取得（PC用）
+            const sidebarSearchInput = document.getElementById('sidebarSearchInput');
+            const searchText = sidebarSearchInput ? sidebarSearchInput.value.toLowerCase() : '';
+            
+            // カテゴリフィルターを取得（PC用）
+            const activeChip = document.querySelector('.sidebar-chip.active');
+            const selectedCategory = activeChip ? activeChip.dataset.category : '';
 
             const filteredStores = stores.filter(store => {
                 const matchesCategory = !selectedCategory || store.category === selectedCategory;
@@ -2832,18 +2819,8 @@
             });
 
             displayStores(filteredStores);
-            
-            // デバイス別UI更新
-            if (isDesktop()) {
-                // PC用サイドバーを更新
-                displayStoreList(filteredStores);
-            } else {
-                // モバイル用オーバーレイパネルを更新
-                const activeTab = document.querySelector('.panel-tab.active');
-                if (activeTab) {
-                    updatePanelContent(activeTab.dataset.tab);
-                }
-            }
+            // PC用サイドバーを更新
+            displayStoreList(filteredStores);
         }
 
         // 現在地取得
@@ -3010,27 +2987,12 @@
         function setupEventListeners() {
             console.log('🎛️ イベントリスナー設定開始');
 
-            // 検索（モバイル用）
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                searchInput.addEventListener('input', filterStores);
-            }
-            
             // PC用検索
             const sidebarSearchInput = document.getElementById('sidebarSearchInput');
             if (sidebarSearchInput) {
                 sidebarSearchInput.addEventListener('input', filterStores);
             }
 
-            // フィルターチップ（モバイル用）
-            document.querySelectorAll('.filter-chip').forEach(chip => {
-                chip.addEventListener('click', () => {
-                    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-                    chip.classList.add('active');
-                    filterStores();
-                });
-            });
-            
             // PC用フィルターチップ
             document.querySelectorAll('.sidebar-chip').forEach(chip => {
                 chip.addEventListener('click', () => {
