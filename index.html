@@ -204,34 +204,6 @@
         }
 
 
-        /* 検索とフィルター */
-        .search-filter-container {
-            background: var(--bg-primary);
-            border-bottom: 1px solid var(--border-light);
-            padding: var(--space-md) var(--space-lg);
-        }
-
-        .search-filter-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            gap: var(--space-lg);
-            align-items: flex-start;
-            flex-direction: column;
-        }
-        
-        @media (min-width: 768px) {
-            .search-filter-content {
-                flex-direction: row;
-                align-items: center;
-            }
-        }
-
-        .search-box {
-            flex: 1;
-            min-width: 300px;
-            position: relative;
-        }
 
         .search-input {
             width: 100%;
@@ -1673,23 +1645,6 @@
             </div>
         </header>
 
-        <!-- 検索・フィルター（PC専用、モバイルでは非表示） -->
-        <div class="search-filter-container pc-only">
-            <div class="search-filter-content">
-                <div class="search-box">
-                    <input type="text" id="searchInput" class="search-input" placeholder="店名・エリアで検索">
-                </div>
-                <div class="filter-chips">
-                    <button class="filter-chip active" data-category="">すべて</button>
-                    <button class="filter-chip" data-category="カフェ">☕ カフェ</button>
-                    <button class="filter-chip" data-category="和食">🍱 和食</button>
-                    <button class="filter-chip" data-category="洋食">🍽️ 洋食</button>
-                    <button class="filter-chip" data-category="パン屋">🥐 パン屋</button>
-                    <button class="filter-chip" data-category="スイーツ">🧁 スイーツ</button>
-                    <button class="filter-chip" data-category="販売店">🛒 販売店</button>
-                </div>
-            </div>
-        </div>
 
         <!-- メインコンテンツ -->
         <div class="main-content">
