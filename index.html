@@ -90,7 +90,7 @@
             background: var(--bg-glass);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border-light);
-            padding: var(--space-lg) var(--space-xl);
+            padding: var(--space-md) var(--space-lg);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -99,7 +99,7 @@
         .header-content {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             max-width: 1400px;
             margin: 0 auto;
         }
@@ -138,8 +138,8 @@
         }
 
         .title-icon {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             background: transparent;
             border-radius: 50%;
             display: flex;
@@ -203,38 +203,6 @@
             display: block;
         }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: var(--space-md);
-            text-align: right;
-            margin-right: var(--space-sm);
-        }
-
-        .user-name {
-            font-weight: 500;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            line-height: 1.3;
-            white-space: nowrap;
-        }
-        
-        /* モバイルでの美しい表示 */
-        @media (max-width: 480px) {
-            .user-info {
-                margin-right: var(--space-xs);
-            }
-            .user-name {
-                font-size: 0.75rem;
-                text-align: right;
-            }
-        }
-        
-        @media (max-width: 360px) {
-            .user-name {
-                font-size: 0.7rem;
-            }
-        }
 
         /* 検索とフィルター */
         .search-filter-container {
@@ -920,12 +888,9 @@
             <div class="header-content">
                 <div class="app-title">
                     <div class="title-icon">
-                        <img src="nacoキャラクター.png" alt="naco" style="width: 60px; height: 60px; object-fit: contain; background: transparent;">
+                        <img src="nacoキャラクター.png" alt="naco" style="width: 50px; height: 50px; object-fit: contain; background: transparent;">
                     </div>
                     <span>グルテンフリーマップ</span>
-                </div>
-                <div class="user-info">
-                    <span class="user-name">ビヨフリ倶楽部 presents by naco</span>
                 </div>
             </div>
         </header>
