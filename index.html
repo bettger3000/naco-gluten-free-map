@@ -724,6 +724,10 @@
             padding-bottom: var(--space-md);
         }
 
+        .popup-category-row {
+            margin-bottom: var(--space-sm);
+        }
+
 
         .popup-actions {
             margin-top: var(--space-md);
@@ -817,12 +821,12 @@
         /* モバイル用ポップアップ高さ制限 */
         @media (max-width: 1024px) {
             .leaflet-popup-content-wrapper {
-                max-height: 65vh !important;
+                max-height: 35vh !important;
                 overflow: hidden !important;
             }
             
             .popup-content {
-                max-height: calc(65vh - 32px) !important;
+                max-height: calc(35vh - 32px) !important;
                 overflow: hidden !important;
                 display: flex !important;
                 flex-direction: column !important;
@@ -2901,7 +2905,6 @@
                     <div class="popup-header-fixed">
                         <div class="popup-header-main">
                             <h3 class="popup-title">${storeName}</h3>
-                            <span class="popup-category">${storeCategory}</span>
                         </div>
                         <button class="popup-close-btn" onclick="closePopup()" title="閉じる">
                             <span class="close-icon">×</span>
@@ -2909,6 +2912,9 @@
                     </div>
                     <div class="popup-scrollable-content">
                         <div class="popup-info-section">
+                            <div class="popup-category-row">
+                                <span class="popup-category">${storeCategory}</span>
+                            </div>
                             <div class="popup-row">
                                 <span class="popup-icon">📍</span>
                                 <span class="popup-text">${storeAddress}</span>
