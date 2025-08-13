@@ -3558,17 +3558,13 @@
             console.log('📦 オーバーレイパネル初期化開始');
             
             const panel = document.getElementById('overlayPanel');
-            const handle = document.getElementById('panelHandle');
             const panelContent = document.getElementById('panelContent');
             
-            if (!panel || !handle) {
+            if (!panel) {
                 console.error('オーバーレイパネル要素が見つかりません');
                 return;
             }
             
-            let isDragging = false;
-            let startY = 0;
-            let currentTranslateY = 0;
             let panelState = 'collapsed'; // collapsed, half, full
             
             // パネル位置設定
@@ -3601,57 +3597,6 @@
                 }
             }
             
-            // ドラッグ開始
-            handle.addEventListener('touchstart', (e) => {
-                isDragging = true;
-                startY = e.touches[0].clientY;
-                panel.style.transition = 'none';
-            });
-            
-            handle.addEventListener('mousedown', (e) => {
-                isDragging = true;
-                startY = e.clientY;
-                panel.style.transition = 'none';
-            });
-            
-            // ドラッグ中
-            document.addEventListener('touchmove', (e) => {
-                if (!isDragging) return;
-                
-                const deltaY = e.touches[0].clientY - startY;
-                const newTranslateY = Math.max(0, Math.min(window.innerHeight - 60, currentTranslateY + deltaY));
-                panel.style.transform = `translateY(${newTranslateY}px)`;
-            });
-            
-            document.addEventListener('mousemove', (e) => {
-                if (!isDragging) return;
-                
-                const deltaY = e.clientY - startY;
-                const newTranslateY = Math.max(0, Math.min(window.innerHeight - 60, currentTranslateY + deltaY));
-                panel.style.transform = `translateY(${newTranslateY}px)`;
-            });
-            
-            // ドラッグ終了
-            function handleDragEnd() {
-                if (!isDragging) return;
-                isDragging = false;
-                panel.style.transition = '';
-                
-                const panelRect = panel.getBoundingClientRect();
-                const panelTop = panelRect.top;
-                const windowHeight = window.innerHeight;
-                
-                if (panelTop < windowHeight * 0.2) {
-                    setPanelPosition('full');
-                } else if (panelTop < windowHeight * 0.6) {
-                    setPanelPosition('half');
-                } else {
-                    setPanelPosition('collapsed');
-                }
-            }
-            
-            document.addEventListener('touchend', handleDragEnd);
-            document.addEventListener('mouseup', handleDragEnd);
             
             // 2ボタンコントロール（上下矢印）
             document.getElementById('panelDownBtn').addEventListener('click', (e) => {
