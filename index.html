@@ -1732,7 +1732,6 @@
                     </div>
                     <!-- その他のコントロール -->
                     <button class="map-control-btn" id="locateBtn" title="現在地を表示">📍</button>
-                    <button class="map-control-btn" id="resetViewBtn" title="全体表示">🗾</button>
                 </div>
                 
                 <!-- モバイル専用現在地ボタン（右下角） -->
@@ -3305,11 +3304,6 @@
         }
 
         // マップ表示リセット
-        function resetMapView() {
-            if (map) {
-                map.setView([35.6762, 139.6503], 6);
-            }
-        }
 
         // HTMLエスケープ
         function escapeHtml(text) {
@@ -3522,10 +3516,6 @@
                 mobileLocateBtn.addEventListener('click', getCurrentLocation);
             }
 
-            const resetBtn = document.getElementById('resetViewBtn');
-            if (resetBtn) {
-                resetBtn.addEventListener('click', resetMapView);
-            }
             
             // ズームコントロール
             const zoomInBtn = document.getElementById('zoomInBtn');
