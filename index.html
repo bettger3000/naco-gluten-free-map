@@ -640,15 +640,6 @@
             margin-bottom: var(--space-xs);
         }
 
-        .popup-category {
-            background: var(--gradient-primary);
-            color: white;
-            padding: var(--space-xs) var(--space-sm);
-            border-radius: var(--radius-sm);
-            font-size: 0.75rem;
-            font-weight: 500;
-            display: inline-block;
-        }
 
         .popup-info {
             display: flex;
@@ -3088,7 +3079,7 @@
                     <div class="popup-scrollable-content">
                         <div class="popup-info-section">
                             <div class="popup-category-row">
-                                <span class="popup-category">${storeCategory}</span>
+                                <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
                             </div>
                             <div class="popup-row">
                                 <span class="popup-icon">📍</span>
