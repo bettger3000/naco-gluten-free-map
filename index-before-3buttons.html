@@ -707,49 +707,6 @@
             border-top-right-radius: var(--radius-2xl);
         }
         
-        .panel-controls {
-            display: flex;
-            gap: var(--space-sm);
-            margin-bottom: var(--space-sm);
-        }
-        
-        .panel-control-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            padding: var(--space-xs) var(--space-md);
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            min-width: 60px;
-        }
-        
-        .panel-control-btn:hover {
-            background: var(--bg-primary);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .panel-control-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-        
-        .control-icon {
-            font-size: 1.2rem;
-            font-weight: 700;
-            line-height: 1;
-        }
-        
-        .control-label {
-            font-size: 0.7rem;
-            font-weight: 500;
-        }
-        
         .panel-handle:active {
             cursor: grabbing;
         }
@@ -1048,20 +1005,6 @@
     <div id="overlayPanel" class="overlay-panel">
         <div class="panel-handle" id="panelHandle">
             <div class="handle-bar"></div>
-            <div class="panel-controls">
-                <button class="panel-control-btn" id="panelCloseBtn" data-position="collapsed">
-                    <span class="control-icon">▼</span>
-                    <span class="control-label">閉じる</span>
-                </button>
-                <button class="panel-control-btn active" id="panelHalfBtn" data-position="half">
-                    <span class="control-icon">◐</span>
-                    <span class="control-label">半開き</span>
-                </button>
-                <button class="panel-control-btn" id="panelFullBtn" data-position="full">
-                    <span class="control-icon">▲</span>
-                    <span class="control-label">全画面</span>
-                </button>
-            </div>
             <div class="panel-title">
                 <span>グルテンフリー店舗</span>
                 <span id="panelStoreCount">全国62店舗</span>
@@ -2820,19 +2763,10 @@
                 panelState = state;
                 panel.classList.remove('half-open', 'full-open');
                 
-                // ボタンのアクティブ状態を更新
-                document.querySelectorAll('.panel-control-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                
-                if (state === 'collapsed') {
-                    document.getElementById('panelCloseBtn').classList.add('active');
-                } else if (state === 'half') {
+                if (state === 'half') {
                     panel.classList.add('half-open');
-                    document.getElementById('panelHalfBtn').classList.add('active');
                 } else if (state === 'full') {
                     panel.classList.add('full-open');
-                    document.getElementById('panelFullBtn').classList.add('active');
                 }
             }
             
@@ -2888,20 +2822,17 @@
             document.addEventListener('touchend', handleDragEnd);
             document.addEventListener('mouseup', handleDragEnd);
             
-            // 3ボタンコントロール
-            document.getElementById('panelCloseBtn').addEventListener('click', (e) => {
-                e.stopPropagation();
-                setPanelPosition('collapsed');
-            });
-            
-            document.getElementById('panelHalfBtn').addEventListener('click', (e) => {
-                e.stopPropagation();
-                setPanelPosition('half');
-            });
-            
-            document.getElementById('panelFullBtn').addEventListener('click', (e) => {
-                e.stopPropagation();
-                setPanelPosition('full');
+            // タップで展開
+            handle.addEventListener('click', (e) => {
+                if (isDragging) return;
+                
+                if (panelState === 'collapsed') {
+                    setPanelPosition('half');
+                } else if (panelState === 'half') {
+                    setPanelPosition('full');
+                } else {
+                    setPanelPosition('collapsed');
+                }
             });
             
             // タブ切り替え
@@ -2915,7 +2846,6 @@
             
             // 初期表示
             updatePanelContent('all');
-            setPanelPosition('collapsed'); // 初期状態は閉じた状態
             
             console.log('✅ オーバーレイパネル初期化完了');
         }
