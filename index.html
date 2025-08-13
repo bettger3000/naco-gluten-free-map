@@ -2680,7 +2680,7 @@
                 map = L.map('map', {
                     center: defaultCenter,
                     zoom: defaultZoom,
-                    zoomControl: false, // デフォルトは無効にして、後で右下に追加
+                    zoomControl: true, // デフォルトの左上位置を使用
                     scrollWheelZoom: true
                 });
 
@@ -2690,11 +2690,6 @@
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '© OpenStreetMap contributors',
                     maxZoom: 18
-                }).addTo(map);
-
-                // ズームコントロールを右下に配置
-                L.control.zoom({
-                    position: 'bottomright'
                 }).addTo(map);
 
                 // マップ準備完了時に店舗マーカーを表示
@@ -2773,7 +2768,9 @@
                     }).addTo(map);
 
                     const popupContent = createPopupContent(store);
-                    marker.bindPopup(popupContent);
+                    marker.bindPopup(popupContent, {
+                        offset: [0, -40] // ポップアップを上に表示（-40ピクセル上）
+                    });
 
                     marker.on('click', function() {
                         selectStoreCard(store.id);
