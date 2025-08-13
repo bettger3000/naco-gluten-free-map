@@ -624,41 +624,6 @@
             margin-bottom: var(--space-md);
             padding-bottom: var(--space-sm);
             border-bottom: 1px solid var(--border-light);
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-        
-        .popup-header-main {
-            flex: 1;
-        }
-        
-        .popup-close-btn {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-light);
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            flex-shrink: 0;
-            margin-left: var(--space-sm);
-        }
-        
-        .popup-close-btn:hover {
-            background: var(--error);
-            border-color: var(--error);
-            color: white;
-            transform: scale(1.1);
-        }
-        
-        .close-icon {
-            font-size: 18px;
-            font-weight: bold;
-            line-height: 1;
         }
 
         .popup-title {
@@ -2828,13 +2793,8 @@
             return `
                 <div class="popup-content">
                     <div class="popup-header">
-                        <div class="popup-header-main">
-                            <h3 class="popup-title">${storeName}</h3>
-                            <span class="popup-category">${storeCategory}</span>
-                        </div>
-                        <button class="popup-close-btn" onclick="closePopup()" title="閉じる">
-                            <span class="close-icon">×</span>
-                        </button>
+                        <h3 class="popup-title">${storeName}</h3>
+                        <span class="popup-category">${storeCategory}</span>
                     </div>
                     <div class="popup-info">
                         <div class="popup-row">
@@ -2943,11 +2903,17 @@
 
             displayStores(filteredStores);
             
-            // PC用サイドバーを更新（PC版専用処理）
+            // デバイス別UI更新
             if (isDesktop()) {
+                // PC用サイドバーを更新
                 displayStoreList(filteredStores);
+            } else {
+                // モバイル用オーバーレイパネルを更新
+                const activeTab = document.querySelector('.panel-tab.active');
+                if (activeTab) {
+                    updatePanelContent(activeTab.dataset.tab);
+                }
             }
-            // 注意: モバイル版は直接updatePanelContent()を呼ぶため、ここでは処理しない
         }
 
         // 現在地取得
@@ -3106,17 +3072,9 @@
             }
         }
         
-        // ポップアップを閉じる関数
-        function closePopup() {
-            if (map) {
-                map.closePopup();
-            }
-        }
-
         // グローバル関数として公開（onclick用）
         window.toggleVisitStatus = toggleVisitStatus;
         window.focusOnStore = focusOnStore;
-        window.closePopup = closePopup;
 
         // イベントリスナー設定
         function setupEventListeners() {
@@ -3131,17 +3089,7 @@
             // モバイル用検索
             const mobileSearchInput = document.getElementById('mobileSearchInput');
             if (mobileSearchInput) {
-                mobileSearchInput.addEventListener('input', () => {
-                    if (!isDesktop()) {
-                        // モバイル版では直接パネル更新（重複防止）
-                        const activeTab = document.querySelector('.panel-tab.active');
-                        if (activeTab) {
-                            updatePanelContent(activeTab.dataset.tab);
-                        }
-                    } else {
-                        filterStores();
-                    }
-                });
+                mobileSearchInput.addEventListener('input', filterStores);
             }
 
             // PC用フィルターチップ
@@ -3158,16 +3106,7 @@
                 chip.addEventListener('click', () => {
                     document.querySelectorAll('.mobile-chip').forEach(c => c.classList.remove('active'));
                     chip.classList.add('active');
-                    
-                    if (!isDesktop()) {
-                        // モバイル版では直接パネル更新（重複防止）
-                        const activeTab = document.querySelector('.panel-tab.active');
-                        if (activeTab) {
-                            updatePanelContent(activeTab.dataset.tab);
-                        }
-                    } else {
-                        filterStores();
-                    }
+                    filterStores();
                 });
             });
 
@@ -3608,12 +3547,6 @@
             // 初期表示
             updatePanelContent('all');
             setPanelPosition('collapsed'); // 初期状態は閉じた状態
-            
-            // 初期化フラグを設定
-            const overlayPanel = document.getElementById('overlayPanel');
-            if (overlayPanel) {
-                overlayPanel.classList.add('initialized');
-            }
             
             console.log('✅ オーバーレイパネル初期化完了');
         }
