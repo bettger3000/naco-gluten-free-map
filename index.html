@@ -112,6 +112,29 @@
             display: flex;
             align-items: center;
             gap: var(--space-sm);
+            white-space: nowrap;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .app-title span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
+        }
+        
+        /* モバイル対応でタイトルサイズ調整 */
+        @media (max-width: 480px) {
+            .app-title {
+                font-size: 1.3rem;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .app-title {
+                font-size: 1.1rem;
+            }
         }
 
         .title-icon {
