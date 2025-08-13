@@ -1556,6 +1556,24 @@
             }
         }
 
+        /* Leafletポップアップのz-index調整 */
+        .leaflet-popup {
+            z-index: 700 !important;
+        }
+        
+        .leaflet-popup-pane {
+            z-index: 700 !important;
+        }
+        
+        /* ズームコントロールのz-index調整 */
+        .leaflet-control-zoom {
+            z-index: 400 !important;
+        }
+        
+        .leaflet-top.leaflet-left {
+            z-index: 400 !important;
+        }
+
         /* 底部导航 */
         .bottom-navigation {
             position: fixed;
@@ -2777,7 +2795,7 @@
                 map = L.map('map', {
                     center: defaultCenter,
                     zoom: defaultZoom,
-                    zoomControl: true, // デフォルトの左上位置を使用
+                    zoomControl: false, // 一旦無効にして後で追加
                     scrollWheelZoom: true
                 });
 
@@ -2788,6 +2806,17 @@
                     attribution: '© OpenStreetMap contributors',
                     maxZoom: 18
                 }).addTo(map);
+
+                // カスタムズームコントロールを追加（z-indexを低く設定）
+                L.control.zoom({
+                    position: 'topleft'
+                }).addTo(map);
+                
+                // ズームコントロールのz-indexを調整
+                const zoomControl = document.querySelector('.leaflet-control-zoom');
+                if (zoomControl) {
+                    zoomControl.style.zIndex = '400'; // ポップアップより低い値
+                }
 
                 // マップ準備完了時に店舗マーカーを表示
                 map.whenReady(() => {
@@ -2865,9 +2894,7 @@
                     }).addTo(map);
 
                     const popupContent = createPopupContent(store);
-                    marker.bindPopup(popupContent, {
-                        offset: [0, -40] // ポップアップを上に表示（-40ピクセル上）
-                    });
+                    marker.bindPopup(popupContent);
 
                     marker.on('click', function() {
                         selectStoreCard(store.id);
