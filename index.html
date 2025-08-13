@@ -848,6 +848,45 @@
             display: none !important;
         }
 
+        /* 地図コントロール（ズームボタン）のカスタマイズ */
+        .leaflet-control-zoom {
+            border: none !important;
+            border-radius: var(--radius-lg) !important;
+            box-shadow: var(--shadow-lg) !important;
+            background: white !important;
+            overflow: hidden !important;
+        }
+
+        .leaflet-control-zoom a {
+            background: white !important;
+            border: none !important;
+            color: var(--primary) !important;
+            font-weight: 600 !important;
+            font-size: 18px !important;
+            width: 36px !important;
+            height: 36px !important;
+            line-height: 32px !important;
+            text-align: center !important;
+            transition: all 0.2s ease !important;
+            border-radius: 0 !important;
+        }
+
+        .leaflet-control-zoom a:hover {
+            background: var(--primary) !important;
+            color: white !important;
+            transform: scale(1.05) !important;
+        }
+
+        .leaflet-control-zoom a:first-child {
+            border-top-left-radius: var(--radius-lg) !important;
+            border-top-right-radius: var(--radius-lg) !important;
+        }
+
+        .leaflet-control-zoom a:last-child {
+            border-bottom-left-radius: var(--radius-lg) !important;
+            border-bottom-right-radius: var(--radius-lg) !important;
+        }
+
         /* レスポンシブ */
 
         /* オーバーレイ式店舗リストパネル */
@@ -2641,7 +2680,7 @@
                 map = L.map('map', {
                     center: defaultCenter,
                     zoom: defaultZoom,
-                    zoomControl: !isDesktop(), // PC版では無効、モバイル版では有効
+                    zoomControl: false, // デフォルトは無効にして、後で右下に追加
                     scrollWheelZoom: true
                 });
 
@@ -2651,6 +2690,11 @@
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '© OpenStreetMap contributors',
                     maxZoom: 18
+                }).addTo(map);
+
+                // ズームコントロールを右下に配置
+                L.control.zoom({
+                    position: 'bottomright'
                 }).addTo(map);
 
                 // マップ準備完了時に店舗マーカーを表示
