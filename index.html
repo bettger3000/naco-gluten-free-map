@@ -4741,28 +4741,28 @@
             const menuWidth = rect.width;
             const menuHeight = rect.height;
             
-            // マウス/タッチ位置を取得
-            let x = event.clientX || event.touches?.[0]?.clientX || 0;
-            let y = event.clientY || event.touches?.[0]?.clientY || 0;
+            // map-containerの位置を取得
+            const mapContainer = document.querySelector('.map-container');
+            const mapRect = mapContainer.getBoundingClientRect();
             
-            // スクロール位置を考慮
-            const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            // マウス/タッチ位置をmap-container基準に変換
+            let x = (event.clientX || event.touches?.[0]?.clientX || 0) - mapRect.left;
+            let y = (event.clientY || event.touches?.[0]?.clientY || 0) - mapRect.top;
             
-            // ビューポートサイズ
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
+            // map-container内でのメニュー位置調整
+            const containerWidth = mapRect.width;
+            const containerHeight = mapRect.height;
             
-            // 水平方向の調整（左端、右端を考慮）
-            if (x + menuWidth > viewportWidth) {
-                x = Math.max(10, viewportWidth - menuWidth - 10);
+            // 水平方向の調整（コンテナ内での左端、右端を考慮）
+            if (x + menuWidth > containerWidth) {
+                x = Math.max(10, containerWidth - menuWidth - 10);
             }
             if (x < 10) {
                 x = 10;
             }
             
-            // 垂直方向の調整（上端、下端を考慮）
-            if (y + menuHeight > viewportHeight) {
+            // 垂直方向の調整（コンテナ内での上端、下端を考慮）
+            if (y + menuHeight > containerHeight) {
                 y = Math.max(10, y - menuHeight - 10);
             }
             if (y < 10) {
@@ -4777,7 +4777,8 @@
                 latlng,
                 position: { x, y },
                 menuSize: { width: menuWidth, height: menuHeight },
-                viewport: { width: viewportWidth, height: viewportHeight }
+                mapContainer: { width: containerWidth, height: containerHeight },
+                mousePosition: { clientX: event.clientX, clientY: event.clientY }
             });
         }
 
