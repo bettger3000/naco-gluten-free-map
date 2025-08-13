@@ -1108,6 +1108,63 @@
             overflow-y: auto;
             padding: var(--space-sm);
         }
+        
+        /* モバイル版検索・フィルター */
+        .mobile-search-filter {
+            padding: var(--space-md) var(--space-lg);
+            border-bottom: 1px solid var(--border-light);
+            background: var(--bg-secondary);
+        }
+        
+        .mobile-search-box {
+            margin-bottom: var(--space-md);
+        }
+        
+        .mobile-search-input {
+            width: 100%;
+            padding: var(--space-sm) var(--space-md);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: border-color 0.3s ease;
+        }
+        
+        .mobile-search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .mobile-filter-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-xs);
+        }
+        
+        .mobile-chip {
+            padding: var(--space-xs) var(--space-sm);
+            background: var(--bg-primary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        
+        .mobile-chip:hover {
+            background: var(--bg-secondary);
+            border-color: var(--primary);
+            color: var(--text-primary);
+        }
+        
+        .mobile-chip.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
 
         /* 訪問履歴ビュー */
         .visit-history-view {
@@ -1405,6 +1462,23 @@
                 </div>
             </div>
         </div>
+        
+        <!-- モバイル版検索・フィルター -->
+        <div class="mobile-search-filter">
+            <div class="mobile-search-box">
+                <input type="text" id="mobileSearchInput" class="mobile-search-input" placeholder="店名・エリアで検索">
+            </div>
+            <div class="mobile-filter-chips">
+                <button class="mobile-chip active" data-category="">すべて</button>
+                <button class="mobile-chip" data-category="カフェ">☕ カフェ</button>
+                <button class="mobile-chip" data-category="和食">🍱 和食</button>
+                <button class="mobile-chip" data-category="洋食">🍽️ 洋食</button>
+                <button class="mobile-chip" data-category="パン屋">🥐 パン屋</button>
+                <button class="mobile-chip" data-category="スイーツ">🧁 スイーツ</button>
+                <button class="mobile-chip" data-category="販売店">🛒 販売店</button>
+            </div>
+        </div>
+        
         <div class="panel-tabs">
             <button class="panel-tab active" data-tab="all">すべて</button>
             <button class="panel-tab" data-tab="want-to-go">行きたい</button>
@@ -2797,16 +2871,25 @@
         function filterStores() {
             if (!stores.length) return;
 
-            // PC版のみでフィルタリング実行（モバイル版はパネル内で処理）
-            if (!isDesktop()) return;
+            // 検索テキストを取得（PC用またはモバイル用）
+            let searchText = '';
+            if (isDesktop()) {
+                const sidebarSearchInput = document.getElementById('sidebarSearchInput');
+                searchText = sidebarSearchInput ? sidebarSearchInput.value.toLowerCase() : '';
+            } else {
+                const mobileSearchInput = document.getElementById('mobileSearchInput');
+                searchText = mobileSearchInput ? mobileSearchInput.value.toLowerCase() : '';
+            }
             
-            // 検索テキストを取得（PC用）
-            const sidebarSearchInput = document.getElementById('sidebarSearchInput');
-            const searchText = sidebarSearchInput ? sidebarSearchInput.value.toLowerCase() : '';
-            
-            // カテゴリフィルターを取得（PC用）
-            const activeChip = document.querySelector('.sidebar-chip.active');
-            const selectedCategory = activeChip ? activeChip.dataset.category : '';
+            // カテゴリフィルターを取得（PC用またはモバイル用）
+            let selectedCategory = '';
+            if (isDesktop()) {
+                const activeChip = document.querySelector('.sidebar-chip.active');
+                selectedCategory = activeChip ? activeChip.dataset.category : '';
+            } else {
+                const activeChip = document.querySelector('.mobile-chip.active');
+                selectedCategory = activeChip ? activeChip.dataset.category : '';
+            }
 
             const filteredStores = stores.filter(store => {
                 const matchesCategory = !selectedCategory || store.category === selectedCategory;
@@ -2819,8 +2902,18 @@
             });
 
             displayStores(filteredStores);
-            // PC用サイドバーを更新
-            displayStoreList(filteredStores);
+            
+            // デバイス別UI更新
+            if (isDesktop()) {
+                // PC用サイドバーを更新
+                displayStoreList(filteredStores);
+            } else {
+                // モバイル用オーバーレイパネルを更新
+                const activeTab = document.querySelector('.panel-tab.active');
+                if (activeTab) {
+                    updatePanelContent(activeTab.dataset.tab);
+                }
+            }
         }
 
         // 現在地取得
@@ -2992,11 +3085,26 @@
             if (sidebarSearchInput) {
                 sidebarSearchInput.addEventListener('input', filterStores);
             }
+            
+            // モバイル用検索
+            const mobileSearchInput = document.getElementById('mobileSearchInput');
+            if (mobileSearchInput) {
+                mobileSearchInput.addEventListener('input', filterStores);
+            }
 
             // PC用フィルターチップ
             document.querySelectorAll('.sidebar-chip').forEach(chip => {
                 chip.addEventListener('click', () => {
                     document.querySelectorAll('.sidebar-chip').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    filterStores();
+                });
+            });
+            
+            // モバイル用フィルターチップ
+            document.querySelectorAll('.mobile-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    document.querySelectorAll('.mobile-chip').forEach(c => c.classList.remove('active'));
                     chip.classList.add('active');
                     filterStores();
                 });
@@ -3450,15 +3558,36 @@
             const panelContent = document.getElementById('panelContent');
             if (!panelContent) return;
             
+            // まず検索・カテゴリフィルターを適用
             let filteredStores = [...stores];
             
+            // モバイル版の検索・カテゴリフィルターを適用
+            if (!isDesktop()) {
+                const mobileSearchInput = document.getElementById('mobileSearchInput');
+                const searchText = mobileSearchInput ? mobileSearchInput.value.toLowerCase() : '';
+                
+                const activeChip = document.querySelector('.mobile-chip.active');
+                const selectedCategory = activeChip ? activeChip.dataset.category : '';
+                
+                filteredStores = filteredStores.filter(store => {
+                    const matchesCategory = !selectedCategory || store.category === selectedCategory;
+                    const matchesSearch = !searchText ||
+                        (store.name && store.name.toLowerCase().includes(searchText)) ||
+                        (store.address && store.address.toLowerCase().includes(searchText)) ||
+                        (store.description && store.description.toLowerCase().includes(searchText));
+                    
+                    return matchesCategory && matchesSearch;
+                });
+            }
+            
+            // 訪問ステータスフィルターを適用
             if (tab === 'want-to-go') {
-                filteredStores = stores.filter(store => {
+                filteredStores = filteredStores.filter(store => {
                     const status = userVisitHistory.get(`${store.id}`);
                     return status === 'want_to_go';
                 });
             } else if (tab === 'visited') {
-                filteredStores = stores.filter(store => {
+                filteredStores = filteredStores.filter(store => {
                     const status = userVisitHistory.get(`${store.id}`);
                     return status === 'visited';
                 });
