@@ -1073,8 +1073,7 @@
         <div class="panel-handle" id="panelHandle">
             <div class="handle-bar"></div>
             <div class="panel-title">
-                <span>グルテンフリー店舗</span>
-                <span id="panelStoreCount">全国62店舗</span>
+                <span id="panelStoreCount">店舗リスト 62件</span>
                 <div class="panel-controls">
                     <div class="state-indicators">
                         <span class="state-dot active" id="stateDot1"></span>
@@ -2054,7 +2053,6 @@
             displayStores(stores);
             // オーバーレイパネルに初期表示
             updatePanelContent('all');
-            updateStoreCount(stores.length);
             
             console.log(`✅ ${stores.length}店舗のデータを即座に表示完了`);
         }
@@ -2497,7 +2495,6 @@
             if (activeTab) {
                 updatePanelContent(activeTab.dataset.tab);
             }
-            updateStoreCount(filteredStores.length);
         }
 
         // 現在地取得
@@ -2984,11 +2981,11 @@
             const countEl = document.getElementById('panelStoreCount');
             if (countEl) {
                 if (tab === 'all') {
-                    countEl.textContent = `全国${filteredStores.length}店舗`;
+                    countEl.textContent = `店舗リスト ${filteredStores.length}件`;
                 } else if (tab === 'want-to-go') {
-                    countEl.textContent = `行きたい${filteredStores.length}店舗`;
+                    countEl.textContent = `行きたい ${filteredStores.length}件`;
                 } else if (tab === 'visited') {
-                    countEl.textContent = `行った${filteredStores.length}店舗`;
+                    countEl.textContent = `行った ${filteredStores.length}件`;
                 }
             }
             
