@@ -1257,16 +1257,17 @@
         /* モバイル版検索・フィルター */
         .mobile-search-filter {
             padding: 0 var(--space-lg);
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 0;
             background: var(--bg-secondary);
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease, padding 0.3s ease;
+            transition: max-height 0.3s ease, padding 0.3s ease, border-width 0.3s ease;
         }
         
         .mobile-search-filter.show {
             max-height: 200px;
             padding: var(--space-md) var(--space-lg);
+            border-bottom: 1px solid var(--border-light);
         }
         
         .mobile-search-box {
@@ -1623,7 +1624,7 @@
         </div>
         
         <!-- モバイル版検索・フィルター -->
-        <div class="mobile-search-filter" id="mobileSearchFilter" style="display: none;">
+        <div class="mobile-search-filter" id="mobileSearchFilter">
             <div class="mobile-search-box">
                 <input type="text" id="mobileSearchInput" class="mobile-search-input" placeholder="店名・エリアで検索">
             </div>
@@ -3681,15 +3682,8 @@
                         mobileSearchFilter.classList.remove('show');
                         searchToggleBtn.classList.remove('active');
                         searchToggleBtn.querySelector('.search-icon').textContent = '🔍';
-                        // スタイル属性も更新
-                        setTimeout(() => {
-                            mobileSearchFilter.style.display = 'none';
-                        }, 300);
                     } else {
-                        mobileSearchFilter.style.display = 'block';
-                        setTimeout(() => {
-                            mobileSearchFilter.classList.add('show');
-                        }, 10);
+                        mobileSearchFilter.classList.add('show');
                         searchToggleBtn.classList.add('active');
                         searchToggleBtn.querySelector('.search-icon').textContent = '✕';
                     }
