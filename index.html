@@ -1800,6 +1800,38 @@
             filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
         }
         
+        /* 長押しインジケーター */
+        .long-press-indicator {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid var(--primary);
+            background: rgba(255, 107, 157, 0.1);
+            pointer-events: none;
+            z-index: 1000;
+            animation: longPressRipple 0.8s ease-out;
+            transform: translate(-50%, -50%);
+        }
+        
+        @keyframes longPressRipple {
+            0% {
+                width: 30px;
+                height: 30px;
+                opacity: 0;
+                border-width: 6px;
+            }
+            20% {
+                opacity: 1;
+            }
+            100% {
+                width: 60px;
+                height: 60px;
+                opacity: 0.8;
+                border-width: 3px;
+            }
+        }
+        
         /* アニメーション */
         @keyframes slideInFromRight {
             from {
@@ -1832,6 +1864,42 @@
             0% { transform: rotate(-45deg) scale(0) translateY(20px); opacity: 0; }
             50% { transform: rotate(-45deg) scale(1.2) translateY(-5px); opacity: 0.8; }
             100% { transform: rotate(-45deg) scale(1) translateY(0); opacity: 1; }
+        }
+        
+        /* モバイル用ピン設置ヒント */
+        .mobile-pin-hint {
+            position: absolute;
+            bottom: calc(var(--space-lg) * 6);
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.9) 100%);
+            backdrop-filter: blur(10px);
+            padding: 10px 16px;
+            border-radius: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 500;
+            animation: slideInFromBottom 0.5s ease-out;
+        }
+        
+        .mobile-pin-hint i {
+            color: var(--primary);
+            font-size: 1rem;
+        }
+        
+        @keyframes slideInFromBottom {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
         }
         
         /* モバイル対応 */
@@ -1949,6 +2017,12 @@
                     <button class="pin-control-btn" id="removePinBtn" title="ピンを削除">
                         <i class="fas fa-times"></i>
                     </button>
+                </div>
+                
+                <!-- モバイル用ピン設置ヒント -->
+                <div id="mobilePinHint" class="mobile-pin-hint mobile-only hidden">
+                    <i class="fas fa-hand-pointer"></i>
+                    <span>地図を長押しでピン設置</span>
                 </div>
             </div>
         </div>
@@ -4649,6 +4723,18 @@
             // 外部クリックでメニュー閉じる
             document.addEventListener('click', hideContextMenu);
             
+            // モバイル用ヒント表示（初回のみ）
+            if (!isDesktop() && !localStorage.getItem('pinHintShown')) {
+                const hint = document.getElementById('mobilePinHint');
+                if (hint) {
+                    hint.classList.remove('hidden');
+                    setTimeout(() => {
+                        hint.classList.add('hidden');
+                        localStorage.setItem('pinHintShown', 'true');
+                    }, 5000); // 5秒間表示
+                }
+            }
+            
             console.log('✅ カスタムピン機能初期化完了');
         }
 
@@ -4669,18 +4755,57 @@
                 // モバイル版: 長押しでコンテキストメニュー
                 let longPressTimer;
                 let isLongPress = false;
+                let pressIndicator = null;
                 
                 map.on('mousedown touchstart', function(e) {
                     isLongPress = false;
+                    
+                    // 長押しインジケーターを表示
+                    const touches = e.originalEvent.touches;
+                    if (touches && touches.length > 0) {
+                        const touch = touches[0];
+                        
+                        // インジケーターを作成
+                        pressIndicator = document.createElement('div');
+                        pressIndicator.className = 'long-press-indicator';
+                        pressIndicator.style.left = touch.clientX + 'px';
+                        pressIndicator.style.top = touch.clientY + 'px';
+                        document.body.appendChild(pressIndicator);
+                        
+                        // 振動フィードバック（対応デバイスのみ）
+                        if (window.navigator && window.navigator.vibrate) {
+                            window.navigator.vibrate(10);
+                        }
+                    }
+                    
                     longPressTimer = setTimeout(() => {
                         isLongPress = true;
                         const latlng = e.latlng;
+                        
+                        // インジケーターを削除
+                        if (pressIndicator) {
+                            pressIndicator.remove();
+                            pressIndicator = null;
+                        }
+                        
+                        // 振動フィードバック（対応デバイスのみ）
+                        if (window.navigator && window.navigator.vibrate) {
+                            window.navigator.vibrate([20, 10, 20]);
+                        }
+                        
                         showContextMenu(latlng, e.originalEvent);
-                    }, 800); // 800ms長押し
+                    }, 600); // 600msに短縮（より使いやすく）
                 });
                 
                 map.on('mouseup touchend mousemove touchmove', function(e) {
                     clearTimeout(longPressTimer);
+                    
+                    // インジケーターを削除
+                    if (pressIndicator) {
+                        pressIndicator.remove();
+                        pressIndicator = null;
+                    }
+                    
                     if (e.type === 'mousemove' || e.type === 'touchmove') {
                         clearTimeout(longPressTimer);
                     }
