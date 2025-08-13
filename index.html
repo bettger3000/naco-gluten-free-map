@@ -1537,14 +1537,6 @@
             z-index: 700 !important;
         }
         
-        /* ズームコントロールのz-index調整 */
-        .leaflet-control-zoom {
-            z-index: 400 !important;
-        }
-        
-        .leaflet-top.leaflet-left {
-            z-index: 400 !important;
-        }
         
         /* モバイルでポップアップ位置調整 */
         @media (max-width: 768px) {
@@ -2773,16 +2765,6 @@
                     maxZoom: 18
                 }).addTo(map);
 
-                // カスタムズームコントロールを追加（z-indexを低く設定）
-                L.control.zoom({
-                    position: 'topleft'
-                }).addTo(map);
-                
-                // ズームコントロールのz-indexを調整
-                const zoomControl = document.querySelector('.leaflet-control-zoom');
-                if (zoomControl) {
-                    zoomControl.style.zIndex = '400'; // ポップアップより低い値
-                }
 
                 // マップ準備完了時に店舗マーカーを表示
                 map.whenReady(() => {
