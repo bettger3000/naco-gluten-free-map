@@ -4731,25 +4731,54 @@
             // 座標を保存
             mapContextMenu.dataset.latlng = JSON.stringify(latlng);
             
-            // マウス/タッチ位置にメニューを表示
+            // メニューを一度表示してサイズを取得
+            mapContextMenu.style.left = '0px';
+            mapContextMenu.style.top = '0px';
+            mapContextMenu.classList.remove('hidden');
+            
+            // 実際のメニューサイズを取得
+            const rect = mapContextMenu.getBoundingClientRect();
+            const menuWidth = rect.width;
+            const menuHeight = rect.height;
+            
+            // マウス/タッチ位置を取得
             let x = event.clientX || event.touches?.[0]?.clientX || 0;
             let y = event.clientY || event.touches?.[0]?.clientY || 0;
             
-            // 画面端の調整
-            const menuWidth = 180;
-            const menuHeight = 50;
-            if (x + menuWidth > window.innerWidth) {
-                x = window.innerWidth - menuWidth - 10;
+            // スクロール位置を考慮
+            const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            // ビューポートサイズ
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // 水平方向の調整（左端、右端を考慮）
+            if (x + menuWidth > viewportWidth) {
+                x = Math.max(10, viewportWidth - menuWidth - 10);
             }
-            if (y + menuHeight > window.innerHeight) {
-                y = y - menuHeight - 10;
+            if (x < 10) {
+                x = 10;
             }
             
+            // 垂直方向の調整（上端、下端を考慮）
+            if (y + menuHeight > viewportHeight) {
+                y = Math.max(10, y - menuHeight - 10);
+            }
+            if (y < 10) {
+                y = 10;
+            }
+            
+            // 最終位置を設定
             mapContextMenu.style.left = x + 'px';
             mapContextMenu.style.top = y + 'px';
-            mapContextMenu.classList.remove('hidden');
             
-            console.log('📍 コンテキストメニュー表示:', latlng);
+            console.log('📍 コンテキストメニュー表示:', {
+                latlng,
+                position: { x, y },
+                menuSize: { width: menuWidth, height: menuHeight },
+                viewport: { width: viewportWidth, height: viewportHeight }
+            });
         }
 
         // コンテキストメニュー非表示
