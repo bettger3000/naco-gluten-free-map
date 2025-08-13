@@ -698,36 +698,37 @@
             padding-top: var(--space-sm);
         }
 
-        .popup-header-fixed {
-            margin-bottom: var(--space-md);
-            padding-bottom: var(--space-sm);
-            border-bottom: 1px solid var(--border-light);
+        .show-details-btn {
+            margin-top: var(--space-md);
+            padding: var(--space-sm) var(--space-md);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            cursor: pointer;
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            background: white;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-xs);
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            width: 100%;
         }
 
-        .popup-scrollable-content {
-            flex: 1;
-            overflow-y: auto;
-            max-height: calc(100% - 80px);
+        .show-details-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
         }
 
-        .popup-info-section {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-sm);
-            padding-bottom: var(--space-md);
+        .details-btn-icon {
+            transition: transform 0.2s ease;
+            font-size: 0.8rem;
         }
 
-        .popup-category-row {
-            margin-bottom: var(--space-sm);
+        .show-details-btn.expanded .details-btn-icon {
+            transform: rotate(180deg);
         }
-
 
         .popup-actions {
             margin-top: var(--space-md);
@@ -821,22 +822,22 @@
         /* モバイル用ポップアップ高さ制限 */
         @media (max-width: 1024px) {
             .leaflet-popup-content-wrapper {
-                max-height: 35vh !important;
+                max-height: 65vh !important;
                 overflow: hidden !important;
             }
             
             .popup-content {
-                max-height: calc(35vh - 32px) !important;
+                max-height: calc(65vh - 32px) !important;
                 overflow: hidden !important;
                 display: flex !important;
                 flex-direction: column !important;
             }
             
-            .popup-header-fixed {
+            .popup-basic-info {
                 flex-shrink: 0 !important;
             }
             
-            .popup-scrollable-content {
+            .popup-scrollable {
                 overflow-y: auto !important;
                 flex: 1 !important;
                 min-height: 0 !important;
@@ -863,7 +864,7 @@
             z-index: 1100;
             transform: translateY(calc(100% - 60px));
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            height: 90vh;
+            max-height: 90vh;
             display: flex;
             flex-direction: column;
         }
@@ -1178,56 +1179,7 @@
             color: var(--text-primary);
             display: flex;
             align-items: center;
-            justify-content: space-between;
             gap: var(--space-sm);
-        }
-        
-        .panel-title-left {
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-        }
-        
-        .search-toggle-btn {
-            background: transparent;
-            border: none;
-            padding: var(--space-xs);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            position: relative;
-            font-size: 1.2rem;
-            transition: transform 0.2s ease;
-        }
-        
-        .search-toggle-btn:hover {
-            transform: scale(1.1);
-        }
-        
-        .search-toggle-btn.active {
-            transform: rotate(90deg);
-        }
-        
-        .filter-indicator {
-            position: absolute;
-            top: 0;
-            right: 0;
-            color: var(--error);
-            font-size: 0.6rem;
-        }
-        
-        /* モバイル版検索・フィルター - 完全に独立したレイアウト */
-        .mobile-search-filter {
-            position: fixed;
-            top: calc(var(--panel-top, 0px) + 70px);
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            background: var(--bg-secondary);
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-            border-bottom: 0;
         }
         
         .panel-tabs {
@@ -1235,8 +1187,6 @@
             gap: var(--space-md);
             padding: 0 var(--space-lg) var(--space-sm);
             border-bottom: 1px solid var(--border-light);
-            background: white;
-            flex-shrink: 0;
         }
         
         .panel-tab {
@@ -1265,18 +1215,16 @@
         }
         
         .panel-content {
-            flex: 1 1 0;
-            overflow-y: scroll !important;
+            flex: 1;
+            overflow-y: auto;
             padding: var(--space-sm);
-            min-height: 0;
-            max-height: 100%;
-            -webkit-overflow-scrolling: touch;
         }
         
-        .mobile-search-filter.show {
-            max-height: 200px;
+        /* モバイル版検索・フィルター */
+        .mobile-search-filter {
             padding: var(--space-md) var(--space-lg);
             border-bottom: 1px solid var(--border-light);
+            background: var(--bg-secondary);
         }
         
         .mobile-search-box {
@@ -1609,13 +1557,7 @@
         <div class="panel-handle" id="panelHandle">
             <div class="handle-bar"></div>
             <div class="panel-title">
-                <div class="panel-title-left">
-                    <span id="panelStoreCount">店舗リスト 62件</span>
-                    <button class="search-toggle-btn" id="searchToggleBtn" title="検索・フィルター">
-                        <span class="search-icon">🔍</span>
-                        <span class="filter-indicator" id="filterIndicator" style="display: none;">●</span>
-                    </button>
-                </div>
+                <span id="panelStoreCount">店舗リスト 62件</span>
                 <div class="panel-controls">
                     <div class="state-indicators">
                         <span class="state-dot active" id="stateDot1"></span>
@@ -1633,7 +1575,7 @@
         </div>
         
         <!-- モバイル版検索・フィルター -->
-        <div class="mobile-search-filter" id="mobileSearchFilter">
+        <div class="mobile-search-filter">
             <div class="mobile-search-box">
                 <input type="text" id="mobileSearchInput" class="mobile-search-input" placeholder="店名・エリアで検索">
             </div>
@@ -2959,21 +2901,22 @@
             const storeWebsite = store.website ? escapeHtml(store.website) : '';
             const storeDescription = store.description ? escapeHtml(store.description) : '';
 
+            // 詳細情報があるかチェック
+            const hasDetails = storePhone || storeWebsite || storeDescription;
+
             return `
                 <div class="popup-content">
-                    <div class="popup-header-fixed">
-                        <div class="popup-header-main">
-                            <h3 class="popup-title">${storeName}</h3>
-                        </div>
-                        <button class="popup-close-btn" onclick="closePopup()" title="閉じる">
-                            <span class="close-icon">×</span>
-                        </button>
-                    </div>
-                    <div class="popup-scrollable-content">
-                        <div class="popup-info-section">
-                            <div class="popup-category-row">
+                    <div class="popup-basic-info">
+                        <div class="popup-header">
+                            <div class="popup-header-main">
+                                <h3 class="popup-title">${storeName}</h3>
                                 <span class="popup-category">${storeCategory}</span>
                             </div>
+                            <button class="popup-close-btn" onclick="closePopup()" title="閉じる">
+                                <span class="close-icon">×</span>
+                            </button>
+                        </div>
+                        <div class="popup-essential-info">
                             <div class="popup-row">
                                 <span class="popup-icon">📍</span>
                                 <span class="popup-text">${storeAddress}</span>
@@ -2990,25 +2933,37 @@
                                     <span class="popup-text">${storeHours}</span>
                                 </div>
                             ` : ''}
-                            ${storePhone ? `
-                                <div class="popup-row">
-                                    <span class="popup-icon">📞</span>
-                                    <span class="popup-text">${storePhone}</span>
-                                </div>
-                            ` : ''}
-                            ${storeWebsite ? `
-                                <div class="popup-row">
-                                    <span class="popup-icon">🌐</span>
-                                    <span class="popup-text"><a href="${storeWebsite}" target="_blank" rel="noopener">ウェブサイト</a></span>
-                                </div>
-                            ` : ''}
-                            ${storeDescription ? `
-                                <div class="popup-row">
-                                    <span class="popup-icon">💬</span>
-                                    <span class="popup-text">${storeDescription}</span>
-                                </div>
-                            ` : ''}
                         </div>
+                        ${hasDetails ? `
+                            <button class="show-details-btn" onclick="togglePopupDetails(this)">
+                                <span class="details-btn-text">詳細を見る</span>
+                                <span class="details-btn-icon">▼</span>
+                            </button>
+                        ` : ''}
+                    </div>
+                    <div class="popup-scrollable" ${hasDetails ? 'style="display: none;"' : ''}>
+                        ${hasDetails ? `
+                            <div class="popup-additional-info">
+                                ${storePhone ? `
+                                    <div class="popup-row">
+                                        <span class="popup-icon">📞</span>
+                                        <span class="popup-text">${storePhone}</span>
+                                    </div>
+                                ` : ''}
+                                ${storeWebsite ? `
+                                    <div class="popup-row">
+                                        <span class="popup-icon">🌐</span>
+                                        <span class="popup-text"><a href="${storeWebsite}" target="_blank" rel="noopener">ウェブサイト</a></span>
+                                    </div>
+                                ` : ''}
+                                ${storeDescription ? `
+                                    <div class="popup-row">
+                                        <span class="popup-icon">💬</span>
+                                        <span class="popup-text">${storeDescription}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        ` : ''}
                         <div class="popup-actions">
                             <button class="visit-btn want-to-go-btn" onclick="toggleVisitStatus(${store.id}, 'want_to_go')" data-store-id="${store.id}">
                                 <span class="btn-icon">🤍</span>
@@ -3084,27 +3039,6 @@
             // PC用サイドバーを更新（PC版専用処理）
             if (isDesktop()) {
                 displayStoreList(filteredStores);
-            }
-            
-            // モバイル用フィルターインジケーター更新
-            if (!isDesktop()) {
-                const filterIndicator = document.getElementById('filterIndicator');
-                const panelStoreCount = document.getElementById('panelStoreCount');
-                
-                // フィルターが適用されているかチェック
-                const hasFilter = searchText || selectedCategory;
-                
-                if (filterIndicator) {
-                    filterIndicator.style.display = hasFilter ? 'inline' : 'none';
-                }
-                
-                if (panelStoreCount) {
-                    if (hasFilter) {
-                        panelStoreCount.textContent = `フィルター中 ${filteredStores.length}件`;
-                    } else {
-                        panelStoreCount.textContent = `店舗リスト ${stores.length}件`;
-                    }
-                }
             }
             // 注意: モバイル版は直接updatePanelContent()を呼ぶため、ここでは処理しない
         }
@@ -3272,11 +3206,41 @@
             }
         }
 
+        // ポップアップ詳細表示切り替え
+        function togglePopupDetails(button) {
+            const popupContent = button.closest('.popup-content');
+            const scrollableSection = popupContent.querySelector('.popup-scrollable');
+            const buttonText = button.querySelector('.details-btn-text');
+            const buttonIcon = button.querySelector('.details-btn-icon');
+            
+            if (scrollableSection.style.display === 'none') {
+                // 詳細を表示
+                scrollableSection.style.display = 'block';
+                buttonText.textContent = '詳細を隠す';
+                buttonIcon.textContent = '▲';
+                button.classList.add('expanded');
+                
+                // スクロールを有効にする
+                setTimeout(() => {
+                    scrollableSection.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'nearest' 
+                    });
+                }, 100);
+            } else {
+                // 詳細を隠す
+                scrollableSection.style.display = 'none';
+                buttonText.textContent = '詳細を見る';
+                buttonIcon.textContent = '▼';
+                button.classList.remove('expanded');
+            }
+        }
 
         // グローバル関数として公開（onclick用）
         window.toggleVisitStatus = toggleVisitStatus;
         window.focusOnStore = focusOnStore;
         window.closePopup = closePopup;
+        window.togglePopupDetails = togglePopupDetails;
 
         // イベントリスナー設定
         function setupEventListeners() {
@@ -3638,28 +3602,23 @@
             console.log('📦 オーバーレイパネル初期化開始');
             
             const panel = document.getElementById('overlayPanel');
+            const handle = document.getElementById('panelHandle');
             const panelContent = document.getElementById('panelContent');
             
-            if (!panel) {
+            if (!panel || !handle) {
                 console.error('オーバーレイパネル要素が見つかりません');
                 return;
             }
             
+            let isDragging = false;
+            let startY = 0;
+            let currentTranslateY = 0;
             let panelState = 'collapsed'; // collapsed, half, full
             
             // パネル位置設定
             function setPanelPosition(state) {
                 panelState = state;
                 panel.classList.remove('half-open', 'full-open');
-                
-                // パネル位置をCSS変数として設定
-                let panelTop = window.innerHeight - 120; // collapsed
-                if (state === 'half') {
-                    panelTop = window.innerHeight * 0.5;
-                } else if (state === 'full') {
-                    panelTop = 80;
-                }
-                document.documentElement.style.setProperty('--panel-top', panelTop + 'px');
                 
                 // 状態インジケーターを更新
                 document.querySelectorAll('.state-dot').forEach(dot => {
@@ -3686,27 +3645,57 @@
                 }
             }
             
+            // ドラッグ開始
+            handle.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                startY = e.touches[0].clientY;
+                panel.style.transition = 'none';
+            });
             
-            // 検索トグルボタン
-            const searchToggleBtn = document.getElementById('searchToggleBtn');
-            const mobileSearchFilter = document.getElementById('mobileSearchFilter');
+            handle.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startY = e.clientY;
+                panel.style.transition = 'none';
+            });
             
-            if (searchToggleBtn && mobileSearchFilter) {
-                searchToggleBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    
-                    // 検索エリアの表示/非表示を切り替え
-                    if (mobileSearchFilter.classList.contains('show')) {
-                        mobileSearchFilter.classList.remove('show');
-                        searchToggleBtn.classList.remove('active');
-                        searchToggleBtn.querySelector('.search-icon').textContent = '🔍';
-                    } else {
-                        mobileSearchFilter.classList.add('show');
-                        searchToggleBtn.classList.add('active');
-                        searchToggleBtn.querySelector('.search-icon').textContent = '✕';
-                    }
-                });
+            // ドラッグ中
+            document.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                
+                const deltaY = e.touches[0].clientY - startY;
+                const newTranslateY = Math.max(0, Math.min(window.innerHeight - 60, currentTranslateY + deltaY));
+                panel.style.transform = `translateY(${newTranslateY}px)`;
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                const deltaY = e.clientY - startY;
+                const newTranslateY = Math.max(0, Math.min(window.innerHeight - 60, currentTranslateY + deltaY));
+                panel.style.transform = `translateY(${newTranslateY}px)`;
+            });
+            
+            // ドラッグ終了
+            function handleDragEnd() {
+                if (!isDragging) return;
+                isDragging = false;
+                panel.style.transition = '';
+                
+                const panelRect = panel.getBoundingClientRect();
+                const panelTop = panelRect.top;
+                const windowHeight = window.innerHeight;
+                
+                if (panelTop < windowHeight * 0.2) {
+                    setPanelPosition('full');
+                } else if (panelTop < windowHeight * 0.6) {
+                    setPanelPosition('half');
+                } else {
+                    setPanelPosition('collapsed');
+                }
             }
+            
+            document.addEventListener('touchend', handleDragEnd);
+            document.addEventListener('mouseup', handleDragEnd);
             
             // 2ボタンコントロール（上下矢印）
             document.getElementById('panelDownBtn').addEventListener('click', (e) => {
