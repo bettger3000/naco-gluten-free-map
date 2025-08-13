@@ -4771,21 +4771,26 @@
                 let isLongPress = false;
                 let pressIndicator = null;
                 let touchStartPos = null;
+                let savedLatlng = null;
+                
+                console.log('📱 モバイル版ピン機能初期化');
                 
                 // タッチ開始
                 map.on('touchstart', function(e) {
-                    // デフォルト動作を無効化（ブラウザの長押しメニューを防ぐ）
-                    if (e.originalEvent) {
-                        e.originalEvent.preventDefault();
-                        e.originalEvent.stopPropagation();
-                    }
+                    console.log('👆 touchstartイベント発生', e);
                     
                     isLongPress = false;
-                    const touches = e.originalEvent.touches;
+                    
+                    // latlngを保存（preventDefaultする前に）
+                    savedLatlng = e.latlng;
+                    
+                    const touches = e.originalEvent ? e.originalEvent.touches : e.touches;
                     
                     if (touches && touches.length === 1) {
                         const touch = touches[0];
                         touchStartPos = { x: touch.clientX, y: touch.clientY };
+                        
+                        console.log('📍 タッチ位置:', touchStartPos, '緯度経度:', savedLatlng);
                         
                         // インジケーターを作成
                         pressIndicator = document.createElement('div');
@@ -4800,8 +4805,8 @@
                         }
                         
                         longPressTimer = setTimeout(() => {
+                            console.log('✅ 長押し完了 - メニュー表示');
                             isLongPress = true;
-                            const latlng = e.latlng;
                             
                             // インジケーターを削除
                             if (pressIndicator) {
@@ -4814,14 +4819,32 @@
                                 window.navigator.vibrate([20, 10, 20]);
                             }
                             
-                            showContextMenu(latlng, e.originalEvent);
+                            // 保存したlatlngを使用
+                            if (savedLatlng) {
+                                const fakeEvent = {
+                                    clientX: touch.clientX,
+                                    clientY: touch.clientY,
+                                    touches: [{ clientX: touch.clientX, clientY: touch.clientY }]
+                                };
+                                showContextMenu(savedLatlng, fakeEvent);
+                            } else {
+                                console.error('❗ latlngが取得できませんでした');
+                            }
                         }, 600);
                     }
+                    
+                    // ブラウザのデフォルト長押しメニューを防ぐ
+                    // （タイミングを遅らせて実行）
+                    setTimeout(() => {
+                        if (e.originalEvent) {
+                            e.originalEvent.preventDefault();
+                        }
+                    }, 100);
                 });
                 
                 // タッチ移動（指が動いたらキャンセル）
                 map.on('touchmove', function(e) {
-                    if (touchStartPos && e.originalEvent.touches.length === 1) {
+                    if (touchStartPos && e.originalEvent && e.originalEvent.touches.length === 1) {
                         const touch = e.originalEvent.touches[0];
                         const moveDistance = Math.sqrt(
                             Math.pow(touch.clientX - touchStartPos.x, 2) + 
@@ -4830,6 +4853,7 @@
                         
                         // 10ピクセル以上動いたらキャンセル
                         if (moveDistance > 10) {
+                            console.log('🚫 指が動いたのでキャンセル');
                             clearTimeout(longPressTimer);
                             if (pressIndicator) {
                                 pressIndicator.remove();
@@ -4841,8 +4865,10 @@
                 
                 // タッチ終了
                 map.on('touchend touchcancel', function(e) {
+                    console.log('🎬 touchend/touchcancelイベント');
                     clearTimeout(longPressTimer);
                     touchStartPos = null;
+                    savedLatlng = null;
                     
                     if (pressIndicator) {
                         pressIndicator.remove();
@@ -4854,6 +4880,12 @@
                         hideContextMenu();
                     }
                 });
+                
+                // コンテキストメニューを無効化（iOS Safari対策）
+                document.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                    return false;
+                }, { passive: false });
             }
             
             // 通常のクリック/タップでメニューを閉じる
