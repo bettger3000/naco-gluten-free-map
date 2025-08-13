@@ -1017,6 +1017,39 @@
             border-color: var(--primary);
         }
         
+        /* PC用タブ */
+        .sidebar-tabs {
+            display: flex;
+            gap: var(--space-xs);
+            margin: var(--space-md) 0;
+            background: var(--bg-light);
+            border-radius: var(--radius-md);
+            padding: var(--space-xs);
+        }
+        
+        .sidebar-tab {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .sidebar-tab.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .sidebar-tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
         /* PC用フィルターチップ */
         .sidebar-filter-chips {
             display: flex;
@@ -1644,6 +1677,13 @@
                     <!-- PC用検索ボックス -->
                     <div class="sidebar-search">
                         <input type="text" id="sidebarSearchInput" class="sidebar-search-input" placeholder="店名・エリアで検索">
+                    </div>
+                    
+                    <!-- PC用タブ -->
+                    <div class="sidebar-tabs">
+                        <button class="sidebar-tab active" data-tab="all">すべて</button>
+                        <button class="sidebar-tab" data-tab="want-to-go">行きたい</button>
+                        <button class="sidebar-tab" data-tab="visited">行った</button>
                     </div>
                     
                     <!-- PC用フィルターチップ -->
@@ -3178,14 +3218,31 @@
                 selectedCategory = activeChip ? activeChip.dataset.category : '';
             }
 
+            // タブフィルターを取得（PC用のみ）
+            let selectedTab = 'all';
+            if (isDesktop()) {
+                const activeTab = document.querySelector('.sidebar-tab.active');
+                selectedTab = activeTab ? activeTab.dataset.tab : 'all';
+            }
+
             const filteredStores = stores.filter(store => {
                 const matchesCategory = !selectedCategory || store.category === selectedCategory;
                 const matchesSearch = !searchText ||
                     (store.name && store.name.toLowerCase().includes(searchText)) ||
                     (store.address && store.address.toLowerCase().includes(searchText)) ||
                     (store.description && store.description.toLowerCase().includes(searchText));
+                
+                // タブフィルターを適用（PC用）
+                let matchesTab = true;
+                if (selectedTab === 'want-to-go') {
+                    const status = userVisitHistory.get(`${store.id}`);
+                    matchesTab = status === 'want_to_go';
+                } else if (selectedTab === 'visited') {
+                    const status = userVisitHistory.get(`${store.id}`);
+                    matchesTab = status === 'visited';
+                }
 
-                return matchesCategory && matchesSearch;
+                return matchesCategory && matchesSearch && matchesTab;
             });
 
             displayStores(filteredStores);
@@ -3407,6 +3464,15 @@
                     }
                 });
             }
+
+            // PC用サイドバータブ
+            document.querySelectorAll('.sidebar-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    filterStores(); // 既存のフィルター関数を再利用
+                });
+            });
 
             // PC用フィルターチップ
             document.querySelectorAll('.sidebar-chip').forEach(chip => {
