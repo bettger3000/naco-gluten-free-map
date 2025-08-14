@@ -4925,7 +4925,7 @@
 
             sortedStores.forEach(store => {
                 try {
-                    const card = createStoreCard(store);
+                    const card = createMobileStoreCard(store);
                     container.appendChild(card);
                 } catch (error) {
                     console.error(`店舗「${store.name}」のカード作成エラー:`, error);
@@ -4933,8 +4933,8 @@
             });
         }
 
-        // 店舗カード作成
-        function createStoreCard(store) {
+        // モバイル用店舗カード作成
+        function createMobileStoreCard(store) {
             const card = document.createElement('div');
             card.className = 'store-card';
             card.dataset.storeId = store.id;
