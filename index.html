@@ -270,6 +270,195 @@
             font-weight: inherit;
         }
 
+        /* 店舗詳細モーダル */
+        .store-detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            overflow-y: auto;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .store-detail-container {
+            background: white;
+            max-width: 600px;
+            width: 90%;
+            margin: 20px auto;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.3s ease;
+            position: relative;
+        }
+
+        .store-detail-header {
+            position: sticky;
+            top: 0;
+            background: white;
+            border-radius: 12px 12px 0 0;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            z-index: 10;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .store-detail-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #f5f5f5;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            font-size: 18px;
+            color: #666;
+        }
+
+        .store-detail-close:hover {
+            background: #e0e0e0;
+            transform: scale(1.1);
+        }
+
+        .store-detail-body {
+            padding: 20px;
+        }
+
+        .store-detail-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .store-detail-category {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-bottom: 20px;
+        }
+
+        .store-detail-section {
+            margin-bottom: 25px;
+        }
+
+        .store-detail-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .store-detail-info {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 12px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .store-detail-info i {
+            width: 20px;
+            text-align: center;
+            color: var(--primary-green);
+            flex-shrink: 0;
+        }
+
+        .store-detail-description {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            line-height: 1.6;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .store-detail-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .store-detail-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .store-detail-btn.primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .store-detail-btn.secondary {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .store-detail-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* レスポンシブ対応 */
+        @media (max-width: 768px) {
+            .store-detail-container {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                border-radius: 0;
+                max-width: none;
+            }
+
+            .store-detail-header {
+                border-radius: 0;
+            }
+
+            .store-detail-body {
+                padding: 15px;
+            }
+
+            .store-detail-title {
+                font-size: 20px;
+            }
+        }
+
+        /* アニメーション */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
         /* プロフィールモーダル */
         .modal-overlay {
             position: fixed;
@@ -4715,8 +4904,8 @@
                                 <button class="action-btn visited popup-action-btn ${isVisited ? 'active' : ''}" onclick="toggleVisitStatus(${store.id}, 'visited')" data-store-id="${store.id}">
                                     ✨ 行った
                                 </button>
-                                <button class="action-btn popup-action-btn" onclick="focusOnStore(${store.id})">
-                                    🗺️ 地図
+                                <button class="action-btn popup-action-btn" onclick="openStoreDetail(${store.id})">
+                                    📋 詳細
                                 </button>
                             </div>
                         </div>
@@ -4781,8 +4970,8 @@
                                 <button class="action-btn visited popup-action-btn ${isVisited ? 'active' : ''}" onclick="toggleVisitStatus(${store.id}, 'visited')" data-store-id="${store.id}">
                                     ✨ 行った
                                 </button>
-                                <button class="action-btn popup-action-btn" onclick="focusOnStore(${store.id})">
-                                    🗺️ 地図
+                                <button class="action-btn popup-action-btn" onclick="openStoreDetail(${store.id})">
+                                    📋 詳細
                                 </button>
                             </div>
                         </div>
@@ -5818,6 +6007,123 @@
             if (confirm('ログアウトしますか？')) {
                 supabaseClient.auth.signOut();
                 console.log('✅ ログアウト完了');
+            }
+        }
+
+        // ========== 店舗詳細モーダル関連 ==========
+        
+        // 店舗詳細モーダルを開く
+        function openStoreDetail(storeId) {
+            try {
+                console.log('🏪 店舗詳細を開く:', storeId);
+                
+                // 店舗データを取得
+                const store = storesData.find(s => s.id === storeId);
+                if (!store) {
+                    console.error('店舗が見つかりません:', storeId);
+                    return;
+                }
+                
+                // モーダルコンテンツを生成
+                const content = createStoreDetailContent(store);
+                document.getElementById('storeDetailContent').innerHTML = content;
+                
+                // モーダルを表示
+                const modal = document.getElementById('storeDetailModal');
+                if (modal) {
+                    modal.style.display = 'block';
+                    document.body.style.overflow = 'hidden'; // スクロール防止
+                }
+                
+            } catch (error) {
+                console.error('❌ 店舗詳細表示エラー:', error);
+                alert('店舗詳細の表示に失敗しました');
+            }
+        }
+        
+        // 店舗詳細のコンテンツを生成
+        function createStoreDetailContent(store) {
+            const storeName = escapeHtml(store.name || '');
+            const storeAddress = escapeHtml(store.address || '');
+            const storeCategory = escapeHtml(store.category || '');
+            const storePhone = store.phone ? escapeHtml(store.phone) : '';
+            const storeWebsite = store.website ? escapeHtml(store.website) : '';
+            const storeHours = store.opening_hours ? escapeHtml(store.opening_hours) : '';
+            const storeGfOptions = store.gluten_free_options ? escapeHtml(store.gluten_free_options) : '';
+            const storeDescription = store.description ? escapeHtml(store.description) : '';
+            
+            return `
+                <h2 class="store-detail-title">${storeName}</h2>
+                <span class="store-detail-category">${storeCategory}</span>
+                
+                <!-- 基本情報 -->
+                <div class="store-detail-section">
+                    <h3><i class="fas fa-info-circle"></i> 基本情報</h3>
+                    
+                    <div class="store-detail-info">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>${storeAddress}</span>
+                    </div>
+                    
+                    ${storePhone ? `
+                        <div class="store-detail-info">
+                            <i class="fas fa-phone"></i>
+                            <span>${storePhone}</span>
+                        </div>
+                    ` : ''}
+                    
+                    ${storeHours ? `
+                        <div class="store-detail-info">
+                            <i class="fas fa-clock"></i>
+                            <span>${storeHours}</span>
+                        </div>
+                    ` : ''}
+                    
+                    ${storeWebsite ? `
+                        <div class="store-detail-info">
+                            <i class="fas fa-globe"></i>
+                            <a href="${storeWebsite}" target="_blank" rel="noopener noreferrer">
+                                ウェブサイト
+                            </a>
+                        </div>
+                    ` : ''}
+                </div>
+                
+                <!-- グルテンフリー情報 -->
+                ${storeGfOptions ? `
+                    <div class="store-detail-section">
+                        <h3><i class="fas fa-check-circle"></i> グルテンフリー対応</h3>
+                        <div class="store-detail-description">
+                            ${storeGfOptions}
+                        </div>
+                    </div>
+                ` : ''}
+                
+                <!-- 店舗説明 -->
+                ${storeDescription ? `
+                    <div class="store-detail-section">
+                        <h3><i class="fas fa-comment-dots"></i> 店舗について</h3>
+                        <div class="store-detail-description">
+                            ${storeDescription}
+                        </div>
+                    </div>
+                ` : ''}
+                
+                <!-- アクションボタン -->
+                <div class="store-detail-actions">
+                    <button class="store-detail-btn secondary" onclick="closeStoreDetail()">
+                        閉じる
+                    </button>
+                </div>
+            `;
+        }
+        
+        // 店舗詳細モーダルを閉じる
+        function closeStoreDetail() {
+            const modal = document.getElementById('storeDetailModal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = ''; // スクロール復活
             }
         }
 
@@ -7809,7 +8115,7 @@
                 bioTextarea.addEventListener('input', updateCharCount);
             }
             
-            // モーダル外クリックで閉じる
+            // プロフィールモーダル外クリックで閉じる
             const profileModal = document.getElementById('profileModal');
             if (profileModal) {
                 profileModal.addEventListener('click', function(e) {
@@ -7818,8 +8124,32 @@
                     }
                 });
             }
+            
+            // 店舗詳細モーダル外クリックで閉じる
+            const storeDetailModal = document.getElementById('storeDetailModal');
+            if (storeDetailModal) {
+                storeDetailModal.addEventListener('click', function(e) {
+                    if (e.target === storeDetailModal) {
+                        closeStoreDetail();
+                    }
+                });
+            }
         });
     </script>
+
+    <!-- 店舗詳細モーダル -->
+    <div class="store-detail-modal" id="storeDetailModal" style="display: none;">
+        <div class="store-detail-container">
+            <div class="store-detail-header">
+                <button class="store-detail-close" onclick="closeStoreDetail()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="store-detail-body" id="storeDetailContent">
+                <!-- 動的にコンテンツが挿入される -->
+            </div>
+        </div>
+    </div>
 
     <!-- プロフィールモーダル -->
     <div class="modal-overlay" id="profileModal" style="display: none;">
