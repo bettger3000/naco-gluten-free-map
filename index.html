@@ -104,6 +104,22 @@
             margin: 0 auto;
         }
 
+        /* PC版のapp-titleスタイル */
+        @media (min-width: 769px) {
+            .app-title {
+                font-family: var(--font-display);
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: var(--primary);
+                display: flex;
+                align-items: center;
+                gap: var(--space-sm);
+                white-space: nowrap;
+                overflow: hidden;
+                flex-shrink: 0;
+            }
+        }
+
         /* スマホ版ヘッダー3分割レイアウト */
         @media (max-width: 768px) {
             .header-content {
@@ -116,14 +132,17 @@
             }
             
             .app-title {
-                display: contents; /* flexboxを無効化してgridの子要素として扱う */
+                display: contents !important; /* PC版のflexを無効化してgridの子要素として扱う */
+                font-family: var(--font-display) !important;
+                font-weight: 700 !important;
+                color: var(--primary) !important;
             }
             
             .title-icon {
                 grid-column: 1;
                 justify-self: center;
-                width: 45px;
-                height: 45px;
+                width: 45px !important;
+                height: 45px !important;
             }
             
             .title-icon img {
@@ -135,12 +154,15 @@
                 grid-column: 2;
                 justify-self: center;
                 text-align: center;
-                font-size: 1.0rem;
+                font-size: 1.0rem !important;
                 line-height: 1.2;
                 white-space: nowrap;
-                overflow: hidden;
+                overflow: visible !important;
                 text-overflow: ellipsis;
                 max-width: 100%;
+                display: block !important;
+                visibility: visible !important;
+                color: var(--primary) !important;
             }
             
             .header-actions {
@@ -256,38 +278,6 @@
             box-shadow: var(--shadow-lg);
         }
 
-        .app-title {
-            font-family: var(--font-display);
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-            white-space: nowrap;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-        
-        .app-title span {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            min-width: 0;
-        }
-        
-        /* モバイル対応でタイトルサイズ調整 */
-        @media (max-width: 480px) {
-            .app-title {
-                font-size: 1.3rem;
-            }
-        }
-        
-        @media (max-width: 360px) {
-            .app-title {
-                font-size: 1.1rem;
-            }
-        }
 
         .title-icon {
             width: 50px;
