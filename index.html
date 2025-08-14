@@ -1632,6 +1632,26 @@
                 box-sizing: border-box;
                 overflow-wrap: break-word;
             }
+            
+            /* PC版：ポップアップの情報階層を修正 */
+            .popup-header-main {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                align-items: flex-start;
+            }
+            
+            .popup-title {
+                margin: 0 !important;
+                font-size: 1.2rem !important;
+                font-weight: 600 !important;
+                line-height: 1.3 !important;
+            }
+            
+            .popup-header-main .store-category {
+                font-size: 0.85rem !important;
+                margin: 0 !important;
+            }
         }
         
         /* モバイルでポップアップ位置調整 */
@@ -3475,70 +3495,137 @@
             const storePhone = store.phone ? escapeHtml(store.phone) : '';
             const storeWebsite = store.website ? escapeHtml(store.website) : '';
             const storeDescription = store.description ? escapeHtml(store.description) : '';
-
-            return `
-                <div class="popup-content">
-                    <div class="popup-header-fixed">
-                        <div class="popup-header-main">
-                            <h3 class="popup-title">${storeName}</h3>
-                        </div>
-                        <button class="popup-close-btn" onclick="closePopup()" title="閉じる">
-                            <span class="close-icon">×</span>
-                        </button>
-                    </div>
-                    <div class="popup-scrollable-content">
-                        <div class="popup-info-section">
-                            <div class="popup-category-row">
+            
+            // PC版とモバイル版で異なる情報階層
+            if (isDesktop()) {
+                // PC版：店舗名が最上部、その下にカテゴリ
+                return `
+                    <div class="popup-content">
+                        <div class="popup-header-fixed">
+                            <div class="popup-header-main">
+                                <h3 class="popup-title">${storeName}</h3>
                                 <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
                             </div>
-                            <div class="popup-row">
-                                <span class="popup-icon">📍</span>
-                                <span class="popup-text">${storeAddress}</span>
-                            </div>
-                            ${storeGfOptions ? `
-                                <div class="popup-row">
-                                    <span class="popup-icon">✨</span>
-                                    <span class="popup-text">${storeGfOptions}</span>
-                                </div>
-                            ` : ''}
-                            ${storeHours ? `
-                                <div class="popup-row">
-                                    <span class="popup-icon">🕒</span>
-                                    <span class="popup-text">${storeHours}</span>
-                                </div>
-                            ` : ''}
-                            ${storePhone ? `
-                                <div class="popup-row">
-                                    <span class="popup-icon">📞</span>
-                                    <span class="popup-text">${storePhone}</span>
-                                </div>
-                            ` : ''}
-                            ${storeWebsite ? `
-                                <div class="popup-row">
-                                    <span class="popup-icon">🌐</span>
-                                    <span class="popup-text"><a href="${storeWebsite}" target="_blank" rel="noopener">ウェブサイト</a></span>
-                                </div>
-                            ` : ''}
-                            ${storeDescription ? `
-                                <div class="popup-row">
-                                    <span class="popup-icon">💬</span>
-                                    <span class="popup-text">${storeDescription}</span>
-                                </div>
-                            ` : ''}
+                            <button class="popup-close-btn" onclick="closePopup()" title="閉じる">
+                                <span class="close-icon">×</span>
+                            </button>
                         </div>
-                        <div class="popup-actions">
-                            <button class="visit-btn want-to-go-btn" onclick="toggleVisitStatus(${store.id}, 'want_to_go')" data-store-id="${store.id}">
-                                <span class="btn-icon">🤍</span>
-                                <span class="btn-text">行きたい</span>
-                            </button>
-                            <button class="visit-btn visited-btn" onclick="toggleVisitStatus(${store.id}, 'visited')" data-store-id="${store.id}">
-                                <span class="btn-icon">✨</span>
-                                <span class="btn-text">行った</span>
-                            </button>
+                        <div class="popup-scrollable-content">
+                            <div class="popup-info-section">
+                                <div class="popup-row">
+                                    <span class="popup-icon">📍</span>
+                                    <span class="popup-text">${storeAddress}</span>
+                                </div>
+                                ${storeGfOptions ? `
+                                    <div class="popup-row">
+                                        <span class="popup-icon">✨</span>
+                                        <span class="popup-text">${storeGfOptions}</span>
+                                    </div>
+                                ` : ''}
+                                ${storeHours ? `
+                                    <div class="popup-row">
+                                        <span class="popup-icon">🕒</span>
+                                        <span class="popup-text">${storeHours}</span>
+                                    </div>
+                                ` : ''}
+                                ${storePhone ? `
+                                    <div class="popup-row">
+                                        <span class="popup-icon">📞</span>
+                                        <span class="popup-text">${storePhone}</span>
+                                    </div>
+                                ` : ''}
+                                ${storeWebsite ? `
+                                    <div class="popup-row">
+                                        <span class="popup-icon">🌐</span>
+                                        <span class="popup-text"><a href="${storeWebsite}" target="_blank" rel="noopener">ウェブサイト</a></span>
+                                    </div>
+                                ` : ''}
+                                ${storeDescription ? `
+                                    <div class="popup-row">
+                                        <span class="popup-icon">💬</span>
+                                        <span class="popup-text">${storeDescription}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            <div class="popup-actions">
+                                <button class="visit-btn want-to-go-btn" onclick="toggleVisitStatus(${store.id}, 'want_to_go')" data-store-id="${store.id}">
+                                    <span class="btn-icon">🤍</span>
+                                    <span class="btn-text">行きたい</span>
+                                </button>
+                                <button class="visit-btn visited-btn" onclick="toggleVisitStatus(${store.id}, 'visited')" data-store-id="${store.id}">
+                                    <span class="btn-icon">✨</span>
+                                    <span class="btn-text">行った</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            `;
+                `;
+            } else {
+                // モバイル版：既存のレイアウトを維持
+                return `
+                    <div class="popup-content">
+                        <div class="popup-header-fixed">
+                            <div class="popup-header-main">
+                                <h3 class="popup-title">${storeName}</h3>
+                            </div>
+                            <button class="popup-close-btn" onclick="closePopup()" title="閉じる">
+                                <span class="close-icon">×</span>
+                            </button>
+                        </div>
+                        <div class="popup-scrollable-content">
+                            <div class="popup-info-section">
+                                <div class="popup-category-row">
+                                    <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
+                                </div>
+                                <div class="popup-row">
+                                    <span class="popup-icon">📍</span>
+                                    <span class="popup-text">${storeAddress}</span>
+                                </div>
+                                ${storeGfOptions ? `
+                                    <div class="popup-row">
+                                        <span class="popup-icon">✨</span>
+                                        <span class="popup-text">${storeGfOptions}</span>
+                                    </div>
+                                ` : ''}
+                                ${storeHours ? `
+                                    <div class="popup-row">
+                                        <span class="popup-icon">🕒</span>
+                                        <span class="popup-text">${storeHours}</span>
+                                    </div>
+                                ` : ''}
+                                ${storePhone ? `
+                                    <div class="popup-row">
+                                        <span class="popup-icon">📞</span>
+                                        <span class="popup-text">${storePhone}</span>
+                                    </div>
+                                ` : ''}
+                                ${storeWebsite ? `
+                                    <div class="popup-row">
+                                        <span class="popup-icon">🌐</span>
+                                        <span class="popup-text"><a href="${storeWebsite}" target="_blank" rel="noopener">ウェブサイト</a></span>
+                                    </div>
+                                ` : ''}
+                                ${storeDescription ? `
+                                    <div class="popup-row">
+                                        <span class="popup-icon">💬</span>
+                                        <span class="popup-text">${storeDescription}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            <div class="popup-actions">
+                                <button class="visit-btn want-to-go-btn" onclick="toggleVisitStatus(${store.id}, 'want_to_go')" data-store-id="${store.id}">
+                                    <span class="btn-icon">🤍</span>
+                                    <span class="btn-text">行きたい</span>
+                                </button>
+                                <button class="visit-btn visited-btn" onclick="toggleVisitStatus(${store.id}, 'visited')" data-store-id="${store.id}">
+                                    <span class="btn-icon">✨</span>
+                                    <span class="btn-text">行った</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
         }
 
         // 店舗カード選択
