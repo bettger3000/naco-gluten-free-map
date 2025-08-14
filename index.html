@@ -6329,6 +6329,11 @@
             try {
                 console.log('💾 Supabaseに画像保存開始');
                 
+                // Supabaseクライアントの確認
+                if (!supabaseClient) {
+                    throw new Error('Supabaseクライアントが初期化されていません');
+                }
+                
                 for (const imageData of images) {
                     // Base64エンコード
                     const base64 = await fileToBase64(imageData.file);
@@ -6339,7 +6344,7 @@
                             store_id: storeId,
                             image_url: base64,
                             caption: imageData.originalName,
-                            uploaded_by: currentUser?.email || 'admin',
+                            uploaded_by: currentUser || 'admin',
                             is_primary: false
                         }]);
                         
@@ -6374,6 +6379,18 @@
                 
                 const container = document.getElementById(`storeImagesContainer-${storeId}`);
                 if (!container) return;
+                
+                // Supabaseクライアントの確認
+                if (!supabaseClient) {
+                    console.warn('⚠️ Supabaseクライアントが未初期化、プレースホルダー表示');
+                    container.innerHTML = `
+                        <div class="store-images-placeholder">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>データベース接続エラー</p>
+                        </div>
+                    `;
+                    return;
+                }
                 
                 // Supabaseから画像データを取得
                 const { data: images, error } = await supabaseClient
