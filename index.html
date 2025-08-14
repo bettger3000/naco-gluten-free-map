@@ -351,6 +351,59 @@
         .store-detail-section {
             margin-bottom: 25px;
         }
+        
+        /* 店舗画像ギャラリー */
+        .store-images-container {
+            min-height: 150px;
+            background: var(--bg-light);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin-bottom: var(--space-sm);
+        }
+        .store-images-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 120px;
+            color: var(--text-secondary);
+        }
+        .store-images-placeholder i {
+            font-size: 2rem;
+            margin-bottom: var(--space-sm);
+            opacity: 0.5;
+        }
+        .store-images-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: var(--space-sm);
+        }
+        .store-image-item {
+            position: relative;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            aspect-ratio: 1;
+            cursor: pointer;
+        }
+        .store-image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.2s ease;
+        }
+        .store-image-item:hover img {
+            transform: scale(1.05);
+        }
+        .store-image-admin {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-top: var(--space-sm);
+        }
+        .image-limit-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
 
         .store-detail-section h3 {
             font-size: 16px;
@@ -6084,11 +6137,45 @@
                 if (modal) {
                     modal.style.display = 'block';
                     document.body.style.overflow = 'hidden'; // スクロール防止
+                    
+                    // 画像を読み込み
+                    setTimeout(() => loadStoreImages(storeId), 100);
                 }
                 
             } catch (error) {
                 console.error('❌ 店舗詳細表示エラー:', error);
                 alert('店舗詳細の表示に失敗しました');
+            }
+        }
+        
+        // 管理者モード判定
+        function isAdminMode() {
+            // TODO: 実際の管理者判定ロジックを実装
+            // 現在は常にfalseを返す（開発用）
+            return false;
+        }
+        
+        // 店舗画像を読み込み表示
+        async function loadStoreImages(storeId) {
+            try {
+                console.log('🖼️ 店舗画像読み込み開始:', storeId);
+                
+                const container = document.getElementById(`storeImagesContainer-${storeId}`);
+                if (!container) return;
+                
+                // TODO: Supabaseから画像データを取得
+                // 現在はプレースホルダー表示
+                container.innerHTML = `
+                    <div class="store-images-placeholder">
+                        <i class="fas fa-camera"></i>
+                        <p>まだ画像がありません</p>
+                    </div>
+                `;
+                
+                console.log('✅ 画像読み込み完了（プレースホルダー）');
+                
+            } catch (error) {
+                console.error('❌ 店舗画像読み込みエラー:', error);
             }
         }
         
@@ -6106,6 +6193,26 @@
             return `
                 <h2 class="store-detail-title">${storeName}</h2>
                 <span class="store-detail-category">${storeCategory}</span>
+                
+                <!-- 店舗画像ギャラリー -->
+                <div class="store-detail-section">
+                    <h3><i class="fas fa-images"></i> 店舗画像</h3>
+                    <div class="store-images-container" id="storeImagesContainer-${store.id}">
+                        <div class="store-images-placeholder">
+                            <i class="fas fa-camera"></i>
+                            <p>画像を読み込み中...</p>
+                        </div>
+                    </div>
+                    ${isAdminMode() ? `
+                        <div class="store-image-admin">
+                            <input type="file" id="imageUpload-${store.id}" accept="image/*" multiple style="display: none;">
+                            <button class="btn btn-secondary" onclick="document.getElementById('imageUpload-${store.id}').click()">
+                                <i class="fas fa-plus"></i> 画像を追加
+                            </button>
+                            <span class="image-limit-text">最大3枚まで</span>
+                        </div>
+                    ` : ''}
+                </div>
                 
                 <!-- 基本情報 -->
                 <div class="store-detail-section">
