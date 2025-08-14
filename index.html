@@ -419,12 +419,6 @@
             background: var(--bg-secondary);
         }
 
-        .sidebar-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: var(--space-sm);
-        }
 
         .sidebar-subtitle {
             color: var(--text-secondary);
@@ -1008,22 +1002,59 @@
         
         .sidebar-title-row {
             display: flex;
-            justify-content: space-between;
             align-items: center;
             margin-bottom: var(--space-md);
             gap: var(--space-sm);
+        }
+        
+        .sidebar-title {
+            flex: 1;
+            min-width: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        .sidebar-count {
+            flex-shrink: 0;
         }
         
         .sidebar-title-row .pin-mode-btn {
             flex-shrink: 0;
         }
         
-        .sidebar-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin: 0;
+        /* PC版ピンボタン専用スタイル */
+        .pc-pin-btn {
+            padding: 8px 16px !important;
+            height: auto !important;
+            min-width: auto !important;
+            font-size: 0.9rem !important;
+            border-radius: 12px !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            white-space: nowrap;
+            font-weight: 500;
         }
+        
+        .pc-pin-btn .pin-icon {
+            font-size: 1rem;
+        }
+        
+        .pc-pin-btn .pin-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        /* PC版ピンボタンの状態表示 */
+        .pc-pin-btn.active .pin-label::after {
+            content: '設置中';
+            margin-left: 4px;
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+        
         
         .sidebar-count {
             color: var(--text-secondary);
@@ -1981,8 +2012,9 @@
                     <div class="sidebar-title-row">
                         <h2 class="sidebar-title">店舗リスト</h2>
                         <span class="sidebar-count"><span id="storeCount">62</span>件</span>
-                        <button class="pin-mode-btn" id="pcPinModeBtn" title="ピン設置モード">
+                        <button class="pin-mode-btn pc-pin-btn" id="pcPinModeBtn" title="ピン設置モード">
                             <span class="pin-icon">📍</span>
+                            <span class="pin-label">目的地ピン</span>
                         </button>
                     </div>
                     
