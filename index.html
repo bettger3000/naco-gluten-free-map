@@ -5184,9 +5184,19 @@
                     currentUser = session.user.email;
                     console.log('✅ ログイン成功:', currentUser);
                     
-                    // ログイン成功時はページをリロードしてマップ画面を表示
-                    console.log('🔄 認証成功によりページをリロード');
-                    window.location.reload();
+                    // ログイン成功時は直接マップ画面を表示（リロードしない）
+                    console.log('🔄 認証成功 - マップ画面を表示');
+                    showMapScreen();
+                    
+                    // 地図の初期化とデータ読み込み（まだ初期化されていない場合のみ）
+                    if (!window.mapInitialized) {
+                        loadEmbeddedStores();
+                        initMap();
+                        setupEventListeners();
+                        checkDatabaseStatus();
+                        initializeHeaderActions();
+                        window.mapInitialized = true;
+                    }
                     
                 } else if (event === 'SIGNED_OUT') {
                     console.log('🚪 ログアウト');
