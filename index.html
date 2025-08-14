@@ -783,11 +783,20 @@
             box-shadow: var(--shadow-md);
             cursor: pointer;
             transition: all 0.2s ease;
+            overflow: hidden;
         }
 
         .mobile-user-btn:hover {
             transform: translateY(-1px) scale(1.05);
             box-shadow: var(--shadow-lg);
+        }
+
+        /* スマホ版アバターボタン内の画像 */
+        .mobile-user-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
         }
 
 
@@ -4058,6 +4067,10 @@
             console.log('✅ 認証済みユーザー - マップ画面を表示');
             showMapScreen();
             
+            // 1.5. プロフィール情報を読み込み（重要: ヘッダー初期化前に実行）
+            await loadUserProfile();
+            console.log('📱 初期プロフィール情報読み込み完了');
+            
             // 2. 即座に店舗データを表示
             loadEmbeddedStores();
             
@@ -5141,32 +5154,84 @@
         };
 
         // メニューアイテムの機能実装
-        function showUserProfile() {
+        async function showUserProfile() {
             console.log('👤 プロフィール画面を表示');
             // メニューを閉じる
             document.getElementById('userMenuDropdown').style.display = 'none';
             
+            // プロフィール保存ボタンのイベントリスナーを設定（一度だけ）
+            const saveBtn = document.getElementById('saveProfileBtn');
+            if (saveBtn && !saveBtn.hasAttribute('data-listener-added')) {
+                saveBtn.addEventListener('click', async () => {
+                    await saveProfile();
+                });
+                saveBtn.setAttribute('data-listener-added', 'true');
+            }
+            
             // プロフィールデータを読み込んで表示
-            loadUserProfile();
+            await loadUserProfile();
             document.getElementById('profileModal').style.display = 'flex';
         }
 
-        // プロフィールデータ読み込み
-        function loadUserProfile() {
-            // 現在のユーザー情報を設定
+        // プロフィールデータ読み込み（Supabaseベース）
+        async function loadUserProfile() {
+            // 基本情報
             currentUserProfile.email = currentUser || 'demo@example.com';
-            currentUserProfile.name = getUserDisplayName();
             currentUserProfile.joinDate = new Date().toLocaleDateString('ja-JP');
             
-            // LocalStorageから保存されたプロフィール情報を読み込み
-            const savedProfile = localStorage.getItem(`profile_${currentUser}`);
-            if (savedProfile) {
-                const parsed = JSON.parse(savedProfile);
-                currentUserProfile = { ...currentUserProfile, ...parsed };
+            try {
+                // Supabaseからプロフィール情報を読み込み
+                const { data, error } = await supabaseClient
+                    .from('user_profiles')
+                    .select('nickname, bio, avatar_type, avatar_emoji, avatar_url')
+                    .eq('email', currentUser)
+                    .single();
+                
+                if (data) {
+                    currentUserProfile.name = data.nickname || '';
+                    currentUserProfile.bio = data.bio || '';
+                    currentUserProfile.avatarType = data.avatar_type || 'emoji';
+                    currentUserProfile.avatar = data.avatar_emoji || '🍰';
+                    currentUserProfile.avatarImage = data.avatar_url || null;
+                    console.log('✅ Supabaseからプロフィール読み込み完了:', data);
+                } else {
+                    // プロフィールが存在しない場合のデフォルト値
+                    currentUserProfile.name = getUserDisplayNameFromEmail();
+                    currentUserProfile.bio = '';
+                    currentUserProfile.avatarType = 'emoji';
+                    currentUserProfile.avatar = '🍰';
+                    currentUserProfile.avatarImage = null;
+                    console.log('📝 新規ユーザー - デフォルトプロフィール設定');
+                }
+            } catch (error) {
+                console.error('❌ プロフィール読み込みエラー:', error);
+                // エラー時はLocalStorageのフォールバック
+                const savedProfile = localStorage.getItem(`profile_${currentUser}`);
+                if (savedProfile) {
+                    const parsed = JSON.parse(savedProfile);
+                    currentUserProfile = { ...currentUserProfile, ...parsed };
+                    console.log('🔄 LocalStorageフォールバック使用');
+                } else {
+                    // 完全なフォールバック
+                    currentUserProfile.name = getUserDisplayNameFromEmail();
+                    currentUserProfile.bio = '';
+                    currentUserProfile.avatarType = 'emoji';
+                    currentUserProfile.avatar = '🍰';
+                    currentUserProfile.avatarImage = null;
+                }
             }
             
             // 画面に表示
             updateProfileDisplay();
+            console.log('📋 プロフィール読み込み完了:', currentUserProfile);
+        }
+        
+        // メールアドレスから表示名を生成
+        function getUserDisplayNameFromEmail() {
+            if (currentUser && currentUser.includes('@')) {
+                return currentUser.split('@')[0];
+            }
+            return 'ユーザー';
         }
 
         // プロフィール表示を更新
@@ -5423,8 +5488,8 @@
             showProfileView();
         }
 
-        // プロフィールを保存
-        function saveProfile() {
+        // プロフィールを保存（Supabaseベース）
+        async function saveProfile() {
             // フォームデータを取得
             const name = document.getElementById('editName').value.trim();
             const bio = document.getElementById('editBio').value.trim();
@@ -5444,25 +5509,61 @@
             currentUserProfile.name = name;
             currentUserProfile.bio = bio;
             
-            // LocalStorageに保存
-            localStorage.setItem(`profile_${currentUser}`, JSON.stringify({
-                avatar: currentUserProfile.avatar,
-                avatarType: currentUserProfile.avatarType,
-                avatarImage: currentUserProfile.avatarImage,
-                name: currentUserProfile.name,
-                bio: currentUserProfile.bio
-            }));
+            try {
+                // Supabaseに保存
+                const profileData = {
+                    email: currentUser,
+                    nickname: currentUserProfile.name,
+                    bio: currentUserProfile.bio,
+                    avatar_type: currentUserProfile.avatarType,
+                    avatar_emoji: currentUserProfile.avatar,
+                    avatar_url: currentUserProfile.avatarImage,
+                    updated_at: new Date().toISOString()
+                };
+                
+                const { data, error } = await supabaseClient
+                    .from('user_profiles')
+                    .upsert(profileData, { 
+                        onConflict: 'email',
+                        returning: 'minimal' 
+                    });
+                    
+                if (error) throw error;
+                
+                console.log('✅ Supabaseにプロフィール保存完了');
+                
+                // LocalStorageにもバックアップ保存
+                localStorage.setItem(`profile_${currentUser}`, JSON.stringify({
+                    avatar: currentUserProfile.avatar,
+                    avatarType: currentUserProfile.avatarType,
+                    avatarImage: currentUserProfile.avatarImage,
+                    name: currentUserProfile.name,
+                    bio: currentUserProfile.bio
+                }));
+                
+            } catch (error) {
+                console.error('❌ Supabase保存エラー:', error);
+                // エラー時はLocalStorageのみに保存
+                localStorage.setItem(`profile_${currentUser}`, JSON.stringify({
+                    avatar: currentUserProfile.avatar,
+                    avatarType: currentUserProfile.avatarType,
+                    avatarImage: currentUserProfile.avatarImage,
+                    name: currentUserProfile.name,
+                    bio: currentUserProfile.bio
+                }));
+                console.log('🔄 LocalStorageにフォールバック保存');
+            }
             
             // 表示を更新
             updateProfileDisplay();
             
-            // ヘッダーのユーザー表示も更新
-            initializeHeaderActions();
+            // ヘッダーのユーザー表示も更新（PC・スマホ両対応）
+            updateAllHeaderDisplays();
             
             // 表示モードに戻す
             showProfileView();
             
-            console.log('✅ プロフィールを保存しました（ヘッダー更新含む）');
+            console.log('✅ プロフィールを保存しました（全デバイス対応・Supabase同期済み）');
             
             // 成功メッセージ（簡易版）
             const saveBtn = document.querySelector('.btn-primary');
@@ -5473,6 +5574,27 @@
                 saveBtn.textContent = originalText;
                 saveBtn.style.background = '';
             }, 2000);
+        }
+
+        // 全てのヘッダー表示を更新（PC・スマホ対応）
+        function updateAllHeaderDisplays() {
+            initializeHeaderActions();
+            
+            // 追加: スマホ版のアバターボタンが存在する場合は個別更新
+            const mobileUserBtn = document.querySelector('.mobile-user-btn');
+            if (mobileUserBtn) {
+                const userAvatar = getUserAvatar();
+                let mobileAvatarContent = userAvatar;
+                
+                // 画像アバターの場合はスマホ用にサイズ調整
+                if (userAvatar.includes('<img')) {
+                    mobileAvatarContent = userAvatar.replace('width: 24px; height: 24px', 'width: 32px; height: 32px');
+                }
+                
+                mobileUserBtn.innerHTML = mobileAvatarContent;
+            }
+            
+            console.log('🔄 全デバイスのヘッダー表示を更新しました');
         }
 
         function showUserReviews() {
@@ -5532,10 +5654,17 @@
                     </button>
                 `;
             } else {
-                // スマホ版: 丸いアバターボタン
+                // スマホ版: 丸いアバターボタン（プロフィール画像対応）
+                let mobileAvatarContent = userAvatar;
+                
+                // 画像アバターの場合はスマホ用にサイズ調整
+                if (userAvatar.includes('<img')) {
+                    mobileAvatarContent = userAvatar.replace('width: 24px; height: 24px', 'width: 32px; height: 32px');
+                }
+                
                 headerActions.innerHTML = `
                     <button class="mobile-user-btn" onclick="toggleUserMenu()">
-                        ${userAvatar}
+                        ${mobileAvatarContent}
                     </button>
                 `;
             }
@@ -5543,8 +5672,19 @@
 
         // ユーザーアバターを取得
         function getUserAvatar() {
+            // まずcurrentUserProfileから取得
+            if (currentUserProfile) {
+                if (currentUserProfile.avatarType === 'image' && currentUserProfile.avatarImage) {
+                    // 画像アバターの場合
+                    return `<img src="${currentUserProfile.avatarImage}" alt="プロフィール画像" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">`;
+                } else if (currentUserProfile.avatar) {
+                    // 絵文字アバターの場合
+                    return currentUserProfile.avatar;
+                }
+            }
+            
             if (currentUser) {
-                // 保存されたプロフィールアバターを優先して使用
+                // フォールバック：LocalStorageから取得
                 const savedProfile = localStorage.getItem(`profile_${currentUser}`);
                 if (savedProfile) {
                     try {
@@ -5567,8 +5707,13 @@
 
         // ユーザー表示名を取得
         function getUserDisplayName() {
+            // まずcurrentUserProfileから取得
+            if (currentUserProfile && currentUserProfile.name) {
+                return currentUserProfile.name.trim();
+            }
+            
             if (currentUser) {
-                // 保存されたプロフィール名を優先して使用
+                // フォールバック：LocalStorageから取得
                 const savedProfile = localStorage.getItem(`profile_${currentUser}`);
                 if (savedProfile) {
                     try {
@@ -5581,7 +5726,7 @@
                     }
                 }
                 
-                // フォールバック: メールアドレスから名前部分を抽出
+                // 最終フォールバック: メールアドレスから名前部分を抽出
                 const emailName = currentUser.split('@')[0];
                 // 数字や記号を除去して、見やすい名前に
                 const cleanName = emailName.replace(/[0-9]/g, '').replace(/[._-]/g, '');
@@ -6150,6 +6295,10 @@
                     console.log('🔄 認証成功 - マップ画面を表示');
                     showMapScreen();
                     
+                    // プロフィール情報を読み込み（重要: ヘッダー初期化前に実行）
+                    await loadUserProfile();
+                    console.log('📱 プロフィール情報読み込み完了');
+                    
                     // 地図の初期化とデータ読み込み（まだ初期化されていない場合のみ）
                     if (!window.mapInitialized) {
                         loadEmbeddedStores();
@@ -6158,6 +6307,9 @@
                         checkDatabaseStatus();
                         initializeHeaderActions();
                         window.mapInitialized = true;
+                    } else {
+                        // 既に初期化済みの場合はヘッダーのみ更新
+                        initializeHeaderActions();
                     }
                     
                 } else if (event === 'SIGNED_OUT') {
@@ -7582,7 +7734,7 @@
                         </div>
                         <div class="form-actions">
                             <button class="btn btn-secondary" onclick="cancelEdit()">キャンセル</button>
-                            <button class="btn btn-primary" onclick="saveProfile()">保存</button>
+                            <button class="btn btn-primary" id="saveProfileBtn">保存</button>
                         </div>
                     </div>
                 </div>
