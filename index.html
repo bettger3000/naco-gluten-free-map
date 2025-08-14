@@ -5456,10 +5456,13 @@
             // 表示を更新
             updateProfileDisplay();
             
+            // ヘッダーのユーザー表示も更新
+            initializeHeaderActions();
+            
             // 表示モードに戻す
             showProfileView();
             
-            console.log('✅ プロフィールを保存しました');
+            console.log('✅ プロフィールを保存しました（ヘッダー更新含む）');
             
             // 成功メッセージ（簡易版）
             const saveBtn = document.querySelector('.btn-primary');
@@ -5515,14 +5518,15 @@
             const headerActions = document.getElementById('headerActions');
             if (!headerActions) return;
             
-            // ユーザー名を取得（仮の実装）
+            // ユーザー名とアバター情報を取得
             const userName = getUserDisplayName();
+            const userAvatar = getUserAvatar();
             
             if (isDesktop()) {
                 // PC版: ユーザープロフィールボタン
                 headerActions.innerHTML = `
                     <button class="user-profile-btn" onclick="toggleUserMenu()">
-                        <div class="user-icon">👤</div>
+                        <div class="user-icon">${userAvatar}</div>
                         <span>${userName}</span>
                         <i class="fas fa-chevron-down" style="font-size: 0.7rem; opacity: 0.7;"></i>
                     </button>
@@ -5531,16 +5535,53 @@
                 // スマホ版: 丸いアバターボタン
                 headerActions.innerHTML = `
                     <button class="mobile-user-btn" onclick="toggleUserMenu()">
-                        🎀
+                        ${userAvatar}
                     </button>
                 `;
             }
         }
 
+        // ユーザーアバターを取得
+        function getUserAvatar() {
+            if (currentUser) {
+                // 保存されたプロフィールアバターを優先して使用
+                const savedProfile = localStorage.getItem(`profile_${currentUser}`);
+                if (savedProfile) {
+                    try {
+                        const parsed = JSON.parse(savedProfile);
+                        if (parsed.avatarType === 'image' && parsed.avatarImage) {
+                            // 画像アバターの場合
+                            return `<img src="${parsed.avatarImage}" alt="プロフィール画像" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">`;
+                        } else if (parsed.avatar) {
+                            // 絵文字アバターの場合
+                            return parsed.avatar;
+                        }
+                    } catch (e) {
+                        console.error('アバター読み込みエラー:', e);
+                    }
+                }
+            }
+            // フォールバック
+            return '👤';
+        }
+
         // ユーザー表示名を取得
         function getUserDisplayName() {
             if (currentUser) {
-                // メールアドレスから名前部分を抽出
+                // 保存されたプロフィール名を優先して使用
+                const savedProfile = localStorage.getItem(`profile_${currentUser}`);
+                if (savedProfile) {
+                    try {
+                        const parsed = JSON.parse(savedProfile);
+                        if (parsed.name && parsed.name.trim()) {
+                            return parsed.name.trim();
+                        }
+                    } catch (e) {
+                        console.error('プロフィール読み込みエラー:', e);
+                    }
+                }
+                
+                // フォールバック: メールアドレスから名前部分を抽出
                 const emailName = currentUser.split('@')[0];
                 // 数字や記号を除去して、見やすい名前に
                 const cleanName = emailName.replace(/[0-9]/g, '').replace(/[._-]/g, '');
