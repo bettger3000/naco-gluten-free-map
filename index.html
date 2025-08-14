@@ -4977,6 +4977,9 @@
                     distanceText = `${distance.toFixed(1)}km`;
                 }
             }
+            
+            // カテゴリ設定を取得
+            const config = getCategoryConfig(store.category);
 
             // 訪問ステータスをチェック
             const visitStatus = userVisitHistory.get(`${store.id}`);
@@ -4987,7 +4990,7 @@
                 <div class="store-header">
                     <h3 class="store-name">${storeName}</h3>
                     <div class="store-header-right">
-                        <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
+                        <span class="store-category" data-category="${storeCategory}">${config.icon} ${storeCategory}</span>
                         ${distanceText ? `<span class="store-distance">📍 ${distanceText}</span>` : ''}
                     </div>
                 </div>
@@ -6901,7 +6904,7 @@
                     ${distanceText ? `<div class="store-distance">📍 ${distanceText}</div>` : ''}
                 </div>
                 <div class="store-meta">
-                    <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
+                    <span class="store-category" data-category="${storeCategory}">${config.icon} ${storeCategory}</span>
                 </div>
                 <div class="store-info">
                     <div class="info-item">
@@ -8712,11 +8715,14 @@
             const storeCategory = escapeHtml(store.category || '');
             const storeGfOptions = store.gluten_free_options ? escapeHtml(store.gluten_free_options) : '';
             
+            // カテゴリ設定を取得
+            const config = getCategoryConfig(store.category);
+            
             return `
                 <div class="store-header">
                     <h3 class="store-name">${storeName}</h3>
                     <div class="store-header-right">
-                        <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
+                        <span class="store-category" data-category="${storeCategory}">${config.icon} ${storeCategory}</span>
                         ${distanceText ? `<span class="store-distance">${distanceText}</span>` : ''}
                     </div>
                 </div>
@@ -8737,6 +8743,9 @@
             const storeCategory = escapeHtml(store.category || '');
             const storeGfOptions = store.gluten_free_options ? escapeHtml(store.gluten_free_options) : '';
             
+            // カテゴリ設定を取得
+            const config = getCategoryConfig(store.category);
+            
             // 訪問ステータスをチェック
             const visitStatus = userVisitHistory.get(`${store.id}`);
             const isWantToGo = visitStatus === 'want_to_go';
@@ -8748,7 +8757,7 @@
                     ${distanceText ? `<div class="store-distance">${distanceText}</div>` : ''}
                 </div>
                 <div class="store-meta">
-                    <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
+                    <span class="store-category" data-category="${storeCategory}">${config.icon} ${storeCategory}</span>
                 </div>
                 <div class="store-info">
                     <div class="info-item">
