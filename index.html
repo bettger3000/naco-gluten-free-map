@@ -5511,7 +5511,7 @@
             reader.readAsDataURL(file);
         }
 
-        // 画像リサイズ関数
+        // 画像リサイズ関数（サイズ最適化版）
         function resizeImage(img, maxWidth, maxHeight) {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
@@ -5537,8 +5537,20 @@
             // 画像を描画
             ctx.drawImage(img, 0, 0, width, height);
             
-            // Base64として返す
-            return canvas.toDataURL('image/jpeg', 0.8);
+            // Base64として返す（品質を下げてサイズ削減）
+            // 最初は品質0.5で試す
+            let dataUrl = canvas.toDataURL('image/jpeg', 0.5);
+            
+            // データサイズをチェック（約50KB以下を目標）
+            console.log('画像データサイズ:', Math.round(dataUrl.length / 1024), 'KB');
+            
+            if (dataUrl.length > 50000) {
+                // さらに圧縮が必要な場合は品質を0.3に下げる
+                dataUrl = canvas.toDataURL('image/jpeg', 0.3);
+                console.log('再圧縮後のサイズ:', Math.round(dataUrl.length / 1024), 'KB');
+            }
+            
+            return dataUrl;
         }
 
         // アップロードした画像を削除
@@ -5646,13 +5658,24 @@
                 currentUserProfile.bio = bio;
                 
                 // Supabaseに保存
+                // avatar_urlが大きすぎる場合の対策
+                let avatarUrl = currentUserProfile.avatarImage || null;
+                if (avatarUrl && avatarUrl.length > 65535) {
+                    console.warn('⚠️ 画像データが大きすぎます。圧縮または削除が必要です。');
+                    // 暫定対応：大きすぎる場合はnullにする
+                    avatarUrl = null;
+                    currentUserProfile.avatarImage = null;
+                    currentUserProfile.avatarType = 'emoji';
+                    alert('画像サイズが大きすぎるため、絵文字アバターに変更されました。');
+                }
+                
                 const profileData = {
                     email: currentUser,
                     nickname: currentUserProfile.name,
                     bio: currentUserProfile.bio,
                     avatar_type: currentUserProfile.avatarType || 'emoji',
                     avatar_emoji: currentUserProfile.avatar || '🍰',
-                    avatar_url: currentUserProfile.avatarImage || null,
+                    avatar_url: avatarUrl,
                     updated_at: new Date().toISOString()
                 };
                 
