@@ -1406,23 +1406,37 @@
         @media (max-width: 768px) {
             .popup-actions {
                 gap: 6px;
+                display: flex;
+                flex-direction: column;
             }
             
             .popup-action-btn {
-                flex: 1 1 calc(50% - 3px);
                 min-width: 0;
                 padding: 8px 6px;
                 font-size: 0.85rem;
+                flex: none;
             }
             
             /* 詳細ボタン（3番目）を一番上に表示 */
             .popup-action-btn:nth-child(3) {
                 order: -1;
-                flex: 1 1 100%;
+                width: 100%;
                 background: var(--gradient-primary);
                 color: white;
                 font-weight: 600;
                 border: none;
+                margin-bottom: 6px;
+            }
+            
+            /* 行きたい・行ったボタンを2行目に横並び */
+            .popup-action-btn:nth-child(1),
+            .popup-action-btn:nth-child(2) {
+                display: inline-block;
+                width: calc(50% - 3px);
+            }
+            
+            .popup-action-btn:nth-child(1) {
+                margin-right: 6px;
             }
             
             .popup-action-btn:nth-child(3):hover {
