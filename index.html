@@ -6214,16 +6214,16 @@
             }
         }
         
-        // カテゴリ設定取得（店舗一覧と完全に同じ色設定）
+        // カテゴリ設定取得（マップで実際に使用されている設定と統一）
         function getCategoryConfig(category) {
             const categoryConfig = {
-                'カフェ': { icon: '☕', color: '#8B4513' },
-                '和食': { icon: '🍱', color: '#006400' },
-                '洋食': { icon: '🍽️', color: '#FF6347' },
-                'パン屋': { icon: '🥐', color: '#FFA500' },
-                'スイーツ': { icon: '🧁', color: '#FF69B4' },
-                '販売店': { icon: '🛒', color: '#4169E1' },
-                'その他': { icon: '🏪', color: '#808080' }
+                'カフェ': { icon: '☕', color: '#8B4513' },      // 濃いブラウン
+                '和食': { icon: '🍱', color: '#E74C3C' },       // 鮮やかな赤
+                '洋食': { icon: '🍽️', color: '#3498DB' },      // 鮮やかなブルー
+                'パン屋': { icon: '🥐', color: '#F39C12' },     // 鮮やかなオレンジ
+                'スイーツ': { icon: '🧁', color: '#E91E63' },   // 鮮やかなピンク
+                '販売店': { icon: '🛒', color: '#27AE60' },     // 鮮やかなグリーン
+                'その他': { icon: '🏪', color: '#7F8C8D' }      // グレー
             };
             return categoryConfig[category] || categoryConfig['その他'];
         }
