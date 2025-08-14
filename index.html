@@ -5018,8 +5018,8 @@
                             onclick="event.stopPropagation(); toggleVisitStatus(${store.id}, 'visited')">
                         ✨ 行った
                     </button>
-                    <button class="action-btn detail" onclick="event.stopPropagation(); showStoreDetail(${store.id})">
-                        📍 詳細
+                    <button class="action-btn detail" onclick="event.stopPropagation(); openStoreDetail(${store.id})">
+                        📋 詳細
                     </button>
                 </div>
             `;
@@ -7984,8 +7984,8 @@
                     </div>
                     <div class="history-address">${escapeHtml(store.address || '')}</div>
                     <div class="history-actions">
-                        <button class="history-action-btn" onclick="showStoreOnMap(${store.id})">
-                            地図で見る
+                        <button class="history-action-btn" onclick="openStoreDetail(${store.id})">
+                            詳細を見る
                         </button>
                         <button class="history-action-btn" onclick="toggleVisitStatus(${store.id}, '${type === 'want-to-go' ? 'want_to_go' : 'visited'}')">
                             削除
