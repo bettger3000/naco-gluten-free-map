@@ -793,8 +793,8 @@
 
         /* スマホ版アバターボタン内の画像 */
         .mobile-user-btn img {
-            width: 100%;
-            height: 100%;
+            width: 100% !important;
+            height: 100% !important;
             object-fit: cover;
             border-radius: 50%;
         }
@@ -5772,9 +5772,9 @@
                 const userAvatar = getUserAvatar();
                 let mobileAvatarContent = userAvatar;
                 
-                // 画像アバターの場合はスマホ用にサイズ調整
+                // 画像アバターの場合はインラインスタイルを削除（CSSで制御）
                 if (userAvatar.includes('<img')) {
-                    mobileAvatarContent = userAvatar.replace('width: 24px; height: 24px', 'width: 32px; height: 32px');
+                    mobileAvatarContent = userAvatar.replace(/style="[^"]*"/g, '');
                 }
                 
                 mobileUserBtn.innerHTML = mobileAvatarContent;
@@ -5843,9 +5843,10 @@
                 // スマホ版: 丸いアバターボタン（プロフィール画像対応）
                 let mobileAvatarContent = userAvatar;
                 
-                // 画像アバターの場合はスマホ用にサイズ調整
+                // 画像アバターの場合はスマホ用にサイズを削除（CSSで制御）
                 if (userAvatar.includes('<img')) {
-                    mobileAvatarContent = userAvatar.replace('width: 24px; height: 24px', 'width: 32px; height: 32px');
+                    // インラインスタイルを削除してCSSで制御
+                    mobileAvatarContent = userAvatar.replace(/style="[^"]*"/g, '');
                 }
                 
                 headerActions.innerHTML = `
