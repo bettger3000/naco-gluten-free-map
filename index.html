@@ -6538,10 +6538,10 @@
             const storeGfOptions = store.gluten_free_options ? escapeHtml(store.gluten_free_options) : '';
             const storeDescription = store.description ? escapeHtml(store.description) : '';
             
-            // カテゴリスタイル（店舗一覧と同じ）
+            // カテゴリスタイル（店舗一覧と完全に同じ）
             const config = getCategoryConfig(store.category);
             const categoryBadge = `
-                <span class="category-badge" style="background: ${config.color}15; color: ${config.color}; border: 1px solid ${config.color}30;">
+                <span class="category-tag" style="background: ${config.color}; color: white; padding: 4px 12px; border-radius: 15px; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 4px;">
                     ${config.icon} ${storeCategory}
                 </span>
             `;
