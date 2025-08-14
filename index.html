@@ -7116,6 +7116,52 @@
             }
             
             console.log('✅ 訪問履歴機能初期化完了');
+        
+        // 初期化完了後に店舗カードのボタン状態を更新
+        updateAllStoreCardButtons();
+        }
+        
+        // 全店舗カードのボタン状態を更新
+        function updateAllStoreCardButtons() {
+            console.log('🔄 全店舗カードのボタン状態を更新中...');
+            
+            // 店舗一覧のカードを更新
+            const storeCards = document.querySelectorAll('.store-card');
+            storeCards.forEach(card => {
+                const storeId = card.dataset.storeId;
+                if (storeId) {
+                    updateStoreCardButtons(storeId, card);
+                }
+            });
+            
+            console.log('✅ 店舗カードのボタン状態更新完了');
+        }
+        
+        // 個別店舗カードのボタン状態を更新
+        function updateStoreCardButtons(storeId, cardElement) {
+            const status = userVisitHistory.get(`${storeId}`);
+            const isWantToGo = status === 'want_to_go';
+            const isVisited = status === 'visited';
+            
+            // 「行きたい」ボタンの更新
+            const wantToGoBtn = cardElement.querySelector('.action-btn.want-to-go');
+            if (wantToGoBtn) {
+                if (isWantToGo) {
+                    wantToGoBtn.classList.add('active');
+                } else {
+                    wantToGoBtn.classList.remove('active');
+                }
+            }
+            
+            // 「行った」ボタンの更新
+            const visitedBtn = cardElement.querySelector('.action-btn.visited');
+            if (visitedBtn) {
+                if (isVisited) {
+                    visitedBtn.classList.add('active');
+                } else {
+                    visitedBtn.classList.remove('active');
+                }
+            }
         }
 
         // Supabaseから訪問履歴を読み込み
@@ -7139,6 +7185,9 @@
                         userVisitHistory.set(`${item.store_id}`, item.status);
                     });
                     console.log('✅ Supabaseから訪問履歴を読み込み:', data.length, '件');
+                    
+                    // 読み込み完了後に店舗カードのボタン状態を更新
+                    updateAllStoreCardButtons();
                 }
             } catch (error) {
                 console.error('❌ 訪問履歴読み込み失敗:', error);
