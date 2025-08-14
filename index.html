@@ -561,6 +561,97 @@
             color: #15803d;
         }
 
+        /* PC版店舗カードスタイル */
+        .pc-store-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-light);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .pc-store-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: var(--primary);
+        }
+
+        .pc-store-card.selected {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(152, 216, 200, 0.2);
+        }
+
+        .pc-store-card .store-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .pc-store-card .store-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .pc-store-card .store-distance {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            background: var(--bg-light);
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+
+        .pc-store-card .store-meta {
+            margin-bottom: 12px;
+        }
+
+        .pc-store-card .store-category {
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 12px;
+            color: white;
+            background: var(--primary);
+        }
+
+        .pc-store-card .store-info {
+            margin-bottom: 12px;
+        }
+
+        .pc-store-card .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .pc-store-card .info-icon {
+            flex-shrink: 0;
+            width: 16px;
+            text-align: center;
+        }
+
+        .pc-store-card .store-card-actions {
+            display: flex;
+            gap: 6px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .pc-store-card .action-btn {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            min-height: 36px;
+        }
+
         .store-card:hover::before,
         .store-card.selected::before {
             transform: scaleY(1);
@@ -3944,7 +4035,7 @@
         // PC用店舗カード作成
         function createStoreCard(store) {
             const card = document.createElement('div');
-            card.className = 'store-card';
+            card.className = 'store-card pc-store-card';
             card.dataset.storeId = store.id;
             
             const storeName = escapeHtml(store.name || '');
@@ -3963,25 +4054,43 @@
                 }
             }
             
+            // 訪問ステータスをチェック
+            const visitStatus = userVisitHistory.get(`${store.id}`);
+            const isWantToGo = visitStatus === 'want_to_go';
+            const isVisited = visitStatus === 'visited';
+            
             card.innerHTML = `
                 <div class="store-header">
-                    <h3 class="store-name">${storeName}</h3>
-                    <div class="store-header-right">
-                        <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
-                        ${distanceText ? `<span class="store-distance">📍 ${distanceText}</span>` : ''}
-                    </div>
+                    <div class="store-name">${storeName}</div>
+                    ${distanceText ? `<div class="store-distance">📍 ${distanceText}</div>` : ''}
+                </div>
+                <div class="store-meta">
+                    <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
                 </div>
                 <div class="store-info">
-                    <div class="store-address">
-                        <span class="popup-icon">📍</span>
+                    <div class="info-item">
+                        <span class="info-icon">📍</span>
                         <span>${storeAddress}</span>
                     </div>
                     ${storeGfOptions ? `
-                        <div class="store-gf-type">
-                            <span>✨</span>
+                        <div class="info-item">
+                            <span class="info-icon">✨</span>
                             <span>${storeGfOptions}</span>
                         </div>
                     ` : ''}
+                </div>
+                <div class="store-card-actions">
+                    <button class="action-btn want-to-go ${isWantToGo ? 'active' : ''}" 
+                            onclick="event.stopPropagation(); toggleVisitStatus(${store.id}, 'want_to_go')">
+                        🤍 行きたい
+                    </button>
+                    <button class="action-btn visited ${isVisited ? 'active' : ''}" 
+                            onclick="event.stopPropagation(); toggleVisitStatus(${store.id}, 'visited')">
+                        ✨ 行った
+                    </button>
+                    <button class="action-btn" onclick="event.stopPropagation(); focusOnStore(${store.id})">
+                        🗺️ 地図
+                    </button>
                 </div>
             `;
             
