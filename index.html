@@ -503,7 +503,7 @@
         /* ポップアップ内のアクションボタン */
         .popup-action-btn {
             flex: 1;
-            padding: 12px 16px;
+            padding: 10px 12px;
             border: 1px solid var(--border-light);
             border-radius: 8px;
             background: white;
@@ -515,8 +515,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
-            min-height: 44px;
+            gap: 6px;
+            min-height: 40px;
+            white-space: nowrap;
         }
 
         .popup-action-btn:hover {
@@ -546,6 +547,7 @@
             margin-top: 12px;
             padding-top: 12px;
             border-top: 1px solid var(--border-light);
+            flex-wrap: nowrap;
         }
 
         /* ポップアップボタンのアクティブ状態 */
@@ -1778,6 +1780,8 @@
                 word-wrap: break-word;
                 word-break: break-word;
                 box-sizing: border-box;
+                min-width: 350px;
+                max-width: 420px;
             }
             
             .leaflet-popup-content {
@@ -1857,7 +1861,13 @@
             .desktop-popup .popup-text {
                 flex: 1;
                 word-wrap: break-word;
+                word-break: keep-all;
                 line-height: 1.4;
+            }
+            
+            .desktop-popup .popup-row {
+                margin-bottom: 8px;
+                min-height: 24px;
             }
             
             .desktop-popup .popup-actions {
@@ -1883,6 +1893,17 @@
             /* カスタムポップアップクラス */
             .custom-popup .leaflet-popup-content-wrapper {
                 margin-left: 10px;
+            }
+            
+            .leaflet-popup-content-wrapper {
+                min-width: 300px !important;
+                max-width: 350px !important;
+            }
+            
+            .popup-action-btn {
+                font-size: 13px !important;
+                padding: 8px 10px !important;
+                min-height: 38px !important;
             }
         }
 
