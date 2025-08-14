@@ -4852,7 +4852,7 @@
                 if (customPinMarker && customPinLocation) {
                     hint.textContent = '📍 新しいピン設置・既存ピンダブルタップで削除';
                 } else {
-                    hint.textContent = '📍 地図タップでピン設置・ピンダブルタップで削除';
+                    hint.textContent = '📍 地図タップでピン設置';
                 }
             }
             
@@ -4875,6 +4875,34 @@
             }
         }
         
+        // スマホ用ダブルタップ検出
+        function setupMobileDoubleTap(marker) {
+            let tapCount = 0;
+            let tapTimer = null;
+            
+            marker.on('click', function(e) {
+                tapCount++;
+                
+                if (tapCount === 1) {
+                    // 最初のタップ - 300ms待機
+                    tapTimer = setTimeout(() => {
+                        tapCount = 0;
+                        // 単一タップ時：ピンモードOFF時はガイダンス表示
+                        if (!pinModeActive) {
+                            showPinGuidanceMessage();
+                        }
+                    }, 300);
+                } else if (tapCount === 2) {
+                    // ダブルタップ検出 - ピン削除
+                    clearTimeout(tapTimer);
+                    tapCount = 0;
+                    removeCustomPin();
+                    e.originalEvent?.preventDefault();
+                    e.originalEvent?.stopPropagation();
+                }
+            });
+        }
+        
         // ピンガイダンスメッセージ表示（ピンモードOFF時）
         function showPinGuidanceMessage() {
             // 既存のガイダンスを削除
@@ -4891,7 +4919,7 @@
             if (isDesktop()) {
                 guidance.innerHTML = '📍 ピンモードをオンにして、<br>ダブルクリックで削除できます';
             } else {
-                guidance.innerHTML = '📍 ピンモードをオンにして<br>ダブルタップで削除';
+                guidance.innerHTML = '📍 ダブルタップで削除できます';
             }
             
             const mapContainer = document.querySelector('.map-container');
@@ -5025,19 +5053,23 @@
             customPinLocation = latlng;
             
             // ピンのクリック・ダブルクリックイベントを設定
-            customPinMarker.on('click', function() {
-                if (!pinModeActive) {
-                    // ピンモードOFF時：ガイダンスを表示
-                    showPinGuidanceMessage();
-                }
-            });
-            
-            customPinMarker.on('dblclick', function() {
-                if (pinModeActive) {
-                    // ピンモードON時のみ削除可能
-                    removeCustomPin();
-                }
-            });
+            if (isDesktop()) {
+                // PC版：ピンモードON時のみ削除可能
+                customPinMarker.on('click', function() {
+                    if (!pinModeActive) {
+                        showPinGuidanceMessage();
+                    }
+                });
+                
+                customPinMarker.on('dblclick', function() {
+                    if (pinModeActive) {
+                        removeCustomPin();
+                    }
+                });
+            } else {
+                // スマホ版：ピンモードに関係なくダブルタップで削除可能
+                setupMobileDoubleTap(customPinMarker);
+            }
             
             // ピンモードを無効にする
             if (pinModeActive) {
