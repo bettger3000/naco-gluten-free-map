@@ -528,6 +528,24 @@
             background: #f5f5f5;
             color: #666;
         }
+        .store-detail-btn.want-to-go {
+            background: #fff;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        .store-detail-btn.want-to-go.active {
+            background: var(--primary);
+            color: white;
+        }
+        .store-detail-btn.visited {
+            background: #fff;
+            color: var(--success);
+            border: 2px solid var(--success);
+        }
+        .store-detail-btn.visited.active {
+            background: var(--success);
+            color: white;
+        }
 
         .store-detail-btn:hover {
             transform: translateY(-2px);
@@ -6235,6 +6253,11 @@
                     
                     // 画像アップロードイベントリスナーを設定
                     setupImageUploadListener(storeId);
+                    
+                    // ボタン状態を更新
+                    setTimeout(() => {
+                        updateDetailButtons(storeId);
+                    }, 100); // DOM生成後に実行
                 }
                 
             } catch (error) {
@@ -6654,6 +6677,12 @@
                 
                 <!-- アクションボタン -->
                 <div class="store-detail-actions">
+                    <button class="store-detail-btn want-to-go" id="detailWantToGoBtn-${store.id}" onclick="toggleVisitStatus(${store.id}, 'want_to_go'); updateDetailButtons(${store.id})">
+                        🤍 行きたい
+                    </button>
+                    <button class="store-detail-btn visited" id="detailVisitedBtn-${store.id}" onclick="toggleVisitStatus(${store.id}, 'visited'); updateDetailButtons(${store.id})">
+                        ✨ 行った
+                    </button>
                     <button class="store-detail-btn secondary" onclick="closeStoreDetail()">
                         閉じる
                     </button>
@@ -6895,8 +6924,8 @@
                             onclick="event.stopPropagation(); toggleVisitStatus(${store.id}, 'visited')">
                         ✨ 行った
                     </button>
-                    <button class="action-btn" onclick="event.stopPropagation(); focusOnStore(${store.id})">
-                        🗺️ 地図
+                    <button class="action-btn" onclick="event.stopPropagation(); openStoreDetail(${store.id})">
+                        📋 詳細
                     </button>
                 </div>
             `;
@@ -7195,6 +7224,33 @@
                     btn.classList.remove('active');
                 }
             });
+        }
+        
+        // 詳細モーダル内のボタン状態を更新
+        function updateDetailButtons(storeId) {
+            const status = userVisitHistory.get(`${storeId}`);
+            const isWantToGo = status === 'want_to_go';
+            const isVisited = status === 'visited';
+            
+            // 詳細モーダル内の「行きたい」ボタンを更新
+            const detailWantBtn = document.getElementById(`detailWantToGoBtn-${storeId}`);
+            if (detailWantBtn) {
+                if (isWantToGo) {
+                    detailWantBtn.classList.add('active');
+                } else {
+                    detailWantBtn.classList.remove('active');
+                }
+            }
+            
+            // 詳細モーダル内の「行った」ボタンを更新
+            const detailVisitedBtn = document.getElementById(`detailVisitedBtn-${storeId}`);
+            if (detailVisitedBtn) {
+                if (isVisited) {
+                    detailVisitedBtn.classList.add('active');
+                } else {
+                    detailVisitedBtn.classList.remove('active');
+                }
+            }
         }
 
         // Supabaseから訪問履歴を読み込み
@@ -7805,8 +7861,8 @@
                             onclick="toggleVisitStatus(${store.id}, 'visited')">
                         ✨ 行った
                     </button>
-                    <button class="action-btn" onclick="focusOnStore(${store.id})">
-                        🗺️ 地図
+                    <button class="action-btn" onclick="openStoreDetail(${store.id})">
+                        📋 詳細
                     </button>
                 </div>
             `;
@@ -8714,8 +8770,8 @@
                             onclick="toggleVisitStatus(${store.id}, 'visited')">
                         ✨ 行った
                     </button>
-                    <button class="action-btn" onclick="focusOnStore(${store.id})">
-                        🗺️ 地図
+                    <button class="action-btn" onclick="openStoreDetail(${store.id})">
+                        📋 詳細
                     </button>
                 </div>
             `;
