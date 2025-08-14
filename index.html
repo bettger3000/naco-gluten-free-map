@@ -4319,8 +4319,23 @@
         async function initVisitHistory() {
             console.log('📝 訪問履歴機能初期化開始');
             
-            // 現在のユーザーを設定（Google認証確認）
-            await checkAuthentication();
+            // Supabaseクライアントの準備を待つ
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // 認証状態変更の監視を設定
+            setupAuthStateListener();
+            
+            // 認証確認を少し遅らせて実行
+            setTimeout(async () => {
+                await checkAuthentication();
+                console.log('🔄 遅延認証確認完了');
+            }, 200);
+            
+            // 一旦デモモードで続行
+            if (!currentUser) {
+                currentUser = 'demo_user@example.com';
+                console.log('⏳ 認証確認を並行実行中、デモモードで開始');
+            }
             
             // Supabaseから訪問履歴を読み込み
             await loadVisitHistoryFromSupabase();
@@ -4535,26 +4550,63 @@
             }, 200);
         }
 
+        // 認証状態変更の監視設定
+        function setupAuthStateListener() {
+            console.log('👁️ 認証状態変更の監視を開始');
+            
+            supabaseClient.auth.onAuthStateChange((event, session) => {
+                console.log('🔄 認証状態変更:', event, session ? `user: ${session.user.email}` : 'no session');
+                
+                if (event === 'SIGNED_IN' && session) {
+                    currentUser = session.user.email;
+                    console.log('✅ ログイン成功:', currentUser);
+                    
+                    // 訪問履歴を再読み込み
+                    loadVisitHistoryFromSupabase();
+                    
+                } else if (event === 'SIGNED_OUT') {
+                    console.log('🚪 ログアウト');
+                    currentUser = 'demo_user@example.com';
+                    userVisitHistory.clear();
+                    
+                } else if (event === 'TOKEN_REFRESHED' && session) {
+                    console.log('🔄 トークン更新:', session.user.email);
+                    currentUser = session.user.email;
+                }
+            });
+        }
+
         // 認証確認
         async function checkAuthentication() {
             try {
                 console.log('🔐 認証状態を確認中...');
                 
-                const { data: { user }, error } = await supabaseClient.auth.getUser();
+                // まずセッションを確認
+                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
                 
-                if (error) {
-                    console.warn('⚠️ 認証確認エラー、デモモードで続行:', error.message || error);
-                    currentUser = 'demo_user@example.com';
+                if (sessionError) {
+                    console.warn('⚠️ セッション確認エラー:', sessionError.message);
+                } else if (session && session.user) {
+                    currentUser = session.user.email;
+                    console.log('✅ セッションから認証済みユーザーを確認:', currentUser);
                     return;
                 }
                 
-                if (user && user.email) {
+                // セッションがない場合、ユーザー情報を確認
+                const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+                
+                if (userError) {
+                    console.warn('⚠️ ユーザー確認エラー、デモモードで続行:', userError.message);
+                } else if (user && user.email) {
                     currentUser = user.email;
                     console.log('✅ 認証済みユーザー:', currentUser);
-                } else {
-                    console.log('⚠️ 未認証ユーザー、デモモードで続行');
-                    currentUser = 'demo_user@example.com';
+                    return;
                 }
+                
+                // 両方とも失敗した場合、デモモードに設定
+                console.log('⚠️ 未認証状態、デモモードで続行');
+                currentUser = 'demo_user@example.com';
+                
             } catch (error) {
                 console.warn('⚠️ 認証情報エラー、デモモードで実行:', error.message || error);
                 currentUser = 'demo_user@example.com'; // フォールバック
@@ -5163,8 +5215,60 @@
         // テスト関数をグローバルに公開
         window.insertTestData = insertTestVisitHistory;
 
+        // 認証状態デバッグ機能
+        async function debugAuthentication() {
+            console.log('🔍=== 認証状態デバッグ開始 ===');
+            
+            try {
+                // 1. Supabaseクライアント確認
+                console.log('1. Supabaseクライアント:', supabaseClient ? '✅ 初期化済み' : '❌ 未初期化');
+                
+                // 2. セッション確認
+                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+                console.log('2. セッション確認:');
+                if (sessionError) {
+                    console.log('   ❌ セッションエラー:', sessionError);
+                } else if (session) {
+                    console.log('   ✅ セッション存在:', {
+                        user: session.user.email,
+                        expires_at: new Date(session.expires_at * 1000),
+                        access_token: session.access_token ? '存在' : '不在'
+                    });
+                } else {
+                    console.log('   ⚠️ セッション不在');
+                }
+                
+                // 3. ユーザー確認
+                const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+                console.log('3. ユーザー確認:');
+                if (userError) {
+                    console.log('   ❌ ユーザーエラー:', userError);
+                } else if (user) {
+                    console.log('   ✅ ユーザー存在:', {
+                        email: user.email,
+                        id: user.id,
+                        created_at: user.created_at
+                    });
+                } else {
+                    console.log('   ⚠️ ユーザー不在');
+                }
+                
+                // 4. 現在の状態
+                console.log('4. 現在の認証状態:', {
+                    currentUser: currentUser,
+                    isDemo: currentUser === 'demo_user@example.com'
+                });
+                
+            } catch (error) {
+                console.error('❌ デバッグ中にエラー:', error);
+            }
+            
+            console.log('🔍=== 認証状態デバッグ終了 ===');
+        }
+
         // テスト実行用のグローバル関数として公開
         window.testSupabase = testSupabaseConnection;
+        window.debugAuthentication = debugAuthentication;
 
         // =======================================
         // カスタムピン機能の実装
