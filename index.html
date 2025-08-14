@@ -131,6 +131,28 @@
             box-shadow: var(--shadow-md);
         }
 
+        .hamburger-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: var(--space-sm);
+            border-radius: var(--radius-lg);
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            transition: all 0.2s ease;
+        }
+
+        .hamburger-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+            background: var(--primary-dark);
+        }
+
         .app-title {
             font-family: var(--font-display);
             font-size: 1.5rem;
@@ -2313,9 +2335,8 @@
                     <span>グルテンフリーマップ</span>
                 </div>
                 <div class="header-actions">
-                    <button id="authBtn" class="auth-btn" onclick="handleAuth()">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span id="authBtnText">ログアウト</span>
+                    <button id="hamburgerBtn" class="hamburger-btn" onclick="toggleHamburgerMenu()">
+                        <i class="fas fa-bars"></i>
                     </button>
                 </div>
             </div>
@@ -4444,6 +4465,12 @@
                 map.setView([lat, lng], zoom);
                 console.log(`📍 マップを移動: ${lat}, ${lng} (zoom: ${zoom})`);
             }
+        }
+
+        // ハンバーガーメニュー切り替え（仮実装）
+        function toggleHamburgerMenu() {
+            console.log('🍔 ハンバーガーメニューボタンがクリックされました');
+            // 今後ここにメニュー表示ロジックを追加
         }
 
         // 現在地取得
