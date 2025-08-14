@@ -153,6 +153,64 @@
             background: var(--primary-dark);
         }
 
+        /* PC版ユーザープロフィールボタン */
+        .user-profile-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-xl);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .user-profile-btn:hover {
+            background: var(--gradient-primary);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .user-profile-btn .user-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+        }
+
+        /* スマホ版アバターボタン */
+        .mobile-user-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: white;
+            border: 2px solid var(--bg-primary);
+            box-shadow: var(--shadow-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mobile-user-btn:hover {
+            transform: translateY(-1px) scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+
         .app-title {
             font-family: var(--font-display);
             font-size: 1.5rem;
@@ -2334,10 +2392,8 @@
                     </div>
                     <span>グルテンフリーマップ</span>
                 </div>
-                <div class="header-actions">
-                    <button id="hamburgerBtn" class="hamburger-btn" onclick="toggleHamburgerMenu()">
-                        <i class="fas fa-bars"></i>
-                    </button>
+                <div class="header-actions" id="headerActions">
+                    <!-- デバイス判定で動的に生成 -->
                 </div>
             </div>
         </header>
@@ -3438,8 +3494,8 @@
             // 5. データベース状態確認
             checkDatabaseStatus();
             
-            // 6. 認証ボタンの初期状態を設定
-            updateAuthButton();
+            // 6. ヘッダーアクションの初期化
+            initializeHeaderActions();
             
             console.log('✅ アプリ初期化完了 - 全機能利用可能');
         }
@@ -4467,10 +4523,49 @@
             }
         }
 
-        // ハンバーガーメニュー切り替え（仮実装）
-        function toggleHamburgerMenu() {
-            console.log('🍔 ハンバーガーメニューボタンがクリックされました');
+        // ユーザーメニュー切り替え
+        function toggleUserMenu() {
+            console.log('👤 ユーザーメニューボタンがクリックされました');
             // 今後ここにメニュー表示ロジックを追加
+        }
+
+        // ヘッダーアクションを初期化
+        function initializeHeaderActions() {
+            const headerActions = document.getElementById('headerActions');
+            if (!headerActions) return;
+            
+            // ユーザー名を取得（仮の実装）
+            const userName = getUserDisplayName();
+            
+            if (isDesktop()) {
+                // PC版: ユーザープロフィールボタン
+                headerActions.innerHTML = `
+                    <button class="user-profile-btn" onclick="toggleUserMenu()">
+                        <div class="user-icon">👤</div>
+                        <span>${userName}</span>
+                        <i class="fas fa-chevron-down" style="font-size: 0.7rem; opacity: 0.7;"></i>
+                    </button>
+                `;
+            } else {
+                // スマホ版: 丸いアバターボタン
+                headerActions.innerHTML = `
+                    <button class="mobile-user-btn" onclick="toggleUserMenu()">
+                        🎀
+                    </button>
+                `;
+            }
+        }
+
+        // ユーザー表示名を取得
+        function getUserDisplayName() {
+            if (currentUser) {
+                // メールアドレスから名前部分を抽出
+                const emailName = currentUser.split('@')[0];
+                // 数字や記号を除去して、見やすい名前に
+                const cleanName = emailName.replace(/[0-9]/g, '').replace(/[._-]/g, '');
+                return cleanName || 'ユーザー';
+            }
+            return 'ゲスト';
         }
 
         // 現在地取得
@@ -5037,12 +5132,12 @@
                     console.log('🚪 ログアウト');
                     currentUser = 'demo_user@example.com';
                     userVisitHistory.clear();
-                    updateAuthButton();
+                    initializeHeaderActions();
                     
                 } else if (event === 'TOKEN_REFRESHED' && session) {
                     console.log('🔄 トークン更新:', session.user.email);
                     currentUser = session.user.email;
-                    updateAuthButton();
+                    initializeHeaderActions();
                 }
             });
         }
@@ -5119,20 +5214,6 @@
             } else {
                 console.log('Google認証を開始...');
                 await signInWithGoogle();
-            }
-        }
-
-        // 認証状態の表示更新
-        function updateAuthButton() {
-            const authBtn = document.getElementById('authBtn');
-            const authBtnText = document.getElementById('authBtnText');
-            
-            if (currentUser) {
-                authBtnText.textContent = 'ログアウト';
-                authBtn.querySelector('i').className = 'fas fa-sign-out-alt';
-            } else {
-                authBtnText.textContent = 'ログイン';
-                authBtn.querySelector('i').className = 'fas fa-user';
             }
         }
 
