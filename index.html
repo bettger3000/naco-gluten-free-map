@@ -7156,6 +7156,8 @@
         // 初期化完了後に店舗カードのボタン状態を更新（遅延実行で他の初期化処理と分離）
         setTimeout(() => {
             updateAllStoreCardButtons();
+            // 検索ボタンのイベントリスナーを強制再設定
+            reinitializeSearchButton();
         }, 100);
         }
         
@@ -7255,6 +7257,43 @@
                 } else {
                     detailVisitedBtn.classList.remove('active');
                 }
+            }
+        }
+        
+        // 検索ボタンのイベントリスナーを強制再設定
+        function reinitializeSearchButton() {
+            console.log('🔄 検索ボタンの強制再設定開始');
+            
+            const searchToggleBtn = document.getElementById('searchToggleBtn');
+            const mobileSearchFilter = document.getElementById('mobileSearchFilter');
+            
+            if (searchToggleBtn && mobileSearchFilter) {
+                // 既存のイベントリスナーをクリア（クローンで置き換え）
+                const newSearchBtn = searchToggleBtn.cloneNode(true);
+                searchToggleBtn.parentNode.replaceChild(newSearchBtn, searchToggleBtn);
+                
+                // 新しいイベントリスナーを設定
+                newSearchBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    console.log('🔍 検索ボタンがクリックされました（強制再設定版）');
+                    
+                    // 検索エリアの表示/非表示を切り替え
+                    if (mobileSearchFilter.classList.contains('show')) {
+                        console.log('🔍 検索エリアを非表示にします');
+                        mobileSearchFilter.classList.remove('show');
+                        newSearchBtn.classList.remove('active');
+                        newSearchBtn.querySelector('.search-icon').textContent = '🔍';
+                    } else {
+                        console.log('🔍 検索エリアを表示します');
+                        mobileSearchFilter.classList.add('show');
+                        newSearchBtn.classList.add('active');
+                        newSearchBtn.querySelector('.search-icon').textContent = '✕';
+                    }
+                });
+                
+                console.log('✅ 検索ボタンの強制再設定完了');
+            } else {
+                console.error('❌ 検索ボタンまたは検索フィルター要素が見つかりません（強制再設定）');
             }
         }
 
