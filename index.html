@@ -3694,16 +3694,25 @@
             }
         }
 
-        // 店舗カード選択
+        // 店舗カード選択（PC版専用）
         function selectStoreCard(storeId) {
+            if (!isDesktop()) return;
+            
+            // 既存の選択を解除
             document.querySelectorAll('.store-card').forEach(card => {
                 card.classList.remove('selected');
             });
 
+            // 該当する店舗カードを選択
             const selectedCard = document.querySelector(`[data-store-id="${storeId}"]`);
             if (selectedCard) {
                 selectedCard.classList.add('selected');
-                selectedCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                // 店舗一覧の一番上にスクロール
+                selectedCard.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start',  // 一番上に配置
+                    inline: 'nearest' 
+                });
             }
         }
 
@@ -3917,19 +3926,6 @@
         }
         
         // 店舗カード選択
-        function selectStoreCard(storeId) {
-            if (!isDesktop()) return;
-            
-            document.querySelectorAll('.store-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            
-            const selectedCard = document.querySelector(`[data-store-id="${storeId}"]`);
-            if (selectedCard) {
-                selectedCard.classList.add('selected');
-                selectedCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-        }
         
         // ウィンドウリサイズ処理
         function handleResize() {
