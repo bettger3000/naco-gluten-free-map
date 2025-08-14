@@ -4046,9 +4046,9 @@
         let mapContextMenu = null;
 
         // DOM読み込み完了後に即座に初期化
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             console.log('⚡ 埋め込みデータ版 - 高速起動');
-            initializeApp();
+            await initializeApp();
         });
 
         // アプリ初期化（認証ガード付き）
@@ -6284,7 +6284,7 @@
         function setupAuthStateListener() {
             console.log('👁️ 認証状態変更の監視を開始');
             
-            supabaseClient.auth.onAuthStateChange((event, session) => {
+            supabaseClient.auth.onAuthStateChange(async (event, session) => {
                 console.log('🔄 認証状態変更:', event, session ? `user: ${session.user.email}` : 'no session');
                 
                 if (event === 'SIGNED_IN' && session) {
