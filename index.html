@@ -2314,8 +2314,8 @@
                 </div>
                 <div class="header-actions">
                     <button id="authBtn" class="auth-btn" onclick="handleAuth()">
-                        <i class="fas fa-user"></i>
-                        <span id="authBtnText">ログイン</span>
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span id="authBtnText">ログアウト</span>
                     </button>
                 </div>
             </div>
@@ -3389,26 +3389,190 @@
             initializeApp();
         });
 
-        // アプリ初期化（超高速）
-        function initializeApp() {
-            console.log('🚀 アプリ初期化開始（埋め込みデータ版）');
+        // アプリ初期化（認証ガード付き）
+        async function initializeApp() {
+            console.log('🚀 アプリ初期化開始（認証チェック）');
             
-            // 1. 即座に店舗データを表示
+            // 1. 認証状態を確認
+            const isAuthenticated = await checkAuthenticationStatus();
+            
+            if (!isAuthenticated) {
+                console.log('🔒 未認証ユーザー - ログイン画面にリダイレクト');
+                showLoginScreen();
+                return;
+            }
+            
+            console.log('✅ 認証済みユーザー - マップ画面を表示');
+            showMapScreen();
+            
+            // 2. 即座に店舗データを表示
             loadEmbeddedStores();
             
-            // 2. 地図を初期化
+            // 3. 地図を初期化
             initMap();
             
-            // 3. イベントリスナー設定
+            // 4. イベントリスナー設定
             setupEventListeners();
             
-            // 4. データベース状態確認
+            // 5. データベース状態確認
             checkDatabaseStatus();
             
-            // 5. 認証ボタンの初期状態を設定
+            // 6. 認証ボタンの初期状態を設定
             updateAuthButton();
             
             console.log('✅ アプリ初期化完了 - 全機能利用可能');
+        }
+
+        // 認証状態チェック
+        async function checkAuthenticationStatus() {
+            try {
+                console.log('🔍 認証状態をチェック中...');
+                
+                // Supabaseセッションチェック
+                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+                
+                if (session && session.user) {
+                    currentUser = session.user.email;
+                    console.log('✅ 有効なセッション:', currentUser);
+                    return true;
+                }
+                
+                // フォールバック: ユーザー情報チェック
+                const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+                
+                if (user && !userError) {
+                    currentUser = user.email;
+                    console.log('✅ 有効なユーザー:', currentUser);
+                    return true;
+                }
+                
+                console.log('❌ 認証セッションなし');
+                return false;
+                
+            } catch (error) {
+                console.error('❌ 認証チェックエラー:', error);
+                return false;
+            }
+        }
+
+        // ログイン画面を表示
+        function showLoginScreen() {
+            document.body.innerHTML = `
+                <div class="login-container">
+                    <div class="login-card">
+                        <div class="login-header">
+                            <img src="nacoキャラクター.png" alt="naco" class="login-logo">
+                            <h1>グルテンフリーマップ</h1>
+                            <p>ビヨフリ倶楽部</p>
+                        </div>
+                        <div class="login-content">
+                            <h2>ログインが必要です</h2>
+                            <p>このサイトは会員限定です。<br>Googleアカウントでログインしてください。</p>
+                            <button id="loginBtn" class="google-login-btn" onclick="performGoogleLogin()">
+                                <i class="fab fa-google"></i>
+                                Googleでログイン
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <style>
+                    .login-container {
+                        min-height: 100vh;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        background: var(--gradient-bg);
+                        padding: var(--space-lg);
+                    }
+                    .login-card {
+                        background: var(--bg-glass);
+                        backdrop-filter: blur(20px);
+                        border-radius: var(--radius-2xl);
+                        padding: var(--space-2xl);
+                        box-shadow: var(--shadow-xl);
+                        text-align: center;
+                        max-width: 400px;
+                        width: 100%;
+                    }
+                    .login-logo {
+                        width: 80px;
+                        height: 80px;
+                        object-fit: contain;
+                        margin-bottom: var(--space-md);
+                    }
+                    .login-header h1 {
+                        color: var(--primary);
+                        font-size: 1.8rem;
+                        margin-bottom: var(--space-xs);
+                    }
+                    .login-header p {
+                        color: var(--text-secondary);
+                        font-size: 1rem;
+                        margin-bottom: var(--space-xl);
+                    }
+                    .login-content h2 {
+                        color: var(--text-primary);
+                        font-size: 1.3rem;
+                        margin-bottom: var(--space-md);
+                    }
+                    .login-content p {
+                        color: var(--text-secondary);
+                        margin-bottom: var(--space-xl);
+                        line-height: 1.6;
+                    }
+                    .google-login-btn {
+                        background: #4285f4;
+                        color: white;
+                        border: none;
+                        padding: var(--space-md) var(--space-xl);
+                        border-radius: var(--radius-lg);
+                        font-size: 1rem;
+                        font-weight: 500;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        gap: var(--space-sm);
+                        width: 100%;
+                        transition: all 0.2s ease;
+                    }
+                    .google-login-btn:hover {
+                        background: #3367d6;
+                        transform: translateY(-1px);
+                        box-shadow: var(--shadow-lg);
+                    }
+                </style>
+            `;
+        }
+
+        // マップ画面を表示
+        function showMapScreen() {
+            // 既存のマップ画面は既に表示されているので、何もしない
+            console.log('📍 マップ画面を表示');
+        }
+
+        // Google認証実行
+        async function performGoogleLogin() {
+            try {
+                console.log('🔐 Google認証を開始...');
+                
+                const { data, error } = await supabaseClient.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: window.location.origin
+                    }
+                });
+                
+                if (error) {
+                    console.error('❌ Google認証エラー:', error);
+                    alert('認証に失敗しました。しばらく時間をおいて再度お試しください。');
+                } else {
+                    console.log('✅ Google認証リクエスト送信成功');
+                }
+            } catch (error) {
+                console.error('❌ 認証処理エラー:', error);
+                alert('認証に失敗しました。しばらく時間をおいて再度お試しください。');
+            }
         }
 
         // データベース状態確認（簡略版）
@@ -4596,10 +4760,10 @@
                 if (event === 'SIGNED_IN' && session) {
                     currentUser = session.user.email;
                     console.log('✅ ログイン成功:', currentUser);
-                    updateAuthButton();
                     
-                    // 訪問履歴を再読み込み
-                    loadVisitHistoryFromSupabase();
+                    // ログイン成功時はページをリロードしてマップ画面を表示
+                    console.log('🔄 認証成功によりページをリロード');
+                    window.location.reload();
                     
                 } else if (event === 'SIGNED_OUT') {
                     console.log('🚪 ログアウト');
