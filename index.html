@@ -6214,6 +6214,20 @@
             }
         }
         
+        // カテゴリ設定取得
+        function getCategoryConfig(category) {
+            const categoryConfig = {
+                'カフェ': { icon: '☕', color: '#8B4513' },
+                '和食': { icon: '🍱', color: '#006400' },
+                '洋食': { icon: '🍽️', color: '#FF6347' },
+                'パン屋': { icon: '🥐', color: '#FFA500' },
+                'スイーツ': { icon: '🧁', color: '#FF69B4' },
+                '販売店': { icon: '🛒', color: '#4169E1' },
+                'その他': { icon: '🏪', color: '#808080' }
+            };
+            return categoryConfig[category] || categoryConfig['その他'];
+        }
+        
         // 管理者モード判定
         function isAdminMode() {
             // 開発用: ログインしているユーザーが管理者の場合
