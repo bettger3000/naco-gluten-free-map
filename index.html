@@ -563,6 +563,26 @@
             color: #15803d;
         }
 
+        /* ボタン押下時のアニメーション */
+        @keyframes buttonPress {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(0.95);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* ボタン押下時の一時的な視覚効果 */
+        .action-btn.pressing,
+        .popup-action-btn.pressing {
+            transform: scale(0.95);
+            transition: transform 0.1s ease;
+        }
+
         /* PC版店舗カードスタイル */
         .pc-store-card {
             background: white;
@@ -4353,6 +4373,15 @@
         async function toggleVisitStatus(storeId, status) {
             console.log('📝 訪問ステータス更新:', storeId, status);
             
+            // 即座に視覚的フィードバックを提供
+            const clickedButton = event.target.closest('.action-btn, .popup-action-btn');
+            if (clickedButton) {
+                clickedButton.classList.add('pressing');
+                setTimeout(() => {
+                    clickedButton.classList.remove('pressing');
+                }, 100);
+            }
+            
             if (!currentUser) {
                 alert('ユーザー認証が必要です');
                 return;
@@ -4460,16 +4489,50 @@
         function updateVisitButtonsForStore(storeId) {
             const status = userVisitHistory.get(`${storeId}`);
             
-            // ポップアップ内のボタンを更新
-            const wantBtn = document.querySelector(`.want-to-go-btn[data-store-id="${storeId}"]`);
-            const visitedBtn = document.querySelector(`.visited-btn[data-store-id="${storeId}"]`);
+            // ポップアップ内のボタンを更新（新しいクラス名に対応）
+            const popupWantBtns = document.querySelectorAll(`.popup-action-btn.want-to-go[data-store-id="${storeId}"]`);
+            const popupVisitedBtns = document.querySelectorAll(`.popup-action-btn.visited[data-store-id="${storeId}"]`);
             
-            if (wantBtn) {
-                wantBtn.classList.toggle('active', status === 'want_to_go');
-            }
-            if (visitedBtn) {
-                visitedBtn.classList.toggle('active', status === 'visited');
-            }
+            // 店舗カード内のボタンを更新
+            const cardWantBtns = document.querySelectorAll(`.action-btn.want-to-go[onclick*="${storeId}"]`);
+            const cardVisitedBtns = document.querySelectorAll(`.action-btn.visited[onclick*="${storeId}"]`);
+            
+            // ポップアップのボタン更新
+            popupWantBtns.forEach(btn => {
+                btn.classList.toggle('active', status === 'want_to_go');
+                if (status === 'want_to_go') {
+                    btn.style.animation = 'buttonPress 0.2s ease';
+                }
+            });
+            
+            popupVisitedBtns.forEach(btn => {
+                btn.classList.toggle('active', status === 'visited');
+                if (status === 'visited') {
+                    btn.style.animation = 'buttonPress 0.2s ease';
+                }
+            });
+            
+            // 店舗カードのボタン更新
+            cardWantBtns.forEach(btn => {
+                btn.classList.toggle('active', status === 'want_to_go');
+                if (status === 'want_to_go') {
+                    btn.style.animation = 'buttonPress 0.2s ease';
+                }
+            });
+            
+            cardVisitedBtns.forEach(btn => {
+                btn.classList.toggle('active', status === 'visited');
+                if (status === 'visited') {
+                    btn.style.animation = 'buttonPress 0.2s ease';
+                }
+            });
+            
+            // アニメーション終了後にリセット
+            setTimeout(() => {
+                document.querySelectorAll('.action-btn, .popup-action-btn').forEach(btn => {
+                    btn.style.animation = '';
+                });
+            }, 200);
         }
 
         // 認証確認
