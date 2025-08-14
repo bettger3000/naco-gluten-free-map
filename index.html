@@ -4786,6 +4786,10 @@
 
                     marker.on('click', function() {
                         selectStoreCard(store.id);
+                        // ポップアップが開いた後にボタン状態を更新
+                        setTimeout(() => {
+                            updatePopupButtons(store.id);
+                        }, 100); // 少し遅延させてポップアップのDOM生成を待つ
                     });
 
                     // マーカーにstoreIdを保存
@@ -7131,10 +7135,12 @@
                 const storeId = card.dataset.storeId;
                 if (storeId) {
                     updateStoreCardButtons(storeId, card);
+                    // ついでにポップアップのボタンも更新（開いている場合）
+                    updatePopupButtons(storeId);
                 }
             });
             
-            console.log('✅ 店舗カードのボタン状態更新完了');
+            console.log('✅ 店舗カードとポップアップのボタン状態更新完了');
         }
         
         // 個別店舗カードのボタン状態を更新
@@ -7162,6 +7168,33 @@
                     visitedBtn.classList.remove('active');
                 }
             }
+        }
+        
+        // マップポップアップ内のボタン状態を更新
+        function updatePopupButtons(storeId) {
+            const status = userVisitHistory.get(`${storeId}`);
+            const isWantToGo = status === 'want_to_go';
+            const isVisited = status === 'visited';
+            
+            // ポップアップ内の「行きたい」ボタンを更新
+            const popupWantBtns = document.querySelectorAll(`.popup-action-btn.want-to-go[data-store-id="${storeId}"]`);
+            popupWantBtns.forEach(btn => {
+                if (isWantToGo) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // ポップアップ内の「行った」ボタンを更新
+            const popupVisitedBtns = document.querySelectorAll(`.popup-action-btn.visited[data-store-id="${storeId}"]`);
+            popupVisitedBtns.forEach(btn => {
+                if (isVisited) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
         }
 
         // Supabaseから訪問履歴を読み込み
