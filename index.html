@@ -2522,8 +2522,8 @@
         
         .panel-tabs {
             display: flex;
-            gap: var(--space-md);
-            padding: 0 var(--space-lg) var(--space-sm);
+            gap: 0;
+            padding: 0 var(--space-lg) 0;
             border-bottom: 1px solid var(--border-light);
             background: white;
             flex-shrink: 0;
@@ -2531,6 +2531,7 @@
         }
         
         .panel-tab {
+            flex: 1;
             padding: var(--space-sm) var(--space-md);
             border: none;
             background: none;
@@ -2539,6 +2540,7 @@
             cursor: pointer;
             position: relative;
             transition: color 0.2s;
+            text-align: center;
         }
         
         .panel-tab.active {
