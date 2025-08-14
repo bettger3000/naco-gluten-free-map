@@ -379,6 +379,19 @@
             font-size: 2rem;
             color: white;
             box-shadow: 0 4px 12px rgba(152, 216, 200, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .avatar-circle.image-avatar {
+            background: none;
+            padding: 0;
+        }
+
+        .avatar-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .avatar-edit-btn {
@@ -438,12 +451,117 @@
             gap: var(--space-lg);
         }
 
+        /* アバタータブ */
+        .avatar-tabs {
+            display: flex;
+            gap: var(--space-xs);
+            margin: var(--space-md) 0;
+            justify-content: center;
+        }
+
+        .avatar-tab {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-xs) var(--space-sm);
+            border: 2px solid #e5e7eb;
+            background: #ffffff;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .avatar-tab.active {
+            border-color: var(--primary);
+            background: var(--bg-light);
+            color: var(--primary);
+        }
+
+        .avatar-tab:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
         .avatar-options {
             display: flex;
             gap: var(--space-sm);
             justify-content: center;
             flex-wrap: wrap;
             margin-top: var(--space-sm);
+        }
+
+        /* 画像アップロード */
+        .image-upload-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-top: var(--space-sm);
+        }
+
+        .upload-btn {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-sm) var(--space-md);
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(152, 216, 200, 0.4);
+        }
+
+        .upload-info {
+            text-align: center;
+            color: #6b7280;
+        }
+
+        .image-preview {
+            position: relative;
+            margin-top: var(--space-sm);
+        }
+
+        .image-preview img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+            box-shadow: 0 4px 12px rgba(152, 216, 200, 0.3);
+        }
+
+        .remove-image-btn {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 24px;
+            height: 24px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.2s ease;
+        }
+
+        .remove-image-btn:hover {
+            background: #c82333;
+            transform: scale(1.1);
         }
 
         .avatar-option {
@@ -5014,6 +5132,8 @@
         // プロフィール関連の変数
         let currentUserProfile = {
             avatar: '👤',
+            avatarType: 'emoji', // 'emoji' or 'image'
+            avatarImage: null, // Base64画像データ
             name: '',
             email: '',
             bio: '',
@@ -5051,7 +5171,28 @@
 
         // プロフィール表示を更新
         function updateProfileDisplay() {
-            document.getElementById('userAvatar').textContent = currentUserProfile.avatar;
+            const userAvatar = document.getElementById('userAvatar');
+            const editAvatar = document.getElementById('editAvatar');
+            
+            // アバター表示を更新
+            if (currentUserProfile.avatarType === 'image' && currentUserProfile.avatarImage) {
+                // 画像アバターの場合
+                userAvatar.innerHTML = `<img src="${currentUserProfile.avatarImage}" alt="プロフィール画像">`;
+                userAvatar.className = 'avatar-circle image-avatar';
+                if (editAvatar) {
+                    editAvatar.innerHTML = `<img src="${currentUserProfile.avatarImage}" alt="プロフィール画像">`;
+                    editAvatar.className = 'avatar-circle image-avatar';
+                }
+            } else {
+                // 絵文字アバターの場合
+                userAvatar.textContent = currentUserProfile.avatar;
+                userAvatar.className = 'avatar-circle';
+                if (editAvatar) {
+                    editAvatar.textContent = currentUserProfile.avatar;
+                    editAvatar.className = 'avatar-circle';
+                }
+            }
+            
             document.getElementById('displayName').textContent = currentUserProfile.name || '-';
             document.getElementById('displayEmail').textContent = currentUserProfile.email;
             document.getElementById('displayJoinDate').textContent = currentUserProfile.joinDate;
@@ -5068,9 +5209,23 @@
         // プロフィール編集モードに切り替え
         function editProfile() {
             // 編集フォームに現在の値を設定
-            document.getElementById('editAvatar').textContent = currentUserProfile.avatar;
             document.getElementById('editName').value = currentUserProfile.name || '';
             document.getElementById('editBio').value = currentUserProfile.bio || '';
+            
+            // アバター表示を更新
+            updateProfileDisplay();
+            
+            // タブ設定
+            const avatarType = currentUserProfile.avatarType || 'emoji';
+            showAvatarTypeByValue(avatarType);
+            
+            // 画像プレビューの設定
+            if (avatarType === 'image' && currentUserProfile.avatarImage) {
+                document.getElementById('previewImg').src = currentUserProfile.avatarImage;
+                document.getElementById('imagePreview').style.display = 'block';
+            } else {
+                document.getElementById('imagePreview').style.display = 'none';
+            }
             
             // 文字数カウントを更新
             updateCharCount();
@@ -5083,6 +5238,24 @@
             document.getElementById('profileEdit').style.display = 'flex';
         }
 
+        // アバタータイプを値で設定
+        function showAvatarTypeByValue(type) {
+            // タブの表示切り替え
+            document.querySelectorAll('.avatar-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            if (type === 'emoji') {
+                document.querySelector('.avatar-tab:first-child').classList.add('active');
+                document.getElementById('emojiAvatars').style.display = 'flex';
+                document.getElementById('imageUpload').style.display = 'none';
+            } else {
+                document.querySelector('.avatar-tab:last-child').classList.add('active');
+                document.getElementById('emojiAvatars').style.display = 'none';
+                document.getElementById('imageUpload').style.display = 'flex';
+            }
+        }
+
         // プロフィール表示モードに戻す
         function showProfileView() {
             document.getElementById('profileEdit').style.display = 'none';
@@ -5092,8 +5265,130 @@
         // アバター選択
         function selectAvatar(emoji) {
             currentUserProfile.avatar = emoji;
-            document.getElementById('editAvatar').textContent = emoji;
+            currentUserProfile.avatarType = 'emoji';
+            currentUserProfile.avatarImage = null;
+            
+            const editAvatar = document.getElementById('editAvatar');
+            editAvatar.textContent = emoji;
+            editAvatar.className = 'avatar-circle';
+            editAvatar.innerHTML = emoji; // imgタグを削除
+            
             updateAvatarSelection();
+            
+            // 画像プレビューを非表示
+            document.getElementById('imagePreview').style.display = 'none';
+        }
+
+        // アバタータイプ切り替え
+        function showAvatarType(type) {
+            // タブの表示切り替え
+            document.querySelectorAll('.avatar-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.closest('.avatar-tab').classList.add('active');
+            
+            // コンテンツの表示切り替え
+            if (type === 'emoji') {
+                document.getElementById('emojiAvatars').style.display = 'flex';
+                document.getElementById('imageUpload').style.display = 'none';
+            } else {
+                document.getElementById('emojiAvatars').style.display = 'none';
+                document.getElementById('imageUpload').style.display = 'flex';
+            }
+        }
+
+        // 画像アップロード処理
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // ファイルサイズチェック (2MB制限)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('ファイルサイズが2MBを超えています。より小さなファイルを選択してください。');
+                return;
+            }
+            
+            // ファイルタイプチェック
+            if (!file.type.startsWith('image/')) {
+                alert('画像ファイルを選択してください。');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    // 画像をリサイズ
+                    const resizedImage = resizeImage(img, 200, 200);
+                    
+                    // プロフィールに設定
+                    currentUserProfile.avatarType = 'image';
+                    currentUserProfile.avatarImage = resizedImage;
+                    
+                    // プレビュー表示
+                    document.getElementById('previewImg').src = resizedImage;
+                    document.getElementById('imagePreview').style.display = 'block';
+                    
+                    // 編集用アバターも更新
+                    const editAvatar = document.getElementById('editAvatar');
+                    editAvatar.innerHTML = `<img src="${resizedImage}" alt="プロフィール画像">`;
+                    editAvatar.className = 'avatar-circle image-avatar';
+                    
+                    console.log('✅ 画像アップロード完了');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 画像リサイズ関数
+        function resizeImage(img, maxWidth, maxHeight) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // アスペクト比を保持してリサイズ
+            let { width, height } = img;
+            
+            if (width > height) {
+                if (width > maxWidth) {
+                    height = (height * maxWidth) / width;
+                    width = maxWidth;
+                }
+            } else {
+                if (height > maxHeight) {
+                    width = (width * maxHeight) / height;
+                    height = maxHeight;
+                }
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            // 画像を描画
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Base64として返す
+            return canvas.toDataURL('image/jpeg', 0.8);
+        }
+
+        // アップロードした画像を削除
+        function removeUploadedImage() {
+            currentUserProfile.avatarType = 'emoji';
+            currentUserProfile.avatarImage = null;
+            
+            // プレビューを非表示
+            document.getElementById('imagePreview').style.display = 'none';
+            
+            // デフォルトの絵文字に戻す
+            const editAvatar = document.getElementById('editAvatar');
+            editAvatar.textContent = currentUserProfile.avatar;
+            editAvatar.className = 'avatar-circle';
+            editAvatar.innerHTML = currentUserProfile.avatar;
+            
+            // ファイル入力をクリア
+            document.getElementById('avatarImageInput').value = '';
+            
+            console.log('🗑️ アップロード画像を削除');
         }
 
         // アバター選択状態を更新
@@ -5152,6 +5447,8 @@
             // LocalStorageに保存
             localStorage.setItem(`profile_${currentUser}`, JSON.stringify({
                 avatar: currentUserProfile.avatar,
+                avatarType: currentUserProfile.avatarType,
+                avatarImage: currentUserProfile.avatarImage,
                 name: currentUserProfile.name,
                 bio: currentUserProfile.bio
             }));
@@ -7189,13 +7486,45 @@
                 <div class="profile-edit" id="profileEdit" style="display: none;">
                     <div class="profile-avatar">
                         <div class="avatar-circle" id="editAvatar">👤</div>
-                        <div class="avatar-options">
+                        
+                        <!-- アバター選択タブ -->
+                        <div class="avatar-tabs">
+                            <button class="avatar-tab active" onclick="showAvatarType('emoji')">
+                                <i class="fas fa-smile"></i>
+                                絵文字
+                            </button>
+                            <button class="avatar-tab" onclick="showAvatarType('image')">
+                                <i class="fas fa-camera"></i>
+                                画像
+                            </button>
+                        </div>
+                        
+                        <!-- 絵文字アバター選択 -->
+                        <div class="avatar-options" id="emojiAvatars">
                             <button class="avatar-option" onclick="selectAvatar('👤')">👤</button>
                             <button class="avatar-option" onclick="selectAvatar('😊')">😊</button>
                             <button class="avatar-option" onclick="selectAvatar('🌸')">🌸</button>
                             <button class="avatar-option" onclick="selectAvatar('🎀')">🎀</button>
                             <button class="avatar-option" onclick="selectAvatar('🍰')">🍰</button>
                             <button class="avatar-option" onclick="selectAvatar('🌟')">🌟</button>
+                        </div>
+                        
+                        <!-- 画像アップロード -->
+                        <div class="image-upload-section" id="imageUpload" style="display: none;">
+                            <input type="file" id="avatarImageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                            <button class="upload-btn" onclick="document.getElementById('avatarImageInput').click()">
+                                <i class="fas fa-upload"></i>
+                                画像を選択
+                            </button>
+                            <div class="upload-info">
+                                <small>JPG, PNG形式 / 最大2MB</small>
+                            </div>
+                            <div class="image-preview" id="imagePreview" style="display: none;">
+                                <img id="previewImg" src="" alt="プレビュー">
+                                <button class="remove-image-btn" onclick="removeUploadedImage()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="profile-form">
