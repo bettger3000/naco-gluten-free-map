@@ -7153,8 +7153,10 @@
             
             console.log('✅ 訪問履歴機能初期化完了');
         
-        // 初期化完了後に店舗カードのボタン状態を更新
-        updateAllStoreCardButtons();
+        // 初期化完了後に店舗カードのボタン状態を更新（遅延実行で他の初期化処理と分離）
+        setTimeout(() => {
+            updateAllStoreCardButtons();
+        }, 100);
         }
         
         // 全店舗カードのボタン状態を更新
@@ -7278,8 +7280,10 @@
                     });
                     console.log('✅ Supabaseから訪問履歴を読み込み:', data.length, '件');
                     
-                    // 読み込み完了後に店舗カードのボタン状態を更新
-                    updateAllStoreCardButtons();
+                    // 読み込み完了後に店舗カードのボタン状態を更新（遅延実行）
+                    setTimeout(() => {
+                        updateAllStoreCardButtons();
+                    }, 150);
                 }
             } catch (error) {
                 console.error('❌ 訪問履歴読み込み失敗:', error);
