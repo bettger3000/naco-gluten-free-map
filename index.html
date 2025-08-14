@@ -4433,6 +4433,14 @@
                         color: var(--primary);
                         font-size: 1.8rem;
                         margin-bottom: var(--space-xs);
+                        white-space: nowrap;
+                    }
+                    
+                    /* スマホでタイトルを1行に表示 */
+                    @media (max-width: 480px) {
+                        .login-header h1 {
+                            font-size: 1.4rem;
+                        }
                     }
                     .login-header p {
                         color: var(--text-secondary);
