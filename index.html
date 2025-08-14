@@ -6017,8 +6017,8 @@
             try {
                 console.log('🏪 店舗詳細を開く:', storeId);
                 
-                // 店舗データを取得
-                const store = storesData.find(s => s.id === storeId);
+                // 店舗データを取得（embeddedStoresを使用）
+                const store = embeddedStores.find(s => s.id === storeId);
                 if (!store) {
                     console.error('店舗が見つかりません:', storeId);
                     return;
