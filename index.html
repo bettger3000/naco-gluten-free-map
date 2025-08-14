@@ -500,6 +500,67 @@
             border-color: var(--success);
         }
 
+        /* ポップアップ内のアクションボタン */
+        .popup-action-btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background: white;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            min-height: 44px;
+        }
+
+        .popup-action-btn:hover {
+            background: var(--bg-light);
+            border-color: var(--primary);
+        }
+
+        .popup-action-btn:active {
+            transform: scale(0.95);
+            background: var(--primary);
+            color: white;
+        }
+
+        .popup-action-btn.want-to-go:active {
+            background: #ec4899;
+            border-color: #ec4899;
+        }
+
+        .popup-action-btn.visited:active {
+            background: #4ade80;
+            border-color: #4ade80;
+        }
+
+        .popup-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        /* ポップアップボタンのアクティブ状態 */
+        .popup-action-btn.want-to-go.active {
+            background: #fdf2f8;
+            border-color: #ec4899;
+            color: #be185d;
+        }
+
+        .popup-action-btn.visited.active {
+            background: #f0fdf4;
+            border-color: #4ade80;
+            color: #15803d;
+        }
+
         .store-card:hover::before,
         .store-card.selected::before {
             transform: scaleY(1);
@@ -3564,6 +3625,11 @@
             const storeWebsite = store.website ? escapeHtml(store.website) : '';
             const storeDescription = store.description ? escapeHtml(store.description) : '';
             
+            // 訪問ステータスをチェック
+            const visitStatus = userVisitHistory.get(`${store.id}`);
+            const isWantToGo = visitStatus === 'want_to_go';
+            const isVisited = visitStatus === 'visited';
+            
             // PC版とモバイル版で異なる情報階層
             if (isDesktop()) {
                 // PC版：店舗名が最上部、その下にカテゴリ
@@ -3614,13 +3680,14 @@
                                 ` : ''}
                             </div>
                             <div class="popup-actions">
-                                <button class="visit-btn want-to-go-btn" onclick="toggleVisitStatus(${store.id}, 'want_to_go')" data-store-id="${store.id}">
-                                    <span class="btn-icon">🤍</span>
-                                    <span class="btn-text">行きたい</span>
+                                <button class="action-btn want-to-go popup-action-btn ${isWantToGo ? 'active' : ''}" onclick="toggleVisitStatus(${store.id}, 'want_to_go')" data-store-id="${store.id}">
+                                    🤍 行きたい
                                 </button>
-                                <button class="visit-btn visited-btn" onclick="toggleVisitStatus(${store.id}, 'visited')" data-store-id="${store.id}">
-                                    <span class="btn-icon">✨</span>
-                                    <span class="btn-text">行った</span>
+                                <button class="action-btn visited popup-action-btn ${isVisited ? 'active' : ''}" onclick="toggleVisitStatus(${store.id}, 'visited')" data-store-id="${store.id}">
+                                    ✨ 行った
+                                </button>
+                                <button class="action-btn popup-action-btn" onclick="focusOnStore(${store.id})">
+                                    🗺️ 地図
                                 </button>
                             </div>
                         </div>
@@ -3679,13 +3746,14 @@
                                 ` : ''}
                             </div>
                             <div class="popup-actions">
-                                <button class="visit-btn want-to-go-btn" onclick="toggleVisitStatus(${store.id}, 'want_to_go')" data-store-id="${store.id}">
-                                    <span class="btn-icon">🤍</span>
-                                    <span class="btn-text">行きたい</span>
+                                <button class="action-btn want-to-go popup-action-btn ${isWantToGo ? 'active' : ''}" onclick="toggleVisitStatus(${store.id}, 'want_to_go')" data-store-id="${store.id}">
+                                    🤍 行きたい
                                 </button>
-                                <button class="visit-btn visited-btn" onclick="toggleVisitStatus(${store.id}, 'visited')" data-store-id="${store.id}">
-                                    <span class="btn-icon">✨</span>
-                                    <span class="btn-text">行った</span>
+                                <button class="action-btn visited popup-action-btn ${isVisited ? 'active' : ''}" onclick="toggleVisitStatus(${store.id}, 'visited')" data-store-id="${store.id}">
+                                    ✨ 行った
+                                </button>
+                                <button class="action-btn popup-action-btn" onclick="focusOnStore(${store.id})">
+                                    🗺️ 地図
                                 </button>
                             </div>
                         </div>
