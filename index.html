@@ -2508,11 +2508,11 @@
         
         /* モバイル版検索・フィルター - 完全に独立したレイアウト */
         .mobile-search-filter {
-            position: fixed;
-            top: 140px; /* 固定値に変更してテスト */
+            position: absolute;
+            top: 0;
             left: 0;
             right: 0;
-            z-index: 1000;
+            z-index: 100;
             background: var(--bg-secondary);
             max-height: 0;
             overflow: hidden;
@@ -2573,6 +2573,15 @@
             max-height: 200px;
             padding: var(--space-md) var(--space-lg);
             border-bottom: 1px solid var(--border-light);
+        }
+        
+        /* タブとコンテンツを包むコンテナ */
+        .panel-main-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            transition: margin-top 0.3s ease;
+            position: relative;
         }
         
         .mobile-search-box {
@@ -3475,13 +3484,15 @@
             </div>
         </div>
         
-        <div class="panel-tabs">
+        <div class="panel-main-content" id="panelMainContent">
+            <div class="panel-tabs">
             <button class="panel-tab active" data-tab="all">すべて</button>
             <button class="panel-tab" data-tab="want-to-go">行きたい</button>
             <button class="panel-tab" data-tab="visited">行った</button>
         </div>
-        <div class="panel-content" id="panelContent">
-            <!-- 店舗リストがここに表示される -->
+            <div class="panel-content" id="panelContent">
+                <!-- 店舗リストがここに表示される -->
+            </div>
         </div>
     </div>
 
@@ -7762,17 +7773,33 @@
                     e.stopPropagation();
                     console.log('🔍 検索ボタンがクリックされました');
                     
+                    const panelMainContent = document.getElementById('panelMainContent');
+                    
                     // 検索エリアの表示/非表示を切り替え
                     if (mobileSearchFilter.classList.contains('show')) {
                         console.log('🔍 検索エリアを非表示にします');
                         mobileSearchFilter.classList.remove('show');
                         searchToggleBtn.classList.remove('active');
                         searchToggleBtn.querySelector('.search-icon').textContent = '🔍';
+                        
+                        // コンテンツエリアを元の位置に戻す
+                        if (panelMainContent) {
+                            panelMainContent.style.marginTop = '0';
+                        }
                     } else {
                         console.log('🔍 検索エリアを表示します');
                         mobileSearchFilter.classList.add('show');
                         searchToggleBtn.classList.add('active');
                         searchToggleBtn.querySelector('.search-icon').textContent = '✕';
+                        
+                        // 検索エリアの高さ分だけコンテンツエリアを下にずらす
+                        if (panelMainContent) {
+                            // 検索エリアの実際の高さを取得
+                            setTimeout(() => {
+                                const searchHeight = mobileSearchFilter.offsetHeight;
+                                panelMainContent.style.marginTop = `${searchHeight}px`;
+                            }, 10);
+                        }
                     }
                 });
                 console.log('🔍 検索ボタンのイベントリスナー設定完了');
