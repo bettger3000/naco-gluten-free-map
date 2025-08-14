@@ -99,9 +99,36 @@
         .header-content {
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             max-width: 1400px;
             margin: 0 auto;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .auth-btn {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-lg);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
         }
 
         .app-title {
@@ -2285,6 +2312,12 @@
                     </div>
                     <span>グルテンフリーマップ</span>
                 </div>
+                <div class="header-actions">
+                    <button id="authBtn" class="auth-btn" onclick="handleAuth()">
+                        <i class="fas fa-user"></i>
+                        <span id="authBtnText">ログイン</span>
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -3371,6 +3404,9 @@
             
             // 4. データベース状態確認
             checkDatabaseStatus();
+            
+            // 5. 認証ボタンの初期状態を設定
+            updateAuthButton();
             
             console.log('✅ アプリ初期化完了 - 全機能利用可能');
         }
@@ -4560,6 +4596,7 @@
                 if (event === 'SIGNED_IN' && session) {
                     currentUser = session.user.email;
                     console.log('✅ ログイン成功:', currentUser);
+                    updateAuthButton();
                     
                     // 訪問履歴を再読み込み
                     loadVisitHistoryFromSupabase();
@@ -4568,10 +4605,12 @@
                     console.log('🚪 ログアウト');
                     currentUser = 'demo_user@example.com';
                     userVisitHistory.clear();
+                    updateAuthButton();
                     
                 } else if (event === 'TOKEN_REFRESHED' && session) {
                     console.log('🔄 トークン更新:', session.user.email);
                     currentUser = session.user.email;
+                    updateAuthButton();
                 }
             });
         }
@@ -4634,6 +4673,29 @@
             } catch (error) {
                 console.error('❌ 認証処理エラー:', error);
                 alert('認証に失敗しました。デモモードで続行します。');
+            }
+        }
+
+        // 認証ボタンハンドラー
+        async function handleAuth() {
+            if (currentUser) {
+                await signOut();
+            } else {
+                await signInWithGoogle();
+            }
+        }
+
+        // 認証状態の表示更新
+        function updateAuthButton() {
+            const authBtn = document.getElementById('authBtn');
+            const authBtnText = document.getElementById('authBtnText');
+            
+            if (currentUser) {
+                authBtnText.textContent = 'ログアウト';
+                authBtn.querySelector('i').className = 'fas fa-sign-out-alt';
+            } else {
+                authBtnText.textContent = 'ログイン';
+                authBtn.querySelector('i').className = 'fas fa-user';
             }
         }
 
