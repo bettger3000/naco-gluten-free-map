@@ -108,12 +108,12 @@
         @media (min-width: 769px) {
             .header-content {
                 display: grid;
-                grid-template-columns: 1fr auto 1fr;
+                grid-template-columns: auto 1fr auto;
                 align-items: center;
                 gap: var(--space-lg);
             }
             
-            .title-icon {
+            .app-title .title-icon {
                 grid-column: 1;
                 justify-self: start;
                 width: 50px;
@@ -121,30 +121,18 @@
             }
             
             .app-title {
-                grid-column: 2;
-                justify-self: center;
-                font-family: var(--font-display);
-                font-size: 1.6rem;
-                font-weight: 700;
-                color: var(--primary);
-                display: block;
-                text-align: center;
-                white-space: nowrap;
-            }
-            
-            .app-title .title-icon {
-                display: none; /* PC版では中央配置のためnacoキャラクターを非表示 */
+                display: contents; /* グリッドの子要素として分離 */
             }
             
             .app-title span {
-                display: inline-flex;
-                align-items: center;
-                gap: var(--space-xs);
-            }
-            
-            .app-title span::before {
-                content: "🌸";
-                font-size: 1.2rem;
+                grid-column: 2;
+                justify-self: center;
+                font-family: var(--font-display);
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: var(--primary);
+                white-space: nowrap;
+                text-align: center;
             }
             
             .header-actions {
