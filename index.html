@@ -404,6 +404,65 @@
             font-size: 0.85rem;
             color: var(--text-secondary);
         }
+        .delete-image-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: background-color 0.2s ease;
+        }
+        .delete-image-btn:hover {
+            background: rgba(255, 0, 0, 1);
+        }
+        
+        /* 画像拡大モーダル */
+        .image-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            cursor: pointer;
+        }
+        .image-modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+        }
+        .image-modal-content img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: var(--radius-md);
+        }
+        .image-modal-close {
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
         .store-detail-section h3 {
             font-size: 16px;
@@ -6136,10 +6195,14 @@
                 const modal = document.getElementById('storeDetailModal');
                 if (modal) {
                     modal.style.display = 'block';
+                    modal.dataset.currentStoreId = storeId; // storeIdを保存
                     document.body.style.overflow = 'hidden'; // スクロール防止
                     
                     // 画像を読み込み
                     setTimeout(() => loadStoreImages(storeId), 100);
+                    
+                    // 画像アップロードイベントリスナーを設定
+                    setupImageUploadListener(storeId);
                 }
                 
             } catch (error) {
@@ -6150,9 +6213,158 @@
         
         // 管理者モード判定
         function isAdminMode() {
-            // TODO: 実際の管理者判定ロジックを実装
-            // 現在は常にfalseを返す（開発用）
-            return false;
+            // 開発用: ログインしているユーザーが管理者の場合
+            return currentUser && (
+                currentUser.email === 'kanakugimakoto@gmail.com' ||
+                localStorage.getItem('adminMode') === 'true'
+            );
+        }
+        
+        // 管理者モード切り替え（開発用）
+        function toggleAdminMode() {
+            const current = localStorage.getItem('adminMode') === 'true';
+            localStorage.setItem('adminMode', !current ? 'true' : 'false');
+            console.log('🔧 管理者モード:', !current ? 'ON' : 'OFF');
+            
+            // モーダルが開いている場合は再読み込み
+            const modal = document.getElementById('storeDetailModal');
+            if (modal && modal.style.display === 'block') {
+                const storeId = modal.dataset.currentStoreId;
+                if (storeId) {
+                    openStoreDetail(parseInt(storeId));
+                }
+            }
+        }
+        
+        // 画像アップロードイベントリスナー設定
+        function setupImageUploadListener(storeId) {
+            const fileInput = document.getElementById(`imageUpload-${storeId}`);
+            if (!fileInput) return;
+            
+            fileInput.addEventListener('change', async (event) => {
+                const files = Array.from(event.target.files);
+                if (files.length === 0) return;
+                
+                await handleImageUpload(storeId, files);
+                
+                // ファイル入力をリセット
+                event.target.value = '';
+            });
+        }
+        
+        // 画像アップロード処理
+        async function handleImageUpload(storeId, files) {
+            try {
+                console.log('📤 画像アップロード開始:', files.length, '枚');
+                
+                if (files.length > 3) {
+                    alert('画像は最大3枚まで選択できます。');
+                    return;
+                }
+                
+                // 画像ファイルのみフィルタ
+                const imageFiles = files.filter(file => file.type.startsWith('image/'));
+                if (imageFiles.length !== files.length) {
+                    alert('画像ファイルのみを選択してください。');
+                    return;
+                }
+                
+                // 各画像を処理
+                const processedImages = [];
+                for (const file of imageFiles) {
+                    if (file.size > 10 * 1024 * 1024) { // 10MB制限
+                        alert(`${file.name} は10MBを超えています。`);
+                        continue;
+                    }
+                    
+                    const compressedImage = await compressImage(file);
+                    processedImages.push({
+                        file: compressedImage,
+                        originalName: file.name
+                    });
+                }
+                
+                if (processedImages.length === 0) return;
+                
+                // Supabaseに保存
+                await saveImagesToSupabase(storeId, processedImages);
+                
+                // 表示を更新
+                await loadStoreImages(storeId);
+                
+                console.log('✅ 画像アップロード完了');
+                
+            } catch (error) {
+                console.error('❌ 画像アップロードエラー:', error);
+                alert('画像のアップロードに失敗しました。');
+            }
+        }
+        
+        // 画像圧縮
+        async function compressImage(file, maxWidth = 800, quality = 0.8) {
+            return new Promise((resolve) => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+                
+                img.onload = () => {
+                    // アスペクト比を保持してリサイズ
+                    const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
+                    canvas.width = img.width * ratio;
+                    canvas.height = img.height * ratio;
+                    
+                    // 描画
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    // Blobに変換
+                    canvas.toBlob(resolve, 'image/jpeg', quality);
+                };
+                
+                img.src = URL.createObjectURL(file);
+            });
+        }
+        
+        // Supabaseに画像保存
+        async function saveImagesToSupabase(storeId, images) {
+            try {
+                console.log('💾 Supabaseに画像保存開始');
+                
+                for (const imageData of images) {
+                    // Base64エンコード
+                    const base64 = await fileToBase64(imageData.file);
+                    
+                    const { data, error } = await supabaseClient
+                        .from('store_images')
+                        .insert([{
+                            store_id: storeId,
+                            image_url: base64,
+                            caption: imageData.originalName,
+                            uploaded_by: currentUser?.email || 'admin',
+                            is_primary: false
+                        }]);
+                        
+                    if (error) {
+                        console.error('Supabase保存エラー:', error);
+                        throw error;
+                    }
+                }
+                
+                console.log('✅ 画像Supabase保存完了');
+                
+            } catch (error) {
+                console.error('❌ Supabase画像保存エラー:', error);
+                throw error;
+            }
+        }
+        
+        // ファイルをBase64に変換
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
         }
         
         // 店舗画像を読み込み表示
@@ -6163,20 +6375,122 @@
                 const container = document.getElementById(`storeImagesContainer-${storeId}`);
                 if (!container) return;
                 
-                // TODO: Supabaseから画像データを取得
-                // 現在はプレースホルダー表示
+                // Supabaseから画像データを取得
+                const { data: images, error } = await supabaseClient
+                    .from('store_images')
+                    .select('*')
+                    .eq('store_id', storeId)
+                    .order('created_at', { ascending: true });
+                
+                if (error) {
+                    console.error('画像取得エラー:', error);
+                    throw error;
+                }
+                
+                if (!images || images.length === 0) {
+                    container.innerHTML = `
+                        <div class="store-images-placeholder">
+                            <i class="fas fa-camera"></i>
+                            <p>まだ画像がありません</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // 画像ギャラリーを表示
+                const galleryHTML = images.map(img => `
+                    <div class="store-image-item" onclick="viewImageLarge('${img.image_url}')">
+                        <img src="${img.image_url}" alt="${img.caption || '店舗画像'}" loading="lazy">
+                        ${isAdminMode() ? `
+                            <button class="delete-image-btn" onclick="event.stopPropagation(); deleteImage(${img.id}, ${storeId})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                `).join('');
+                
                 container.innerHTML = `
-                    <div class="store-images-placeholder">
-                        <i class="fas fa-camera"></i>
-                        <p>まだ画像がありません</p>
+                    <div class="store-images-gallery">
+                        ${galleryHTML}
                     </div>
                 `;
                 
-                console.log('✅ 画像読み込み完了（プレースホルダー）');
+                console.log('✅ 画像表示完了:', images.length, '枚');
                 
             } catch (error) {
                 console.error('❌ 店舗画像読み込みエラー:', error);
+                
+                // エラー時はプレースホルダー表示
+                const container = document.getElementById(`storeImagesContainer-${storeId}`);
+                if (container) {
+                    container.innerHTML = `
+                        <div class="store-images-placeholder">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>画像の読み込みに失敗しました</p>
+                        </div>
+                    `;
+                }
             }
+        }
+        
+        // 画像削除
+        async function deleteImage(imageId, storeId) {
+            try {
+                if (!confirm('この画像を削除してもよろしいですか？')) {
+                    return;
+                }
+                
+                console.log('🗑️ 画像削除開始:', imageId);
+                
+                const { error } = await supabaseClient
+                    .from('store_images')
+                    .delete()
+                    .eq('id', imageId);
+                
+                if (error) {
+                    console.error('画像削除エラー:', error);
+                    throw error;
+                }
+                
+                console.log('✅ 画像削除完了');
+                
+                // 表示を更新
+                await loadStoreImages(storeId);
+                
+            } catch (error) {
+                console.error('❌ 画像削除エラー:', error);
+                alert('画像の削除に失敗しました。');
+            }
+        }
+        
+        // 画像拡大表示
+        function viewImageLarge(imageUrl) {
+            const modal = document.createElement('div');
+            modal.className = 'image-modal';
+            modal.innerHTML = `
+                <div class="image-modal-content">
+                    <span class="image-modal-close">&times;</span>
+                    <img src="${imageUrl}" alt="拡大画像">
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // クリックで閉じる
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal || e.target.className === 'image-modal-close') {
+                    document.body.removeChild(modal);
+                }
+            });
+            
+            // ESCキーで閉じる
+            const handleKeydown = (e) => {
+                if (e.key === 'Escape') {
+                    document.body.removeChild(modal);
+                    document.removeEventListener('keydown', handleKeydown);
+                }
+            };
+            document.addEventListener('keydown', handleKeydown);
         }
         
         // 店舗詳細のコンテンツを生成
