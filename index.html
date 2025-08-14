@@ -4678,9 +4678,14 @@
 
         // 認証ボタンハンドラー
         async function handleAuth() {
-            if (currentUser) {
+            console.log('🔘 ログインボタンがクリックされました');
+            console.log('現在のユーザー:', currentUser);
+            
+            if (currentUser && currentUser !== 'demo_user@example.com') {
+                console.log('ログアウト処理を開始...');
                 await signOut();
             } else {
+                console.log('Google認証を開始...');
                 await signInWithGoogle();
             }
         }
