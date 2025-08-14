@@ -270,6 +270,307 @@
             font-weight: inherit;
         }
 
+        /* プロフィールモーダル */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 1300;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-lg);
+        }
+
+        .modal-container {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow: hidden;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-lg);
+            border-bottom: 1px solid #f1f3f4;
+            background: #fafbfc;
+        }
+
+        .modal-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: var(--space-xs);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close-btn:hover {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .modal-body {
+            padding: var(--space-lg);
+            overflow-y: auto;
+            max-height: calc(90vh - 100px);
+        }
+
+        /* プロフィール表示 */
+        .profile-view {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+        }
+
+        .profile-avatar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-sm);
+            position: relative;
+        }
+
+        .avatar-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(152, 216, 200, 0.3);
+        }
+
+        .avatar-edit-btn {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: #ffffff;
+            border: 2px solid #e5e7eb;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.7rem;
+            color: #6b7280;
+            transition: all 0.2s ease;
+        }
+
+        .avatar-edit-btn:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
+        }
+
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .profile-field {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+
+        .profile-field label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .profile-field span {
+            font-size: 1rem;
+            color: var(--text-primary);
+            padding: var(--space-sm) 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        /* プロフィール編集 */
+        .profile-edit {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+        }
+
+        .avatar-options {
+            display: flex;
+            gap: var(--space-sm);
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: var(--space-sm);
+        }
+
+        .avatar-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #e5e7eb;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .avatar-option:hover {
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .avatar-option.selected {
+            border-color: var(--primary);
+            background: var(--bg-light);
+        }
+
+        .profile-form {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: var(--space-sm);
+            border: 2px solid #e5e7eb;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: var(--space-sm);
+            justify-content: flex-end;
+            margin-top: var(--space-md);
+        }
+
+        .btn {
+            padding: var(--space-sm) var(--space-lg);
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(152, 216, 200, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        /* モバイル対応 */
+        @media (max-width: 768px) {
+            .modal-overlay {
+                padding: var(--space-md);
+            }
+            
+            .modal-container {
+                max-height: 95vh;
+            }
+            
+            .modal-header,
+            .modal-body {
+                padding: var(--space-md);
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+
         .auth-btn {
             background: var(--gradient-primary);
             color: white;
@@ -4710,13 +5011,168 @@
             }
         });
 
+        // プロフィール関連の変数
+        let currentUserProfile = {
+            avatar: '👤',
+            name: '',
+            email: '',
+            bio: '',
+            joinDate: ''
+        };
+
         // メニューアイテムの機能実装
         function showUserProfile() {
             console.log('👤 プロフィール画面を表示');
             // メニューを閉じる
             document.getElementById('userMenuDropdown').style.display = 'none';
-            // TODO: プロフィール画面の実装
-            alert('プロフィール機能は準備中です');
+            
+            // プロフィールデータを読み込んで表示
+            loadUserProfile();
+            document.getElementById('profileModal').style.display = 'flex';
+        }
+
+        // プロフィールデータ読み込み
+        function loadUserProfile() {
+            // 現在のユーザー情報を設定
+            currentUserProfile.email = currentUser || 'demo@example.com';
+            currentUserProfile.name = getUserDisplayName();
+            currentUserProfile.joinDate = new Date().toLocaleDateString('ja-JP');
+            
+            // LocalStorageから保存されたプロフィール情報を読み込み
+            const savedProfile = localStorage.getItem(`profile_${currentUser}`);
+            if (savedProfile) {
+                const parsed = JSON.parse(savedProfile);
+                currentUserProfile = { ...currentUserProfile, ...parsed };
+            }
+            
+            // 画面に表示
+            updateProfileDisplay();
+        }
+
+        // プロフィール表示を更新
+        function updateProfileDisplay() {
+            document.getElementById('userAvatar').textContent = currentUserProfile.avatar;
+            document.getElementById('displayName').textContent = currentUserProfile.name || '-';
+            document.getElementById('displayEmail').textContent = currentUserProfile.email;
+            document.getElementById('displayJoinDate').textContent = currentUserProfile.joinDate;
+            document.getElementById('displayBio').textContent = currentUserProfile.bio || '自己紹介がまだ設定されていません';
+        }
+
+        // プロフィールモーダルを閉じる
+        function closeProfileModal() {
+            document.getElementById('profileModal').style.display = 'none';
+            // 編集モードの場合は表示モードに戻す
+            showProfileView();
+        }
+
+        // プロフィール編集モードに切り替え
+        function editProfile() {
+            // 編集フォームに現在の値を設定
+            document.getElementById('editAvatar').textContent = currentUserProfile.avatar;
+            document.getElementById('editName').value = currentUserProfile.name || '';
+            document.getElementById('editBio').value = currentUserProfile.bio || '';
+            
+            // 文字数カウントを更新
+            updateCharCount();
+            
+            // アバター選択状態を更新
+            updateAvatarSelection();
+            
+            // 編集モードを表示
+            document.getElementById('profileView').style.display = 'none';
+            document.getElementById('profileEdit').style.display = 'flex';
+        }
+
+        // プロフィール表示モードに戻す
+        function showProfileView() {
+            document.getElementById('profileEdit').style.display = 'none';
+            document.getElementById('profileView').style.display = 'flex';
+        }
+
+        // アバター選択
+        function selectAvatar(emoji) {
+            currentUserProfile.avatar = emoji;
+            document.getElementById('editAvatar').textContent = emoji;
+            updateAvatarSelection();
+        }
+
+        // アバター選択状態を更新
+        function updateAvatarSelection() {
+            const options = document.querySelectorAll('.avatar-option');
+            options.forEach(option => {
+                option.classList.remove('selected');
+                if (option.textContent === currentUserProfile.avatar) {
+                    option.classList.add('selected');
+                }
+            });
+        }
+
+        // 文字数カウント更新
+        function updateCharCount() {
+            const textarea = document.getElementById('editBio');
+            const counter = document.getElementById('bioCharCount');
+            counter.textContent = textarea.value.length;
+            
+            // 文字数に応じて色を変更
+            if (textarea.value.length > 90) {
+                counter.style.color = '#dc3545';
+            } else if (textarea.value.length > 70) {
+                counter.style.color = '#fd7e14';
+            } else {
+                counter.style.color = '#6b7280';
+            }
+        }
+
+        // プロフィール編集をキャンセル
+        function cancelEdit() {
+            showProfileView();
+        }
+
+        // プロフィールを保存
+        function saveProfile() {
+            // フォームデータを取得
+            const name = document.getElementById('editName').value.trim();
+            const bio = document.getElementById('editBio').value.trim();
+            
+            // バリデーション
+            if (!name) {
+                alert('名前を入力してください');
+                return;
+            }
+            
+            if (bio.length > 100) {
+                alert('自己紹介は100文字以内で入力してください');
+                return;
+            }
+            
+            // プロフィールデータを更新
+            currentUserProfile.name = name;
+            currentUserProfile.bio = bio;
+            
+            // LocalStorageに保存
+            localStorage.setItem(`profile_${currentUser}`, JSON.stringify({
+                avatar: currentUserProfile.avatar,
+                name: currentUserProfile.name,
+                bio: currentUserProfile.bio
+            }));
+            
+            // 表示を更新
+            updateProfileDisplay();
+            
+            // 表示モードに戻す
+            showProfileView();
+            
+            console.log('✅ プロフィールを保存しました');
+            
+            // 成功メッセージ（簡易版）
+            const saveBtn = document.querySelector('.btn-primary');
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = '保存完了！';
+            saveBtn.style.background = '#28a745';
+            setTimeout(() => {
+                saveBtn.textContent = originalText;
+                saveBtn.style.background = '';
+            }, 2000);
         }
 
         function showUserReviews() {
@@ -6667,6 +7123,101 @@
         console.log('📊 店舗数:', embeddedStores.length, '店舗');
         console.log('🧪 Supabaseテスト: コンソールで testSupabase() を実行');
         console.log('🧪 テストデータ挿入: コンソールで insertTestData() を実行');
+
+        // プロフィール関連のイベントリスナー設定
+        document.addEventListener('DOMContentLoaded', function() {
+            // 文字数カウントのイベントリスナー
+            const bioTextarea = document.getElementById('editBio');
+            if (bioTextarea) {
+                bioTextarea.addEventListener('input', updateCharCount);
+            }
+            
+            // モーダル外クリックで閉じる
+            const profileModal = document.getElementById('profileModal');
+            if (profileModal) {
+                profileModal.addEventListener('click', function(e) {
+                    if (e.target === profileModal) {
+                        closeProfileModal();
+                    }
+                });
+            }
+        });
     </script>
+
+    <!-- プロフィールモーダル -->
+    <div class="modal-overlay" id="profileModal" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-user"></i>
+                    プロフィール
+                </h2>
+                <button class="modal-close-btn" onclick="closeProfileModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- プロフィール表示エリア -->
+                <div class="profile-view" id="profileView">
+                    <div class="profile-avatar">
+                        <div class="avatar-circle" id="userAvatar">👤</div>
+                        <button class="avatar-edit-btn" onclick="editProfile()">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                    <div class="profile-info">
+                        <div class="profile-field">
+                            <label>名前</label>
+                            <span id="displayName">-</span>
+                        </div>
+                        <div class="profile-field">
+                            <label>メールアドレス</label>
+                            <span id="displayEmail">-</span>
+                        </div>
+                        <div class="profile-field">
+                            <label>加入日</label>
+                            <span id="displayJoinDate">-</span>
+                        </div>
+                        <div class="profile-field">
+                            <label>自己紹介</label>
+                            <span id="displayBio">自己紹介がまだ設定されていません</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- プロフィール編集エリア -->
+                <div class="profile-edit" id="profileEdit" style="display: none;">
+                    <div class="profile-avatar">
+                        <div class="avatar-circle" id="editAvatar">👤</div>
+                        <div class="avatar-options">
+                            <button class="avatar-option" onclick="selectAvatar('👤')">👤</button>
+                            <button class="avatar-option" onclick="selectAvatar('😊')">😊</button>
+                            <button class="avatar-option" onclick="selectAvatar('🌸')">🌸</button>
+                            <button class="avatar-option" onclick="selectAvatar('🎀')">🎀</button>
+                            <button class="avatar-option" onclick="selectAvatar('🍰')">🍰</button>
+                            <button class="avatar-option" onclick="selectAvatar('🌟')">🌟</button>
+                        </div>
+                    </div>
+                    <div class="profile-form">
+                        <div class="form-group">
+                            <label for="editName">名前</label>
+                            <input type="text" id="editName" placeholder="お名前を入力してください">
+                        </div>
+                        <div class="form-group">
+                            <label for="editBio">自己紹介</label>
+                            <textarea id="editBio" placeholder="自己紹介を入力してください（100文字以内）" maxlength="100"></textarea>
+                            <div class="char-count">
+                                <span id="bioCharCount">0</span>/100文字
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-secondary" onclick="cancelEdit()">キャンセル</button>
+                            <button class="btn btn-primary" onclick="saveProfile()">保存</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
