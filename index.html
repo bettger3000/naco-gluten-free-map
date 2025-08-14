@@ -1399,7 +1399,34 @@
             margin-top: 12px;
             padding-top: 12px;
             border-top: 1px solid var(--border-light);
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
+        }
+        
+        /* スマホ版でのボタンレイアウト調整 */
+        @media (max-width: 768px) {
+            .popup-actions {
+                gap: 6px;
+            }
+            
+            .popup-action-btn {
+                flex: 1 1 calc(50% - 3px);
+                min-width: 0;
+                padding: 8px 6px;
+                font-size: 0.85rem;
+            }
+            
+            .popup-action-btn:nth-child(3) {
+                flex: 1 1 100%;
+                background: var(--gradient-primary);
+                color: white;
+                font-weight: 600;
+                border: none;
+            }
+            
+            .popup-action-btn:nth-child(3):hover {
+                opacity: 0.9;
+                transform: translateY(-1px);
+            }
         }
 
         /* ポップアップボタンのアクティブ状態 */
