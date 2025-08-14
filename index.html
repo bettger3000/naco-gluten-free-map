@@ -1011,6 +1011,11 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: var(--space-md);
+            gap: var(--space-sm);
+        }
+        
+        .sidebar-title-row .pin-mode-btn {
+            flex-shrink: 0;
         }
         
         .sidebar-title {
@@ -1855,6 +1860,21 @@
             pointer-events: none;
         }
         
+        /* PC版でのピンヒント位置調整 */
+        @media (min-width: 1024px) {
+            .pin-mode-hint {
+                top: calc(var(--space-lg) * 2);
+                left: calc(320px + 50%);
+                transform: translateX(-50%);
+            }
+            
+            .pin-guidance-message {
+                top: calc(var(--space-lg) * 2);
+                left: calc(320px + 50%);
+                transform: translateX(-50%);
+            }
+        }
+        
         /* ピンガイダンスメッセージ（ピンモードOFF時） */
         .pin-guidance-message {
             position: absolute;
@@ -1961,6 +1981,9 @@
                     <div class="sidebar-title-row">
                         <h2 class="sidebar-title">店舗リスト</h2>
                         <span class="sidebar-count"><span id="storeCount">62</span>件</span>
+                        <button class="pin-mode-btn" id="pcPinModeBtn" title="ピン設置モード">
+                            <span class="pin-icon">📍</span>
+                        </button>
                     </div>
                     
                     <!-- PC用検索ボックス -->
@@ -4838,10 +4861,19 @@
         function setupPinUIEventListeners() {
             console.log('🎯 ピンUIイベントリスナー設定中...');
             
-            // PC版ピンモードボタン
+            // PC版ピンモードボタン（モバイル版）
             const pinModeBtn = document.getElementById('pinModeBtn');
             if (pinModeBtn) {
                 pinModeBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    togglePinMode();
+                });
+            }
+            
+            // PC版ピンモードボタン（サイドバー）
+            const pcPinModeBtn = document.getElementById('pcPinModeBtn');
+            if (pcPinModeBtn) {
+                pcPinModeBtn.addEventListener('click', function(e) {
                     e.stopPropagation();
                     togglePinMode();
                 });
