@@ -7292,10 +7292,70 @@
                 });
                 
                 console.log('✅ 検索ボタンの強制再設定完了');
+                
+                // 検索エリアの状態をデバッグ出力
+                debugSearchAreaStatus();
             } else {
                 console.error('❌ 検索ボタンまたは検索フィルター要素が見つかりません（強制再設定）');
             }
         }
+        
+        // 検索エリアの状態をデバッグ
+        function debugSearchAreaStatus() {
+            const searchToggleBtn = document.getElementById('searchToggleBtn');
+            const mobileSearchFilter = document.getElementById('mobileSearchFilter');
+            
+            console.log('🔍 検索エリア状態デバッグ:');
+            console.log('- 検索ボタン存在:', !!searchToggleBtn);
+            console.log('- 検索フィルター存在:', !!mobileSearchFilter);
+            
+            if (searchToggleBtn) {
+                console.log('- ボタンクラス:', searchToggleBtn.className);
+                console.log('- アクティブ状態:', searchToggleBtn.classList.contains('active'));
+            }
+            
+            if (mobileSearchFilter) {
+                console.log('- フィルタークラス:', mobileSearchFilter.className);
+                console.log('- show状態:', mobileSearchFilter.classList.contains('show'));
+                console.log('- 表示スタイル:', window.getComputedStyle(mobileSearchFilter).display);
+                console.log('- 最大高さ:', window.getComputedStyle(mobileSearchFilter).maxHeight);
+                console.log('- Z-index:', window.getComputedStyle(mobileSearchFilter).zIndex);
+                console.log('- 位置:', {
+                    top: window.getComputedStyle(mobileSearchFilter).top,
+                    left: window.getComputedStyle(mobileSearchFilter).left,
+                    right: window.getComputedStyle(mobileSearchFilter).right
+                });
+            }
+        }
+        
+        // テスト用: 手動で検索エリアを表示/非表示
+        window.testSearchToggle = function() {
+            console.log('🔧 手動検索テスト実行');
+            const mobileSearchFilter = document.getElementById('mobileSearchFilter');
+            const searchToggleBtn = document.getElementById('searchToggleBtn');
+            
+            if (mobileSearchFilter) {
+                if (mobileSearchFilter.classList.contains('show')) {
+                    mobileSearchFilter.classList.remove('show');
+                    console.log('🔧 検索エリアを非表示にしました');
+                } else {
+                    mobileSearchFilter.classList.add('show');
+                    console.log('🔧 検索エリアを表示しました');
+                }
+                
+                if (searchToggleBtn) {
+                    searchToggleBtn.classList.toggle('active');
+                    const icon = searchToggleBtn.querySelector('.search-icon');
+                    if (icon) {
+                        icon.textContent = mobileSearchFilter.classList.contains('show') ? '✕' : '🔍';
+                    }
+                }
+                
+                debugSearchAreaStatus();
+            } else {
+                console.error('🔧 検索フィルター要素が見つかりません');
+            }
+        };
 
         // Supabaseから訪問履歴を読み込み
         async function loadVisitHistoryFromSupabase() {
