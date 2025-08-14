@@ -5009,6 +5009,10 @@
             const storeWebsite = store.website ? escapeHtml(store.website) : '';
             const storeDescription = store.description ? escapeHtml(store.description) : '';
             
+            // カテゴリバッジ（店舗一覧と同じスタイル）
+            const config = getCategoryConfig(store.category);
+            const categoryBadge = `<span class="category-badge" style="background: ${config.color}15; color: ${config.color}; border: 1px solid ${config.color}30; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">${config.icon} ${storeCategory}</span>`;
+            
             // 訪問ステータスをチェック
             const visitStatus = userVisitHistory.get(`${store.id}`);
             const isWantToGo = visitStatus === 'want_to_go';
@@ -5022,7 +5026,7 @@
                         <div class="popup-header">
                             <div class="popup-header-main">
                                 <h3 class="popup-title">${storeName}</h3>
-                                <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
+                                ${categoryBadge}
                             </div>
                             <button class="popup-close-btn" onclick="closePopup()" title="閉じる">×</button>
                         </div>
@@ -5092,7 +5096,7 @@
                         <div class="popup-scrollable-content">
                             <div class="popup-info-section">
                                 <div class="popup-category-row">
-                                    <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
+                                    ${categoryBadge}
                                 </div>
                                 <div class="popup-row">
                                     <span class="popup-icon">📍</span>
