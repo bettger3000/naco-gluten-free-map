@@ -5656,14 +5656,15 @@
                     updated_at: new Date().toISOString()
                 };
                 
+                // upsertを実行（emailが存在すれば更新、なければ挿入）
                 const { data, error } = await supabaseClient
                     .from('user_profiles')
-                    .upsert(profileData, { 
-                        onConflict: 'email',
-                        returning: 'minimal' 
-                    });
+                    .upsert(profileData);
                     
-                if (error) throw error;
+                if (error) {
+                    console.error('Supabase upsertエラーの詳細:', error);
+                    throw error;
+                }
                 
                 console.log('✅ Supabaseにプロフィール保存完了');
                 
