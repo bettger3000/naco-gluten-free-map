@@ -4807,11 +4807,21 @@
             const hint = document.createElement('div');
             hint.className = 'pin-mode-hint';
             
-            // ピンの有無に応じてメッセージを変更
-            if (customPinMarker && customPinLocation) {
-                hint.textContent = '📍 新しいピン設置・既存ピンダブルタップで削除';
+            // PC版とモバイル版、ピンの有無に応じてメッセージを変更
+            if (isDesktop()) {
+                // PC版
+                if (customPinMarker && customPinLocation) {
+                    hint.innerHTML = '📍 新しいピン設置・<br>既存ピンダブルクリックで削除';
+                } else {
+                    hint.innerHTML = '📍 地図クリックでピン設置・<br>ピンダブルクリックで削除';
+                }
             } else {
-                hint.textContent = '📍 地図タップでピン設置・ピンダブルタップで削除';
+                // モバイル版
+                if (customPinMarker && customPinLocation) {
+                    hint.textContent = '📍 新しいピン設置・既存ピンダブルタップで削除';
+                } else {
+                    hint.textContent = '📍 地図タップでピン設置・ピンダブルタップで削除';
+                }
             }
             
             const mapContainer = document.querySelector('.map-container');
@@ -4844,7 +4854,13 @@
             // 新しいガイダンスを作成
             const guidance = document.createElement('div');
             guidance.className = 'pin-guidance-message';
-            guidance.innerHTML = '📍 ピンモードをオンにして<br>ダブルタップで削除';
+            
+            // PC版とモバイル版で異なるメッセージを表示
+            if (isDesktop()) {
+                guidance.innerHTML = '📍 ピンモードをオンにして、<br>ダブルクリックで削除できます';
+            } else {
+                guidance.innerHTML = '📍 ピンモードをオンにして<br>ダブルタップで削除';
+            }
             
             const mapContainer = document.querySelector('.map-container');
             mapContainer.appendChild(guidance);
