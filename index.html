@@ -347,6 +347,9 @@
             font-size: 12px;
             margin-bottom: 20px;
         }
+        .store-detail-category-container {
+            margin-bottom: 20px;
+        }
 
         .store-detail-section {
             margin-bottom: 25px;
@@ -6521,9 +6524,17 @@
             const storeGfOptions = store.gluten_free_options ? escapeHtml(store.gluten_free_options) : '';
             const storeDescription = store.description ? escapeHtml(store.description) : '';
             
+            // カテゴリスタイル（店舗一覧と同じ）
+            const config = getCategoryConfig(store.category);
+            const categoryBadge = `
+                <span class="category-badge" style="background: ${config.color}15; color: ${config.color}; border: 1px solid ${config.color}30;">
+                    ${config.icon} ${storeCategory}
+                </span>
+            `;
+            
             return `
                 <h2 class="store-detail-title">${storeName}</h2>
-                <span class="store-detail-category">${storeCategory}</span>
+                <div class="store-detail-category-container">${categoryBadge}</div>
                 
                 <!-- 店舗画像ギャラリー -->
                 <div class="store-detail-section">
