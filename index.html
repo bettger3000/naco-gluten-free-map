@@ -785,12 +785,15 @@
         .leaflet-popup-content-wrapper {
             border-radius: var(--radius-lg) !important;
             box-shadow: var(--shadow-xl) !important;
+            max-width: 320px !important;
         }
 
         .leaflet-popup-content {
             margin: var(--space-lg) !important;
             font-family: var(--font-body) !important;
             line-height: 1.6 !important;
+            width: auto !important;
+            max-width: none !important;
         }
 
         /* モバイル用ポップアップ高さ制限 */
@@ -1610,6 +1613,26 @@
             z-index: 700 !important;
         }
         
+        
+        /* PC版でポップアップ位置調整 */
+        @media (min-width: 1025px) {
+            .leaflet-popup {
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+            
+            .leaflet-popup-content-wrapper {
+                white-space: normal;
+                word-wrap: break-word;
+                word-break: break-word;
+                box-sizing: border-box;
+            }
+            
+            .leaflet-popup-content {
+                box-sizing: border-box;
+                overflow-wrap: break-word;
+            }
+        }
         
         /* モバイルでポップアップ位置調整 */
         @media (max-width: 768px) {
