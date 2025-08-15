@@ -3553,12 +3553,27 @@
             const { createClient } = supabase;
             console.log('🔧 createClient関数:', typeof createClient);
             
-            supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            console.log('✅ Supabaseクライアント作成成功');
+            supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                auth: {
+                    flowType: 'pkce',
+                    persistSession: true,
+                    autoRefreshToken: true,
+                }
+            });
+            console.log('✅ Supabaseクライアント作成成功（PKCE有効）');
             console.log('🔗 クライアント詳細:', {
                 url: supabaseClient.supabaseUrl,
-                key: supabaseClient.supabaseKey ? 'あり' : 'なし'
+                key: supabaseClient.supabaseKey ? 'あり' : 'なし',
+                flowType: 'pkce',
+                persistSession: true,
+                autoRefreshToken: true
             });
+            
+            console.log('🔧 Supabaseダッシュボード設定確認:');
+            console.log('   Site URL: https://bettger3000.github.io/naco-gluten-free-map/');
+            console.log('   Redirect URLs:');
+            console.log('     - https://bettger3000.github.io/naco-gluten-free-map/');
+            console.log('     - https://bettger3000.github.io/naco-gluten-free-map/index.html');
         } catch (error) {
             console.error('❌ Supabaseクライアント作成エラー:', error);
             alert('Supabase初期化エラー: ' + error.message);
