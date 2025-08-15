@@ -3614,6 +3614,20 @@
                 </style>
             `;
         }
+        
+        // ログイン画面を非表示
+        function hideLoginScreen() {
+            const loginContainer = document.querySelector('.login-container');
+            if (loginContainer) {
+                loginContainer.style.display = 'none';
+            }
+        }
+        
+        // メインアプリを表示
+        function showMainApp() {
+            // ログイン画面を削除し、メインアプリを表示
+            location.reload(); // シンプルにページをリロードしてメインアプリを表示
+        }
 
         // マップ画面を表示
         function showMapScreen() {
