@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>最小限Supabaseテスト</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        button {
+            background: #ff6b9d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .result {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 最小限Supabaseテスト</h1>
+    
+    <button onclick="testBasicFetch()">1. Fetch APIテスト</button>
+    <button onclick="testSupabaseRaw()">2. Supabase Raw APIテスト</button>
+    <button onclick="testSupabaseClient()">3. Supabaseクライアントテスト</button>
+    
+    <div id="result" class="result">テスト結果がここに表示されます</div>
+
+    <script>
+        const SUPABASE_URL = 'https://hxrmsjfvgctoaxpbukvo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4cm1zamZ2Z2N0b2F4cGJ1a3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MTI3NTAsImV4cCI6MjA3MDQ4ODc1MH0.tM1vDVVhYhh7OHlA1BTj071BfsIzeBG_HatijjtxwLw';
+        
+        const resultDiv = document.getElementById('result');
+        
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString('ja-JP');
+            resultDiv.textContent += `[${timestamp}] ${message}\n`;
+            console.log(`[${timestamp}] ${message}`);
+        }
+        
+        function clearLog() {
+            resultDiv.textContent = '';
+        }
+
+        // 1. 基本的なFetch APIテスト
+        async function testBasicFetch() {
+            clearLog();
+            log('=== Fetch APIテスト開始 ===');
+            
+            try {
+                log('fetch()でSupabaseエンドポイントにアクセス中...');
+                
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/user_profiles?select=email&limit=1`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                log(`HTTPステータス: ${response.status}`);
+                log(`レスポンスOK: ${response.ok}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('✅ Fetch APIテスト成功');
+                    log(`データ: ${JSON.stringify(data)}`);
+                } else {
+                    const errorText = await response.text();
+                    log(`❌ HTTPエラー: ${errorText}`);
+                }
+            } catch (error) {
+                log(`❌ Fetch APIエラー: ${error.message}`);
+                log(`エラータイプ: ${error.constructor.name}`);
+                log(`Stack: ${error.stack}`);
+            }
+        }
+
+        // 2. Supabase REST API直接テスト
+        async function testSupabaseRaw() {
+            clearLog();
+            log('=== Supabase REST API直接テスト開始 ===');
+            
+            try {
+                const startTime = Date.now();
+                log('シンプルなGETリクエストでテスト...');
+                
+                const fetchPromise = fetch(`${SUPABASE_URL}/rest/v1/user_profiles?select=email&limit=1`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('タイムアウト（10秒）')), 10000)
+                );
+                
+                const response = await Promise.race([fetchPromise, timeoutPromise]);
+                const duration = Date.now() - startTime;
+                
+                log(`レスポンス取得: ${duration}ms`);
+                log(`ステータス: ${response.status}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('✅ REST API直接アクセス成功');
+                    log(`データ: ${JSON.stringify(data)}`);
+                } else {
+                    const errorText = await response.text();
+                    log(`❌ REST APIエラー: ${response.status}`);
+                    log(`エラー内容: ${errorText}`);
+                }
+            } catch (error) {
+                const duration = Date.now() - startTime;
+                log(`❌ REST APIテストエラー (${duration}ms): ${error.message}`);
+            }
+        }
+
+        // 3. Supabaseクライアントテスト
+        async function testSupabaseClient() {
+            clearLog();
+            log('=== Supabaseクライアントテスト開始 ===');
+            
+            try {
+                // 異なる設定でクライアント作成
+                log('Supabaseクライアント作成...');
+                const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                    auth: {
+                        persistSession: false,
+                        autoRefreshToken: false
+                    }
+                });
+                
+                log('✅ クライアント作成成功');
+                
+                const startTime = Date.now();
+                log('count()クエリ実行中...');
+                
+                // タイムアウト付きクエリ
+                const queryPromise = supabase
+                    .from('user_profiles')
+                    .select('count()', { count: 'exact', head: true });
+                
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('クライアントタイムアウト（8秒）')), 8000)
+                );
+                
+                const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
+                const duration = Date.now() - startTime;
+                
+                log(`クエリ完了: ${duration}ms`);
+                
+                if (error) {
+                    log(`❌ Supabaseクライアントエラー: ${JSON.stringify(error)}`);
+                } else {
+                    log('✅ Supabaseクライアントテスト成功');
+                    log(`結果: ${JSON.stringify(data)}`);
+                }
+            } catch (error) {
+                const duration = Date.now() - startTime;
+                log(`❌ クライアントテストエラー (${duration}ms): ${error.message}`);
+                log(`エラータイプ: ${error.constructor.name}`);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase詳細デバッグ</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+        }
+        .container {
+            background: #2d2d30;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+        }
+        h1 {
+            color: #4ec9b0;
+            text-align: center;
+            border-bottom: 2px solid #4ec9b0;
+            padding-bottom: 10px;
+        }
+        .test-section {
+            background: #252526;
+            border: 1px solid #3e3e42;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .test-section h2 {
+            color: #dcdcaa;
+            margin-top: 0;
+        }
+        button {
+            background: #0e639c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #1177bb;
+        }
+        .result {
+            background: #1e1e1e;
+            border: 1px solid #464647;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            font-size: 13px;
+            overflow-x: auto;
+        }
+        .success {
+            color: #4ec9b0;
+            border-color: #4ec9b0;
+        }
+        .error {
+            color: #f48771;
+            border-color: #f48771;
+        }
+        .info {
+            color: #dcdcaa;
+            border-color: #dcdcaa;
+        }
+        .warning {
+            color: #ce9178;
+            border-color: #ce9178;
+        }
+        code {
+            background: #3e3e42;
+            padding: 2px 6px;
+            border-radius: 3px;
+            color: #d7ba7d;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .status-success {
+            background: #4ec9b0;
+            box-shadow: 0 0 10px #4ec9b0;
+        }
+        .status-error {
+            background: #f48771;
+            box-shadow: 0 0 10px #f48771;
+        }
+        .status-pending {
+            background: #dcdcaa;
+            box-shadow: 0 0 10px #dcdcaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Supabase詳細デバッグツール</h1>
+        
+        <div class="test-section">
+            <h2>1. 環境設定確認</h2>
+            <button onclick="checkEnvironment()">環境チェック</button>
+            <div id="envResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>2. ネットワーク接続テスト</h2>
+            <button onclick="testNetworkConnection()">ネットワークテスト</button>
+            <div id="networkResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>3. Supabase API直接テスト</h2>
+            <button onclick="testDirectAPI()">REST API直接アクセス</button>
+            <div id="apiResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>4. Supabaseクライアントテスト</h2>
+            <button onclick="testSupabaseClient()">クライアントテスト</button>
+            <div id="clientResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>5. user_profilesテーブルテスト</h2>
+            <button onclick="testUserProfiles()">テーブルクエリテスト</button>
+            <div id="tableResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>6. PIN認証シミュレーション</h2>
+            <button onclick="testPinAuth()">PIN認証テスト</button>
+            <div id="authResult"></div>
+        </div>
+    </div>
+
+    <script>
+        // Supabase設定
+        const SUPABASE_URL = 'https://hxrmsjfvgctoaxpbukvo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4cm1zamZ2Z2N0b2F4cGJ1a3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MTI3NTAsImV4cCI6MjA3MDQ4ODc1MH0.tM1vDVVhYhh7OHlA1BTj071BfsIzeBG_HatijjtxwLw';
+
+        function log(elementId, message, type = 'info') {
+            const resultDiv = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString('ja-JP', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit', fractionalSecondDigits: 3 });
+            const statusClass = type === 'error' ? 'status-error' : type === 'success' ? 'status-success' : 'status-pending';
+            const messageClass = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'info';
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `result ${messageClass}`;
+            messageDiv.innerHTML = `<span class="status-indicator ${statusClass}"></span>[${timestamp}] ${message}`;
+            
+            if (!resultDiv) return;
+            resultDiv.appendChild(messageDiv);
+        }
+
+        function clearLog(elementId) {
+            const resultDiv = document.getElementById(elementId);
+            if (resultDiv) resultDiv.innerHTML = '';
+        }
+
+        // 1. 環境設定確認
+        function checkEnvironment() {
+            clearLog('envResult');
+            log('envResult', '環境設定確認開始...', 'info');
+            
+            // URL確認
+            log('envResult', `Supabase URL: ${SUPABASE_URL}`, 'info');
+            
+            // API Key確認
+            const keyInfo = `API Key: ${SUPABASE_ANON_KEY.substring(0, 20)}...${SUPABASE_ANON_KEY.substring(SUPABASE_ANON_KEY.length - 10)}`;
+            log('envResult', keyInfo, 'info');
+            
+            // API Key長さ確認
+            log('envResult', `API Key長さ: ${SUPABASE_ANON_KEY.length}文字`, 'info');
+            
+            // JWT デコード（簡易版）
+            try {
+                const parts = SUPABASE_ANON_KEY.split('.');
+                if (parts.length === 3) {
+                    const payload = JSON.parse(atob(parts[1]));
+                    log('envResult', `JWT Payload: ${JSON.stringify(payload, null, 2)}`, 'success');
+                    
+                    // 有効期限チェック
+                    if (payload.exp) {
+                        const expDate = new Date(payload.exp * 1000);
+                        const now = new Date();
+                        if (expDate > now) {
+                            log('envResult', `✅ トークン有効期限: ${expDate.toLocaleString('ja-JP')}`, 'success');
+                        } else {
+                            log('envResult', `❌ トークン期限切れ: ${expDate.toLocaleString('ja-JP')}`, 'error');
+                        }
+                    }
+                }
+            } catch (e) {
+                log('envResult', `JWT解析エラー: ${e.message}`, 'warning');
+            }
+            
+            // Supabaseライブラリ確認
+            if (window.supabase) {
+                log('envResult', '✅ Supabaseライブラリ: ロード済み', 'success');
+            } else {
+                log('envResult', '❌ Supabaseライブラリ: 未ロード', 'error');
+            }
+        }
+
+        // 2. ネットワーク接続テスト
+        async function testNetworkConnection() {
+            clearLog('networkResult');
+            log('networkResult', 'ネットワーク接続テスト開始...', 'info');
+            
+            try {
+                const startTime = performance.now();
+                const response = await fetch(SUPABASE_URL, {
+                    method: 'HEAD',
+                    mode: 'cors'
+                });
+                const endTime = performance.now();
+                const duration = (endTime - startTime).toFixed(2);
+                
+                log('networkResult', `ベースURL接続: ${response.ok ? '✅ 成功' : '❌ 失敗'} (${duration}ms)`, response.ok ? 'success' : 'error');
+                log('networkResult', `HTTPステータス: ${response.status} ${response.statusText}`, 'info');
+                
+                // CORS確認
+                const corsHeaders = ['access-control-allow-origin', 'access-control-allow-methods'];
+                corsHeaders.forEach(header => {
+                    const value = response.headers.get(header);
+                    if (value) {
+                        log('networkResult', `CORS ${header}: ${value}`, 'success');
+                    }
+                });
+            } catch (e) {
+                log('networkResult', `❌ ネットワークエラー: ${e.message}`, 'error');
+            }
+        }
+
+        // 3. REST API直接テスト
+        async function testDirectAPI() {
+            clearLog('apiResult');
+            log('apiResult', 'REST API直接アクセステスト開始...', 'info');
+            
+            const endpoints = [
+                { path: '/rest/v1/', method: 'GET', description: 'REST APIルート' },
+                { path: '/rest/v1/user_profiles?limit=1', method: 'GET', description: 'user_profilesテーブル' }
+            ];
+            
+            for (const endpoint of endpoints) {
+                try {
+                    log('apiResult', `テスト: ${endpoint.description}`, 'info');
+                    log('apiResult', `URL: ${SUPABASE_URL}${endpoint.path}`, 'info');
+                    
+                    const startTime = performance.now();
+                    const response = await fetch(`${SUPABASE_URL}${endpoint.path}`, {
+                        method: endpoint.method,
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=minimal'
+                        }
+                    });
+                    const endTime = performance.now();
+                    const duration = (endTime - startTime).toFixed(2);
+                    
+                    log('apiResult', `レスポンス: ${response.status} ${response.statusText} (${duration}ms)`, response.ok ? 'success' : 'error');
+                    
+                    if (response.ok) {
+                        const contentType = response.headers.get('content-type');
+                        log('apiResult', `Content-Type: ${contentType}`, 'info');
+                        
+                        if (contentType && contentType.includes('application/json')) {
+                            const data = await response.json();
+                            log('apiResult', `データ: ${JSON.stringify(data).substring(0, 200)}...`, 'success');
+                        }
+                    } else {
+                        const errorText = await response.text();
+                        log('apiResult', `エラー内容: ${errorText}`, 'error');
+                    }
+                } catch (e) {
+                    log('apiResult', `❌ ${endpoint.description}エラー: ${e.message}`, 'error');
+                }
+            }
+        }
+
+        // 4. Supabaseクライアントテスト
+        async function testSupabaseClient() {
+            clearLog('clientResult');
+            log('clientResult', 'Supabaseクライアントテスト開始...', 'info');
+            
+            try {
+                // クライアント作成
+                log('clientResult', 'クライアント作成中...', 'info');
+                const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                    auth: {
+                        persistSession: false,
+                        autoRefreshToken: false
+                    }
+                });
+                log('clientResult', '✅ クライアント作成成功', 'success');
+                
+                // 基本クエリテスト
+                log('clientResult', '基本クエリ実行中...', 'info');
+                const startTime = performance.now();
+                const { data, error, status, statusText } = await supabase
+                    .from('user_profiles')
+                    .select('email')
+                    .limit(1);
+                const endTime = performance.now();
+                const duration = (endTime - startTime).toFixed(2);
+                
+                log('clientResult', `クエリ実行時間: ${duration}ms`, 'info');
+                log('clientResult', `ステータス: ${status} ${statusText || ''}`, 'info');
+                
+                if (error) {
+                    log('clientResult', `❌ エラー: ${JSON.stringify(error)}`, 'error');
+                } else {
+                    log('clientResult', `✅ 成功: ${JSON.stringify(data)}`, 'success');
+                }
+            } catch (e) {
+                log('clientResult', `❌ 例外エラー: ${e.message}`, 'error');
+                log('clientResult', `スタックトレース: ${e.stack}`, 'error');
+            }
+        }
+
+        // 5. user_profilesテーブルテスト
+        async function testUserProfiles() {
+            clearLog('tableResult');
+            log('tableResult', 'user_profilesテーブルテスト開始...', 'info');
+            
+            try {
+                const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                    auth: {
+                        persistSession: false,
+                        autoRefreshToken: false
+                    }
+                });
+                
+                // すべてのユーザー取得
+                log('tableResult', 'すべてのユーザー取得中...', 'info');
+                const { data, error } = await supabase
+                    .from('user_profiles')
+                    .select('email, pin, is_active, created_at');
+                
+                if (error) {
+                    log('tableResult', `❌ エラー: ${JSON.stringify(error)}`, 'error');
+                } else {
+                    log('tableResult', `✅ ユーザー数: ${data.length}`, 'success');
+                    data.forEach(user => {
+                        log('tableResult', `- ${user.email}: PIN=${user.pin ? '設定済み' : '未設定'}, Active=${user.is_active}`, 'info');
+                    });
+                }
+            } catch (e) {
+                log('tableResult', `❌ 例外エラー: ${e.message}`, 'error');
+            }
+        }
+
+        // 6. PIN認証テスト
+        async function testPinAuth() {
+            clearLog('authResult');
+            log('authResult', 'PIN認証テスト開始...', 'info');
+            
+            const testCases = [
+                { email: 'bettger1000@gmail.com', pin: '1234', expected: 'success' },
+                { email: 'nono511shu123@gmail.com', pin: '5678', expected: 'success' },
+                { email: 'invalid@example.com', pin: '0000', expected: 'fail' }
+            ];
+            
+            try {
+                const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                    auth: {
+                        persistSession: false,
+                        autoRefreshToken: false
+                    }
+                });
+                
+                for (const testCase of testCases) {
+                    log('authResult', `テスト: ${testCase.email} / ${testCase.pin}`, 'info');
+                    
+                    const startTime = performance.now();
+                    const { data, error } = await supabase
+                        .from('user_profiles')
+                        .select('email, nickname, is_active')
+                        .eq('email', testCase.email.toLowerCase())
+                        .eq('pin', testCase.pin)
+                        .eq('is_active', true)
+                        .single();
+                    const endTime = performance.now();
+                    const duration = (endTime - startTime).toFixed(2);
+                    
+                    if (error) {
+                        if (error.code === 'PGRST116' && testCase.expected === 'fail') {
+                            log('authResult', `✅ 期待通り認証失敗 (${duration}ms)`, 'success');
+                        } else {
+                            log('authResult', `❌ エラー: ${error.message} (${duration}ms)`, 'error');
+                        }
+                    } else if (data) {
+                        if (testCase.expected === 'success') {
+                            log('authResult', `✅ 認証成功: ${data.email} (${duration}ms)`, 'success');
+                        } else {
+                            log('authResult', `⚠️ 予期しない成功 (${duration}ms)`, 'warning');
+                        }
+                    }
+                }
+            } catch (e) {
+                log('authResult', `❌ 例外エラー: ${e.message}`, 'error');
+            }
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            log('envResult', 'デバッグツール初期化完了', 'success');
+        });
+    </script>
+</body>
+</html>

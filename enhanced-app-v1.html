@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>グルテンフリーマップ - 拡張版v1</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .login-form {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 400px;
+            text-align: center;
+        }
+        
+        .app-title {
+            color: #ff6b9d;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .login-btn {
+            background: linear-gradient(45deg, #ff6b9d, #4ecdc4);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        .login-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .error {
+            color: #dc3545;
+            margin: 10px 0;
+        }
+        
+        .app-container {
+            display: none;
+            height: 100vh;
+        }
+        
+        .header {
+            background: #ff6b9d;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .content {
+            display: flex;
+            height: calc(100vh - 60px);
+        }
+        
+        .sidebar {
+            width: 380px;
+            background: white;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .search-section {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            background: #f8f9fa;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            background: white;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 35px;
+            top: 32px;
+            color: #999;
+        }
+        
+        .search-input-container {
+            position: relative;
+        }
+        
+        .category-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .category-chip {
+            padding: 6px 12px;
+            border-radius: 15px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        
+        .category-chip:hover {
+            background: #f0f0f0;
+        }
+        
+        .category-chip.active {
+            background: #ff6b9d;
+            color: white;
+            border-color: #ff6b9d;
+        }
+        
+        .stores-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            background: white;
+        }
+        
+        .stores-count {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .clear-filters {
+            background: none;
+            border: none;
+            color: #ff6b9d;
+            cursor: pointer;
+            font-size: 13px;
+            margin-left: 10px;
+        }
+        
+        .map-container {
+            flex: 1;
+        }
+        
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+        
+        .store-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .store-card {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .store-card:hover {
+            background: #f8f9fa;
+        }
+        
+        .store-card.selected {
+            background: #e3f2fd;
+            border-left: 4px solid #ff6b9d;
+        }
+        
+        .store-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .store-category {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        
+        .store-address {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        
+        .category-cafe { background: #8B4513; color: white; }
+        .category-japanese { background: #FF6B6B; color: white; }
+        .category-western { background: #4ECDC4; color: white; }
+        .category-bakery { background: #FFB347; color: white; }
+        .category-sweets { background: #FF69B4; color: white; }
+        .category-shop { background: #32CD32; color: white; }
+        
+        .no-results {
+            padding: 40px 20px;
+            text-align: center;
+            color: #666;
+        }
+        
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        /* マーカーのスタイル */
+        .custom-marker {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        
+        /* レスポンシブ対応 */
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: 40vh;
+                order: 2;
+            }
+            
+            .map-container {
+                height: 60vh;
+                order: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ログイン画面 -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-form">
+            <h1 class="app-title">🍰 グルテンフリーマップ</h1>
+            <p style="margin-bottom: 30px; color: #666;">ビヨグリ倶楽部</p>
+            
+            <div class="form-group">
+                <label>メールアドレス</label>
+                <input type="email" id="email" value="bettger1000@gmail.com">
+            </div>
+            
+            <div class="form-group">
+                <label>PIN (4桁)</label>
+                <input type="text" id="pin" value="1234" maxlength="4">
+            </div>
+            
+            <button class="login-btn" onclick="login()">🔓 ログイン</button>
+            
+            <div id="error" class="error" style="display: none;"></div>
+        </div>
+    </div>
+    
+    <!-- アプリ画面 -->
+    <div id="appScreen" class="app-container">
+        <div class="header">
+            <h1>🍰 グルテンフリーマップ</h1>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                ログアウト
+            </button>
+        </div>
+        
+        <div class="content">
+            <div class="sidebar">
+                <!-- 検索・フィルターセクション -->
+                <div class="search-section">
+                    <div class="search-input-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="searchInput" class="search-input" placeholder="店舗名で検索..." onkeyup="filterStores()">
+                    </div>
+                    
+                    <div class="category-filters">
+                        <div class="category-chip active" data-category="" onclick="selectCategory(this)">すべて</div>
+                        <div class="category-chip" data-category="カフェ" onclick="selectCategory(this)">☕ カフェ</div>
+                        <div class="category-chip" data-category="和食" onclick="selectCategory(this)">🍱 和食</div>
+                        <div class="category-chip" data-category="洋食" onclick="selectCategory(this)">🍝 洋食</div>
+                        <div class="category-chip" data-category="パン屋" onclick="selectCategory(this)">🥖 パン屋</div>
+                        <div class="category-chip" data-category="スイーツ" onclick="selectCategory(this)">🍰 スイーツ</div>
+                        <div class="category-chip" data-category="販売店" onclick="selectCategory(this)">🛒 販売店</div>
+                    </div>
+                </div>
+                
+                <!-- 店舗数表示 -->
+                <div class="stores-header">
+                    <span class="stores-count" id="storeCount">0件の店舗</span>
+                    <button class="clear-filters" onclick="clearFilters()" id="clearBtn" style="display: none;">
+                        <i class="fas fa-times"></i> フィルターをクリア
+                    </button>
+                </div>
+                
+                <!-- 店舗リスト -->
+                <div class="store-list" id="storeList"></div>
+            </div>
+            
+            <div class="map-container">
+                <div id="map"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Supabase設定
+        const SUPABASE_URL = 'https://hxrmsjfvgctoaxpbukvo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4cm1zamZ2Z2N0b2F4cGJ1a3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MTI3NTAsImV4cCI6MjA3MDQ4ODc1MH0.tM1vDVVhYhh7OHlA1BTj071BfsIzeBG_HatijjtxwLw';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: {
+                persistSession: false,
+                autoRefreshToken: false
+            }
+        });
+        
+        let map;
+        let markers = [];
+        let currentUser = null;
+        let selectedCategory = '';
+        let searchText = '';
+        
+        // 拡張された店舗データ
+        const stores = [
+            {
+                id: 1,
+                name: "みちのり弁当（Gluten-Free Michinori Bento）",
+                category: "和食",
+                address: "名古屋市西区浄心１丁目４−６",
+                latitude: 35.2040,
+                longitude: 136.8922,
+                description: "グルテンフリーの和食弁当専門店"
+            },
+            {
+                id: 2,
+                name: "Gluten Free Bakery たんぽぽ",
+                category: "パン屋",
+                address: "名古屋市中区錦三丁目１−３",
+                latitude: 35.1685,
+                longitude: 136.9062,
+                description: "米粉を使ったグルテンフリーパンの専門店"
+            },
+            {
+                id: 3,
+                name: "自然食カフェ みどり",
+                category: "カフェ",
+                address: "名古屋市東区泉１丁目２−３",
+                latitude: 35.1794,
+                longitude: 136.9186,
+                description: "オーガニック食材使用のカフェ"
+            },
+            {
+                id: 4,
+                name: "グルテンフリー洋食レストラン BEYOND",
+                category: "洋食",
+                address: "名古屋市中区栄３丁目１５−３３",
+                latitude: 35.1676,
+                longitude: 136.9040,
+                description: "本格的なグルテンフリー洋食"
+            },
+            {
+                id: 5,
+                name: "スイーツパラダイス セリアック",
+                category: "スイーツ",
+                address: "名古屋市千種区今池１丁目６−２",
+                latitude: 35.1583,
+                longitude: 136.9281,
+                description: "グルテンフリースイーツ専門店"
+            },
+            {
+                id: 6,
+                name: "ヘルシーマート グリーン",
+                category: "販売店",
+                address: "名古屋市昭和区御器所２丁目１−１",
+                latitude: 35.1469,
+                longitude: 136.9345,
+                description: "グルテンフリー食品販売店"
+            }
+        ];
+        
+        // カテゴリー設定
+        function getCategoryConfig(category) {
+            const configs = {
+                'カフェ': { color: '#8B4513', class: 'category-cafe' },
+                '和食': { color: '#FF6B6B', class: 'category-japanese' },
+                '洋食': { color: '#4ECDC4', class: 'category-western' },
+                'パン屋': { color: '#FFB347', class: 'category-bakery' },
+                'スイーツ': { color: '#FF69B4', class: 'category-sweets' },
+                '販売店': { color: '#32CD32', class: 'category-shop' }
+            };
+            return configs[category] || { color: '#808080', class: 'category-other' };
+        }
+        
+        // ログイン処理
+        async function login() {
+            const email = document.getElementById('email').value.trim();
+            const pin = document.getElementById('pin').value.trim();
+            const errorDiv = document.getElementById('error');
+            
+            errorDiv.style.display = 'none';
+            
+            if (!email || !pin) {
+                showError('メールアドレスとPINを入力してください');
+                return;
+            }
+            
+            try {
+                console.log('🔐 PIN認証開始:', email);
+                
+                const { data, error } = await supabase
+                    .from('user_profiles')
+                    .select('email, nickname, is_active')
+                    .eq('email', email.toLowerCase())
+                    .eq('pin', pin)
+                    .eq('is_active', true)
+                    .single();
+                
+                if (error) {
+                    if (error.code === 'PGRST116') {
+                        showError('メールアドレスまたはPINが正しくありません');
+                    } else {
+                        showError('システムエラーが発生しました');
+                        console.error('認証エラー:', error);
+                    }
+                } else if (data) {
+                    console.log('✅ PIN認証成功:', data);
+                    currentUser = data.email;
+                    showApp();
+                } else {
+                    showError('認証に失敗しました');
+                }
+            } catch (e) {
+                console.error('認証エラー:', e);
+                showError('システムエラーが発生しました');
+            }
+        }
+        
+        // エラー表示
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        // アプリ画面表示
+        function showApp() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'block';
+            
+            initMap();
+            displayStores();
+        }
+        
+        // 地図初期化
+        function initMap() {
+            if (map) return;
+            
+            map = L.map('map').setView([35.1815, 136.9066], 13);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            
+            displayMapMarkers(stores);
+        }
+        
+        // マップマーカー表示
+        function displayMapMarkers(storesData) {
+            // 既存マーカーを削除
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+            
+            storesData.forEach(store => {
+                if (store.latitude && store.longitude) {
+                    const config = getCategoryConfig(store.category);
+                    
+                    const marker = L.marker([store.latitude, store.longitude], {
+                        icon: L.divIcon({
+                            className: 'custom-marker',
+                            html: `<div class="custom-marker" style="background: ${config.color};">📍</div>`,
+                            iconSize: [30, 30],
+                            iconAnchor: [15, 15]
+                        })
+                    }).addTo(map);
+                    
+                    marker.bindPopup(`
+                        <div style="min-width: 200px;">
+                            <strong>${store.name}</strong><br>
+                            <span class="store-category ${config.class}">${store.category}</span><br>
+                            <small>${store.address}</small><br>
+                            ${store.description ? `<p style="margin-top: 8px; color: #666; font-size: 13px;">${store.description}</p>` : ''}
+                        </div>
+                    `);
+                    
+                    marker.on('click', () => selectStore(store.id));
+                    markers.push(marker);
+                }
+            });
+        }
+        
+        // 店舗リスト表示
+        function displayStores() {
+            const filteredStores = getFilteredStores();
+            displayStoreList(filteredStores);
+            displayMapMarkers(filteredStores);
+            updateStoreCount(filteredStores.length);
+            updateClearButton();
+        }
+        
+        // フィルター適用
+        function getFilteredStores() {
+            return stores.filter(store => {
+                const matchesCategory = !selectedCategory || store.category === selectedCategory;
+                const matchesSearch = !searchText || 
+                    store.name.toLowerCase().includes(searchText.toLowerCase()) ||
+                    store.address.toLowerCase().includes(searchText.toLowerCase()) ||
+                    store.description.toLowerCase().includes(searchText.toLowerCase());
+                
+                return matchesCategory && matchesSearch;
+            });
+        }
+        
+        // 店舗リスト表示
+        function displayStoreList(storesData) {
+            const storeList = document.getElementById('storeList');
+            
+            if (storesData.length === 0) {
+                storeList.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-search" style="font-size: 2rem; color: #ddd; margin-bottom: 10px;"></i>
+                        <p>条件に合う店舗が見つかりません</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            storeList.innerHTML = storesData.map(store => {
+                const config = getCategoryConfig(store.category);
+                return `
+                    <div class="store-card" onclick="focusStore(${store.id})" data-store-id="${store.id}">
+                        <div class="store-name">${store.name}</div>
+                        <div class="store-category ${config.class}">${store.category}</div>
+                        <div class="store-address">${store.address}</div>
+                        ${store.description ? `<div style="color: #666; font-size: 12px; margin-top: 5px;">${store.description}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // 店舗数更新
+        function updateStoreCount(count) {
+            const storeCount = document.getElementById('storeCount');
+            storeCount.textContent = `${count}件の店舗`;
+        }
+        
+        // クリアボタン表示制御
+        function updateClearButton() {
+            const clearBtn = document.getElementById('clearBtn');
+            const hasFilters = selectedCategory || searchText;
+            clearBtn.style.display = hasFilters ? 'inline' : 'none';
+        }
+        
+        // カテゴリー選択
+        function selectCategory(element) {
+            // すべてのチップから active クラスを削除
+            document.querySelectorAll('.category-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            
+            // 選択されたチップに active クラスを追加
+            element.classList.add('active');
+            
+            selectedCategory = element.dataset.category;
+            displayStores();
+        }
+        
+        // 検索フィルター
+        function filterStores() {
+            searchText = document.getElementById('searchInput').value.trim();
+            displayStores();
+        }
+        
+        // フィルタークリア
+        function clearFilters() {
+            selectedCategory = '';
+            searchText = '';
+            
+            document.getElementById('searchInput').value = '';
+            document.querySelectorAll('.category-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            document.querySelector('.category-chip[data-category=""]').classList.add('active');
+            
+            displayStores();
+        }
+        
+        // 店舗選択
+        function selectStore(storeId) {
+            document.querySelectorAll('.store-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            const selectedCard = document.querySelector(`[data-store-id="${storeId}"]`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+            }
+        }
+        
+        // 店舗にフォーカス
+        function focusStore(storeId) {
+            const store = stores.find(s => s.id === storeId);
+            if (store && store.latitude && store.longitude) {
+                map.setView([store.latitude, store.longitude], 16);
+                selectStore(storeId);
+            }
+        }
+        
+        // ログアウト
+        function logout() {
+            currentUser = null;
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('appScreen').style.display = 'none';
+            
+            // フォームリセット
+            document.getElementById('email').value = 'bettger1000@gmail.com';
+            document.getElementById('pin').value = '1234';
+            document.getElementById('error').style.display = 'none';
+            
+            // フィルターリセット
+            clearFilters();
+        }
+        
+        // Enterキーでログイン
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && document.getElementById('loginScreen').style.display !== 'none') {
+                login();
+            }
+        });
+        
+        // 初期化
+        console.log('🍰 グルテンフリーマップ拡張版v1 初期化完了');
+    </script>
+</body>
+</html>

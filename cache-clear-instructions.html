@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>キャッシュクリア手順</title>
+    <style>
+        body {
+            font-family: 'Noto Sans JP', Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #ff6b9d;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .warning h2 {
+            color: #856404;
+            margin-top: 0;
+        }
+        .step {
+            background: #f8f9fa;
+            border-left: 4px solid #ff6b9d;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .step h3 {
+            color: #495057;
+            margin-top: 0;
+        }
+        .method {
+            background: #e7f3ff;
+            border: 1px solid #4dabf7;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .method h3 {
+            color: #1971c2;
+        }
+        code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(45deg, #ff6b9d, #4ecdc4);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 10px;
+            transition: transform 0.3s;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        ul {
+            line-height: 2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚨 キャッシュクリアが必要です！</h1>
+        
+        <div class="warning">
+            <h2>⚠️ 重要</h2>
+            <p>古いJavaScriptコードがブラウザにキャッシュされており、<code>select=count*</code>という不正なクエリが送信されています。</p>
+            <p>これを解決するには、<strong>ブラウザのキャッシュを完全にクリア</strong>する必要があります。</p>
+        </div>
+
+        <div class="method">
+            <h3>方法1: 🔥 スーパーリロード（推奨）</h3>
+            <div class="step">
+                <h4>Windows/Linux:</h4>
+                <ul>
+                    <li><code>Ctrl + Shift + R</code> を押す</li>
+                    <li>または <code>Ctrl + F5</code> を押す</li>
+                </ul>
+            </div>
+            <div class="step">
+                <h4>Mac:</h4>
+                <ul>
+                    <li><code>Command + Shift + R</code> を押す</li>
+                    <li>または <code>Shift</code>を押しながらリロードボタンをクリック</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="method">
+            <h3>方法2: 🧹 開発者ツールからキャッシュクリア</h3>
+            <div class="step">
+                <ol>
+                    <li><code>F12</code>を押して開発者ツールを開く</li>
+                    <li><strong>Network</strong>タブを選択</li>
+                    <li><strong>Disable cache</strong>にチェックを入れる</li>
+                    <li>ページを再読み込み（<code>F5</code>）</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="method">
+            <h3>方法3: 🗑️ ブラウザの設定から完全クリア</h3>
+            <div class="step">
+                <h4>Chrome/Edge:</h4>
+                <ol>
+                    <li><code>Ctrl/Cmd + Shift + Delete</code>を押す</li>
+                    <li>「キャッシュされた画像とファイル」を選択</li>
+                    <li>期間を「全期間」に設定</li>
+                    <li>「データを削除」をクリック</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="method">
+            <h3>方法4: 🆕 プライベートウィンドウで開く</h3>
+            <div class="step">
+                <ul>
+                    <li><strong>Chrome:</strong> <code>Ctrl/Cmd + Shift + N</code></li>
+                    <li><strong>Firefox:</strong> <code>Ctrl/Cmd + Shift + P</code></li>
+                    <li><strong>Edge:</strong> <code>Ctrl/Cmd + Shift + N</code></li>
+                    <li><strong>Safari:</strong> <code>Cmd + Shift + N</code></li>
+                </ul>
+                <p>プライベートウィンドウで<code>index.html</code>を開く</p>
+            </div>
+        </div>
+
+        <div class="success">
+            <h2>✅ キャッシュクリア後の確認</h2>
+            <p>キャッシュクリア後、以下のボタンからアプリに戻ってください：</p>
+            <a href="index.html" class="btn">🚀 グルテンフリーマップに戻る</a>
+        </div>
+
+        <div class="warning">
+            <h3>💡 ヒント</h3>
+            <p>それでも問題が解決しない場合は、別のブラウザで試してみてください。</p>
+        </div>
+    </div>
+</body>
+</html>

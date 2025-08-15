@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIN認証テスト</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #ff6b9d;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .result {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔐 PIN認証テスト</h1>
+    
+    <div class="form-group">
+        <label>メールアドレス:</label>
+        <input type="email" id="email" value="bettger1000@gmail.com">
+    </div>
+    
+    <div class="form-group">
+        <label>PIN (4桁):</label>
+        <input type="text" id="pin" value="1234" maxlength="4">
+    </div>
+    
+    <button onclick="testPinAuth()">PIN認証テスト</button>
+    
+    <div id="result"></div>
+
+    <script>
+        const SUPABASE_URL = 'https://hxrmsjfvgctoaxpbukvo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4cm1zamZ2Z2N0b2F4cGJ1a3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MTI3NTAsImV4cCI6MjA3MDQ4ODc1MH0.tM1vDVVhYhh7OHlA1BTj071BfsIzeBG_HatijjtxwLw';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: {
+                persistSession: false,
+                autoRefreshToken: false
+            }
+        });
+
+        async function testPinAuth() {
+            const email = document.getElementById('email').value;
+            const pin = document.getElementById('pin').value;
+            const resultDiv = document.getElementById('result');
+            
+            resultDiv.innerHTML = '認証中...';
+            
+            try {
+                console.log('🔐 PIN認証開始:', email);
+                
+                const { data, error } = await supabase
+                    .from('user_profiles')
+                    .select('email, nickname, is_active')
+                    .eq('email', email.toLowerCase())
+                    .eq('pin', pin)
+                    .eq('is_active', true)
+                    .single();
+                
+                console.log('📊 クエリ結果:', { data, error });
+                
+                if (error) {
+                    if (error.code === 'PGRST116') {
+                        resultDiv.innerHTML = '<div class="result error">❌ メールアドレスまたはPINが正しくありません</div>';
+                    } else {
+                        resultDiv.innerHTML = `<div class="result error">❌ エラー: ${error.message}</div>`;
+                    }
+                } else if (data) {
+                    resultDiv.innerHTML = `<div class="result success">✅ 認証成功！<br>ユーザー: ${data.email}<br>ニックネーム: ${data.nickname || '未設定'}</div>`;
+                } else {
+                    resultDiv.innerHTML = '<div class="result error">❌ データが見つかりません</div>';
+                }
+            } catch (e) {
+                console.error('認証エラー:', e);
+                resultDiv.innerHTML = `<div class="result error">❌ システムエラー: ${e.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
