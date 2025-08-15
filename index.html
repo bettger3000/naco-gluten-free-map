@@ -4495,6 +4495,12 @@
                 console.log('🔍 認証状態をチェック中...');
                 console.log('🔧 Supabaseクライアント状態:', supabaseClient ? 'OK' : 'NG');
                 
+                // Supabase設定を確認
+                console.log('🔧 Supabase設定:', {
+                    url: SUPABASE_URL,
+                    key: SUPABASE_ANON_KEY ? SUPABASE_ANON_KEY.substring(0, 20) + '...' : 'なし'
+                });
+                
                 // Supabase接続テスト
                 console.log('🌐 Supabase接続テスト開始...');
                 try {
@@ -4505,10 +4511,12 @@
                             setTimeout(() => reject(new Error('接続テストタイムアウト')), 5000)
                         )
                     ]);
-                    console.log('✅ Supabase接続テスト成功');
+                    console.log('✅ Supabase接続テスト成功:', testResult);
                 } catch (testError) {
                     console.error('❌ Supabase接続テストエラー:', testError);
                     console.log('🔍 ネットワーク状態を確認してください');
+                    console.log('❌ 認証失敗 - Supabase接続エラー');
+                    return false;
                 }
                 
                 // Supabaseセッションチェック（タイムアウト付き）
@@ -4584,6 +4592,7 @@
                 
             } catch (error) {
                 console.error('❌ 認証チェックエラー:', error);
+                console.log('❌ 認証失敗 - 例外によりfalse返却');
                 return false;
             }
         }
@@ -4776,7 +4785,9 @@
                 console.log('🚀 アプリ初期化開始（認証チェック）');
                 
                 // 1. 認証状態を確認
+                console.log('📊 認証状態チェック実行中...');
                 const isAuthenticated = await checkAuthenticationStatus();
+                console.log('📊 認証状態チェック結果:', isAuthenticated);
                 
                 if (!isAuthenticated) {
                     console.log('🔒 未認証ユーザー - ログイン画面にリダイレクト');
@@ -4841,27 +4852,33 @@
 
         // ログイン画面を表示
         function showLoginScreen() {
+            console.log('🔓 ログイン画面表示開始');
+            
             // 初期ローディング画面を非表示
             const loadingScreen = document.getElementById('initialLoading');
             if (loadingScreen) {
                 loadingScreen.style.display = 'none';
+                console.log('📲 初期ローディング画面非表示');
             }
             
             // メインアプリを非表示
             const appContainer = document.getElementById('appContainer');
             if (appContainer) {
                 appContainer.style.display = 'none';
+                console.log('📱 メインアプリ非表示');
             }
             
             // 既存のログイン画面があれば削除
             const existingLogin = document.getElementById('loginContainer');
             if (existingLogin) {
                 existingLogin.remove();
+                console.log('🗑️ 既存のログイン画面削除');
             }
             
             // ログイン画面を作成してbodyに追加
             const loginDiv = document.createElement('div');
             loginDiv.id = 'loginContainer';
+            console.log('🎨 ログイン画面要素作成');
             loginDiv.innerHTML = `
                 <div class="login-container">
                     <div class="login-card">
@@ -4962,10 +4979,15 @@
             
             // bodyに追加
             document.body.appendChild(loginDiv);
+            console.log('✅ ログイン画面DOM追加完了');
+            
             if (!document.getElementById('loginStyles')) {
                 style.id = 'loginStyles';
                 document.head.appendChild(style);
+                console.log('🎨 ログイン画面スタイル追加完了');
             }
+            
+            console.log('🔓 ログイン画面表示完了');
         }
 
         // マップ画面を表示
