@@ -4496,11 +4496,29 @@
                     console.log('✅ 認証コード検出 - PKCEフロー開始');
                     console.log('🔑 認証コード:', sp.get('code').substring(0, 10) + '...');
                     
+                    console.log('🔄 exchangeCodeForSession実行中...');
                     const { data, error } = await supabaseClient.auth.exchangeCodeForSession(sp.get('code'));
-                    if (error) throw error;
                     
-                    console.log('🔐 セッション確立OK', data?.user?.email);
-                    window.authCallbackSuccess = true;
+                    console.log('📊 exchangeCodeForSession結果:', { 
+                        data: data ? { 
+                            user: data.user?.email,
+                            session: !!data.session 
+                        } : null, 
+                        error: error 
+                    });
+                    
+                    if (error) {
+                        console.error('❌ コード交換エラー詳細:', error);
+                        throw error;
+                    }
+                    
+                    if (data?.session && data?.user) {
+                        console.log('🔐 セッション確立OK', data.user.email);
+                        window.authCallbackSuccess = true;
+                    } else {
+                        console.error('❌ セッション確立失敗: データが不正', { data });
+                        throw new Error('セッション確立失敗');
+                    }
                 }
                 
                 if (sp.get('error_description')) {
@@ -4526,10 +4544,22 @@
             console.log('🚀 bootstrapApp開始');
             
             // まずコールバック処理
+            console.log('📌 Step 1: コールバック処理実行');
             await handleAuthCallback();
+            console.log('✅ Step 1: コールバック処理完了');
             
             // 現在のセッション取得
-            const { data: { session } } = await supabaseClient.auth.getSession();
+            console.log('📌 Step 2: セッション取得開始');
+            const sessionResult = await supabaseClient.auth.getSession();
+            console.log('📊 getSession結果:', {
+                session: sessionResult.data?.session ? {
+                    user: sessionResult.data.session.user?.email,
+                    expires_at: sessionResult.data.session.expires_at
+                } : null,
+                error: sessionResult.error
+            });
+            
+            const session = sessionResult.data?.session;
             console.log('📊 初期セッション:', session?.user?.email || 'なし');
             renderFromSession(session);
 
