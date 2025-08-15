@@ -4425,81 +4425,6 @@
         let customPinLocation = null;
         let mapContextMenu = null;
 
-        // DOM読み込み完了後に即座に初期化
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('⚡ 埋め込みデータ版 - 高速起動');
-            await initializeApp();
-        });
-
-        // アプリ初期化（認証ガード付き）
-        async function initializeApp() {
-            try {
-                console.log('🚀 アプリ初期化開始（認証チェック）');
-                
-                // 1. 認証状態を確認
-                const isAuthenticated = await checkAuthenticationStatus();
-                
-                if (!isAuthenticated) {
-                    console.log('🔒 未認証ユーザー - ログイン画面にリダイレクト');
-                    showLoginScreen();
-                    return;
-                }
-                
-                console.log('✅ 認証済みユーザー - マップ画面を表示');
-                showMapScreen();
-                
-                // 1.5. プロフィール情報を読み込み（重要: ヘッダー初期化前に実行）
-                try {
-                    await loadUserProfile();
-                    console.log('📱 初期プロフィール情報読み込み完了');
-                } catch (profileError) {
-                    console.error('⚠️ プロフィール読み込みエラー（続行）:', profileError);
-                    // プロフィール読み込み失敗でも処理は続行
-                }
-                
-                // 2. 即座に店舗データを表示
-                try {
-                    loadEmbeddedStores();
-                } catch (storeError) {
-                    console.error('⚠️ 店舗データ読み込みエラー:', storeError);
-                }
-                
-                // 3. 地図を初期化
-                try {
-                    initMap();
-                } catch (mapError) {
-                    console.error('⚠️ 地図初期化エラー:', mapError);
-                }
-                
-                // 4. イベントリスナー設定
-                try {
-                    setupEventListeners();
-                } catch (eventError) {
-                    console.error('⚠️ イベントリスナー設定エラー:', eventError);
-                }
-                
-                // 5. データベース状態確認
-                try {
-                    checkDatabaseStatus();
-                } catch (dbError) {
-                    console.error('⚠️ データベース状態確認エラー:', dbError);
-                }
-                
-                // 6. ヘッダーアクションの初期化
-                try {
-                    initializeHeaderActions();
-                } catch (headerError) {
-                    console.error('⚠️ ヘッダー初期化エラー:', headerError);
-                }
-                
-                console.log('✅ アプリ初期化完了 - 全機能利用可能');
-                
-            } catch (error) {
-                console.error('❌ アプリ初期化で重大なエラー:', error);
-                alert('アプリの初期化に失敗しました。ページを再読み込みしてください。');
-            }
-        }
-
         // 許可されたユーザーかチェック
         async function checkUserPermission(email) {
             try {
@@ -4675,6 +4600,81 @@
                 
                 // エラーの場合もログイン画面へ
                 return false;
+            }
+        }
+
+        // DOM読み込み完了後に即座に初期化
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('⚡ 埋め込みデータ版 - 高速起動');
+            await initializeApp();
+        });
+
+        // アプリ初期化（認証ガード付き）
+        async function initializeApp() {
+            try {
+                console.log('🚀 アプリ初期化開始（認証チェック）');
+                
+                // 1. 認証状態を確認
+                const isAuthenticated = await checkAuthenticationStatus();
+                
+                if (!isAuthenticated) {
+                    console.log('🔒 未認証ユーザー - ログイン画面にリダイレクト');
+                    showLoginScreen();
+                    return;
+                }
+                
+                console.log('✅ 認証済みユーザー - マップ画面を表示');
+                showMapScreen();
+                
+                // 1.5. プロフィール情報を読み込み（重要: ヘッダー初期化前に実行）
+                try {
+                    await loadUserProfile();
+                    console.log('📱 初期プロフィール情報読み込み完了');
+                } catch (profileError) {
+                    console.error('⚠️ プロフィール読み込みエラー（続行）:', profileError);
+                    // プロフィール読み込み失敗でも処理は続行
+                }
+                
+                // 2. 即座に店舗データを表示
+                try {
+                    loadEmbeddedStores();
+                } catch (storeError) {
+                    console.error('⚠️ 店舗データ読み込みエラー:', storeError);
+                }
+                
+                // 3. 地図を初期化
+                try {
+                    initMap();
+                } catch (mapError) {
+                    console.error('⚠️ 地図初期化エラー:', mapError);
+                }
+                
+                // 4. イベントリスナー設定
+                try {
+                    setupEventListeners();
+                } catch (eventError) {
+                    console.error('⚠️ イベントリスナー設定エラー:', eventError);
+                }
+                
+                // 5. データベース状態確認
+                try {
+                    checkDatabaseStatus();
+                } catch (dbError) {
+                    console.error('⚠️ データベース状態確認エラー:', dbError);
+                }
+                
+                // 6. ヘッダーアクションの初期化
+                try {
+                    initializeHeaderActions();
+                } catch (headerError) {
+                    console.error('⚠️ ヘッダー初期化エラー:', headerError);
+                }
+                
+                console.log('✅ アプリ初期化完了 - 全機能利用可能');
+                
+            } catch (error) {
+                console.error('❌ アプリ初期化で重大なエラー:', error);
+                alert('アプリの初期化に失敗しました。ページを再読み込みしてください。');
             }
         }
 
