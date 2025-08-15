@@ -4550,8 +4550,33 @@
                 // アクセストークンがハッシュに含まれているか確認
                 if (hashParams.get('access_token')) {
                     console.log('✅ アクセストークンを検出');
-                    // Supabaseが自動的に処理するので、少し待つ
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    const accessToken = hashParams.get('access_token');
+                    const refreshToken = hashParams.get('refresh_token');
+                    const tokenType = hashParams.get('token_type');
+                    
+                    console.log('🔑 トークン情報:', {
+                        access_token: accessToken ? 'あり' : 'なし',
+                        refresh_token: refreshToken ? 'あり' : 'なし',
+                        token_type: tokenType
+                    });
+                    
+                    // 手動でセッションを設定
+                    if (accessToken && refreshToken) {
+                        console.log('🔧 手動セッション設定開始...');
+                        const { data, error } = await supabaseClient.auth.setSession({
+                            access_token: accessToken,
+                            refresh_token: refreshToken
+                        });
+                        
+                        if (error) {
+                            console.error('❌ セッション設定エラー:', error);
+                        } else {
+                            console.log('✅ セッション設定成功');
+                        }
+                    }
+                    
+                    // URLをクリーンアップ（ハッシュを削除）
+                    window.history.replaceState({}, document.title, window.location.pathname);
                 }
                 
                 // 認証コードがURLパラメータに含まれているか確認
