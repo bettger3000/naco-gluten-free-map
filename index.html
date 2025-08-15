@@ -4524,6 +4524,9 @@
         async function handleAuthCallback() {
             try {
                 console.log('🔄 認証コールバック処理開始...');
+                console.log('🌐 現在のURL:', window.location.href);
+                console.log('🔗 ハッシュ:', window.location.hash);
+                console.log('🔍 クエリ:', window.location.search);
                 
                 // URLからパラメータを取得
                 const hashParams = new URLSearchParams(window.location.hash.substring(1));
@@ -4615,14 +4618,26 @@
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('⚡ 埋め込みデータ版 - 高速起動');
             
-            // OAuthコールバック処理（認証後のリダイレクトを処理）
-            await handleAuthCallback();
-            
-            // 認証状態変更リスナーを設定
-            setupAuthStateListener();
-            
-            // アプリ初期化
-            await initializeApp();
+            try {
+                // OAuthコールバック処理（認証後のリダイレクトを処理）
+                console.log('📌 Step 1: OAuthコールバック処理開始');
+                await handleAuthCallback();
+                console.log('✅ Step 1: OAuthコールバック処理完了');
+                
+                // 認証状態変更リスナーを設定
+                console.log('📌 Step 2: 認証リスナー設定開始');
+                setupAuthStateListener();
+                console.log('✅ Step 2: 認証リスナー設定完了');
+                
+                // アプリ初期化
+                console.log('📌 Step 3: アプリ初期化開始');
+                await initializeApp();
+                console.log('✅ Step 3: アプリ初期化完了');
+            } catch (error) {
+                console.error('❌ 初期化エラー:', error);
+                // エラーが発生した場合はログイン画面を表示
+                showLoginScreen();
+            }
         });
 
         // アプリ初期化（認証ガード付き）
