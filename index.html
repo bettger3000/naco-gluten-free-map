@@ -93,7 +93,7 @@
             padding: var(--space-md) var(--space-lg);
             position: sticky;
             top: 0;
-            z-index: 1100; /* ヘッダー全体を少し上げる */
+            z-index: 1000;
         }
 
         .header-content {
@@ -104,911 +104,10 @@
             margin: 0 auto;
         }
 
-        /* PC版のヘッダーレイアウト：中央にnaco+タイトル */
-        @media (min-width: 769px) {
-            .header-content {
-                display: grid;
-                grid-template-columns: 1fr auto 1fr;
-                align-items: center;
-                gap: var(--space-lg);
-            }
-            
-            .app-title {
-                grid-column: 2;
-                justify-self: center;
-                display: flex;
-                align-items: center;
-                gap: var(--space-sm);
-                font-family: var(--font-display);
-                font-size: 1.5rem;
-                font-weight: 700;
-                color: var(--primary);
-                white-space: nowrap;
-            }
-            
-            .app-title .title-icon {
-                width: 50px;
-                height: 50px;
-                flex-shrink: 0;
-            }
-            
-            .app-title span {
-                font-family: inherit;
-                font-size: inherit;
-                font-weight: inherit;
-                color: inherit;
-            }
-            
-            .header-actions {
-                grid-column: 3;
-                justify-self: end;
-            }
-        }
-
-        /* スマホ版ヘッダー3分割レイアウト */
-        @media (max-width: 768px) {
-            .header-content {
-                display: grid;
-                grid-template-columns: 50px 1fr 50px;
-                align-items: center;
-                padding: var(--space-md);
-                gap: var(--space-sm);
-                max-width: 100%;
-            }
-            
-            .app-title {
-                display: contents !important; /* PC版のflexを無効化してgridの子要素として扱う */
-                font-family: var(--font-display) !important;
-                font-weight: 700 !important;
-                color: var(--primary) !important;
-            }
-            
-            .title-icon {
-                grid-column: 1;
-                justify-self: center;
-                width: 45px !important;
-                height: 45px !important;
-            }
-            
-            .title-icon img {
-                width: 45px !important;
-                height: 45px !important;
-            }
-            
-            .app-title span {
-                grid-column: 2;
-                justify-self: center;
-                text-align: center;
-                font-size: 1.0rem !important;
-                line-height: 1.2;
-                white-space: nowrap;
-                overflow: visible !important;
-                text-overflow: ellipsis;
-                max-width: 100%;
-                display: block !important;
-                visibility: visible !important;
-                color: var(--primary) !important;
-            }
-            
-            .header-actions {
-                grid-column: 3;
-                justify-self: center;
-            }
-        }
-
         .header-actions {
             display: flex;
             align-items: center;
             gap: var(--space-sm);
-            position: relative; /* ドロップダウン用 */
-        }
-
-        /* ユーザーメニュードロップダウン */
-        .user-menu-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: #ffffff;
-            border: 2px solid #e1e8ed;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.15);
-            z-index: 1200; /* 最前面に表示 */
-            min-width: 220px;
-            overflow: hidden;
-            margin-top: 8px;
-            backdrop-filter: blur(20px);
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 16px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: #1a1a1a;
-            background: #ffffff;
-        }
-
-        .menu-item:hover {
-            background: #f8f9fa;
-            color: #333333;
-        }
-
-        .menu-item.danger {
-            color: #dc3545;
-        }
-
-        .menu-item.danger:hover {
-            background: #fff5f5;
-            color: #c82333;
-        }
-
-        .menu-divider {
-            height: 1px;
-            background: #e9ecef;
-            margin: 6px 0;
-        }
-
-        .menu-item i {
-            width: 18px;
-            height: 18px;
-            text-align: center;
-            font-size: 0.9rem;
-            opacity: 0.8;
-            color: inherit;
-        }
-
-        .menu-item.danger i {
-            opacity: 1;
-        }
-
-        .menu-item span {
-            color: inherit;
-            font-weight: inherit;
-        }
-
-        /* 店舗詳細モーダル */
-        .store-detail-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 2000;
-            overflow-y: auto;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .store-detail-container {
-            background: white;
-            max-width: 600px;
-            width: 90%;
-            margin: 20px auto;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            animation: slideUp 0.3s ease;
-            position: relative;
-        }
-
-        .store-detail-header {
-            position: sticky;
-            top: 0;
-            background: white;
-            border-radius: 12px 12px 0 0;
-            padding: 15px 20px;
-            border-bottom: 1px solid #eee;
-            z-index: 10;
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .store-detail-close {
-            width: 32px;
-            height: 32px;
-            border: none;
-            background: #f5f5f5;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            font-size: 18px;
-            color: #666;
-        }
-
-        .store-detail-close:hover {
-            background: #e0e0e0;
-            transform: scale(1.1);
-        }
-
-        .store-detail-body {
-            padding: 20px;
-        }
-
-        .store-detail-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        .store-detail-category {
-            display: inline-block;
-            padding: 4px 12px;
-            background: var(--gradient-primary);
-            color: white;
-            border-radius: 20px;
-            font-size: 12px;
-            margin-bottom: 20px;
-        }
-        .store-detail-category-container {
-            margin-bottom: 20px;
-        }
-
-        .store-detail-section {
-            margin-bottom: 25px;
-        }
-        
-        /* 店舗画像ギャラリー */
-        .store-images-container {
-            min-height: 150px;
-            background: var(--bg-light);
-            border-radius: var(--radius-md);
-            padding: var(--space-md);
-            margin-bottom: var(--space-sm);
-        }
-        .store-images-placeholder {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 120px;
-            color: var(--text-secondary);
-        }
-        .store-images-placeholder i {
-            font-size: 2rem;
-            margin-bottom: var(--space-sm);
-            opacity: 0.5;
-        }
-        .store-images-gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: var(--space-sm);
-        }
-        .store-image-item {
-            position: relative;
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            aspect-ratio: 1;
-            cursor: pointer;
-        }
-        .store-image-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.2s ease;
-        }
-        .store-image-item:hover img {
-            transform: scale(1.05);
-        }
-        .store-image-admin {
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-            margin-top: var(--space-sm);
-        }
-        .image-limit-text {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-        .delete-image-btn {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(255, 0, 0, 0.8);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 0.75rem;
-            transition: background-color 0.2s ease;
-        }
-        .delete-image-btn:hover {
-            background: rgba(255, 0, 0, 1);
-        }
-        
-        /* 画像拡大モーダル */
-        .image-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            cursor: pointer;
-        }
-        .image-modal-content {
-            position: relative;
-            max-width: 90%;
-            max-height: 90%;
-        }
-        .image-modal-content img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            border-radius: var(--radius-md);
-        }
-        .image-modal-close {
-            position: absolute;
-            top: -40px;
-            right: -40px;
-            color: white;
-            font-size: 2rem;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .store-detail-section h3 {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #555;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .store-detail-info {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            margin-bottom: 12px;
-            color: #666;
-            font-size: 14px;
-        }
-
-        .store-detail-info i {
-            width: 20px;
-            text-align: center;
-            color: var(--primary-green);
-            flex-shrink: 0;
-        }
-
-        .store-detail-description {
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 8px;
-            line-height: 1.6;
-            color: #555;
-            font-size: 14px;
-        }
-
-        .store-detail-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .store-detail-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .store-detail-btn.primary {
-            background: var(--gradient-primary);
-            color: white;
-        }
-
-        .store-detail-btn.secondary {
-            background: #f5f5f5;
-            color: #666;
-        }
-        .store-detail-btn.want-to-go {
-            background: #fff;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-        }
-        .store-detail-btn.want-to-go.active {
-            background: var(--primary);
-            color: white;
-        }
-        .store-detail-btn.visited {
-            background: #fff;
-            color: var(--success);
-            border: 2px solid var(--success);
-        }
-        .store-detail-btn.visited.active {
-            background: var(--success);
-            color: white;
-        }
-
-        .store-detail-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        /* レスポンシブ対応 */
-        @media (max-width: 768px) {
-            .store-detail-container {
-                width: 100%;
-                height: 100%;
-                margin: 0;
-                border-radius: 0;
-                max-width: none;
-            }
-
-            .store-detail-header {
-                border-radius: 0;
-            }
-
-            .store-detail-body {
-                padding: 15px;
-            }
-
-            .store-detail-title {
-                font-size: 20px;
-            }
-        }
-
-        /* アニメーション */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        /* プロフィールモーダル */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(8px);
-            z-index: 1300;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: var(--space-lg);
-        }
-
-        .modal-container {
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-            max-width: 500px;
-            width: 100%;
-            max-height: 90vh;
-            overflow: hidden;
-            animation: modalSlideIn 0.3s ease-out;
-        }
-
-        @keyframes modalSlideIn {
-            from {
-                transform: translateY(30px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: var(--space-lg);
-            border-bottom: 1px solid #f1f3f4;
-            background: #fafbfc;
-        }
-
-        .modal-title {
-            display: flex;
-            align-items: center;
-            gap: var(--space-sm);
-            margin: 0;
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .modal-close-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: var(--space-xs);
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #6b7280;
-            transition: all 0.2s ease;
-        }
-
-        .modal-close-btn:hover {
-            background: #f3f4f6;
-            color: #374151;
-        }
-
-        .modal-body {
-            padding: var(--space-lg);
-            overflow-y: auto;
-            max-height: calc(90vh - 100px);
-        }
-
-        /* プロフィール表示 */
-        .profile-view {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-lg);
-        }
-
-        .profile-avatar {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: var(--space-sm);
-            position: relative;
-        }
-
-        .avatar-circle {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: var(--gradient-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: white;
-            box-shadow: 0 4px 12px rgba(152, 216, 200, 0.3);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .avatar-circle.image-avatar {
-            background: none;
-            padding: 0;
-        }
-
-        .avatar-circle img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .avatar-edit-btn {
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            background: #ffffff;
-            border: 2px solid #e5e7eb;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 0.7rem;
-            color: #6b7280;
-            transition: all 0.2s ease;
-        }
-
-        .avatar-edit-btn:hover {
-            background: #f9fafb;
-            border-color: #d1d5db;
-        }
-
-        .profile-info {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-md);
-        }
-
-        .profile-field {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-xs);
-        }
-
-        .profile-field label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .profile-field span {
-            font-size: 1rem;
-            color: var(--text-primary);
-            padding: var(--space-sm) 0;
-            border-bottom: 1px solid #f3f4f6;
-        }
-
-        /* プロフィール編集 */
-        .profile-edit {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-lg);
-        }
-
-        /* アバタータブ */
-        .avatar-tabs {
-            display: flex;
-            gap: var(--space-xs);
-            margin: var(--space-md) 0;
-            justify-content: center;
-        }
-
-        .avatar-tab {
-            display: flex;
-            align-items: center;
-            gap: var(--space-xs);
-            padding: var(--space-xs) var(--space-sm);
-            border: 2px solid #e5e7eb;
-            background: #ffffff;
-            border-radius: var(--radius-md);
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: #6b7280;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .avatar-tab.active {
-            border-color: var(--primary);
-            background: var(--bg-light);
-            color: var(--primary);
-        }
-
-        .avatar-tab:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .avatar-options {
-            display: flex;
-            gap: var(--space-sm);
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: var(--space-sm);
-        }
-
-        /* 画像アップロード */
-        .image-upload-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: var(--space-sm);
-            margin-top: var(--space-sm);
-        }
-
-        .upload-btn {
-            display: flex;
-            align-items: center;
-            gap: var(--space-xs);
-            padding: var(--space-sm) var(--space-md);
-            background: var(--gradient-primary);
-            color: white;
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .upload-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(152, 216, 200, 0.4);
-        }
-
-        .upload-info {
-            text-align: center;
-            color: #6b7280;
-        }
-
-        .image-preview {
-            position: relative;
-            margin-top: var(--space-sm);
-        }
-
-        .image-preview img {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid var(--primary);
-            box-shadow: 0 4px 12px rgba(152, 216, 200, 0.3);
-        }
-
-        .remove-image-btn {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 24px;
-            height: 24px;
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 0.7rem;
-            transition: all 0.2s ease;
-        }
-
-        .remove-image-btn:hover {
-            background: #c82333;
-            transform: scale(1.1);
-        }
-
-        .avatar-option {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid #e5e7eb;
-            background: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .avatar-option:hover {
-            border-color: var(--primary);
-            transform: scale(1.1);
-        }
-
-        .avatar-option.selected {
-            border-color: var(--primary);
-            background: var(--bg-light);
-        }
-
-        .profile-form {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-md);
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-xs);
-        }
-
-        .form-group label {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .form-group input,
-        .form-group textarea {
-            padding: var(--space-sm);
-            border: 2px solid #e5e7eb;
-            border-radius: var(--radius-md);
-            font-size: 1rem;
-            transition: border-color 0.2s ease;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .char-count {
-            text-align: right;
-            font-size: 0.8rem;
-            color: #6b7280;
-        }
-
-        .form-actions {
-            display: flex;
-            gap: var(--space-sm);
-            justify-content: flex-end;
-            margin-top: var(--space-md);
-        }
-
-        .btn {
-            padding: var(--space-sm) var(--space-lg);
-            border-radius: var(--radius-md);
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: none;
-        }
-
-        .btn-primary {
-            background: var(--gradient-primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(152, 216, 200, 0.4);
-        }
-
-        .btn-secondary {
-            background: #f3f4f6;
-            color: #6b7280;
-        }
-
-        .btn-secondary:hover {
-            background: #e5e7eb;
-            color: #374151;
-        }
-
-        /* モバイル対応 */
-        @media (max-width: 768px) {
-            .modal-overlay {
-                padding: var(--space-md);
-            }
-            
-            .modal-container {
-                max-height: 95vh;
-            }
-            
-            .modal-header,
-            .modal-body {
-                padding: var(--space-md);
-            }
-            
-            .form-actions {
-                flex-direction: column;
-            }
         }
 
         .auth-btn {
@@ -1032,95 +131,38 @@
             box-shadow: var(--shadow-md);
         }
 
-        .hamburger-btn {
-            background: var(--gradient-primary);
-            color: white;
-            border: none;
-            padding: var(--space-sm);
-            border-radius: var(--radius-lg);
-            font-size: 1.1rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 42px;
-            height: 42px;
-            transition: all 0.2s ease;
-        }
-
-        .hamburger-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-            background: var(--primary-dark);
-        }
-
-        /* PC版ユーザープロフィールボタン */
-        .user-profile-btn {
+        .app-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
             display: flex;
             align-items: center;
             gap: var(--space-sm);
-            background: var(--bg-glass);
-            border: 1px solid var(--border);
-            padding: var(--space-sm) var(--space-md);
-            border-radius: var(--radius-xl);
-            color: var(--text-primary);
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .user-profile-btn:hover {
-            background: var(--gradient-primary);
-            color: white;
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .user-profile-btn .user-icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: var(--gradient-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.8rem;
-        }
-
-        /* スマホ版アバターボタン */
-        .mobile-user-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--gradient-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
-            color: white;
-            border: 2px solid var(--bg-primary);
-            box-shadow: var(--shadow-md);
-            cursor: pointer;
-            transition: all 0.2s ease;
+            white-space: nowrap;
             overflow: hidden;
+            flex-shrink: 0;
         }
-
-        .mobile-user-btn:hover {
-            transform: translateY(-1px) scale(1.05);
-            box-shadow: var(--shadow-lg);
+        
+        .app-title span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
         }
-
-        /* スマホ版アバターボタン内の画像 */
-        .mobile-user-btn img {
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: cover;
-            border-radius: 50%;
+        
+        /* モバイル対応でタイトルサイズ調整 */
+        @media (max-width: 480px) {
+            .app-title {
+                font-size: 1.3rem;
+            }
         }
-
+        
+        @media (max-width: 360px) {
+            .app-title {
+                font-size: 1.1rem;
+            }
+        }
 
         .title-icon {
             width: 50px;
@@ -1469,20 +511,19 @@
             border-color: var(--primary);
         }
         
-        .action-btn.want-to-go.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-        
         .action-btn.visited {
             color: var(--success);
             border-color: var(--success);
         }
         
+        .action-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
         .action-btn.visited.active {
             background: var(--success);
-            color: white;
             border-color: var(--success);
         }
 
@@ -1533,65 +574,20 @@
             margin-top: 12px;
             padding-top: 12px;
             border-top: 1px solid var(--border-light);
-            flex-wrap: wrap;
-        }
-        
-        /* スマホ版でのボタンレイアウト調整 */
-        @media (max-width: 768px) {
-            .popup-actions {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                grid-template-rows: auto auto;
-                gap: 6px;
-            }
-            
-            .popup-action-btn {
-                min-width: 0;
-                padding: 8px 6px;
-                font-size: 0.85rem;
-            }
-            
-            /* 詳細ボタン（3番目）を1行目全体に配置 */
-            .popup-action-btn:nth-child(3) {
-                grid-column: 1 / 3;
-                grid-row: 1;
-                background: var(--gradient-primary);
-                color: white;
-                font-weight: 600;
-                border: none;
-            }
-            
-            /* 行きたいボタンを2行目左側に配置 */
-            .popup-action-btn:nth-child(1) {
-                grid-column: 1;
-                grid-row: 2;
-            }
-            
-            /* 行ったボタンを2行目右側に配置 */
-            .popup-action-btn:nth-child(2) {
-                grid-column: 2;
-                grid-row: 2;
-            }
-            
-            .popup-action-btn:nth-child(3):hover {
-                opacity: 0.9;
-                transform: translateY(-1px);
-            }
+            flex-wrap: nowrap;
         }
 
         /* ポップアップボタンのアクティブ状態 */
         .popup-action-btn.want-to-go.active {
-            background: #ec4899;
+            background: #fdf2f8;
             border-color: #ec4899;
-            color: white;
-            font-weight: 600;
+            color: #be185d;
         }
 
         .popup-action-btn.visited.active {
-            background: #22c55e;
-            border-color: #22c55e;
-            color: white;
-            font-weight: 600;
+            background: #f0fdf4;
+            border-color: #4ade80;
+            color: #15803d;
         }
 
         /* ボタン押下時のアニメーション */
@@ -2508,9 +1504,11 @@
         
         /* モバイル版検索・フィルター - 完全に独立したレイアウト */
         .mobile-search-filter {
-            position: relative;
+            position: fixed;
+            top: calc(var(--panel-top, 0px) + 70px);
             left: 0;
             right: 0;
+            z-index: 1000;
             background: var(--bg-secondary);
             max-height: 0;
             overflow: hidden;
@@ -2520,16 +1518,14 @@
         
         .panel-tabs {
             display: flex;
-            gap: 0;
-            padding: 0 var(--space-lg) 0;
+            gap: var(--space-md);
+            padding: 0 var(--space-lg) var(--space-sm);
             border-bottom: 1px solid var(--border-light);
             background: white;
             flex-shrink: 0;
-            margin-top: 0;
         }
         
         .panel-tab {
-            flex: 1;
             padding: var(--space-sm) var(--space-md);
             border: none;
             background: none;
@@ -2538,7 +1534,6 @@
             cursor: pointer;
             position: relative;
             transition: color 0.2s;
-            text-align: center;
         }
         
         .panel-tab.active {
@@ -2559,7 +1554,6 @@
             flex: 1 1 0;
             overflow-y: auto !important;
             padding: var(--space-sm);
-            padding-top: var(--space-xs);
             min-height: 0;
             max-height: 100%;
             -webkit-overflow-scrolling: touch;
@@ -2571,15 +1565,6 @@
             max-height: 200px;
             padding: var(--space-md) var(--space-lg);
             border-bottom: 1px solid var(--border-light);
-        }
-        
-        /* タブとコンテンツを包むコンテナ */
-        .panel-main-content {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            position: relative;
-            overflow: visible;
         }
         
         .mobile-search-box {
@@ -2949,12 +1934,12 @@
         /* モバイルでポップアップ位置調整 */
         @media (max-width: 768px) {
             .leaflet-popup {
-                margin-left: 0px !important; /* 中央に配置 */
+                margin-left: 50px !important; /* 左端から離す */
             }
             
             /* カスタムポップアップクラス */
             .custom-popup .leaflet-popup-content-wrapper {
-                margin-left: 0px;
+                margin-left: 10px;
             }
             
             .leaflet-popup-content-wrapper {
@@ -3316,16 +2301,8 @@
     </style>
 </head>
 <body>
-    <!-- 初期ローディング画面 -->
-    <div id="initialLoading" style="display: flex; justify-content: center; align-items: center; height: 100vh; background: linear-gradient(135deg, #ffe6f2 0%, #fff5e6 100%);">
-        <div style="text-align: center;">
-            <img src="nacoキャラクター.png" alt="naco" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 20px;">
-            <div style="font-size: 18px; color: #666;">認証状態をチェック中...</div>
-        </div>
-    </div>
-    
-    <!-- メインアプリ（初期状態では非表示） -->
-    <div class="app-container" style="display: none;" id="appContainer">
+    <!-- メインアプリ -->
+    <div class="app-container">
         <!-- ヘッダー -->
         <header class="app-header">
             <div class="header-content">
@@ -3335,37 +2312,11 @@
                     </div>
                     <span>グルテンフリーマップ</span>
                 </div>
-                <div class="header-actions" id="headerActions">
-                    <!-- デバイス判定で動的に生成 -->
-                </div>
-                
-                <!-- ユーザーメニュー（ドロップダウン） -->
-                <div class="user-menu-dropdown" id="userMenuDropdown" style="display: none;">
-                    <div class="menu-item" onclick="showUserProfile()">
-                        <i class="fas fa-user"></i>
-                        <span>プロフィール</span>
-                    </div>
-                    <div class="menu-item" onclick="showUserReviews()">
-                        <i class="fas fa-star"></i>
-                        <span>マイレビュー</span>
-                    </div>
-                    <div class="menu-item" onclick="showUserStats()">
-                        <i class="fas fa-chart-bar"></i>
-                        <span>統計</span>
-                    </div>
-                    <div class="menu-item" onclick="showAppGuide()">
-                        <i class="fas fa-question-circle"></i>
-                        <span>使い方ガイド</span>
-                    </div>
-                    <div class="menu-item" onclick="showNotifications()">
-                        <i class="fas fa-bell"></i>
-                        <span>通知</span>
-                    </div>
-                    <div class="menu-divider"></div>
-                    <div class="menu-item danger" onclick="logout()">
+                <div class="header-actions">
+                    <button id="authBtn" class="auth-btn" onclick="handleAuth()">
                         <i class="fas fa-sign-out-alt"></i>
-                        <span>ログアウト</span>
-                    </div>
+                        <span id="authBtnText">ログアウト</span>
+                    </button>
                 </div>
             </div>
         </header>
@@ -3474,30 +2425,29 @@
             </div>
         </div>
         
-        <div class="panel-main-content" id="panelMainContent">
-            <!-- モバイル版検索・フィルター -->
-            <div class="mobile-search-filter" id="mobileSearchFilter">
-                <div class="mobile-search-box">
-                    <input type="text" id="mobileSearchInput" class="mobile-search-input" placeholder="店名・エリアで検索">
-                </div>
-                <div class="mobile-filter-chips">
-                    <button class="mobile-chip active" data-category="">すべて</button>
-                    <button class="mobile-chip" data-category="カフェ">☕ カフェ</button>
-                    <button class="mobile-chip" data-category="和食">🍱 和食</button>
-                    <button class="mobile-chip" data-category="洋食">🍽️ 洋食</button>
-                    <button class="mobile-chip" data-category="パン屋">🥐 パン屋</button>
-                    <button class="mobile-chip" data-category="スイーツ">🧁 スイーツ</button>
-                    <button class="mobile-chip" data-category="販売店">🛒 販売店</button>
-                </div>
+        <!-- モバイル版検索・フィルター -->
+        <div class="mobile-search-filter" id="mobileSearchFilter">
+            <div class="mobile-search-box">
+                <input type="text" id="mobileSearchInput" class="mobile-search-input" placeholder="店名・エリアで検索">
             </div>
-            <div class="panel-tabs">
+            <div class="mobile-filter-chips">
+                <button class="mobile-chip active" data-category="">すべて</button>
+                <button class="mobile-chip" data-category="カフェ">☕ カフェ</button>
+                <button class="mobile-chip" data-category="和食">🍱 和食</button>
+                <button class="mobile-chip" data-category="洋食">🍽️ 洋食</button>
+                <button class="mobile-chip" data-category="パン屋">🥐 パン屋</button>
+                <button class="mobile-chip" data-category="スイーツ">🧁 スイーツ</button>
+                <button class="mobile-chip" data-category="販売店">🛒 販売店</button>
+            </div>
+        </div>
+        
+        <div class="panel-tabs">
             <button class="panel-tab active" data-tab="all">すべて</button>
             <button class="panel-tab" data-tab="want-to-go">行きたい</button>
             <button class="panel-tab" data-tab="visited">行った</button>
         </div>
-            <div class="panel-content" id="panelContent">
-                <!-- 店舗リストがここに表示される -->
-            </div>
+        <div class="panel-content" id="panelContent">
+            <!-- 店舗リストがここに表示される -->
         </div>
     </div>
 
@@ -3539,34 +2489,14 @@
         const SUPABASE_URL = 'https://hxrmsjfvgctoaxpbukvo.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4cm1zamZ2Z2N0b2F4cGJ1a3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MTI3NTAsImV4cCI6MjA3MDQ4ODc1MH0.tM1vDVVhYhh7OHlA1BTj071BfsIzeBG_HatijjtxwLw';
         
-        // Supabaseクライアント初期化（詳細診断付き）
-        console.log('🔍 Supabase初期化診断開始');
-        console.log('📦 Supabaseライブラリ:', typeof supabase);
-        
-        if (typeof supabase === 'undefined') {
-            console.error('❌ Supabaseライブラリが読み込まれていません');
-            alert('Supabaseライブラリの読み込みに失敗しました。ページを再読み込みしてください。');
-        }
-        
-        let supabaseClient;
-        try {
-            const { createClient } = supabase;
-            console.log('🔧 createClient関数:', typeof createClient);
-            
-            // PIN認証専用設定（auth機能を無効化）
-            supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-                auth: {
-                    persistSession: false,
-                    autoRefreshToken: false
-                }
-            });
-            console.log('✅ Supabaseクライアント作成成功（PIN認証専用、auth無効）');
-            
-            console.log('🔗 Supabaseクライアント初期化完了（PIN認証専用）');
-        } catch (error) {
-            console.error('❌ Supabaseクライアント作成エラー:', error);
-            alert('Supabase初期化エラー: ' + error.message);
-        }
+        // Supabaseクライアント初期化（PIN認証専用設定）
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: {
+                persistSession: false,
+                autoRefreshToken: false
+            }
+        });
         
         // カテゴリー色
         const categoryColors = {
@@ -4452,307 +3382,88 @@
         let map;
         let stores = [];
         let markers = [];
+        let currentUser = null;
         
         // カスタムピン機能用変数
         let customPinMarker = null;
         let customPinLocation = null;
         let mapContextMenu = null;
 
-
-
-        // ========== PIN認証システム ==========
-        
-        // セッション有効期限（30日）
-        const SESSION_DURATION = 30 * 24 * 60 * 60 * 1000; // 30日（ミリ秒）
-        
-        // セッション管理
-        function saveSession(email) {
-            const sessionData = {
-                email: email,
-                expires: Date.now() + SESSION_DURATION,
-                created: Date.now()
-            };
-            localStorage.setItem('pinAuthSession', JSON.stringify(sessionData));
-            console.log('✅ セッション保存:', email);
-        }
-        
-        function getSession() {
-            const sessionStr = localStorage.getItem('pinAuthSession');
-            if (!sessionStr) return null;
-            
-            try {
-                const session = JSON.parse(sessionStr);
-                // セッション有効期限チェック
-                if (Date.now() > session.expires) {
-                    console.log('⏰ セッション期限切れ');
-                    clearSession();
-                    return null;
-                }
-                console.log('✅ 有効なセッション:', session.email);
-                return session;
-            } catch (e) {
-                console.error('セッション読み込みエラー:', e);
-                clearSession();
-                return null;
-            }
-        }
-        
-        function clearSession() {
-            localStorage.removeItem('pinAuthSession');
-            console.log('🧹 セッションクリア');
-        }
-        
-        // PIN認証
-        async function authenticateWithPin(email, pin) {
-            console.log('🔐 PIN認証開始:', email);
-            console.log('📊 Supabaseクライアント状態:', supabaseClient ? '初期化済み' : '未初期化');
-            console.log('🔗 Supabase URL:', SUPABASE_URL);
-            console.log('🔑 API Key:', SUPABASE_ANON_KEY ? 'あり（長さ:' + SUPABASE_ANON_KEY.length + ')' : 'なし');
-            
-            if (!supabaseClient) {
-                console.error('❌ Supabaseクライアントが初期化されていません');
-                return { success: false, message: 'システムエラー: データベース接続が確立されていません' };
-            }
-            
-            try {
-                console.log('🔍 Step 1: 基本接続テスト開始...');
-                
-                // Step 1: 最も基本的なクエリでSupabase接続をテスト（タイムアウト付き）
-                const basicQueryPromise = supabaseClient
-                    .from('user_profiles')
-                    .select('count()', { count: 'exact', head: true });
-                
-                const timeoutPromise = new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error('クエリタイムアウト（5秒）')), 5000)
-                );
-                
-                const { data: testData, error: testError } = await Promise.race([basicQueryPromise, timeoutPromise]);
-                
-                console.log('📊 Step 1 結果:', { testData, testError });
-                
-                if (testError) {
-                    console.error('❌ 基本接続失敗:', testError);
-                    return { success: false, message: 'データベース接続エラー: ' + testError.message };
-                }
-                
-                console.log('✅ Step 1: 基本接続成功');
-                console.log('🔍 Step 2: ユーザークエリ実行中...');
-                
-                // Step 2: 実際のユーザー検索
-                const { data, error } = await supabaseClient
-                    .from('user_profiles')
-                    .select('email, nickname, is_active')
-                    .eq('email', email.toLowerCase())
-                    .eq('pin', pin)
-                    .eq('is_active', true)
-                    .single();
-                
-                console.log('📊 Step 2 結果:', { data, error });
-                    
-                if (error) {
-                    if (error.code === 'PGRST116') {
-                        console.log('❌ 認証失敗: メールアドレスまたはPINが正しくありません');
-                        return { success: false, message: 'メールアドレスまたはPINが正しくありません' };
-                    }
-                    console.error('❌ データベースエラー:', error);
-                    throw error;
-                }
-                
-                if (data) {
-                    console.log('✅ PIN認証成功:', data.email);
-                    saveSession(data.email);
-                    currentUser = data.email;
-                    return { success: true, user: data };
-                }
-                
-                return { success: false, message: '認証に失敗しました' };
-                
-            } catch (e) {
-                console.error('❌ PIN認証エラー:', e);
-                return { success: false, message: 'システムエラーが発生しました' };
-            }
-        }
-        
-        // アプリ初期化（PIN認証版）
-        async function bootstrapApp() {
-            console.log('🚀 アプリ初期化開始（PIN認証版）');
-            
-            // 既存セッションチェック
-            const session = getSession();
-            
-            if (session && session.email) {
-                console.log('📱 既存セッション検出:', session.email);
-                currentUser = session.email;
-                
-                // セッションの有効性を確認（ユーザーがまだアクティブか）
-                const isValid = await validateUser(session.email);
-                if (isValid) {
-                    showAppWithData();
-                } else {
-                    console.log('❌ ユーザーが無効化されています');
-                    clearSession();
-                    showLoginScreen();
-                }
-            } else {
-                console.log('🔓 セッションなし - ログイン画面表示');
-                showLoginScreen();
-            }
-        }
-        
-        // ユーザー有効性チェック
-        async function validateUser(email) {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('user_profiles')
-                    .select('is_active')
-                    .eq('email', email.toLowerCase())
-                    .eq('is_active', true)
-                    .single();
-                    
-                return !error && data;
-            } catch (e) {
-                console.error('ユーザー検証エラー:', e);
-                return false;
-            }
-        }
-
-        // アプリ表示（データ初期化付き）
-        async function showAppWithData() {
-            console.log('📱 アプリ表示 & データ初期化開始');
-            showMapScreen();
-            
-            // データ初期化（まだ初期化されていない場合のみ）
-            if (!window.mapInitialized) {
-                try {
-                    await loadUserProfile();
-                    loadEmbeddedStores();
-                    initMap();
-                    setupEventListeners();
-                    checkDatabaseStatus();
-                    initializeHeaderActions();
-                    window.mapInitialized = true;
-                    console.log('✅ アプリ完全初期化完了');
-                } catch (error) {
-                    console.error('❌ アプリ初期化エラー:', error);
-                }
-            } else {
-                // 既に初期化済みの場合はヘッダーのみ更新
-                initializeHeaderActions();
-                console.log('✅ ヘッダー更新完了');
-            }
-        }
-
-        // ログアウト処理（PIN認証版）
-        function logout() {
-            clearSession();
-            currentUser = null;
-            userVisitHistory.clear();
-            showLoginScreen();
-            console.log('✅ ログアウト完了');
-        }
-
-        // DOM読み込み完了後にbootstrapApp実行
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('⚡ 新しい初期化システム開始');
-            
-            try {
-                await bootstrapApp();
-            } catch (error) {
-                console.error('❌ bootstrapApp エラー:', error);
-                showLoginScreen();
-            }
+        // DOM読み込み完了後に即座に初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('⚡ 埋め込みデータ版 - 高速起動');
+            initializeApp();
         });
 
         // アプリ初期化（認証ガード付き）
         async function initializeApp() {
+            console.log('🚀 アプリ初期化開始（認証チェック）');
+            
+            // 1. 認証状態を確認
+            const isAuthenticated = await checkAuthenticationStatus();
+            
+            if (!isAuthenticated) {
+                console.log('🔒 未認証ユーザー - ログイン画面にリダイレクト');
+                showLoginScreen();
+                return;
+            }
+            
+            console.log('✅ 認証済みユーザー - マップ画面を表示');
+            showMapScreen();
+            
+            // 2. 即座に店舗データを表示
+            loadEmbeddedStores();
+            
+            // 3. 地図を初期化
+            initMap();
+            
+            // 4. イベントリスナー設定
+            setupEventListeners();
+            
+            // 5. データベース状態確認
+            checkDatabaseStatus();
+            
+            // 6. 認証ボタンの初期状態を設定
+            updateAuthButton();
+            
+            console.log('✅ アプリ初期化完了 - 全機能利用可能');
+        }
+
+        // 認証状態チェック
+        async function checkAuthenticationStatus() {
             try {
-                console.log('🚀 アプリ初期化開始（PIN認証版）');
+                console.log('🔍 認証状態をチェック中...');
                 
-                // PIN認証システムのbootstrapAppを呼び出し
-                await bootstrapApp();
+                // Supabaseセッションチェック
+                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
                 
-                // 1.5. プロフィール情報を読み込み（重要: ヘッダー初期化前に実行）
-                try {
-                    await loadUserProfile();
-                    console.log('📱 初期プロフィール情報読み込み完了');
-                } catch (profileError) {
-                    console.error('⚠️ プロフィール読み込みエラー（続行）:', profileError);
-                    // プロフィール読み込み失敗でも処理は続行
+                if (session && session.user) {
+                    currentUser = session.user.email;
+                    console.log('✅ 有効なセッション:', currentUser);
+                    return true;
                 }
                 
-                // 2. 即座に店舗データを表示
-                try {
-                    loadEmbeddedStores();
-                } catch (storeError) {
-                    console.error('⚠️ 店舗データ読み込みエラー:', storeError);
+                // フォールバック: ユーザー情報チェック
+                const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+                
+                if (user && !userError) {
+                    currentUser = user.email;
+                    console.log('✅ 有効なユーザー:', currentUser);
+                    return true;
                 }
                 
-                // 3. 地図を初期化
-                try {
-                    initMap();
-                } catch (mapError) {
-                    console.error('⚠️ 地図初期化エラー:', mapError);
-                }
-                
-                // 4. イベントリスナー設定
-                try {
-                    setupEventListeners();
-                } catch (eventError) {
-                    console.error('⚠️ イベントリスナー設定エラー:', eventError);
-                }
-                
-                // 5. データベース状態確認
-                try {
-                    checkDatabaseStatus();
-                } catch (dbError) {
-                    console.error('⚠️ データベース状態確認エラー:', dbError);
-                }
-                
-                // 6. ヘッダーアクションの初期化
-                try {
-                    initializeHeaderActions();
-                } catch (headerError) {
-                    console.error('⚠️ ヘッダー初期化エラー:', headerError);
-                }
-                
-                console.log('✅ アプリ初期化完了 - 全機能利用可能');
+                console.log('❌ 認証セッションなし');
+                return false;
                 
             } catch (error) {
-                console.error('❌ アプリ初期化で重大なエラー:', error);
-                alert('アプリの初期化に失敗しました。ページを再読み込みしてください。');
+                console.error('❌ 認証チェックエラー:', error);
+                return false;
             }
         }
 
         // ログイン画面を表示
         function showLoginScreen() {
-            console.log('🔓 ログイン画面表示開始');
-            
-            // 初期ローディング画面を非表示
-            const loadingScreen = document.getElementById('initialLoading');
-            if (loadingScreen) {
-                loadingScreen.style.display = 'none';
-                console.log('📲 初期ローディング画面非表示');
-            }
-            
-            // メインアプリを非表示
-            const appContainer = document.getElementById('appContainer');
-            if (appContainer) {
-                appContainer.style.display = 'none';
-                console.log('📱 メインアプリ非表示');
-            }
-            
-            // 既存のログイン画面があれば削除
-            const existingLogin = document.getElementById('loginContainer');
-            if (existingLogin) {
-                existingLogin.remove();
-                console.log('🗑️ 既存のログイン画面削除');
-            }
-            
-            // ログイン画面を作成してbodyに追加
-            const loginDiv = document.createElement('div');
-            loginDiv.id = 'loginContainer';
-            console.log('🎨 ログイン画面要素作成');
-            loginDiv.innerHTML = `
+            document.body.innerHTML = `
                 <div class="login-container">
                     <div class="login-card">
                         <div class="login-header">
@@ -4763,31 +3474,29 @@
                         <div class="login-content">
                             <h2>ログインが必要です</h2>
                             <p>このサイトは会員限定です。<br>メールアドレスとPINでログインしてください。</p>
+                            
                             <div class="pin-login-form">
                                 <div class="form-group">
                                     <label for="loginEmail">メールアドレス</label>
-                                    <input type="email" id="loginEmail" placeholder="example@gmail.com" 
-                                           onkeypress="if(event.key==='Enter') performPinLogin()">
+                                    <input type="email" id="loginEmail" value="bettger1000@gmail.com" placeholder="メールアドレスを入力">
                                 </div>
+                                
                                 <div class="form-group">
-                                    <label for="loginPin">PIN（4桁）</label>
-                                    <input type="password" id="loginPin" placeholder="1234" maxlength="4" 
-                                           onkeypress="if(event.key==='Enter') performPinLogin()">
+                                    <label for="loginPin">PIN (4桁)</label>
+                                    <input type="text" id="loginPin" value="1234" maxlength="4" placeholder="PINを入力">
                                 </div>
+                                
                                 <button id="loginBtn" class="pin-login-btn" onclick="performPinLogin()">
                                     <i class="fas fa-sign-in-alt"></i>
                                     ログイン
                                 </button>
-                                <div id="loginError" class="login-error" style="display:none;"></div>
+                                
+                                <div id="loginError" class="login-error" style="display: none;"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-            `;
-            
-            // スタイルを追加
-            const style = document.createElement('style');
-            style.innerHTML = `
+                <style>
                     .login-container {
                         min-height: 100vh;
                         display: flex;
@@ -4816,14 +3525,6 @@
                         color: var(--primary);
                         font-size: 1.8rem;
                         margin-bottom: var(--space-xs);
-                        white-space: nowrap;
-                    }
-                    
-                    /* スマホでタイトルを1行に表示 */
-                    @media (max-width: 480px) {
-                        .login-header h1 {
-                            font-size: 1.4rem;
-                        }
                     }
                     .login-header p {
                         color: var(--text-secondary);
@@ -4841,31 +3542,39 @@
                         line-height: 1.6;
                     }
                     .pin-login-form {
-                        margin-top: var(--space-lg);
+                        display: flex;
+                        flex-direction: column;
+                        gap: var(--space-md);
                     }
+                    
                     .form-group {
-                        margin-bottom: var(--space-md);
+                        display: flex;
+                        flex-direction: column;
+                        gap: var(--space-xs);
                     }
+                    
                     .form-group label {
-                        display: block;
-                        margin-bottom: var(--space-xs);
                         font-weight: 500;
                         color: var(--text-primary);
+                        font-size: 0.9rem;
                     }
+                    
                     .form-group input {
-                        width: 100%;
                         padding: var(--space-sm) var(--space-md);
-                        border: 2px solid var(--border);
+                        border: 1px solid var(--border-color);
                         border-radius: var(--radius-md);
                         font-size: 1rem;
-                        transition: border-color 0.2s;
+                        transition: border-color 0.2s ease;
                     }
+                    
                     .form-group input:focus {
                         outline: none;
                         border-color: var(--primary);
+                        box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
                     }
+                    
                     .pin-login-btn {
-                        background: var(--gradient-primary);
+                        background: linear-gradient(45deg, var(--primary), var(--secondary));
                         color: white;
                         border: none;
                         padding: var(--space-md) var(--space-xl);
@@ -4879,130 +3588,116 @@
                         gap: var(--space-sm);
                         width: 100%;
                         transition: all 0.2s ease;
-                        margin-top: var(--space-lg);
+                        margin-top: var(--space-sm);
                     }
-                    .pin-login-btn:hover:not(:disabled) {
+                    
+                    .pin-login-btn:hover {
                         transform: translateY(-1px);
                         box-shadow: var(--shadow-lg);
                     }
+                    
                     .pin-login-btn:disabled {
-                        opacity: 0.7;
+                        opacity: 0.6;
                         cursor: not-allowed;
+                        transform: none;
                     }
+                    
                     .login-error {
-                        background: #fee;
-                        color: var(--error);
+                        background: #fff5f5;
+                        color: #dc3545;
                         padding: var(--space-sm) var(--space-md);
                         border-radius: var(--radius-md);
-                        margin-top: var(--space-md);
+                        border: 1px solid #f5c6cb;
                         font-size: 0.9rem;
+                        margin-top: var(--space-sm);
                     }
+                </style>
             `;
-            
-            // bodyに追加
-            document.body.appendChild(loginDiv);
-            console.log('✅ ログイン画面DOM追加完了');
-            
-            if (!document.getElementById('loginStyles')) {
-                style.id = 'loginStyles';
-                document.head.appendChild(style);
-                console.log('🎨 ログイン画面スタイル追加完了');
-            }
-            
-            // 前回のメールアドレスを復元
-            setTimeout(() => {
-                const emailInput = document.getElementById('loginEmail');
-                const pinInput = document.getElementById('loginPin');
-                
-                if (emailInput) {
-                    const lastEmail = localStorage.getItem('lastLoginEmail');
-                    if (lastEmail) {
-                        emailInput.value = lastEmail;
-                        if (pinInput) pinInput.focus();
-                    } else {
-                        emailInput.focus();
-                    }
-                }
-            }, 100);
-            
-            console.log('🔓 ログイン画面表示完了');
         }
 
         // マップ画面を表示
         function showMapScreen() {
+            // 既存のマップ画面は既に表示されているので、何もしない
             console.log('📍 マップ画面を表示');
-            
-            // 初期ローディング画面を非表示
-            const loadingScreen = document.getElementById('initialLoading');
-            if (loadingScreen) {
-                loadingScreen.style.display = 'none';
-            }
-            
-            // ログイン画面を削除
-            const loginContainer = document.getElementById('loginContainer');
-            if (loginContainer) {
-                loginContainer.remove();
-            }
-            
-            // メインアプリを表示
-            const appContainer = document.getElementById('appContainer');
-            if (appContainer) {
-                appContainer.style.display = 'block';
-            }
         }
 
-        // 削除：Google認証用のリダイレクト関数（PIN認証では不要）
-
-        // PIN認証実行（グローバルにアクセス可能にする）
-        window.performPinLogin = async function() {
-            console.log('🔐 PIN認証開始');
-            
+        // PIN認証実行
+        async function performPinLogin() {
             const email = document.getElementById('loginEmail').value.trim();
             const pin = document.getElementById('loginPin').value.trim();
-            const errorDiv = document.getElementById('loginError');
-            const loginBtn = document.getElementById('loginBtn');
             
-            // バリデーション
-            if (!email) {
-                errorDiv.textContent = 'メールアドレスを入力してください';
-                errorDiv.style.display = 'block';
+            if (!email || !pin) {
+                showLoginError('メールアドレスとPINを入力してください');
                 return;
             }
             
-            if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
-                errorDiv.textContent = 'PINは4桁の数字で入力してください';
-                errorDiv.style.display = 'block';
-                return;
-            }
-            
-            // ローディング表示
-            loginBtn.disabled = true;
-            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ログイン中...';
-            errorDiv.style.display = 'none';
+            console.log('🔐 PIN認証開始:', email);
             
             try {
-                const result = await authenticateWithPin(email, pin);
+                const { data, error } = await supabaseClient
+                    .from('user_profiles')
+                    .select('email, nickname, is_active')
+                    .eq('email', email.toLowerCase())
+                    .eq('pin', pin)
+                    .eq('is_active', true)
+                    .single();
                 
-                if (result.success) {
-                    console.log('✅ ログイン成功');
-                    // 前回のメールアドレスを保存（次回ログイン時の利便性向上）
-                    localStorage.setItem('lastLoginEmail', email);
-                    showAppWithData();
+                if (error) {
+                    if (error.code === 'PGRST116') {
+                        showLoginError('メールアドレスまたはPINが正しくありません');
+                    } else {
+                        showLoginError('システムエラーが発生しました');
+                        console.error('認証エラー:', error);
+                    }
+                } else if (data) {
+                    console.log('✅ PIN認証成功:', data);
+                    currentUser = data.email;
+                    hideLoginScreen();
+                    showMainApp();
                 } else {
-                    console.log('❌ ログイン失敗:', result.message);
-                    errorDiv.textContent = result.message || '認証に失敗しました';
-                    errorDiv.style.display = 'block';
-                    loginBtn.disabled = false;
-                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> ログイン';
+                    showLoginError('認証に失敗しました');
                 }
-            } catch (error) {
-                console.error('❌ 認証処理エラー:', error);
-                errorDiv.textContent = 'システムエラーが発生しました';
-                errorDiv.style.display = 'block';
-                loginBtn.disabled = false;
-                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> ログイン';
+            } catch (e) {
+                console.error('❌ PIN認証エラー:', e);
+                showLoginError('システムエラーが発生しました');
             }
         }
+        
+        // ログインエラー表示
+        function showLoginError(message) {
+            const errorDiv = document.getElementById('loginError');
+            if (errorDiv) {
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+            }
+        }
+        
+        // ログアウト機能
+        function logout() {
+            currentUser = null;
+            showLoginScreen();
+            hideMainApp();
+            
+            // フォームリセット
+            document.getElementById('loginEmail').value = 'bettger1000@gmail.com';
+            document.getElementById('loginPin').value = '1234';
+            const errorDiv = document.getElementById('loginError');
+            if (errorDiv) {
+                errorDiv.style.display = 'none';
+            }
+            
+            console.log('✅ ログアウト完了');
+        }
+        
+        // Enterキーでログイン
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const loginScreen = document.getElementById('loginScreen');
+                if (loginScreen && loginScreen.style.display !== 'none') {
+                    performPinLogin();
+                }
+            }
+        });
 
         // データベース状態確認（簡略版）
         async function checkDatabaseStatus() {
@@ -5154,16 +3849,12 @@
 
                     const popupContent = createPopupContent(store);
                     marker.bindPopup(popupContent, {
-                        offset: [0, -10], // ポップアップを中央に配置、上に10pxずらす
+                        offset: [15, -10], // ポップアップを右に15px、上に10pxずらす
                         className: 'custom-popup'
                     });
 
                     marker.on('click', function() {
                         selectStoreCard(store.id);
-                        // ポップアップが開いた後にボタン状態を更新
-                        setTimeout(() => {
-                            updatePopupButtons(store.id);
-                        }, 100); // 少し遅延させてポップアップのDOM生成を待つ
                     });
 
                     // マーカーにstoreIdを保存
@@ -5303,7 +3994,7 @@
 
             sortedStores.forEach(store => {
                 try {
-                    const card = createMobileStoreCard(store);
+                    const card = createStoreCard(store);
                     container.appendChild(card);
                 } catch (error) {
                     console.error(`店舗「${store.name}」のカード作成エラー:`, error);
@@ -5311,8 +4002,8 @@
             });
         }
 
-        // モバイル用店舗カード作成
-        function createMobileStoreCard(store) {
+        // 店舗カード作成
+        function createStoreCard(store) {
             const card = document.createElement('div');
             card.className = 'store-card';
             card.dataset.storeId = store.id;
@@ -5333,20 +4024,12 @@
                     distanceText = `${distance.toFixed(1)}km`;
                 }
             }
-            
-            // カテゴリ設定を取得
-            const config = getCategoryConfig(store.category);
-
-            // 訪問ステータスをチェック
-            const visitStatus = userVisitHistory.get(`${store.id}`);
-            const isWantToGo = visitStatus === 'want_to_go';
-            const isVisited = visitStatus === 'visited';
 
             card.innerHTML = `
                 <div class="store-header">
                     <h3 class="store-name">${storeName}</h3>
                     <div class="store-header-right">
-                        <span class="store-category" data-category="${storeCategory}">${config.icon} ${storeCategory}</span>
+                        <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
                         ${distanceText ? `<span class="store-distance">📍 ${distanceText}</span>` : ''}
                     </div>
                 </div>
@@ -5367,19 +4050,6 @@
                             <span>${storeHours}</span>
                         </div>
                     ` : ''}
-                </div>
-                <div class="store-card-actions">
-                    <button class="action-btn want-to-go ${isWantToGo ? 'active' : ''}" 
-                            onclick="event.stopPropagation(); toggleVisitStatus(${store.id}, 'want_to_go')">
-                        🤍 行きたい
-                    </button>
-                    <button class="action-btn visited ${isVisited ? 'active' : ''}" 
-                            onclick="event.stopPropagation(); toggleVisitStatus(${store.id}, 'visited')">
-                        ✨ 行った
-                    </button>
-                    <button class="action-btn detail" onclick="event.stopPropagation(); openStoreDetail(${store.id})">
-                        📋 詳細
-                    </button>
                 </div>
             `;
 
@@ -5411,10 +4081,6 @@
             const storeWebsite = store.website ? escapeHtml(store.website) : '';
             const storeDescription = store.description ? escapeHtml(store.description) : '';
             
-            // カテゴリバッジ（店舗一覧と同じスタイル）
-            const config = getCategoryConfig(store.category);
-            const categoryBadge = `<span class="category-badge" style="background: ${config.color}15; color: ${config.color}; border: 1px solid ${config.color}30; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 500;">${config.icon} ${storeCategory}</span>`;
-            
             // 訪問ステータスをチェック
             const visitStatus = userVisitHistory.get(`${store.id}`);
             const isWantToGo = visitStatus === 'want_to_go';
@@ -5428,7 +4094,7 @@
                         <div class="popup-header">
                             <div class="popup-header-main">
                                 <h3 class="popup-title">${storeName}</h3>
-                                ${categoryBadge}
+                                <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
                             </div>
                             <button class="popup-close-btn" onclick="closePopup()" title="閉じる">×</button>
                         </div>
@@ -5476,8 +4142,8 @@
                                 <button class="action-btn visited popup-action-btn ${isVisited ? 'active' : ''}" onclick="toggleVisitStatus(${store.id}, 'visited')" data-store-id="${store.id}">
                                     ✨ 行った
                                 </button>
-                                <button class="action-btn popup-action-btn" onclick="openStoreDetail(${store.id})">
-                                    📋 詳細
+                                <button class="action-btn popup-action-btn" onclick="focusOnStore(${store.id})">
+                                    🗺️ 地図
                                 </button>
                             </div>
                         </div>
@@ -5498,7 +4164,7 @@
                         <div class="popup-scrollable-content">
                             <div class="popup-info-section">
                                 <div class="popup-category-row">
-                                    ${categoryBadge}
+                                    <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
                                 </div>
                                 <div class="popup-row">
                                     <span class="popup-icon">📍</span>
@@ -5542,8 +4208,8 @@
                                 <button class="action-btn visited popup-action-btn ${isVisited ? 'active' : ''}" onclick="toggleVisitStatus(${store.id}, 'visited')" data-store-id="${store.id}">
                                     ✨ 行った
                                 </button>
-                                <button class="action-btn popup-action-btn" onclick="openStoreDetail(${store.id})">
-                                    📋 詳細
+                                <button class="action-btn popup-action-btn" onclick="focusOnStore(${store.id})">
+                                    🗺️ 地図
                                 </button>
                             </div>
                         </div>
@@ -5613,12 +4279,6 @@
                 selectedTab = activeTab ? activeTab.dataset.tab : 'all';
             }
 
-            // 地域検索を先にチェック
-            if (searchText && searchLocationAndMove(searchText)) {
-                console.log(`🗺️ 地域検索実行: "${searchText}"`);
-                // 地域検索が成功した場合でも、店舗フィルタリングは続行
-            }
-
             const filteredStores = stores.filter(store => {
                 const matchesCategory = !selectedCategory || store.category === selectedCategory;
                 const matchesSearch = !searchText ||
@@ -5667,1495 +4327,6 @@
                 }
             }
             // 注意: モバイル版は直接updatePanelContent()を呼ぶため、ここでは処理しない
-        }
-
-        // 全国主要地域データ（150地域）
-        const famousLocations = {
-            // 北海道・東北
-            '札幌': { lat: 43.0642, lng: 141.3469, zoom: 13 },
-            '札幌駅': { lat: 43.0683, lng: 141.3506, zoom: 15 },
-            '青森': { lat: 40.8244, lng: 140.7400, zoom: 13 },
-            '盛岡': { lat: 39.7036, lng: 141.1527, zoom: 13 },
-            '仙台': { lat: 38.2682, lng: 140.8694, zoom: 13 },
-            '仙台駅': { lat: 38.2601, lng: 140.8820, zoom: 15 },
-            '秋田': { lat: 39.7186, lng: 140.1024, zoom: 13 },
-            '山形': { lat: 38.2404, lng: 140.3634, zoom: 13 },
-            '福島': { lat: 37.7503, lng: 140.4676, zoom: 13 },
-            
-            // 関東
-            '水戸': { lat: 36.3418, lng: 140.4468, zoom: 13 },
-            '宇都宮': { lat: 36.5658, lng: 139.8836, zoom: 13 },
-            '前橋': { lat: 36.3911, lng: 139.0608, zoom: 13 },
-            'さいたま': { lat: 35.8617, lng: 139.6455, zoom: 13 },
-            '大宮': { lat: 35.9067, lng: 139.6235, zoom: 14 },
-            '千葉': { lat: 35.6074, lng: 140.1065, zoom: 13 },
-            '千葉駅': { lat: 35.6135, lng: 140.1133, zoom: 15 },
-            '船橋': { lat: 35.6950, lng: 139.9840, zoom: 14 },
-            
-            // 東京23区・主要エリア
-            '東京': { lat: 35.6812, lng: 139.7671, zoom: 12 },
-            '東京駅': { lat: 35.6812, lng: 139.7671, zoom: 15 },
-            '新宿': { lat: 35.6896, lng: 139.7006, zoom: 14 },
-            '渋谷': { lat: 35.6598, lng: 139.7004, zoom: 14 },
-            '池袋': { lat: 35.7280, lng: 139.7101, zoom: 14 },
-            '上野': { lat: 35.7141, lng: 139.7773, zoom: 14 },
-            '浅草': { lat: 35.7148, lng: 139.7967, zoom: 15 },
-            '銀座': { lat: 35.6762, lng: 139.7653, zoom: 15 },
-            '六本木': { lat: 35.6627, lng: 139.7314, zoom: 15 },
-            '表参道': { lat: 35.6652, lng: 139.7126, zoom: 15 },
-            '原宿': { lat: 35.6702, lng: 139.7025, zoom: 15 },
-            '秋葉原': { lat: 35.6984, lng: 139.7731, zoom: 15 },
-            '品川': { lat: 35.6284, lng: 139.7387, zoom: 14 },
-            '品川駅': { lat: 35.6284, lng: 139.7387, zoom: 15 },
-            '有楽町': { lat: 35.6751, lng: 139.7632, zoom: 15 },
-            '丸の内': { lat: 35.6813, lng: 139.7640, zoom: 15 },
-            '赤坂': { lat: 35.6740, lng: 139.7377, zoom: 15 },
-            '恵比寿': { lat: 35.6466, lng: 139.7100, zoom: 15 },
-            '中目黒': { lat: 35.6441, lng: 139.6979, zoom: 15 },
-            '自由が丘': { lat: 35.6082, lng: 139.6679, zoom: 15 },
-            '二子玉川': { lat: 35.6134, lng: 139.6289, zoom: 15 },
-            '吉祥寺': { lat: 35.7022, lng: 139.5803, zoom: 15 },
-            '立川': { lat: 35.6986, lng: 139.4141, zoom: 14 },
-            '横浜': { lat: 35.4437, lng: 139.6380, zoom: 13 },
-            '新横浜': { lat: 35.5064, lng: 139.6177, zoom: 14 },
-            '川崎': { lat: 35.5308, lng: 139.7029, zoom: 14 },
-            
-            // 中部
-            '新潟': { lat: 37.9161, lng: 139.0364, zoom: 13 },
-            '富山': { lat: 36.6953, lng: 137.2113, zoom: 13 },
-            '金沢': { lat: 36.5944, lng: 136.6256, zoom: 13 },
-            '福井': { lat: 36.0613, lng: 136.2236, zoom: 13 },
-            '甲府': { lat: 35.6638, lng: 138.5681, zoom: 13 },
-            '長野': { lat: 36.6513, lng: 138.1810, zoom: 13 },
-            '軽井沢': { lat: 36.3420, lng: 138.6332, zoom: 14 },
-            '岐阜': { lat: 35.3912, lng: 136.7223, zoom: 13 },
-            '高山': { lat: 36.1460, lng: 137.2510, zoom: 14 },
-            '下呂': { lat: 35.8044, lng: 137.2489, zoom: 14 },
-            '静岡': { lat: 34.9756, lng: 138.3827, zoom: 13 },
-            '浜松': { lat: 34.7108, lng: 137.7261, zoom: 13 },
-            '熱海': { lat: 35.0951, lng: 139.0779, zoom: 14 },
-            '伊豆': { lat: 34.9679, lng: 138.9470, zoom: 13 },
-            '三島': { lat: 35.1184, lng: 138.9184, zoom: 14 },
-            '小田原': { lat: 35.2562, lng: 139.1563, zoom: 14 },
-            '箱根': { lat: 35.2322, lng: 139.1069, zoom: 14 },
-            '名古屋': { lat: 35.1815, lng: 136.9066, zoom: 12 },
-            '名古屋駅': { lat: 35.1706, lng: 136.8816, zoom: 15 },
-            '栄': { lat: 35.1681, lng: 136.9031, zoom: 14 },
-            '大須': { lat: 35.1594, lng: 136.9078, zoom: 15 },
-            '金山': { lat: 35.1434, lng: 136.9007, zoom: 15 },
-            '星ヶ丘': { lat: 35.1847, lng: 136.9710, zoom: 15 },
-            '藤が丘': { lat: 35.1904, lng: 137.0507, zoom: 15 },
-            '豊橋': { lat: 34.7693, lng: 137.3914, zoom: 14 },
-            '岡崎': { lat: 34.9553, lng: 137.1741, zoom: 14 },
-            
-            // 近畿
-            '津': { lat: 34.7309, lng: 136.5086, zoom: 13 },
-            '大津': { lat: 35.0045, lng: 135.8686, zoom: 13 },
-            '京都': { lat: 35.0116, lng: 135.7681, zoom: 12 },
-            '祇園': { lat: 35.0039, lng: 135.7756, zoom: 15 },
-            '嵐山': { lat: 35.0096, lng: 135.6761, zoom: 14 },
-            '清水寺': { lat: 34.9949, lng: 135.7851, zoom: 15 },
-            '金閣寺': { lat: 35.0394, lng: 135.7292, zoom: 15 },
-            '伏見': { lat: 34.9389, lng: 135.7606, zoom: 14 },
-            '大阪': { lat: 34.6937, lng: 135.5023, zoom: 12 },
-            '大阪駅': { lat: 34.7024, lng: 135.4959, zoom: 15 },
-            '梅田': { lat: 34.7024, lng: 135.4959, zoom: 14 },
-            '難波': { lat: 34.6659, lng: 135.5006, zoom: 14 },
-            '心斎橋': { lat: 34.6743, lng: 135.5017, zoom: 15 },
-            '天王寺': { lat: 34.6455, lng: 135.5061, zoom: 14 },
-            '京橋': { lat: 34.6958, lng: 135.5273, zoom: 15 },
-            '新大阪': { lat: 34.7331, lng: 135.5003, zoom: 14 },
-            '神戸': { lat: 34.6901, lng: 135.1956, zoom: 13 },
-            '三ノ宮': { lat: 34.6937, lng: 135.1955, zoom: 14 },
-            '姫路': { lat: 34.8161, lng: 134.6851, zoom: 13 },
-            '奈良': { lat: 34.6851, lng: 135.8048, zoom: 13 },
-            '和歌山': { lat: 34.2261, lng: 135.1675, zoom: 13 },
-            '白浜': { lat: 33.6829, lng: 135.3379, zoom: 14 },
-            '有馬温泉': { lat: 34.7973, lng: 135.2486, zoom: 15 },
-            '城崎温泉': { lat: 35.6190, lng: 134.8077, zoom: 15 },
-            
-            // 中国
-            '鳥取': { lat: 35.5038, lng: 134.2378, zoom: 13 },
-            '松江': { lat: 35.4723, lng: 133.0505, zoom: 13 },
-            '岡山': { lat: 34.6617, lng: 133.9341, zoom: 13 },
-            '倉敷': { lat: 34.5956, lng: 133.7722, zoom: 14 },
-            '広島': { lat: 34.3853, lng: 132.4553, zoom: 13 },
-            '宮島': { lat: 34.2954, lng: 132.3190, zoom: 14 },
-            '山口': { lat: 34.1861, lng: 131.4704, zoom: 13 },
-            
-            // 四国
-            '徳島': { lat: 34.0658, lng: 134.5594, zoom: 13 },
-            '高松': { lat: 34.3401, lng: 134.0434, zoom: 13 },
-            '松山': { lat: 33.8416, lng: 132.7658, zoom: 13 },
-            '高知': { lat: 33.5597, lng: 133.5311, zoom: 13 },
-            
-            // 九州・沖縄
-            '福岡': { lat: 33.5904, lng: 130.4017, zoom: 12 },
-            '博多': { lat: 33.5904, lng: 130.4017, zoom: 14 },
-            '博多駅': { lat: 33.5904, lng: 130.4017, zoom: 15 },
-            '天神': { lat: 33.5918, lng: 130.3989, zoom: 14 },
-            '小倉': { lat: 33.8834, lng: 130.8751, zoom: 14 },
-            '久留米': { lat: 33.3197, lng: 130.5089, zoom: 14 },
-            '佐賀': { lat: 33.2494, lng: 130.2989, zoom: 13 },
-            '長崎': { lat: 32.7503, lng: 129.8779, zoom: 13 },
-            '熊本': { lat: 32.7896, lng: 130.7417, zoom: 13 },
-            '阿蘇': { lat: 32.9511, lng: 131.1074, zoom: 13 },
-            '大分': { lat: 33.2382, lng: 131.6126, zoom: 13 },
-            '別府': { lat: 33.2849, lng: 131.4919, zoom: 14 },
-            '湯布院': { lat: 33.2662, lng: 131.3664, zoom: 14 },
-            '宮崎': { lat: 31.9077, lng: 131.4202, zoom: 13 },
-            '鹿児島': { lat: 31.5966, lng: 130.5571, zoom: 13 },
-            '鹿児島中央': { lat: 31.5814, lng: 130.5431, zoom: 14 },
-            '屋久島': { lat: 30.3318, lng: 130.5021, zoom: 12 },
-            '那覇': { lat: 26.2124, lng: 127.6792, zoom: 13 },
-            
-            // 主要空港
-            '羽田空港': { lat: 35.5494, lng: 139.7798, zoom: 14 },
-            '成田空港': { lat: 35.7653, lng: 140.3862, zoom: 14 },
-            '中部国際空港': { lat: 34.8584, lng: 136.8054, zoom: 14 },
-            '関西空港': { lat: 34.4274, lng: 135.2440, zoom: 14 },
-            '伊丹空港': { lat: 34.7855, lng: 135.4389, zoom: 14 },
-            '福岡空港': { lat: 33.5859, lng: 130.4510, zoom: 14 },
-            '新千歳空港': { lat: 42.7747, lng: 141.6920, zoom: 14 },
-            '那覇空港': { lat: 26.1958, lng: 127.6460, zoom: 14 },
-            
-            // その他主要地点
-            'ニセコ': { lat: 42.8048, lng: 140.6874, zoom: 13 },
-            '小樽': { lat: 43.1907, lng: 140.9947, zoom: 13 },
-            '函館': { lat: 41.7687, lng: 140.7290, zoom: 13 },
-            '松島': { lat: 38.3736, lng: 141.0647, zoom: 14 },
-            '会津若松': { lat: 37.4953, lng: 139.9303, zoom: 13 },
-            '日光': { lat: 36.7581, lng: 139.6170, zoom: 13 },
-            '鎌倉': { lat: 35.3193, lng: 139.5519, zoom: 14 },
-            '江ノ島': { lat: 35.2986, lng: 139.4814, zoom: 15 },
-            '河口湖': { lat: 35.5135, lng: 138.7636, zoom: 13 },
-            '富士山': { lat: 35.3606, lng: 138.7274, zoom: 12 },
-            'つくば': { lat: 36.0837, lng: 140.1133, zoom: 13 },
-            '武蔵小杉': { lat: 35.5781, lng: 139.6565, zoom: 15 },
-            'みなとみらい': { lat: 35.4563, lng: 139.6380, zoom: 14 },
-            '多摩センター': { lat: 35.6246, lng: 139.4461, zoom: 14 },
-            '幕張': { lat: 35.6487, lng: 140.0340, zoom: 14 }
-        };
-
-        // 地域名の異名・略称対応
-        const locationAliases = {
-            '名古屋': ['名古屋', 'なごや', 'ナゴヤ'],
-            '名古屋駅': ['名古屋駅', '名駅', 'めいえき'],
-            '東京': ['東京', 'とうきょう', 'トウキョウ'],
-            '東京駅': ['東京駅', '東京ステーション'],
-            '大阪': ['大阪', 'おおさか', 'オオサカ'],
-            '大阪駅': ['大阪駅', '梅田', 'うめだ'],
-            '福岡': ['福岡', 'ふくおか', 'フクオカ'],
-            '博多': ['博多', 'はかた', 'ハカタ'],
-            '博多駅': ['博多駅', '博多', 'はかた'],
-            '京都': ['京都', 'きょうと', 'キョウト'],
-            '神戸': ['神戸', 'こうべ', 'コウベ'],
-            '横浜': ['横浜', 'よこはま', 'ヨコハマ'],
-            '札幌': ['札幌', 'さっぽろ', 'サッポロ'],
-            '仙台': ['仙台', 'せんだい', 'センダイ'],
-            '広島': ['広島', 'ひろしま', 'ヒロシマ'],
-            '渋谷': ['渋谷', 'しぶや', 'シブヤ'],
-            '新宿': ['新宿', 'しんじゅく', 'シンジュク'],
-            '池袋': ['池袋', 'いけぶくろ', 'イケブクロ'],
-            '栄': ['栄', 'さかえ', 'サカエ'],
-            '天神': ['天神', 'てんじん', 'テンジン']
-        };
-
-        // 地域検索機能
-        function searchLocationAndMove(searchText) {
-            if (!searchText || searchText.length < 2) return false;
-            
-            const query = searchText.toLowerCase();
-            
-            // 直接一致を確認
-            if (famousLocations[searchText]) {
-                const location = famousLocations[searchText];
-                moveMapToLocation(location.lat, location.lng, location.zoom);
-                return true;
-            }
-            
-            // 異名・略称での検索
-            for (const [mainName, aliases] of Object.entries(locationAliases)) {
-                if (aliases.some(alias => alias.toLowerCase().includes(query))) {
-                    if (famousLocations[mainName]) {
-                        const location = famousLocations[mainName];
-                        moveMapToLocation(location.lat, location.lng, location.zoom);
-                        return true;
-                    }
-                }
-            }
-            
-            // 部分一致検索
-            for (const [locationName, location] of Object.entries(famousLocations)) {
-                if (locationName.toLowerCase().includes(query)) {
-                    moveMapToLocation(location.lat, location.lng, location.zoom);
-                    return true;
-                }
-            }
-            
-            return false;
-        }
-
-        // マップ移動実行
-        function moveMapToLocation(lat, lng, zoom = 14) {
-            if (map) {
-                map.setView([lat, lng], zoom);
-                console.log(`📍 マップを移動: ${lat}, ${lng} (zoom: ${zoom})`);
-            }
-        }
-
-        // ユーザーメニュー切り替え
-        function toggleUserMenu() {
-            console.log('👤 ユーザーメニューボタンがクリックされました');
-            
-            const dropdown = document.getElementById('userMenuDropdown');
-            if (!dropdown) return;
-            
-            // 現在の表示状態を切り替え
-            if (dropdown.style.display === 'none' || dropdown.style.display === '') {
-                dropdown.style.display = 'block';
-                console.log('✅ メニューを表示');
-            } else {
-                dropdown.style.display = 'none';
-                console.log('❌ メニューを非表示');
-            }
-        }
-
-        // メニュー外クリックで閉じる
-        document.addEventListener('click', function(event) {
-            const dropdown = document.getElementById('userMenuDropdown');
-            const headerActions = document.getElementById('headerActions');
-            
-            if (dropdown && headerActions) {
-                // メニューまたはボタン以外をクリックした場合は閉じる
-                if (!headerActions.contains(event.target) && !dropdown.contains(event.target)) {
-                    dropdown.style.display = 'none';
-                }
-            }
-        });
-
-        // プロフィール関連の変数
-        let currentUserProfile = {
-            avatar: '👤',
-            avatarType: 'emoji', // 'emoji' or 'image'
-            avatarImage: null, // Base64画像データ
-            name: '',
-            email: '',
-            bio: '',
-            joinDate: ''
-        };
-
-        // メニューアイテムの機能実装
-        async function showUserProfile() {
-            try {
-                console.log('👤 プロフィール画面を表示');
-                // メニューを閉じる
-                const dropdown = document.getElementById('userMenuDropdown');
-                if (dropdown) {
-                    dropdown.style.display = 'none';
-                }
-                
-                // プロフィール保存ボタンのイベントリスナーを設定（一度だけ）
-                setupProfileSaveListener();
-                
-                // プロフィールデータを読み込んで表示
-                await loadUserProfile();
-                
-                const modal = document.getElementById('profileModal');
-                if (modal) {
-                    modal.style.display = 'flex';
-                }
-            } catch (error) {
-                console.error('❌ プロフィール画面表示エラー:', error);
-                alert('プロフィール画面の表示に失敗しました');
-            }
-        }
-        
-        // プロフィール保存ボタンのイベントリスナー設定
-        function setupProfileSaveListener() {
-            const saveBtn = document.getElementById('saveProfileBtn');
-            if (saveBtn && !saveBtn.hasAttribute('data-listener-added')) {
-                saveBtn.addEventListener('click', async () => {
-                    try {
-                        await saveProfile();
-                    } catch (error) {
-                        console.error('❌ プロフィール保存エラー:', error);
-                        alert('プロフィールの保存に失敗しました');
-                    }
-                });
-                saveBtn.setAttribute('data-listener-added', 'true');
-                console.log('✅ プロフィール保存リスナー設定完了');
-            }
-        }
-
-        // プロフィールデータ読み込み（Supabaseベース）
-        async function loadUserProfile() {
-            try {
-                // 基本情報
-                currentUserProfile.email = currentUser;
-                currentUserProfile.joinDate = new Date().toLocaleDateString('ja-JP');
-                
-                // currentUserが設定されていない場合は処理を停止
-                if (!currentUser) {
-                    console.log('⚠️ ユーザー未ログイン - デフォルトプロフィール使用');
-                    setDefaultProfile();
-                    return;
-                }
-                
-                // Supabaseからプロフィール情報を読み込み
-                const { data, error } = await supabaseClient
-                    .from('user_profiles')
-                    .select('nickname, bio, avatar_type, avatar_emoji, avatar_url')
-                    .eq('email', currentUser)
-                    .single();
-                
-                if (error && error.code !== 'PGRST116') { // PGRST116 = レコードが見つからない
-                    throw error;
-                }
-                
-                if (data) {
-                    currentUserProfile.name = data.nickname || '';
-                    currentUserProfile.bio = data.bio || '';
-                    currentUserProfile.avatarType = data.avatar_type || 'emoji';
-                    currentUserProfile.avatar = data.avatar_emoji || '🍰';
-                    currentUserProfile.avatarImage = data.avatar_url || null;
-                    console.log('✅ Supabaseからプロフィール読み込み完了:', data);
-                } else {
-                    // プロフィールが存在しない場合のデフォルト値
-                    setDefaultProfile();
-                    console.log('📝 新規ユーザー - デフォルトプロフィール設定');
-                }
-                
-            } catch (error) {
-                console.error('❌ プロフィール読み込みエラー:', error);
-                // エラー時はLocalStorageのフォールバック
-                loadProfileFromLocalStorage();
-            }
-            
-            // 画面に表示
-            try {
-                updateProfileDisplay();
-                console.log('📋 プロフィール読み込み完了:', currentUserProfile);
-            } catch (displayError) {
-                console.error('❌ プロフィール表示エラー:', displayError);
-            }
-        }
-        
-        // デフォルトプロフィール設定
-        function setDefaultProfile() {
-            currentUserProfile.name = getUserDisplayNameFromEmail();
-            currentUserProfile.bio = '';
-            currentUserProfile.avatarType = 'emoji';
-            currentUserProfile.avatar = '🍰';
-            currentUserProfile.avatarImage = null;
-        }
-        
-        // LocalStorageからプロフィール読み込み
-        function loadProfileFromLocalStorage() {
-            try {
-                const savedProfile = localStorage.getItem(`profile_${currentUser}`);
-                if (savedProfile) {
-                    const parsed = JSON.parse(savedProfile);
-                    currentUserProfile = { ...currentUserProfile, ...parsed };
-                    console.log('🔄 LocalStorageフォールバック使用');
-                } else {
-                    setDefaultProfile();
-                }
-            } catch (error) {
-                console.error('❌ LocalStorage読み込みエラー:', error);
-                setDefaultProfile();
-            }
-        }
-        
-        // メールアドレスから表示名を生成
-        function getUserDisplayNameFromEmail() {
-            if (currentUser && currentUser.includes('@')) {
-                return currentUser.split('@')[0];
-            }
-            return 'ユーザー';
-        }
-
-        // プロフィール表示を更新
-        function updateProfileDisplay() {
-            try {
-                const userAvatar = document.getElementById('userAvatar');
-                const editAvatar = document.getElementById('editAvatar');
-                
-                // アバター表示を更新
-                if (userAvatar) {
-                    if (currentUserProfile.avatarType === 'image' && currentUserProfile.avatarImage) {
-                        // 画像アバターの場合
-                        userAvatar.innerHTML = `<img src="${currentUserProfile.avatarImage}" alt="プロフィール画像">`;
-                        userAvatar.className = 'avatar-circle image-avatar';
-                    } else {
-                        // 絵文字アバターの場合
-                        userAvatar.textContent = currentUserProfile.avatar || '🍰';
-                        userAvatar.className = 'avatar-circle';
-                    }
-                }
-                
-                if (editAvatar) {
-                    if (currentUserProfile.avatarType === 'image' && currentUserProfile.avatarImage) {
-                        editAvatar.innerHTML = `<img src="${currentUserProfile.avatarImage}" alt="プロフィール画像">`;
-                        editAvatar.className = 'avatar-circle image-avatar';
-                    } else {
-                        editAvatar.textContent = currentUserProfile.avatar || '🍰';
-                        editAvatar.className = 'avatar-circle';
-                    }
-                }
-                
-                // テキスト情報を更新
-                const displayName = document.getElementById('displayName');
-                if (displayName) {
-                    displayName.textContent = currentUserProfile.name || '-';
-                }
-                
-                const displayEmail = document.getElementById('displayEmail');
-                if (displayEmail) {
-                    displayEmail.textContent = currentUserProfile.email || '-';
-                }
-                
-                const displayJoinDate = document.getElementById('displayJoinDate');
-                if (displayJoinDate) {
-                    displayJoinDate.textContent = currentUserProfile.joinDate || '-';
-                }
-                
-                const displayBio = document.getElementById('displayBio');
-                if (displayBio) {
-                    displayBio.textContent = currentUserProfile.bio || '自己紹介がまだ設定されていません';
-                }
-                
-            } catch (error) {
-                console.error('❌ プロフィール表示更新エラー:', error);
-            }
-        }
-
-        // プロフィールモーダルを閉じる
-        function closeProfileModal() {
-            document.getElementById('profileModal').style.display = 'none';
-            // 編集モードの場合は表示モードに戻す
-            showProfileView();
-        }
-
-        // プロフィール編集モードに切り替え
-        function editProfile() {
-            // 編集フォームに現在の値を設定
-            document.getElementById('editName').value = currentUserProfile.name || '';
-            document.getElementById('editBio').value = currentUserProfile.bio || '';
-            
-            // アバター表示を更新
-            updateProfileDisplay();
-            
-            // タブ設定
-            const avatarType = currentUserProfile.avatarType || 'emoji';
-            showAvatarTypeByValue(avatarType);
-            
-            // 画像プレビューの設定
-            if (avatarType === 'image' && currentUserProfile.avatarImage) {
-                document.getElementById('previewImg').src = currentUserProfile.avatarImage;
-                document.getElementById('imagePreview').style.display = 'block';
-            } else {
-                document.getElementById('imagePreview').style.display = 'none';
-            }
-            
-            // 文字数カウントを更新
-            updateCharCount();
-            
-            // アバター選択状態を更新
-            updateAvatarSelection();
-            
-            // 編集モードを表示
-            document.getElementById('profileView').style.display = 'none';
-            document.getElementById('profileEdit').style.display = 'flex';
-        }
-
-        // アバタータイプを値で設定
-        function showAvatarTypeByValue(type) {
-            // タブの表示切り替え
-            document.querySelectorAll('.avatar-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            if (type === 'emoji') {
-                document.querySelector('.avatar-tab:first-child').classList.add('active');
-                document.getElementById('emojiAvatars').style.display = 'flex';
-                document.getElementById('imageUpload').style.display = 'none';
-            } else {
-                document.querySelector('.avatar-tab:last-child').classList.add('active');
-                document.getElementById('emojiAvatars').style.display = 'none';
-                document.getElementById('imageUpload').style.display = 'flex';
-            }
-        }
-
-        // プロフィール表示モードに戻す
-        function showProfileView() {
-            document.getElementById('profileEdit').style.display = 'none';
-            document.getElementById('profileView').style.display = 'flex';
-        }
-
-        // アバター選択
-        function selectAvatar(emoji) {
-            currentUserProfile.avatar = emoji;
-            currentUserProfile.avatarType = 'emoji';
-            currentUserProfile.avatarImage = null;
-            
-            const editAvatar = document.getElementById('editAvatar');
-            editAvatar.textContent = emoji;
-            editAvatar.className = 'avatar-circle';
-            editAvatar.innerHTML = emoji; // imgタグを削除
-            
-            updateAvatarSelection();
-            
-            // 画像プレビューを非表示
-            document.getElementById('imagePreview').style.display = 'none';
-        }
-
-        // アバタータイプ切り替え
-        function showAvatarType(type) {
-            // タブの表示切り替え
-            document.querySelectorAll('.avatar-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.closest('.avatar-tab').classList.add('active');
-            
-            // コンテンツの表示切り替え
-            if (type === 'emoji') {
-                document.getElementById('emojiAvatars').style.display = 'flex';
-                document.getElementById('imageUpload').style.display = 'none';
-            } else {
-                document.getElementById('emojiAvatars').style.display = 'none';
-                document.getElementById('imageUpload').style.display = 'flex';
-            }
-        }
-
-        // 画像アップロード処理
-        function handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            // ファイルサイズチェック (2MB制限)
-            if (file.size > 2 * 1024 * 1024) {
-                alert('ファイルサイズが2MBを超えています。より小さなファイルを選択してください。');
-                return;
-            }
-            
-            // ファイルタイプチェック
-            if (!file.type.startsWith('image/')) {
-                alert('画像ファイルを選択してください。');
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    // 画像をリサイズ
-                    const resizedImage = resizeImage(img, 200, 200);
-                    
-                    // プロフィールに設定
-                    currentUserProfile.avatarType = 'image';
-                    currentUserProfile.avatarImage = resizedImage;
-                    
-                    // プレビュー表示
-                    document.getElementById('previewImg').src = resizedImage;
-                    document.getElementById('imagePreview').style.display = 'block';
-                    
-                    // 編集用アバターも更新
-                    const editAvatar = document.getElementById('editAvatar');
-                    editAvatar.innerHTML = `<img src="${resizedImage}" alt="プロフィール画像">`;
-                    editAvatar.className = 'avatar-circle image-avatar';
-                    
-                    console.log('✅ 画像アップロード完了');
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // 画像リサイズ関数（サイズ最適化版）
-        function resizeImage(img, maxWidth, maxHeight) {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            // アスペクト比を保持してリサイズ
-            let { width, height } = img;
-            
-            if (width > height) {
-                if (width > maxWidth) {
-                    height = (height * maxWidth) / width;
-                    width = maxWidth;
-                }
-            } else {
-                if (height > maxHeight) {
-                    width = (width * maxHeight) / height;
-                    height = maxHeight;
-                }
-            }
-            
-            canvas.width = width;
-            canvas.height = height;
-            
-            // 画像を描画
-            ctx.drawImage(img, 0, 0, width, height);
-            
-            // Base64として返す（品質を下げてサイズ削減）
-            // 最初は品質0.5で試す
-            let dataUrl = canvas.toDataURL('image/jpeg', 0.5);
-            
-            // データサイズをチェック（約50KB以下を目標）
-            console.log('画像データサイズ:', Math.round(dataUrl.length / 1024), 'KB');
-            
-            if (dataUrl.length > 50000) {
-                // さらに圧縮が必要な場合は品質を0.3に下げる
-                dataUrl = canvas.toDataURL('image/jpeg', 0.3);
-                console.log('再圧縮後のサイズ:', Math.round(dataUrl.length / 1024), 'KB');
-            }
-            
-            return dataUrl;
-        }
-
-        // アップロードした画像を削除
-        function removeUploadedImage() {
-            currentUserProfile.avatarType = 'emoji';
-            currentUserProfile.avatarImage = null;
-            
-            // プレビューを非表示
-            document.getElementById('imagePreview').style.display = 'none';
-            
-            // デフォルトの絵文字に戻す
-            const editAvatar = document.getElementById('editAvatar');
-            editAvatar.textContent = currentUserProfile.avatar;
-            editAvatar.className = 'avatar-circle';
-            editAvatar.innerHTML = currentUserProfile.avatar;
-            
-            // ファイル入力をクリア
-            document.getElementById('avatarImageInput').value = '';
-            
-            console.log('🗑️ アップロード画像を削除');
-        }
-
-        // アバター選択状態を更新
-        function updateAvatarSelection() {
-            const options = document.querySelectorAll('.avatar-option');
-            options.forEach(option => {
-                option.classList.remove('selected');
-                if (option.textContent === currentUserProfile.avatar) {
-                    option.classList.add('selected');
-                }
-            });
-        }
-
-        // 文字数カウント更新
-        function updateCharCount() {
-            const textarea = document.getElementById('editBio');
-            const counter = document.getElementById('bioCharCount');
-            counter.textContent = textarea.value.length;
-            
-            // 文字数に応じて色を変更
-            if (textarea.value.length > 90) {
-                counter.style.color = '#dc3545';
-            } else if (textarea.value.length > 70) {
-                counter.style.color = '#fd7e14';
-            } else {
-                counter.style.color = '#6b7280';
-            }
-        }
-
-        // プロフィール編集をキャンセル
-        function cancelEdit() {
-            showProfileView();
-        }
-
-        // プロフィールを保存（Supabaseベース）
-        async function saveProfile() {
-            try {
-                // ユーザー認証確認
-                if (!currentUser) {
-                    alert('ログインが必要です');
-                    return false;
-                }
-                
-                // フォームデータを取得
-                const nameElement = document.getElementById('editName');
-                const bioElement = document.getElementById('editBio');
-                
-                if (!nameElement || !bioElement) {
-                    console.error('❌ フォーム要素が見つかりません');
-                    alert('フォームの読み込みに問題があります');
-                    return false;
-                }
-                
-                const name = nameElement.value.trim();
-                const bio = bioElement.value.trim();
-                
-                // バリデーション
-                if (!name) {
-                    alert('名前を入力してください');
-                    nameElement.focus();
-                    return false;
-                }
-                
-                if (name.length > 50) {
-                    alert('名前は50文字以内で入力してください');
-                    nameElement.focus();
-                    return false;
-                }
-                
-                if (bio.length > 100) {
-                    alert('自己紹介は100文字以内で入力してください');
-                    bioElement.focus();
-                    return false;
-                }
-                
-                // 保存ボタンを無効化（二重送信防止）
-                const saveBtn = document.getElementById('saveProfileBtn');
-                if (saveBtn) {
-                    saveBtn.disabled = true;
-                    saveBtn.textContent = '保存中...';
-                }
-                
-                // プロフィールデータを更新
-                currentUserProfile.name = name;
-                currentUserProfile.bio = bio;
-                
-                // Supabaseに保存
-                // avatar_urlが大きすぎる場合の対策
-                let avatarUrl = currentUserProfile.avatarImage || null;
-                if (avatarUrl && avatarUrl.length > 65535) {
-                    console.warn('⚠️ 画像データが大きすぎます。圧縮または削除が必要です。');
-                    // 暫定対応：大きすぎる場合はnullにする
-                    avatarUrl = null;
-                    currentUserProfile.avatarImage = null;
-                    currentUserProfile.avatarType = 'emoji';
-                    alert('画像サイズが大きすぎるため、絵文字アバターに変更されました。');
-                }
-                
-                const profileData = {
-                    email: currentUser,
-                    nickname: currentUserProfile.name,
-                    bio: currentUserProfile.bio,
-                    avatar_type: currentUserProfile.avatarType || 'emoji',
-                    avatar_emoji: currentUserProfile.avatar || '🍰',
-                    avatar_url: avatarUrl,
-                    updated_at: new Date().toISOString()
-                };
-                
-                // upsertを実行（emailが存在すれば更新、なければ挿入）
-                const { data, error } = await supabaseClient
-                    .from('user_profiles')
-                    .upsert(profileData);
-                    
-                if (error) {
-                    console.error('Supabase upsertエラーの詳細:', error);
-                    throw error;
-                }
-                
-                console.log('✅ Supabaseにプロフィール保存完了');
-                
-                // LocalStorageにもバックアップ保存
-                saveProfileToLocalStorage();
-                
-                // 表示を更新
-                updateProfileDisplay();
-                
-                // ヘッダーのユーザー表示も更新（PC・スマホ両対応）
-                updateAllHeaderDisplays();
-                
-                // 表示モードに戻す
-                showProfileView();
-                
-                // 成功メッセージ
-                showSaveSuccessMessage(saveBtn);
-                
-                console.log('✅ プロフィールを保存しました（全デバイス対応・Supabase同期済み）');
-                return true;
-                
-            } catch (error) {
-                console.error('❌ プロフィール保存エラー:', error);
-                
-                // エラー時はLocalStorageのみに保存
-                saveProfileToLocalStorage();
-                console.log('🔄 LocalStorageにフォールバック保存');
-                
-                // エラーメッセージ表示
-                alert('サーバーへの保存に失敗しましたが、ローカルには保存されました');
-                return false;
-                
-            } finally {
-                // 保存ボタンを再有効化
-                const saveBtn = document.getElementById('saveProfileBtn');
-                if (saveBtn) {
-                    saveBtn.disabled = false;
-                    saveBtn.textContent = '保存';
-                }
-            }
-        }
-        
-        // LocalStorageにプロフィール保存
-        function saveProfileToLocalStorage() {
-            try {
-                localStorage.setItem(`profile_${currentUser}`, JSON.stringify({
-                    avatar: currentUserProfile.avatar,
-                    avatarType: currentUserProfile.avatarType,
-                    avatarImage: currentUserProfile.avatarImage,
-                    name: currentUserProfile.name,
-                    bio: currentUserProfile.bio
-                }));
-                console.log('💾 LocalStorageに保存完了');
-            } catch (error) {
-                console.error('❌ LocalStorage保存エラー:', error);
-            }
-        }
-        
-        // 保存成功メッセージ表示
-        function showSaveSuccessMessage(saveBtn) {
-            if (!saveBtn) return;
-            
-            const originalText = saveBtn.textContent;
-            const originalBackground = saveBtn.style.background;
-            
-            saveBtn.textContent = '保存完了！';
-            saveBtn.style.background = '#28a745';
-            
-            setTimeout(() => {
-                saveBtn.textContent = originalText;
-                saveBtn.style.background = originalBackground;
-            }, 2000);
-        }
-
-        // 全てのヘッダー表示を更新（PC・スマホ対応）
-        function updateAllHeaderDisplays() {
-            initializeHeaderActions();
-            
-            // 追加: スマホ版のアバターボタンが存在する場合は個別更新
-            const mobileUserBtn = document.querySelector('.mobile-user-btn');
-            if (mobileUserBtn) {
-                const userAvatar = getUserAvatar();
-                let mobileAvatarContent = userAvatar;
-                
-                // 画像アバターの場合はインラインスタイルを削除（CSSで制御）
-                if (userAvatar.includes('<img')) {
-                    mobileAvatarContent = userAvatar.replace(/style="[^"]*"/g, '');
-                }
-                
-                mobileUserBtn.innerHTML = mobileAvatarContent;
-            }
-            
-            console.log('🔄 全デバイスのヘッダー表示を更新しました');
-        }
-
-        function showUserReviews() {
-            console.log('⭐ マイレビュー画面を表示');
-            document.getElementById('userMenuDropdown').style.display = 'none';
-            // TODO: レビュー画面の実装
-            alert('マイレビュー機能は準備中です');
-        }
-
-        function showUserStats() {
-            console.log('📊 統計画面を表示');
-            document.getElementById('userMenuDropdown').style.display = 'none';
-            // TODO: 統計画面の実装
-            alert('統計機能は準備中です');
-        }
-
-        function showAppGuide() {
-            console.log('❓ 使い方ガイドを表示');
-            document.getElementById('userMenuDropdown').style.display = 'none';
-            // TODO: ガイド画面の実装
-            alert('使い方ガイドは準備中です');
-        }
-
-        function showNotifications() {
-            console.log('🔔 通知画面を表示');
-            document.getElementById('userMenuDropdown').style.display = 'none';
-            // TODO: 通知画面の実装
-            alert('通知機能は準備中です');
-        }
-
-        function logout() {
-            console.log('🚪 ログアウト処理を開始');
-            document.getElementById('userMenuDropdown').style.display = 'none';
-            
-            if (confirm('ログアウトしますか？')) {
-                logout(); // PIN認証版のログアウト関数を使用
-            }
-        }
-
-        // ========== 店舗詳細モーダル関連 ==========
-        
-        // 店舗詳細モーダルを開く
-        function openStoreDetail(storeId) {
-            try {
-                console.log('🏪 店舗詳細を開く:', storeId);
-                
-                // 店舗データを取得（embeddedStoresを使用）
-                const store = embeddedStores.find(s => s.id === storeId);
-                if (!store) {
-                    console.error('店舗が見つかりません:', storeId);
-                    return;
-                }
-                
-                // モーダルコンテンツを生成
-                const content = createStoreDetailContent(store);
-                document.getElementById('storeDetailContent').innerHTML = content;
-                
-                // モーダルを表示
-                const modal = document.getElementById('storeDetailModal');
-                if (modal) {
-                    modal.style.display = 'block';
-                    modal.dataset.currentStoreId = storeId; // storeIdを保存
-                    document.body.style.overflow = 'hidden'; // スクロール防止
-                    
-                    // 画像を読み込み
-                    setTimeout(() => loadStoreImages(storeId), 100);
-                    
-                    // 画像アップロードイベントリスナーを設定
-                    setupImageUploadListener(storeId);
-                    
-                    // ボタン状態を更新
-                    setTimeout(() => {
-                        updateDetailButtons(storeId);
-                    }, 100); // DOM生成後に実行
-                }
-                
-            } catch (error) {
-                console.error('❌ 店舗詳細表示エラー:', error);
-                alert('店舗詳細の表示に失敗しました');
-            }
-        }
-        
-        // カテゴリ設定取得（マップで実際に使用されている設定と統一）
-        function getCategoryConfig(category) {
-            const categoryConfig = {
-                'カフェ': { icon: '☕', color: '#8B4513' },      // 濃いブラウン
-                '和食': { icon: '🍱', color: '#E74C3C' },       // 鮮やかな赤
-                '洋食': { icon: '🍽️', color: '#3498DB' },      // 鮮やかなブルー
-                'パン屋': { icon: '🥐', color: '#F39C12' },     // 鮮やかなオレンジ
-                'スイーツ': { icon: '🧁', color: '#E91E63' },   // 鮮やかなピンク
-                '販売店': { icon: '🛒', color: '#27AE60' },     // 鮮やかなグリーン
-                'その他': { icon: '🏪', color: '#7F8C8D' }      // グレー
-            };
-            return categoryConfig[category] || categoryConfig['その他'];
-        }
-        
-        // 管理者モード判定
-        function isAdminMode() {
-            // 開発用: ログインしているユーザーが管理者の場合
-            return currentUser && (
-                currentUser.email === 'kanakugimakoto@gmail.com' ||
-                localStorage.getItem('adminMode') === 'true'
-            );
-        }
-        
-        // 管理者モード切り替え（開発用）
-        function toggleAdminMode() {
-            const current = localStorage.getItem('adminMode') === 'true';
-            localStorage.setItem('adminMode', !current ? 'true' : 'false');
-            console.log('🔧 管理者モード:', !current ? 'ON' : 'OFF');
-            
-            // モーダルが開いている場合は再読み込み
-            const modal = document.getElementById('storeDetailModal');
-            if (modal && modal.style.display === 'block') {
-                const storeId = modal.dataset.currentStoreId;
-                if (storeId) {
-                    openStoreDetail(parseInt(storeId));
-                }
-            }
-        }
-        
-        // 画像アップロードイベントリスナー設定
-        function setupImageUploadListener(storeId) {
-            const fileInput = document.getElementById(`imageUpload-${storeId}`);
-            if (!fileInput) return;
-            
-            fileInput.addEventListener('change', async (event) => {
-                const files = Array.from(event.target.files);
-                if (files.length === 0) return;
-                
-                await handleImageUpload(storeId, files);
-                
-                // ファイル入力をリセット
-                event.target.value = '';
-            });
-        }
-        
-        // 画像アップロード処理
-        async function handleImageUpload(storeId, files) {
-            try {
-                console.log('📤 画像アップロード開始:', files.length, '枚');
-                
-                if (files.length > 3) {
-                    alert('画像は最大3枚まで選択できます。');
-                    return;
-                }
-                
-                // 画像ファイルのみフィルタ
-                const imageFiles = files.filter(file => file.type.startsWith('image/'));
-                if (imageFiles.length !== files.length) {
-                    alert('画像ファイルのみを選択してください。');
-                    return;
-                }
-                
-                // 各画像を処理
-                const processedImages = [];
-                for (const file of imageFiles) {
-                    if (file.size > 10 * 1024 * 1024) { // 10MB制限
-                        alert(`${file.name} は10MBを超えています。`);
-                        continue;
-                    }
-                    
-                    const compressedImage = await compressImage(file);
-                    processedImages.push({
-                        file: compressedImage,
-                        originalName: file.name
-                    });
-                }
-                
-                if (processedImages.length === 0) return;
-                
-                // Supabaseに保存
-                await saveImagesToSupabase(storeId, processedImages);
-                
-                // 表示を更新
-                await loadStoreImages(storeId);
-                
-                console.log('✅ 画像アップロード完了');
-                
-            } catch (error) {
-                console.error('❌ 画像アップロードエラー:', error);
-                alert('画像のアップロードに失敗しました。');
-            }
-        }
-        
-        // 画像圧縮
-        async function compressImage(file, maxWidth = 800, quality = 0.8) {
-            return new Promise((resolve) => {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                const img = new Image();
-                
-                img.onload = () => {
-                    // アスペクト比を保持してリサイズ
-                    const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
-                    canvas.width = img.width * ratio;
-                    canvas.height = img.height * ratio;
-                    
-                    // 描画
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    
-                    // Blobに変換
-                    canvas.toBlob(resolve, 'image/jpeg', quality);
-                };
-                
-                img.src = URL.createObjectURL(file);
-            });
-        }
-        
-        // Supabaseに画像保存
-        async function saveImagesToSupabase(storeId, images) {
-            try {
-                console.log('💾 Supabaseに画像保存開始');
-                
-                // Supabaseクライアントの確認
-                if (!supabaseClient) {
-                    throw new Error('Supabaseクライアントが初期化されていません');
-                }
-                
-                for (const imageData of images) {
-                    // Base64エンコード
-                    const base64 = await fileToBase64(imageData.file);
-                    
-                    const { data, error } = await supabaseClient
-                        .from('store_images')
-                        .insert([{
-                            store_id: storeId,
-                            image_url: base64,
-                            caption: imageData.originalName,
-                            uploaded_by: currentUser || 'admin',
-                            is_primary: false
-                        }]);
-                        
-                    if (error) {
-                        console.error('Supabase保存エラー:', error);
-                        throw error;
-                    }
-                }
-                
-                console.log('✅ 画像Supabase保存完了');
-                
-            } catch (error) {
-                console.error('❌ Supabase画像保存エラー:', error);
-                throw error;
-            }
-        }
-        
-        // ファイルをBase64に変換
-        function fileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
-        
-        // 店舗画像を読み込み表示
-        async function loadStoreImages(storeId) {
-            try {
-                console.log('🖼️ 店舗画像読み込み開始:', storeId);
-                
-                const container = document.getElementById(`storeImagesContainer-${storeId}`);
-                if (!container) return;
-                
-                // Supabaseクライアントの確認
-                if (!supabaseClient) {
-                    console.warn('⚠️ Supabaseクライアントが未初期化、プレースホルダー表示');
-                    container.innerHTML = `
-                        <div class="store-images-placeholder">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <p>データベース接続エラー</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                // Supabaseから画像データを取得
-                const { data: images, error } = await supabaseClient
-                    .from('store_images')
-                    .select('*')
-                    .eq('store_id', storeId)
-                    .order('created_at', { ascending: true });
-                
-                if (error) {
-                    console.error('画像取得エラー:', error);
-                    throw error;
-                }
-                
-                if (!images || images.length === 0) {
-                    container.innerHTML = `
-                        <div class="store-images-placeholder">
-                            <i class="fas fa-camera"></i>
-                            <p>まだ画像がありません</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                // 画像ギャラリーを表示
-                const galleryHTML = images.map(img => `
-                    <div class="store-image-item" onclick="viewImageLarge('${img.image_url}')">
-                        <img src="${img.image_url}" alt="${img.caption || '店舗画像'}" loading="lazy">
-                        ${isAdminMode() ? `
-                            <button class="delete-image-btn" onclick="event.stopPropagation(); deleteImage(${img.id}, ${storeId})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        ` : ''}
-                    </div>
-                `).join('');
-                
-                container.innerHTML = `
-                    <div class="store-images-gallery">
-                        ${galleryHTML}
-                    </div>
-                `;
-                
-                console.log('✅ 画像表示完了:', images.length, '枚');
-                
-            } catch (error) {
-                console.error('❌ 店舗画像読み込みエラー:', error);
-                
-                // エラー時はプレースホルダー表示
-                const container = document.getElementById(`storeImagesContainer-${storeId}`);
-                if (container) {
-                    container.innerHTML = `
-                        <div class="store-images-placeholder">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <p>画像の読み込みに失敗しました</p>
-                        </div>
-                    `;
-                }
-            }
-        }
-        
-        // 画像削除
-        async function deleteImage(imageId, storeId) {
-            try {
-                if (!confirm('この画像を削除してもよろしいですか？')) {
-                    return;
-                }
-                
-                console.log('🗑️ 画像削除開始:', imageId);
-                
-                const { error } = await supabaseClient
-                    .from('store_images')
-                    .delete()
-                    .eq('id', imageId);
-                
-                if (error) {
-                    console.error('画像削除エラー:', error);
-                    throw error;
-                }
-                
-                console.log('✅ 画像削除完了');
-                
-                // 表示を更新
-                await loadStoreImages(storeId);
-                
-            } catch (error) {
-                console.error('❌ 画像削除エラー:', error);
-                alert('画像の削除に失敗しました。');
-            }
-        }
-        
-        // 画像拡大表示
-        function viewImageLarge(imageUrl) {
-            const modal = document.createElement('div');
-            modal.className = 'image-modal';
-            modal.innerHTML = `
-                <div class="image-modal-content">
-                    <span class="image-modal-close">&times;</span>
-                    <img src="${imageUrl}" alt="拡大画像">
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-            
-            // クリックで閉じる
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal || e.target.className === 'image-modal-close') {
-                    document.body.removeChild(modal);
-                }
-            });
-            
-            // ESCキーで閉じる
-            const handleKeydown = (e) => {
-                if (e.key === 'Escape') {
-                    document.body.removeChild(modal);
-                    document.removeEventListener('keydown', handleKeydown);
-                }
-            };
-            document.addEventListener('keydown', handleKeydown);
-        }
-        
-        // 店舗詳細のコンテンツを生成
-        function createStoreDetailContent(store) {
-            const storeName = escapeHtml(store.name || '');
-            const storeAddress = escapeHtml(store.address || '');
-            const storeCategory = escapeHtml(store.category || '');
-            const storePhone = store.phone ? escapeHtml(store.phone) : '';
-            const storeWebsite = store.website ? escapeHtml(store.website) : '';
-            const storeHours = store.opening_hours ? escapeHtml(store.opening_hours) : '';
-            const storeGfOptions = store.gluten_free_options ? escapeHtml(store.gluten_free_options) : '';
-            const storeDescription = store.description ? escapeHtml(store.description) : '';
-            
-            // カテゴリスタイル（店舗一覧と完全に同じ）
-            const config = getCategoryConfig(store.category);
-            const categoryBadge = `
-                <span class="category-badge" style="background: ${config.color}15; color: ${config.color}; border: 1px solid ${config.color}30; padding: 4px 12px; border-radius: 15px; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 4px;">
-                    ${config.icon} ${storeCategory}
-                </span>
-            `;
-            
-            return `
-                <h2 class="store-detail-title">${storeName}</h2>
-                <div class="store-detail-category-container">${categoryBadge}</div>
-                
-                <!-- 店舗画像ギャラリー -->
-                <div class="store-detail-section">
-                    <h3><i class="fas fa-images"></i> 店舗画像</h3>
-                    <div class="store-images-container" id="storeImagesContainer-${store.id}">
-                        <div class="store-images-placeholder">
-                            <i class="fas fa-camera"></i>
-                            <p>画像を読み込み中...</p>
-                        </div>
-                    </div>
-                    ${isAdminMode() ? `
-                        <div class="store-image-admin">
-                            <input type="file" id="imageUpload-${store.id}" accept="image/*" multiple style="display: none;">
-                            <button class="btn btn-secondary" onclick="document.getElementById('imageUpload-${store.id}').click()">
-                                <i class="fas fa-plus"></i> 画像を追加
-                            </button>
-                            <span class="image-limit-text">最大3枚まで</span>
-                        </div>
-                    ` : ''}
-                </div>
-                
-                <!-- 基本情報 -->
-                <div class="store-detail-section">
-                    <h3><i class="fas fa-info-circle"></i> 基本情報</h3>
-                    
-                    <div class="store-detail-info">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>${storeAddress}</span>
-                    </div>
-                    
-                    ${storePhone ? `
-                        <div class="store-detail-info">
-                            <i class="fas fa-phone"></i>
-                            <span>${storePhone}</span>
-                        </div>
-                    ` : ''}
-                    
-                    ${storeHours ? `
-                        <div class="store-detail-info">
-                            <i class="fas fa-clock"></i>
-                            <span>${storeHours}</span>
-                        </div>
-                    ` : ''}
-                    
-                    ${storeWebsite ? `
-                        <div class="store-detail-info">
-                            <i class="fas fa-globe"></i>
-                            <a href="${storeWebsite}" target="_blank" rel="noopener noreferrer">
-                                ウェブサイト
-                            </a>
-                        </div>
-                    ` : ''}
-                </div>
-                
-                <!-- グルテンフリー情報 -->
-                ${storeGfOptions ? `
-                    <div class="store-detail-section">
-                        <h3><i class="fas fa-check-circle"></i> グルテンフリー対応</h3>
-                        <div class="store-detail-description">
-                            ${storeGfOptions}
-                        </div>
-                    </div>
-                ` : ''}
-                
-                <!-- 店舗説明 -->
-                ${storeDescription ? `
-                    <div class="store-detail-section">
-                        <h3><i class="fas fa-comment-dots"></i> 店舗について</h3>
-                        <div class="store-detail-description">
-                            ${storeDescription}
-                        </div>
-                    </div>
-                ` : ''}
-                
-                <!-- アクションボタン -->
-                <div class="store-detail-actions">
-                    <button class="store-detail-btn want-to-go" id="detailWantToGoBtn-${store.id}" onclick="toggleVisitStatus(${store.id}, 'want_to_go'); updateDetailButtons(${store.id})">
-                        🤍 行きたい
-                    </button>
-                    <button class="store-detail-btn visited" id="detailVisitedBtn-${store.id}" onclick="toggleVisitStatus(${store.id}, 'visited'); updateDetailButtons(${store.id})">
-                        ✨ 行った
-                    </button>
-                    <button class="store-detail-btn secondary" onclick="closeStoreDetail()">
-                        閉じる
-                    </button>
-                </div>
-            `;
-        }
-        
-        // 店舗詳細モーダルを閉じる
-        function closeStoreDetail() {
-            const modal = document.getElementById('storeDetailModal');
-            if (modal) {
-                modal.style.display = 'none';
-                document.body.style.overflow = ''; // スクロール復活
-            }
-        }
-
-        // ヘッダーアクションを初期化
-        function initializeHeaderActions() {
-            const headerActions = document.getElementById('headerActions');
-            if (!headerActions) return;
-            
-            // ユーザー名とアバター情報を取得
-            const userName = getUserDisplayName();
-            const userAvatar = getUserAvatar();
-            
-            if (isDesktop()) {
-                // PC版: ユーザープロフィールボタン
-                headerActions.innerHTML = `
-                    <button class="user-profile-btn" onclick="toggleUserMenu()">
-                        <div class="user-icon">${userAvatar}</div>
-                        <span>${userName}</span>
-                        <i class="fas fa-chevron-down" style="font-size: 0.7rem; opacity: 0.7;"></i>
-                    </button>
-                `;
-            } else {
-                // スマホ版: 丸いアバターボタン（プロフィール画像対応）
-                let mobileAvatarContent = userAvatar;
-                
-                // 画像アバターの場合はスマホ用にサイズを削除（CSSで制御）
-                if (userAvatar.includes('<img')) {
-                    // インラインスタイルを削除してCSSで制御
-                    mobileAvatarContent = userAvatar.replace(/style="[^"]*"/g, '');
-                }
-                
-                headerActions.innerHTML = `
-                    <button class="mobile-user-btn" onclick="toggleUserMenu()">
-                        ${mobileAvatarContent}
-                    </button>
-                `;
-            }
-        }
-
-        // ユーザーアバターを取得
-        function getUserAvatar() {
-            // まずcurrentUserProfileから取得
-            if (currentUserProfile) {
-                if (currentUserProfile.avatarType === 'image' && currentUserProfile.avatarImage) {
-                    // 画像アバターの場合
-                    return `<img src="${currentUserProfile.avatarImage}" alt="プロフィール画像" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">`;
-                } else if (currentUserProfile.avatar) {
-                    // 絵文字アバターの場合
-                    return currentUserProfile.avatar;
-                }
-            }
-            
-            if (currentUser) {
-                // フォールバック：LocalStorageから取得
-                const savedProfile = localStorage.getItem(`profile_${currentUser}`);
-                if (savedProfile) {
-                    try {
-                        const parsed = JSON.parse(savedProfile);
-                        if (parsed.avatarType === 'image' && parsed.avatarImage) {
-                            // 画像アバターの場合
-                            return `<img src="${parsed.avatarImage}" alt="プロフィール画像" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;">`;
-                        } else if (parsed.avatar) {
-                            // 絵文字アバターの場合
-                            return parsed.avatar;
-                        }
-                    } catch (e) {
-                        console.error('アバター読み込みエラー:', e);
-                    }
-                }
-            }
-            // フォールバック
-            return '👤';
-        }
-
-        // ユーザー表示名を取得
-        function getUserDisplayName() {
-            // まずcurrentUserProfileから取得
-            if (currentUserProfile && currentUserProfile.name) {
-                return currentUserProfile.name.trim();
-            }
-            
-            if (currentUser) {
-                // フォールバック：LocalStorageから取得
-                const savedProfile = localStorage.getItem(`profile_${currentUser}`);
-                if (savedProfile) {
-                    try {
-                        const parsed = JSON.parse(savedProfile);
-                        if (parsed.name && parsed.name.trim()) {
-                            return parsed.name.trim();
-                        }
-                    } catch (e) {
-                        console.error('プロフィール読み込みエラー:', e);
-                    }
-                }
-                
-                // 最終フォールバック: メールアドレスから名前部分を抽出
-                const emailName = currentUser.split('@')[0];
-                // 数字や記号を除去して、見やすい名前に
-                const cleanName = emailName.replace(/[0-9]/g, '').replace(/[._-]/g, '');
-                return cleanName || 'ユーザー';
-            }
-            return 'ゲスト';
         }
 
         // 現在地取得
@@ -7259,7 +4430,7 @@
                     ${distanceText ? `<div class="store-distance">📍 ${distanceText}</div>` : ''}
                 </div>
                 <div class="store-meta">
-                    <span class="store-category" data-category="${storeCategory}">${config.icon} ${storeCategory}</span>
+                    <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
                 </div>
                 <div class="store-info">
                     <div class="info-item">
@@ -7282,8 +4453,8 @@
                             onclick="event.stopPropagation(); toggleVisitStatus(${store.id}, 'visited')">
                         ✨ 行った
                     </button>
-                    <button class="action-btn" onclick="event.stopPropagation(); openStoreDetail(${store.id})">
-                        📋 詳細
+                    <button class="action-btn" onclick="event.stopPropagation(); focusOnStore(${store.id})">
+                        🗺️ 地図
                     </button>
                 </div>
             `;
@@ -7475,14 +4646,19 @@
             // Supabaseクライアントの準備を待つ
             await new Promise(resolve => setTimeout(resolve, 100));
             
-            // 削除：Google認証用の状態監視（PIN認証では不要）
+            // 認証状態変更の監視を設定
+            setupAuthStateListener();
             
-            // 削除：Google認証用の遅延認証確認（PIN認証では不要）
+            // 認証確認を少し遅らせて実行
+            setTimeout(async () => {
+                await checkAuthentication();
+                console.log('🔄 遅延認証確認完了');
+            }, 200);
             
-            // 認証が必要（デモモードは削除）
+            // 一旦デモモードで続行
             if (!currentUser) {
-                console.log('⚠️ 認証が必要です');
-                return;
+                currentUser = 'demo_user@example.com';
+                console.log('⏳ 認証確認を並行実行中、デモモードで開始');
             }
             
             // Supabaseから訪問履歴を読み込み
@@ -7502,210 +4678,7 @@
             }
             
             console.log('✅ 訪問履歴機能初期化完了');
-        
-        // 初期化完了後に店舗カードのボタン状態を更新（遅延実行で他の初期化処理と分離）
-        setTimeout(() => {
-            updateAllStoreCardButtons();
-            // 検索ボタンのイベントリスナーを強制再設定
-            reinitializeSearchButton();
-        }, 100);
         }
-        
-        // 全店舗カードのボタン状態を更新
-        function updateAllStoreCardButtons() {
-            console.log('🔄 全店舗カードのボタン状態を更新中...');
-            
-            // 店舗一覧のカードを更新
-            const storeCards = document.querySelectorAll('.store-card');
-            storeCards.forEach(card => {
-                const storeId = card.dataset.storeId;
-                if (storeId) {
-                    updateStoreCardButtons(storeId, card);
-                    // ついでにポップアップのボタンも更新（開いている場合）
-                    updatePopupButtons(storeId);
-                }
-            });
-            
-            console.log('✅ 店舗カードとポップアップのボタン状態更新完了');
-        }
-        
-        // 個別店舗カードのボタン状態を更新
-        function updateStoreCardButtons(storeId, cardElement) {
-            const status = userVisitHistory.get(`${storeId}`);
-            const isWantToGo = status === 'want_to_go';
-            const isVisited = status === 'visited';
-            
-            // 「行きたい」ボタンの更新
-            const wantToGoBtn = cardElement.querySelector('.action-btn.want-to-go');
-            if (wantToGoBtn) {
-                if (isWantToGo) {
-                    wantToGoBtn.classList.add('active');
-                } else {
-                    wantToGoBtn.classList.remove('active');
-                }
-            }
-            
-            // 「行った」ボタンの更新
-            const visitedBtn = cardElement.querySelector('.action-btn.visited');
-            if (visitedBtn) {
-                if (isVisited) {
-                    visitedBtn.classList.add('active');
-                } else {
-                    visitedBtn.classList.remove('active');
-                }
-            }
-        }
-        
-        // マップポップアップ内のボタン状態を更新
-        function updatePopupButtons(storeId) {
-            const status = userVisitHistory.get(`${storeId}`);
-            const isWantToGo = status === 'want_to_go';
-            const isVisited = status === 'visited';
-            
-            // ポップアップ内の「行きたい」ボタンを更新
-            const popupWantBtns = document.querySelectorAll(`.popup-action-btn.want-to-go[data-store-id="${storeId}"]`);
-            popupWantBtns.forEach(btn => {
-                if (isWantToGo) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-            
-            // ポップアップ内の「行った」ボタンを更新
-            const popupVisitedBtns = document.querySelectorAll(`.popup-action-btn.visited[data-store-id="${storeId}"]`);
-            popupVisitedBtns.forEach(btn => {
-                if (isVisited) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-        }
-        
-        // 詳細モーダル内のボタン状態を更新
-        function updateDetailButtons(storeId) {
-            const status = userVisitHistory.get(`${storeId}`);
-            const isWantToGo = status === 'want_to_go';
-            const isVisited = status === 'visited';
-            
-            // 詳細モーダル内の「行きたい」ボタンを更新
-            const detailWantBtn = document.getElementById(`detailWantToGoBtn-${storeId}`);
-            if (detailWantBtn) {
-                if (isWantToGo) {
-                    detailWantBtn.classList.add('active');
-                } else {
-                    detailWantBtn.classList.remove('active');
-                }
-            }
-            
-            // 詳細モーダル内の「行った」ボタンを更新
-            const detailVisitedBtn = document.getElementById(`detailVisitedBtn-${storeId}`);
-            if (detailVisitedBtn) {
-                if (isVisited) {
-                    detailVisitedBtn.classList.add('active');
-                } else {
-                    detailVisitedBtn.classList.remove('active');
-                }
-            }
-        }
-        
-        // 検索ボタンのイベントリスナーを強制再設定
-        function reinitializeSearchButton() {
-            console.log('🔄 検索ボタンの強制再設定開始');
-            
-            const searchToggleBtn = document.getElementById('searchToggleBtn');
-            const mobileSearchFilter = document.getElementById('mobileSearchFilter');
-            
-            if (searchToggleBtn && mobileSearchFilter) {
-                // 既存のイベントリスナーをクリア（クローンで置き換え）
-                const newSearchBtn = searchToggleBtn.cloneNode(true);
-                searchToggleBtn.parentNode.replaceChild(newSearchBtn, searchToggleBtn);
-                
-                // 新しいイベントリスナーを設定
-                newSearchBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    console.log('🔍 検索ボタンがクリックされました（強制再設定版）');
-                    
-                    // 検索エリアの表示/非表示を切り替え
-                    if (mobileSearchFilter.classList.contains('show')) {
-                        console.log('🔍 検索エリアを非表示にします');
-                        mobileSearchFilter.classList.remove('show');
-                        newSearchBtn.classList.remove('active');
-                        newSearchBtn.querySelector('.search-icon').textContent = '🔍';
-                    } else {
-                        console.log('🔍 検索エリアを表示します');
-                        mobileSearchFilter.classList.add('show');
-                        newSearchBtn.classList.add('active');
-                        newSearchBtn.querySelector('.search-icon').textContent = '✕';
-                    }
-                });
-                
-                console.log('✅ 検索ボタンの強制再設定完了');
-                
-                // 検索エリアの状態をデバッグ出力
-                debugSearchAreaStatus();
-            } else {
-                console.error('❌ 検索ボタンまたは検索フィルター要素が見つかりません（強制再設定）');
-            }
-        }
-        
-        // 検索エリアの状態をデバッグ
-        function debugSearchAreaStatus() {
-            const searchToggleBtn = document.getElementById('searchToggleBtn');
-            const mobileSearchFilter = document.getElementById('mobileSearchFilter');
-            
-            console.log('🔍 検索エリア状態デバッグ:');
-            console.log('- 検索ボタン存在:', !!searchToggleBtn);
-            console.log('- 検索フィルター存在:', !!mobileSearchFilter);
-            
-            if (searchToggleBtn) {
-                console.log('- ボタンクラス:', searchToggleBtn.className);
-                console.log('- アクティブ状態:', searchToggleBtn.classList.contains('active'));
-            }
-            
-            if (mobileSearchFilter) {
-                console.log('- フィルタークラス:', mobileSearchFilter.className);
-                console.log('- show状態:', mobileSearchFilter.classList.contains('show'));
-                console.log('- 表示スタイル:', window.getComputedStyle(mobileSearchFilter).display);
-                console.log('- 最大高さ:', window.getComputedStyle(mobileSearchFilter).maxHeight);
-                console.log('- Z-index:', window.getComputedStyle(mobileSearchFilter).zIndex);
-                console.log('- 位置:', {
-                    top: window.getComputedStyle(mobileSearchFilter).top,
-                    left: window.getComputedStyle(mobileSearchFilter).left,
-                    right: window.getComputedStyle(mobileSearchFilter).right
-                });
-            }
-        }
-        
-        // テスト用: 手動で検索エリアを表示/非表示
-        window.testSearchToggle = function() {
-            console.log('🔧 手動検索テスト実行');
-            const mobileSearchFilter = document.getElementById('mobileSearchFilter');
-            const searchToggleBtn = document.getElementById('searchToggleBtn');
-            
-            if (mobileSearchFilter) {
-                if (mobileSearchFilter.classList.contains('show')) {
-                    mobileSearchFilter.classList.remove('show');
-                    console.log('🔧 検索エリアを非表示にしました');
-                } else {
-                    mobileSearchFilter.classList.add('show');
-                    console.log('🔧 検索エリアを表示しました');
-                }
-                
-                if (searchToggleBtn) {
-                    searchToggleBtn.classList.toggle('active');
-                    const icon = searchToggleBtn.querySelector('.search-icon');
-                    if (icon) {
-                        icon.textContent = mobileSearchFilter.classList.contains('show') ? '✕' : '🔍';
-                    }
-                }
-                
-                debugSearchAreaStatus();
-            } else {
-                console.error('🔧 検索フィルター要素が見つかりません');
-            }
-        };
 
         // Supabaseから訪問履歴を読み込み
         async function loadVisitHistoryFromSupabase() {
@@ -7728,11 +4701,6 @@
                         userVisitHistory.set(`${item.store_id}`, item.status);
                     });
                     console.log('✅ Supabaseから訪問履歴を読み込み:', data.length, '件');
-                    
-                    // 読み込み完了後に店舗カードのボタン状態を更新（遅延実行）
-                    setTimeout(() => {
-                        updateAllStoreCardButtons();
-                    }, 150);
                 }
             } catch (error) {
                 console.error('❌ 訪問履歴読み込み失敗:', error);
@@ -7906,23 +4874,140 @@
             }, 200);
         }
 
+        // 認証状態変更の監視設定
+        function setupAuthStateListener() {
+            console.log('👁️ 認証状態変更の監視を開始');
+            
+            supabaseClient.auth.onAuthStateChange((event, session) => {
+                console.log('🔄 認証状態変更:', event, session ? `user: ${session.user.email}` : 'no session');
+                
+                if (event === 'SIGNED_IN' && session) {
+                    currentUser = session.user.email;
+                    console.log('✅ ログイン成功:', currentUser);
+                    
+                    // ログイン成功時はページをリロードしてマップ画面を表示
+                    console.log('🔄 認証成功によりページをリロード');
+                    window.location.reload();
+                    
+                } else if (event === 'SIGNED_OUT') {
+                    console.log('🚪 ログアウト');
+                    currentUser = 'demo_user@example.com';
+                    userVisitHistory.clear();
+                    updateAuthButton();
+                    
+                } else if (event === 'TOKEN_REFRESHED' && session) {
+                    console.log('🔄 トークン更新:', session.user.email);
+                    currentUser = session.user.email;
+                    updateAuthButton();
+                }
+            });
+        }
 
+        // 認証確認
+        async function checkAuthentication() {
+            try {
+                console.log('🔐 認証状態を確認中...');
+                
+                // まずセッションを確認
+                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+                
+                if (sessionError) {
+                    console.warn('⚠️ セッション確認エラー:', sessionError.message);
+                } else if (session && session.user) {
+                    currentUser = session.user.email;
+                    console.log('✅ セッションから認証済みユーザーを確認:', currentUser);
+                    return;
+                }
+                
+                // セッションがない場合、ユーザー情報を確認
+                const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+                
+                if (userError) {
+                    console.warn('⚠️ ユーザー確認エラー、デモモードで続行:', userError.message);
+                } else if (user && user.email) {
+                    currentUser = user.email;
+                    console.log('✅ 認証済みユーザー:', currentUser);
+                    return;
+                }
+                
+                // 両方とも失敗した場合、デモモードに設定
+                console.log('⚠️ 未認証状態、デモモードで続行');
+                currentUser = 'demo_user@example.com';
+                
+            } catch (error) {
+                console.warn('⚠️ 認証情報エラー、デモモードで実行:', error.message || error);
+                currentUser = 'demo_user@example.com'; // フォールバック
+            }
+        }
 
-        // 認証ボタンハンドラー（PIN認証版）
+        // Google認証（オプション機能）
+        async function signInWithGoogle() {
+            try {
+                console.log('🔐 Google認証を開始...');
+                
+                const { data, error } = await supabaseClient.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: 'https://bettger3000.github.io/naco-gluten-free-map/'
+                    }
+                });
+                
+                if (error) {
+                    console.error('❌ Google認証エラー:', error);
+                    alert('認証に失敗しました。デモモードで続行します。');
+                } else {
+                    console.log('✅ Google認証成功');
+                }
+            } catch (error) {
+                console.error('❌ 認証処理エラー:', error);
+                alert('認証に失敗しました。デモモードで続行します。');
+            }
+        }
+
+        // 認証ボタンハンドラー
         async function handleAuth() {
             console.log('🔘 ログインボタンがクリックされました');
             console.log('現在のユーザー:', currentUser);
             
-            if (currentUser) {
+            if (currentUser && currentUser !== 'demo_user@example.com') {
                 console.log('ログアウト処理を開始...');
-                logout();
+                await signOut();
             } else {
-                console.log('⚠️ 未ログイン状態 - ログイン画面を表示');
-                showLoginScreen();
+                console.log('Google認証を開始...');
+                await signInWithGoogle();
             }
         }
 
-        // 削除：廃止されたGoogle認証用ログアウト関数
+        // 認証状態の表示更新
+        function updateAuthButton() {
+            const authBtn = document.getElementById('authBtn');
+            const authBtnText = document.getElementById('authBtnText');
+            
+            if (currentUser) {
+                authBtnText.textContent = 'ログアウト';
+                authBtn.querySelector('i').className = 'fas fa-sign-out-alt';
+            } else {
+                authBtnText.textContent = 'ログイン';
+                authBtn.querySelector('i').className = 'fas fa-user';
+            }
+        }
+
+        // ログアウト
+        async function signOut() {
+            try {
+                const { error } = await supabaseClient.auth.signOut();
+                if (error) {
+                    console.error('❌ ログアウトエラー:', error);
+                } else {
+                    console.log('✅ ログアウト成功');
+                    currentUser = 'demo_user';
+                    userVisitHistory.clear();
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('❌ ログアウト処理エラー:', error);
+            }
+        }
 
         // オーバーレイパネル初期化
         function initOverlayPanel() {
@@ -7983,29 +5068,19 @@
             const mobileSearchFilter = document.getElementById('mobileSearchFilter');
             
             if (searchToggleBtn && mobileSearchFilter) {
-                console.log('🔍 検索ボタンのイベントリスナー設定開始');
                 searchToggleBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    console.log('🔍 検索ボタンがクリックされました');
                     
                     // 検索エリアの表示/非表示を切り替え
                     if (mobileSearchFilter.classList.contains('show')) {
-                        console.log('🔍 検索エリアを非表示にします');
                         mobileSearchFilter.classList.remove('show');
                         searchToggleBtn.classList.remove('active');
                         searchToggleBtn.querySelector('.search-icon').textContent = '🔍';
                     } else {
-                        console.log('🔍 検索エリアを表示します');
                         mobileSearchFilter.classList.add('show');
                         searchToggleBtn.classList.add('active');
                         searchToggleBtn.querySelector('.search-icon').textContent = '✕';
                     }
-                });
-                console.log('🔍 検索ボタンのイベントリスナー設定完了');
-            } else {
-                console.error('❌ 検索ボタンまたは検索フィルター要素が見つかりません', {
-                    searchToggleBtn: !!searchToggleBtn,
-                    mobileSearchFilter: !!mobileSearchFilter
                 });
             }
             
@@ -8207,8 +5282,8 @@
                             onclick="toggleVisitStatus(${store.id}, 'visited')">
                         ✨ 行った
                     </button>
-                    <button class="action-btn" onclick="openStoreDetail(${store.id})">
-                        📋 詳細
+                    <button class="action-btn" onclick="focusOnStore(${store.id})">
+                        🗺️ 地図
                     </button>
                 </div>
             `;
@@ -8330,8 +5405,8 @@
                     </div>
                     <div class="history-address">${escapeHtml(store.address || '')}</div>
                     <div class="history-actions">
-                        <button class="history-action-btn" onclick="openStoreDetail(${store.id})">
-                            詳細を見る
+                        <button class="history-action-btn" onclick="showStoreOnMap(${store.id})">
+                            地図で見る
                         </button>
                         <button class="history-action-btn" onclick="toggleVisitStatus(${store.id}, '${type === 'want-to-go' ? 'want_to_go' : 'visited'}')">
                             削除
@@ -8440,7 +5515,7 @@
             console.log('🧪 テスト訪問履歴データ挿入開始...');
             
             try {
-                const testUser = 'bettger1000@gmail.com'; // 実際の許可ユーザー
+                const testUser = 'demo_user@example.com';
                 const testStoreId = 1; // みちのり亭のID
                 
                 // 1. user_profilesにテストユーザーを作成
@@ -8496,10 +5571,59 @@
         window.insertTestData = insertTestVisitHistory;
 
         // 認証状態デバッグ機能
-        // 削除：Google認証用のデバッグ関数（PIN認証では不要）
+        async function debugAuthentication() {
+            console.log('🔍=== 認証状態デバッグ開始 ===');
+            
+            try {
+                // 1. Supabaseクライアント確認
+                console.log('1. Supabaseクライアント:', supabaseClient ? '✅ 初期化済み' : '❌ 未初期化');
+                
+                // 2. セッション確認
+                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+                console.log('2. セッション確認:');
+                if (sessionError) {
+                    console.log('   ❌ セッションエラー:', sessionError);
+                } else if (session) {
+                    console.log('   ✅ セッション存在:', {
+                        user: session.user.email,
+                        expires_at: new Date(session.expires_at * 1000),
+                        access_token: session.access_token ? '存在' : '不在'
+                    });
+                } else {
+                    console.log('   ⚠️ セッション不在');
+                }
+                
+                // 3. ユーザー確認
+                const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+                console.log('3. ユーザー確認:');
+                if (userError) {
+                    console.log('   ❌ ユーザーエラー:', userError);
+                } else if (user) {
+                    console.log('   ✅ ユーザー存在:', {
+                        email: user.email,
+                        id: user.id,
+                        created_at: user.created_at
+                    });
+                } else {
+                    console.log('   ⚠️ ユーザー不在');
+                }
+                
+                // 4. 現在の状態
+                console.log('4. 現在の認証状態:', {
+                    currentUser: currentUser,
+                    isDemo: currentUser === 'demo_user@example.com'
+                });
+                
+            } catch (error) {
+                console.error('❌ デバッグ中にエラー:', error);
+            }
+            
+            console.log('🔍=== 認証状態デバッグ終了 ===');
+        }
 
         // テスト実行用のグローバル関数として公開
         window.testSupabase = testSupabaseConnection;
+        window.debugAuthentication = debugAuthentication;
 
         // =======================================
         // カスタムピン機能の実装
@@ -9009,14 +6133,11 @@
             const storeCategory = escapeHtml(store.category || '');
             const storeGfOptions = store.gluten_free_options ? escapeHtml(store.gluten_free_options) : '';
             
-            // カテゴリ設定を取得
-            const config = getCategoryConfig(store.category);
-            
             return `
                 <div class="store-header">
                     <h3 class="store-name">${storeName}</h3>
                     <div class="store-header-right">
-                        <span class="store-category" data-category="${storeCategory}">${config.icon} ${storeCategory}</span>
+                        <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
                         ${distanceText ? `<span class="store-distance">${distanceText}</span>` : ''}
                     </div>
                 </div>
@@ -9037,9 +6158,6 @@
             const storeCategory = escapeHtml(store.category || '');
             const storeGfOptions = store.gluten_free_options ? escapeHtml(store.gluten_free_options) : '';
             
-            // カテゴリ設定を取得
-            const config = getCategoryConfig(store.category);
-            
             // 訪問ステータスをチェック
             const visitStatus = userVisitHistory.get(`${store.id}`);
             const isWantToGo = visitStatus === 'want_to_go';
@@ -9051,7 +6169,7 @@
                     ${distanceText ? `<div class="store-distance">${distanceText}</div>` : ''}
                 </div>
                 <div class="store-meta">
-                    <span class="store-category" data-category="${storeCategory}">${config.icon} ${storeCategory}</span>
+                    <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
                 </div>
                 <div class="store-info">
                     <div class="info-item">
@@ -9073,8 +6191,8 @@
                             onclick="toggleVisitStatus(${store.id}, 'visited')">
                         ✨ 行った
                     </button>
-                    <button class="action-btn" onclick="openStoreDetail(${store.id})">
-                        📋 詳細
+                    <button class="action-btn" onclick="focusOnStore(${store.id})">
+                        🗺️ 地図
                     </button>
                 </div>
             `;
@@ -9086,157 +6204,6 @@
         console.log('📊 店舗数:', embeddedStores.length, '店舗');
         console.log('🧪 Supabaseテスト: コンソールで testSupabase() を実行');
         console.log('🧪 テストデータ挿入: コンソールで insertTestData() を実行');
-
-        // プロフィール関連のイベントリスナー設定
-        document.addEventListener('DOMContentLoaded', function() {
-            // 文字数カウントのイベントリスナー
-            const bioTextarea = document.getElementById('editBio');
-            if (bioTextarea) {
-                bioTextarea.addEventListener('input', updateCharCount);
-            }
-            
-            // プロフィールモーダル外クリックで閉じる
-            const profileModal = document.getElementById('profileModal');
-            if (profileModal) {
-                profileModal.addEventListener('click', function(e) {
-                    if (e.target === profileModal) {
-                        closeProfileModal();
-                    }
-                });
-            }
-            
-            // 店舗詳細モーダル外クリックで閉じる
-            const storeDetailModal = document.getElementById('storeDetailModal');
-            if (storeDetailModal) {
-                storeDetailModal.addEventListener('click', function(e) {
-                    if (e.target === storeDetailModal) {
-                        closeStoreDetail();
-                    }
-                });
-            }
-        });
     </script>
-
-    <!-- 店舗詳細モーダル -->
-    <div class="store-detail-modal" id="storeDetailModal" style="display: none;">
-        <div class="store-detail-container">
-            <div class="store-detail-header">
-                <button class="store-detail-close" onclick="closeStoreDetail()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="store-detail-body" id="storeDetailContent">
-                <!-- 動的にコンテンツが挿入される -->
-            </div>
-        </div>
-    </div>
-
-    <!-- プロフィールモーダル -->
-    <div class="modal-overlay" id="profileModal" style="display: none;">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h2 class="modal-title">
-                    <i class="fas fa-user"></i>
-                    プロフィール
-                </h2>
-                <button class="modal-close-btn" onclick="closeProfileModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- プロフィール表示エリア -->
-                <div class="profile-view" id="profileView">
-                    <div class="profile-avatar">
-                        <div class="avatar-circle" id="userAvatar">👤</div>
-                        <button class="avatar-edit-btn" onclick="editProfile()">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                    </div>
-                    <div class="profile-info">
-                        <div class="profile-field">
-                            <label>名前</label>
-                            <span id="displayName">-</span>
-                        </div>
-                        <div class="profile-field">
-                            <label>メールアドレス</label>
-                            <span id="displayEmail">-</span>
-                        </div>
-                        <div class="profile-field">
-                            <label>加入日</label>
-                            <span id="displayJoinDate">-</span>
-                        </div>
-                        <div class="profile-field">
-                            <label>自己紹介</label>
-                            <span id="displayBio">自己紹介がまだ設定されていません</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- プロフィール編集エリア -->
-                <div class="profile-edit" id="profileEdit" style="display: none;">
-                    <div class="profile-avatar">
-                        <div class="avatar-circle" id="editAvatar">👤</div>
-                        
-                        <!-- アバター選択タブ -->
-                        <div class="avatar-tabs">
-                            <button class="avatar-tab active" onclick="showAvatarType('emoji')">
-                                <i class="fas fa-smile"></i>
-                                絵文字
-                            </button>
-                            <button class="avatar-tab" onclick="showAvatarType('image')">
-                                <i class="fas fa-camera"></i>
-                                画像
-                            </button>
-                        </div>
-                        
-                        <!-- 絵文字アバター選択 -->
-                        <div class="avatar-options" id="emojiAvatars">
-                            <button class="avatar-option" onclick="selectAvatar('👤')">👤</button>
-                            <button class="avatar-option" onclick="selectAvatar('😊')">😊</button>
-                            <button class="avatar-option" onclick="selectAvatar('🌸')">🌸</button>
-                            <button class="avatar-option" onclick="selectAvatar('🎀')">🎀</button>
-                            <button class="avatar-option" onclick="selectAvatar('🍰')">🍰</button>
-                            <button class="avatar-option" onclick="selectAvatar('🌟')">🌟</button>
-                        </div>
-                        
-                        <!-- 画像アップロード -->
-                        <div class="image-upload-section" id="imageUpload" style="display: none;">
-                            <input type="file" id="avatarImageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-                            <button class="upload-btn" onclick="document.getElementById('avatarImageInput').click()">
-                                <i class="fas fa-upload"></i>
-                                画像を選択
-                            </button>
-                            <div class="upload-info">
-                                <small>JPG, PNG形式 / 最大2MB</small>
-                            </div>
-                            <div class="image-preview" id="imagePreview" style="display: none;">
-                                <img id="previewImg" src="" alt="プレビュー">
-                                <button class="remove-image-btn" onclick="removeUploadedImage()">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="profile-form">
-                        <div class="form-group">
-                            <label for="editName">名前</label>
-                            <input type="text" id="editName" placeholder="お名前を入力してください">
-                        </div>
-                        <div class="form-group">
-                            <label for="editBio">自己紹介</label>
-                            <textarea id="editBio" placeholder="自己紹介を入力してください（100文字以内）" maxlength="100"></textarea>
-                            <div class="char-count">
-                                <span id="bioCharCount">0</span>/100文字
-                            </div>
-                        </div>
-                        <div class="form-actions">
-                            <button class="btn btn-secondary" onclick="cancelEdit()">キャンセル</button>
-                            <button class="btn btn-primary" id="saveProfileBtn">保存</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </body>
 </html>
