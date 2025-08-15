@@ -4680,18 +4680,37 @@
                 
                 // 認証コードがURLパラメータに含まれているか確認
                 if (searchParams.get('code')) {
-                    console.log('✅ 認証コードを検出');
-                    // PKCEフローの場合、コードをセッションに交換
-                    const { data, error } = await supabaseClient.auth.exchangeCodeForSession(searchParams.get('code'));
+                    console.log('✅ 認証コードを検出 - PKCEフロー開始');
+                    console.log('🔑 認証コード:', searchParams.get('code').substring(0, 10) + '...');
                     
-                    if (error) {
-                        console.error('❌ コード交換エラー:', error);
-                    } else {
-                        console.log('✅ セッション確立成功');
+                    try {
+                        // PKCEフローの場合、コードをセッションに交換
+                        const { data, error } = await supabaseClient.auth.exchangeCodeForSession(searchParams.get('code'));
+                        
+                        if (error) {
+                            console.error('❌ コード交換エラー:', error);
+                            console.error('🔍 エラー詳細:', {
+                                message: error.message,
+                                status: error.status,
+                                code: error.code
+                            });
+                            throw error;
+                        } else {
+                            console.log('✅ PKCEコード交換成功');
+                            console.log('👤 取得したユーザー:', data.user?.email);
+                            console.log('🔐 セッション確立完了');
+                            
+                            // 認証成功フラグを設定
+                            window.authCallbackSuccess = true;
+                        }
+                    } catch (exchangeError) {
+                        console.error('❌ PKCEフロー失敗:', exchangeError);
+                        window.authCallbackError = exchangeError;
                     }
                     
                     // URLをクリーンアップ（パラメータを削除）
                     window.history.replaceState({}, document.title, window.location.pathname);
+                    console.log('🧹 URL クリーンアップ完了');
                 }
                 
                 // エラーがある場合の処理
@@ -5016,12 +5035,19 @@
         // Google認証実行（グローバルにアクセス可能にする）
         window.performGoogleLogin = async function() {
             try {
+                const currentRedirectUrl = window.location.origin + window.location.pathname;
                 console.log('🔐 Google認証を開始...');
+                console.log('🌐 現在のURL:', window.location.href);
+                console.log('🔗 リダイレクトURL:', currentRedirectUrl);
+                console.log('📋 Supabaseプロジェクト:', SUPABASE_URL);
+                console.log('⚠️  Supabaseダッシュボードで以下設定を確認してください:');
+                console.log('   Site URL:', currentRedirectUrl);
+                console.log('   Redirect URLs:', currentRedirectUrl);
                 
                 const { data, error } = await supabaseClient.auth.signInWithOAuth({
                     provider: 'google',
                     options: {
-                        redirectTo: window.location.origin + window.location.pathname
+                        redirectTo: currentRedirectUrl
                     }
                 });
                 
@@ -6025,11 +6051,11 @@
         async function loadUserProfile() {
             try {
                 // 基本情報
-                currentUserProfile.email = currentUser || 'demo@example.com';
+                currentUserProfile.email = currentUser;
                 currentUserProfile.joinDate = new Date().toLocaleDateString('ja-JP');
                 
                 // currentUserが設定されていない場合は処理を停止
-                if (!currentUser || currentUser === 'demo@example.com') {
+                if (!currentUser) {
                     console.log('⚠️ ユーザー未ログイン - デフォルトプロフィール使用');
                     setDefaultProfile();
                     return;
@@ -6403,7 +6429,7 @@
         async function saveProfile() {
             try {
                 // ユーザー認証確認
-                if (!currentUser || currentUser === 'demo@example.com') {
+                if (!currentUser) {
                     alert('ログインが必要です');
                     return false;
                 }
@@ -7514,7 +7540,7 @@
             
             // 認証確認を少し遅らせて実行
             setTimeout(async () => {
-                await checkAuthentication();
+                await checkAuthenticationStatus();
                 console.log('🔄 遅延認証確認完了');
             }, 200);
             
@@ -7945,122 +7971,7 @@
             }, 200);
         }
 
-        // 認証状態変更の監視設定
-        function setupAuthStateListener() {
-            console.log('👁️ 認証状態変更の監視を開始');
-            
-            supabaseClient.auth.onAuthStateChange(async (event, session) => {
-                console.log('🔄 認証状態変更:', event, session ? `user: ${session.user.email}` : 'no session');
-                
-                if (event === 'SIGNED_IN' && session) {
-                    currentUser = session.user.email;
-                    console.log('✅ ログイン成功:', currentUser);
-                    
-                    // ホワイトリストチェック
-                    const isPermitted = await checkUserPermission(currentUser);
-                    if (!isPermitted) {
-                        console.log('🔒 ユーザーは許可リストに登録されていません - ログアウト');
-                        alert('申し訳ございません。このアカウントはアクセス権限がありません。\n\nビヨグル倶楽部のメンバー限定のサービスです。');
-                        await supabaseClient.auth.signOut();
-                        return;
-                    }
-                    
-                    // ログイン成功時は直接マップ画面を表示（リロードしない）
-                    console.log('🔄 認証成功 - マップ画面を表示');
-                    showMapScreen();
-                    
-                    // プロフィール情報を読み込み（重要: ヘッダー初期化前に実行）
-                    await loadUserProfile();
-                    console.log('📱 プロフィール情報読み込み完了');
-                    
-                    // 地図の初期化とデータ読み込み（まだ初期化されていない場合のみ）
-                    if (!window.mapInitialized) {
-                        loadEmbeddedStores();
-                        initMap();
-                        setupEventListeners();
-                        checkDatabaseStatus();
-                        initializeHeaderActions();
-                        window.mapInitialized = true;
-                    } else {
-                        // 既に初期化済みの場合はヘッダーのみ更新
-                        initializeHeaderActions();
-                    }
-                    
-                } else if (event === 'SIGNED_OUT') {
-                    console.log('🚪 ログアウト');
-                    currentUser = null;
-                    userVisitHistory.clear();
-                    // ログイン画面に戻る
-                    showLoginScreen();
-                    
-                } else if (event === 'TOKEN_REFRESHED' && session) {
-                    console.log('🔄 トークン更新:', session.user.email);
-                    currentUser = session.user.email;
-                    initializeHeaderActions();
-                }
-            });
-        }
 
-        // 認証確認
-        async function checkAuthentication() {
-            try {
-                console.log('🔐 認証状態を確認中...');
-                
-                // まずセッションを確認
-                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
-                
-                if (sessionError) {
-                    console.warn('⚠️ セッション確認エラー:', sessionError.message);
-                } else if (session && session.user) {
-                    currentUser = session.user.email;
-                    console.log('✅ セッションから認証済みユーザーを確認:', currentUser);
-                    return;
-                }
-                
-                // セッションがない場合、ユーザー情報を確認
-                const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
-                
-                if (userError) {
-                    console.warn('⚠️ ユーザー確認エラー、デモモードで続行:', userError.message);
-                } else if (user && user.email) {
-                    currentUser = user.email;
-                    console.log('✅ 認証済みユーザー:', currentUser);
-                    return;
-                }
-                
-                // 両方とも失敗した場合、認証が必要
-                console.log('⚠️ 未認証状態、認証が必要');
-                currentUser = null;
-                
-            } catch (error) {
-                console.warn('⚠️ 認証情報エラー:', error.message || error);
-                currentUser = null; // 認証が必要
-            }
-        }
-
-        // Google認証（オプション機能）
-        async function signInWithGoogle() {
-            try {
-                console.log('🔐 Google認証を開始...');
-                
-                const { data, error } = await supabaseClient.auth.signInWithOAuth({
-                    provider: 'google',
-                    options: {
-                        redirectTo: window.location.origin + window.location.pathname
-                    }
-                });
-                
-                if (error) {
-                    console.error('❌ Google認証エラー:', error);
-                    alert('認証に失敗しました。デモモードで続行します。');
-                } else {
-                    console.log('✅ Google認証成功');
-                }
-            } catch (error) {
-                console.error('❌ 認証処理エラー:', error);
-                alert('認証に失敗しました。デモモードで続行します。');
-            }
-        }
 
         // 認証ボタンハンドラー
         async function handleAuth() {
