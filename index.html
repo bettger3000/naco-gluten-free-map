@@ -3539,9 +3539,30 @@
         const SUPABASE_URL = 'https://hxrmsjfvgctoaxpbukvo.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4cm1zamZ2Z2N0b2F4cGJ1a3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MTI3NTAsImV4cCI6MjA3MDQ4ODc1MH0.tM1vDVVhYhh7OHlA1BTj071BfsIzeBG_HatijjtxwLw';
         
-        // Supabaseクライアント初期化
-        const { createClient } = supabase;
-        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Supabaseクライアント初期化（詳細診断付き）
+        console.log('🔍 Supabase初期化診断開始');
+        console.log('📦 Supabaseライブラリ:', typeof supabase);
+        
+        if (typeof supabase === 'undefined') {
+            console.error('❌ Supabaseライブラリが読み込まれていません');
+            alert('Supabaseライブラリの読み込みに失敗しました。ページを再読み込みしてください。');
+        }
+        
+        let supabaseClient;
+        try {
+            const { createClient } = supabase;
+            console.log('🔧 createClient関数:', typeof createClient);
+            
+            supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('✅ Supabaseクライアント作成成功');
+            console.log('🔗 クライアント詳細:', {
+                url: supabaseClient.supabaseUrl,
+                key: supabaseClient.supabaseKey ? 'あり' : 'なし'
+            });
+        } catch (error) {
+            console.error('❌ Supabaseクライアント作成エラー:', error);
+            alert('Supabase初期化エラー: ' + error.message);
+        }
         
         // カテゴリー色
         const categoryColors = {
@@ -4473,6 +4494,22 @@
             try {
                 console.log('🔍 認証状態をチェック中...');
                 console.log('🔧 Supabaseクライアント状態:', supabaseClient ? 'OK' : 'NG');
+                
+                // Supabase接続テスト
+                console.log('🌐 Supabase接続テスト開始...');
+                try {
+                    const testPromise = supabaseClient.from('user_profiles').select('count').limit(1);
+                    const testResult = await Promise.race([
+                        testPromise,
+                        new Promise((_, reject) => 
+                            setTimeout(() => reject(new Error('接続テストタイムアウト')), 5000)
+                        )
+                    ]);
+                    console.log('✅ Supabase接続テスト成功');
+                } catch (testError) {
+                    console.error('❌ Supabase接続テストエラー:', testError);
+                    console.log('🔍 ネットワーク状態を確認してください');
+                }
                 
                 // Supabaseセッションチェック（タイムアウト付き）
                 console.log('📊 セッション取得開始...');
