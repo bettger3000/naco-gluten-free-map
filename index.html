@@ -4428,16 +4428,22 @@
         // 許可されたユーザーかチェック
         async function checkUserPermission(email) {
             try {
-                console.log('🔍 ユーザー許可チェック:', email);
+                // メールアドレスを小文字化して比較
+                const normalizedEmail = email.toLowerCase();
+                console.log('🔍 ユーザー許可チェック:', normalizedEmail);
                 
                 const { data, error } = await supabaseClient
                     .from('user_profiles')
                     .select('email, is_active')
-                    .eq('email', email)
+                    .eq('email', normalizedEmail)
                     .single();
                 
                 if (error) {
                     console.error('❌ ユーザー許可チェックエラー:', error);
+                    // エラーコードがPGRST116（結果なし）の場合は明示的にfalse
+                    if (error.code === 'PGRST116') {
+                        console.log('📋 ユーザーがuser_profilesテーブルに存在しません');
+                    }
                     return false;
                 }
                 
@@ -4468,8 +4474,8 @@
                     currentUser = session.user.email;
                     console.log('✅ 有効なセッション:', currentUser);
                     
-                    // ホワイトリストチェック
-                    const isPermitted = await checkUserPermission(currentUser);
+                    // ホワイトリストチェック（メールアドレスを小文字化して比較）
+                    const isPermitted = await checkUserPermission(currentUser.toLowerCase());
                     if (!isPermitted) {
                         console.log('🔒 ユーザーは許可リストに登録されていません');
                         await supabaseClient.auth.signOut();
@@ -4486,8 +4492,8 @@
                     currentUser = user.email;
                     console.log('✅ 有効なユーザー:', currentUser);
                     
-                    // ホワイトリストチェック
-                    const isPermitted = await checkUserPermission(currentUser);
+                    // ホワイトリストチェック（メールアドレスを小文字化して比較）
+                    const isPermitted = await checkUserPermission(currentUser.toLowerCase());
                     if (!isPermitted) {
                         console.log('🔒 ユーザーは許可リストに登録されていません');
                         await supabaseClient.auth.signOut();
@@ -4506,9 +4512,108 @@
             }
         }
 
+        // OAuthコールバック処理
+        async function handleAuthCallback() {
+            try {
+                console.log('🔄 認証コールバック処理開始...');
+                
+                // URLからパラメータを取得
+                const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                const searchParams = new URLSearchParams(window.location.search);
+                
+                // アクセストークンがハッシュに含まれているか確認
+                if (hashParams.get('access_token')) {
+                    console.log('✅ アクセストークンを検出');
+                    // Supabaseが自動的に処理するので、少し待つ
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+                
+                // 認証コードがURLパラメータに含まれているか確認
+                if (searchParams.get('code')) {
+                    console.log('✅ 認証コードを検出');
+                    // PKCEフローの場合、コードをセッションに交換
+                    const { data, error } = await supabaseClient.auth.exchangeCodeForSession(searchParams.get('code'));
+                    
+                    if (error) {
+                        console.error('❌ コード交換エラー:', error);
+                    } else {
+                        console.log('✅ セッション確立成功');
+                    }
+                    
+                    // URLをクリーンアップ（パラメータを削除）
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+                
+                // エラーがある場合の処理
+                if (searchParams.get('error') || hashParams.get('error')) {
+                    const errorDescription = searchParams.get('error_description') || hashParams.get('error_description');
+                    console.error('❌ 認証エラー:', errorDescription);
+                    alert('認証に失敗しました: ' + errorDescription);
+                }
+                
+            } catch (error) {
+                console.error('❌ コールバック処理エラー:', error);
+            }
+        }
+
+        // 認証状態変更リスナー
+        function setupAuthStateListener() {
+            supabaseClient.auth.onAuthStateChange(async (event, session) => {
+                console.log('🔔 認証状態変更:', event);
+                
+                if (event === 'SIGNED_IN' && session) {
+                    console.log('✅ サインイン検出');
+                    currentUser = session.user.email;
+                    
+                    // ホワイトリストチェック
+                    const isPermitted = await checkUserPermission(currentUser.toLowerCase());
+                    if (!isPermitted) {
+                        console.log('🔒 ユーザーは許可リストに登録されていません');
+                        await supabaseClient.auth.signOut();
+                        showLoginScreen();
+                        alert('このアカウントはアクセス権限がありません。');
+                        return;
+                    }
+                    
+                    // 認証成功 - マップ画面を表示
+                    console.log('🎉 認証成功 - マップ画面へ');
+                    showMapScreen();
+                    
+                    // 初期化処理を実行
+                    try {
+                        await loadUserProfile();
+                        loadEmbeddedStores();
+                        initMap();
+                        setupEventListeners();
+                        checkDatabaseStatus();
+                        initializeHeaderActions();
+                    } catch (error) {
+                        console.error('初期化エラー:', error);
+                    }
+                    
+                } else if (event === 'SIGNED_OUT') {
+                    console.log('👋 サインアウト検出');
+                    currentUser = null;
+                    showLoginScreen();
+                } else if (event === 'TOKEN_REFRESHED') {
+                    console.log('🔄 トークン更新');
+                } else if (event === 'USER_UPDATED') {
+                    console.log('👤 ユーザー情報更新');
+                }
+            });
+        }
+
         // DOM読み込み完了後に即座に初期化
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('⚡ 埋め込みデータ版 - 高速起動');
+            
+            // OAuthコールバック処理（認証後のリダイレクトを処理）
+            await handleAuthCallback();
+            
+            // 認証状態変更リスナーを設定
+            setupAuthStateListener();
+            
+            // アプリ初期化
             await initializeApp();
         });
 
