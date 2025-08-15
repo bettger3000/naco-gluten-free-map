@@ -4649,75 +4649,122 @@
             }
         }
 
-        // 認証状態変更リスナー
-        function setupAuthStateListener() {
-            supabaseClient.auth.onAuthStateChange(async (event, session) => {
-                console.log('🔔 認証状態変更:', event);
-                
-                if (event === 'SIGNED_IN' && session) {
-                    console.log('✅ サインイン検出');
-                    currentUser = session.user.email;
-                    
-                    // ホワイトリストチェック
-                    const isPermitted = await checkUserPermission(currentUser.toLowerCase());
-                    if (!isPermitted) {
-                        console.log('🔒 ユーザーは許可リストに登録されていません');
-                        await supabaseClient.auth.signOut();
-                        showLoginScreen();
-                        alert('このアカウントはアクセス権限がありません。');
-                        return;
-                    }
-                    
-                    // 認証成功 - マップ画面を表示
-                    console.log('🎉 認証成功 - マップ画面へ');
-                    showMapScreen();
-                    
-                    // 初期化処理を実行
-                    try {
-                        await loadUserProfile();
-                        loadEmbeddedStores();
-                        initMap();
-                        setupEventListeners();
-                        checkDatabaseStatus();
-                        initializeHeaderActions();
-                    } catch (error) {
-                        console.error('初期化エラー:', error);
-                    }
-                    
-                } else if (event === 'SIGNED_OUT') {
-                    console.log('👋 サインアウト検出');
-                    currentUser = null;
-                    showLoginScreen();
-                } else if (event === 'TOKEN_REFRESHED') {
-                    console.log('🔄 トークン更新');
-                } else if (event === 'USER_UPDATED') {
-                    console.log('👤 ユーザー情報更新');
-                }
+
+        // 認証購読管理
+        let unsub = null;
+
+        // アプリ初期化システム（改善版）
+        async function bootstrapApp() {
+            console.log('🚀 bootstrapApp開始');
+            
+            // まずコールバック処理
+            await handleAuthCallback();
+            
+            // 現在のセッション取得
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            console.log('📊 初期セッション:', session?.user?.email || 'なし');
+            renderFromSession(session);
+
+            // 認証状態変更を監視
+            const sub = supabaseClient.auth.onAuthStateChange((_evt, s) => {
+                console.log('🔄 auth event:', _evt, s?.user?.email || 'なし');
+                renderFromSession(s);
             });
+            unsub = () => sub.data.subscription.unsubscribe();
+            console.log('✅ 認証監視開始');
         }
 
-        // DOM読み込み完了後に即座に初期化
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('⚡ 埋め込みデータ版 - 高速起動');
+        // セッションから画面レンダリング
+        function renderFromSession(session) {
+            const email = session?.user?.email || null;
+            console.log('🎨 画面レンダリング:', email || 'ログインなし');
+            
+            if (email) {
+                checkAllowlist(email).then(ok => {
+                    if (!ok) {
+                        console.log('🔒 許可リストにないユーザー - ログアウト');
+                        supabaseClient.auth.signOut();
+                        showLoginScreen();
+                        return;
+                    }
+                    console.log('✅ 許可されたユーザー - アプリ表示');
+                    currentUser = email;
+                    showAppWithData();
+                });
+            } else {
+                console.log('🔓 未認証 - ログイン画面表示');
+                showLoginScreen();
+            }
+        }
+
+        // 許可リストチェック（テーブル名をuser_profilesに修正）
+        async function checkAllowlist(email) {
+            const em = email.toLowerCase();
+            console.log('🔍 許可リストチェック:', em);
             
             try {
-                // OAuthコールバック処理（認証後のリダイレクトを処理）
-                console.log('📌 Step 1: OAuthコールバック処理開始');
-                await handleAuthCallback();
-                console.log('✅ Step 1: OAuthコールバック処理完了');
+                const { data, error } = await supabaseClient
+                    .from('user_profiles')
+                    .select('email, is_active')
+                    .eq('email', em)
+                    .limit(1);
+                    
+                if (error) {
+                    console.error('❌ 許可リストチェックエラー:', error);
+                    return false;
+                }
                 
-                // 認証状態変更リスナーを設定
-                console.log('📌 Step 2: 認証リスナー設定開始');
-                setupAuthStateListener();
-                console.log('✅ Step 2: 認証リスナー設定完了');
-                
-                // アプリ初期化
-                console.log('📌 Step 3: アプリ初期化開始');
-                await initializeApp();
-                console.log('✅ Step 3: アプリ初期化完了');
+                const isAllowed = (data?.length ?? 0) > 0;
+                console.log('📋 許可リスト結果:', isAllowed);
+                return isAllowed;
+            } catch (e) {
+                console.error('❌ 許可リストチェック例外:', e);
+                return false;
+            }
+        }
+
+        // アプリ表示（データ初期化付き）
+        async function showAppWithData() {
+            console.log('📱 アプリ表示 & データ初期化開始');
+            showMapScreen();
+            
+            // データ初期化（まだ初期化されていない場合のみ）
+            if (!window.mapInitialized) {
+                try {
+                    await loadUserProfile();
+                    loadEmbeddedStores();
+                    initMap();
+                    setupEventListeners();
+                    checkDatabaseStatus();
+                    initializeHeaderActions();
+                    window.mapInitialized = true;
+                    console.log('✅ アプリ完全初期化完了');
+                } catch (error) {
+                    console.error('❌ アプリ初期化エラー:', error);
+                }
+            } else {
+                // 既に初期化済みの場合はヘッダーのみ更新
+                initializeHeaderActions();
+                console.log('✅ ヘッダー更新完了');
+            }
+        }
+
+        // 購読解除
+        window.addEventListener('unload', () => { 
+            if (unsub) {
+                unsub();
+                console.log('🧹 認証購読解除');
+            }
+        });
+
+        // DOM読み込み完了後にbootstrapApp実行
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('⚡ 新しい初期化システム開始');
+            
+            try {
+                await bootstrapApp();
             } catch (error) {
-                console.error('❌ 初期化エラー:', error);
-                // エラーが発生した場合はログイン画面を表示
+                console.error('❌ bootstrapApp エラー:', error);
                 showLoginScreen();
             }
         });
