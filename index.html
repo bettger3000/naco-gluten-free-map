@@ -3555,16 +3555,16 @@
             
             supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
                 auth: {
-                    flowType: 'pkce',
+                    flowType: 'implicit',  // PKCEからImplicitに一時変更
                     persistSession: true,
                     autoRefreshToken: true,
                 }
             });
-            console.log('✅ Supabaseクライアント作成成功（PKCE有効）');
+            console.log('✅ Supabaseクライアント作成成功（Implicit Flow）');
             console.log('🔗 クライアント詳細:', {
                 url: supabaseClient.supabaseUrl,
                 key: supabaseClient.supabaseKey ? 'あり' : 'なし',
-                flowType: 'pkce',
+                flowType: 'implicit',
                 persistSession: true,
                 autoRefreshToken: true
             });
