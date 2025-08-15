@@ -4506,6 +4506,8 @@
         async function authenticateWithPin(email, pin) {
             console.log('🔐 PIN認証開始:', email);
             console.log('📊 Supabaseクライアント状態:', supabaseClient ? '初期化済み' : '未初期化');
+            console.log('🔗 Supabase URL:', SUPABASE_URL);
+            console.log('🔑 API Key:', SUPABASE_ANON_KEY ? 'あり（長さ:' + SUPABASE_ANON_KEY.length + ')' : 'なし');
             
             if (!supabaseClient) {
                 console.error('❌ Supabaseクライアントが初期化されていません');
@@ -4513,7 +4515,30 @@
             }
             
             try {
-                console.log('🔍 データベースクエリ実行中...');
+                console.log('🔍 Step 1: 基本接続テスト開始...');
+                
+                // Step 1: 最も基本的なクエリでSupabase接続をテスト（タイムアウト付き）
+                const basicQueryPromise = supabaseClient
+                    .from('user_profiles')
+                    .select('count()', { count: 'exact', head: true });
+                
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('クエリタイムアウト（5秒）')), 5000)
+                );
+                
+                const { data: testData, error: testError } = await Promise.race([basicQueryPromise, timeoutPromise]);
+                
+                console.log('📊 Step 1 結果:', { testData, testError });
+                
+                if (testError) {
+                    console.error('❌ 基本接続失敗:', testError);
+                    return { success: false, message: 'データベース接続エラー: ' + testError.message };
+                }
+                
+                console.log('✅ Step 1: 基本接続成功');
+                console.log('🔍 Step 2: ユーザークエリ実行中...');
+                
+                // Step 2: 実際のユーザー検索
                 const { data, error } = await supabaseClient
                     .from('user_profiles')
                     .select('email, nickname, is_active')
@@ -4522,7 +4547,7 @@
                     .eq('is_active', true)
                     .single();
                 
-                console.log('📊 クエリ結果:', { data, error });
+                console.log('📊 Step 2 結果:', { data, error });
                     
                 if (error) {
                     if (error.code === 'PGRST116') {
