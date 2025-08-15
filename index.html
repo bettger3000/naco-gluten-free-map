@@ -3431,34 +3431,19 @@
 
         // 認証状態チェック
         async function checkAuthenticationStatus() {
-            try {
-                console.log('🔍 認証状態をチェック中...');
-                
-                // Supabaseセッションチェック
-                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
-                
-                if (session && session.user) {
-                    currentUser = session.user.email;
-                    console.log('✅ 有効なセッション:', currentUser);
-                    return true;
-                }
-                
-                // フォールバック: ユーザー情報チェック
-                const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
-                
-                if (user && !userError) {
-                    currentUser = user.email;
-                    console.log('✅ 有効なユーザー:', currentUser);
-                    return true;
-                }
-                
-                console.log('❌ 認証セッションなし');
-                return false;
-                
-            } catch (error) {
-                console.error('❌ 認証チェックエラー:', error);
-                return false;
+            console.log('🔍 PIN認証セッション状態をチェック中...');
+            
+            // ローカルセッションをチェック
+            const session = getSession();
+            
+            if (session && session.email) {
+                currentUser = session.email;
+                console.log('✅ 有効なPINセッション:', currentUser);
+                return true;
             }
+            
+            console.log('❌ PIN認証セッションなし');
+            return false;
         }
 
         // ログイン画面を表示
@@ -3623,6 +3608,45 @@
             }
         }
         
+        // セッション管理機能
+        const SESSION_DURATION = 30 * 24 * 60 * 60 * 1000; // 30日間
+        
+        function saveSession(email) {
+            const sessionData = {
+                email: email,
+                expires: Date.now() + SESSION_DURATION,
+                created: Date.now()
+            };
+            localStorage.setItem('pinAuthSession', JSON.stringify(sessionData));
+            console.log('✅ セッション保存:', email);
+        }
+        
+        function getSession() {
+            try {
+                const sessionData = localStorage.getItem('pinAuthSession');
+                if (!sessionData) return null;
+                
+                const session = JSON.parse(sessionData);
+                if (Date.now() > session.expires) {
+                    localStorage.removeItem('pinAuthSession');
+                    console.log('⏰ セッション期限切れ');
+                    return null;
+                }
+                
+                console.log('✅ 有効なセッション:', session.email);
+                return session;
+            } catch (e) {
+                console.error('❌ セッション取得エラー:', e);
+                localStorage.removeItem('pinAuthSession');
+                return null;
+            }
+        }
+        
+        function clearSession() {
+            localStorage.removeItem('pinAuthSession');
+            console.log('🗑️ セッション削除');
+        }
+        
         // メインアプリを表示
         function showMainApp() {
             // ログイン画面を削除し、メインアプリを表示
@@ -3666,6 +3690,7 @@
                 } else if (data) {
                     console.log('✅ PIN認証成功:', data);
                     currentUser = data.email;
+                    saveSession(data.email); // セッション保存
                     hideLoginScreen();
                     showMainApp();
                 } else {
@@ -3689,6 +3714,7 @@
         // ログアウト機能
         function logout() {
             currentUser = null;
+            clearSession(); // セッション削除
             showLoginScreen();
             hideMainApp();
             
