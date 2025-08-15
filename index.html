@@ -4528,6 +4528,12 @@
                 
             } catch (error) {
                 console.error('❌ 認証チェックエラー:', error);
+                console.error('エラー詳細:', {
+                    message: error.message,
+                    stack: error.stack,
+                    supabaseUrl: SUPABASE_URL,
+                    currentUrl: window.location.href
+                });
                 return false;
             }
         }
@@ -4644,7 +4650,7 @@
                 const { data, error } = await supabaseClient.auth.signInWithOAuth({
                     provider: 'google',
                     options: {
-                        redirectTo: 'https://bettger3000.github.io/naco-gluten-free-map/'
+                        redirectTo: window.location.origin + window.location.pathname
                     }
                 });
                 
@@ -7659,7 +7665,7 @@
                 const { data, error } = await supabaseClient.auth.signInWithOAuth({
                     provider: 'google',
                     options: {
-                        redirectTo: 'https://bettger3000.github.io/naco-gluten-free-map/'
+                        redirectTo: window.location.origin + window.location.pathname
                     }
                 });
                 
