@@ -4474,10 +4474,26 @@
                 console.log('🔍 認証状態をチェック中...');
                 console.log('🔧 Supabaseクライアント状態:', supabaseClient ? 'OK' : 'NG');
                 
-                // Supabaseセッションチェック
+                // Supabaseセッションチェック（タイムアウト付き）
                 console.log('📊 セッション取得開始...');
-                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
-                console.log('📊 セッション取得完了:', { session: !!session, error: sessionError });
+                
+                let sessionResult;
+                try {
+                    const getSessionPromise = supabaseClient.auth.getSession();
+                    sessionResult = await Promise.race([
+                        getSessionPromise,
+                        new Promise((_, reject) => 
+                            setTimeout(() => reject(new Error('セッション取得タイムアウト')), 8000)
+                        )
+                    ]);
+                    console.log('📊 セッション取得完了:', { session: !!sessionResult.data.session, error: sessionResult.error });
+                } catch (timeoutError) {
+                    console.error('⏰ セッション取得タイムアウト:', timeoutError);
+                    console.log('❌ 認証セッションなし（タイムアウト）');
+                    return false;
+                }
+                
+                const { data: { session }, error: sessionError } = sessionResult;
                 
                 if (sessionError) {
                     console.error('❌ セッションエラー:', sessionError);
@@ -4596,8 +4612,13 @@
                             }
                         } catch (timeoutError) {
                             console.error('⏰ セッション設定タイムアウト:', timeoutError);
-                            // タイムアウトの場合は続行
+                            console.log('🔄 タイムアウト後も処理続行 - 直接セッション確認します');
+                            // タイムアウトの場合でも、トークンがあれば認証済みの可能性がある
                         }
+                        
+                        // セッション設定後（成功・失敗問わず）、少し待ってからセッション確認
+                        console.log('⏳ セッション安定化のため1秒待機...');
+                        await new Promise(resolve => setTimeout(resolve, 1000));
                     }
                     
                     // URLをクリーンアップ（ハッシュを削除）
