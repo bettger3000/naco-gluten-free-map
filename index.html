@@ -4739,11 +4739,24 @@
                         </div>
                         <div class="login-content">
                             <h2>ログインが必要です</h2>
-                            <p>このサイトは会員限定です。<br>Googleアカウントでログインしてください。</p>
-                            <button id="loginBtn" class="google-login-btn" onclick="performGoogleLogin()">
-                                <i class="fab fa-google"></i>
-                                Googleでログイン
-                            </button>
+                            <p>このサイトは会員限定です。<br>メールアドレスとPINでログインしてください。</p>
+                            <div class="pin-login-form">
+                                <div class="form-group">
+                                    <label for="loginEmail">メールアドレス</label>
+                                    <input type="email" id="loginEmail" placeholder="example@gmail.com" 
+                                           onkeypress="if(event.key==='Enter') performPinLogin()">
+                                </div>
+                                <div class="form-group">
+                                    <label for="loginPin">PIN（4桁）</label>
+                                    <input type="password" id="loginPin" placeholder="1234" maxlength="4" 
+                                           onkeypress="if(event.key==='Enter') performPinLogin()">
+                                </div>
+                                <button id="loginBtn" class="pin-login-btn" onclick="performPinLogin()">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                    ログイン
+                                </button>
+                                <div id="loginError" class="login-error" style="display:none;"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
