@@ -4506,8 +4506,15 @@
         // PIN認証
         async function authenticateWithPin(email, pin) {
             console.log('🔐 PIN認証開始:', email);
+            console.log('📊 Supabaseクライアント状態:', supabaseClient ? '初期化済み' : '未初期化');
+            
+            if (!supabaseClient) {
+                console.error('❌ Supabaseクライアントが初期化されていません');
+                return { success: false, message: 'システムエラー: データベース接続が確立されていません' };
+            }
             
             try {
+                console.log('🔍 データベースクエリ実行中...');
                 const { data, error } = await supabaseClient
                     .from('user_profiles')
                     .select('email, nickname, is_active')
@@ -4515,12 +4522,15 @@
                     .eq('pin', pin)
                     .eq('is_active', true)
                     .single();
+                
+                console.log('📊 クエリ結果:', { data, error });
                     
                 if (error) {
                     if (error.code === 'PGRST116') {
                         console.log('❌ 認証失敗: メールアドレスまたはPINが正しくありません');
                         return { success: false, message: 'メールアドレスまたはPINが正しくありません' };
                     }
+                    console.error('❌ データベースエラー:', error);
                     throw error;
                 }
                 
