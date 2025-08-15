@@ -5047,22 +5047,31 @@
             }
         }
 
+        // リダイレクト先URL正規化関数
+        function getRedirectTarget() {
+            const u = new URL(location.href);
+            u.hash = '';
+            u.search = '';
+            if (!u.pathname.endsWith('/')) u.pathname += '/';
+            return u.origin + u.pathname;
+        }
+
         // Google認証実行（グローバルにアクセス可能にする）
         window.performGoogleLogin = async function() {
             try {
-                const currentRedirectUrl = window.location.origin + window.location.pathname;
+                const redirectTo = getRedirectTarget();
                 console.log('🔐 Google認証を開始...');
                 console.log('🌐 現在のURL:', window.location.href);
-                console.log('🔗 リダイレクトURL:', currentRedirectUrl);
+                console.log('🔗 正規化されたリダイレクトURL:', redirectTo);
                 console.log('📋 Supabaseプロジェクト:', SUPABASE_URL);
                 console.log('⚠️  Supabaseダッシュボードで以下設定を確認してください:');
-                console.log('   Site URL:', currentRedirectUrl);
-                console.log('   Redirect URLs:', currentRedirectUrl);
+                console.log('   Site URL:', redirectTo);
+                console.log('   Redirect URLs:', redirectTo);
                 
                 const { data, error } = await supabaseClient.auth.signInWithOAuth({
                     provider: 'google',
                     options: {
-                        redirectTo: currentRedirectUrl
+                        redirectTo: redirectTo
                     }
                 });
                 
