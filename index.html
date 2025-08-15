@@ -1504,16 +1504,19 @@
         
         /* モバイル版検索・フィルター - 完全に独立したレイアウト */
         .mobile-search-filter {
-            position: fixed;
-            top: calc(var(--panel-top, 0px) + 70px);
+            position: relative;
             left: 0;
             right: 0;
-            z-index: 1000;
-            background: var(--bg-secondary);
+            background: linear-gradient(135deg, #fff5f8 0%, #fff 100%);
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
             border-bottom: 0;
+            margin: 0;
+            box-shadow: 0 4px 12px rgba(255, 107, 157, 0.1);
+            border-radius: 0 0 12px 12px;
+            transform: translateY(-10px);
+            opacity: 0;
         }
         
         .panel-tabs {
@@ -1563,8 +1566,10 @@
         
         .mobile-search-filter.show {
             max-height: 200px;
-            padding: var(--space-md) var(--space-lg);
-            border-bottom: 1px solid var(--border-light);
+            padding: var(--space-lg) var(--space-lg) var(--space-md);
+            border-bottom: 1px solid rgba(255, 107, 157, 0.2);
+            transform: translateY(0);
+            opacity: 1;
         }
         
         .mobile-search-box {
@@ -1573,18 +1578,21 @@
         
         .mobile-search-input {
             width: 100%;
-            padding: var(--space-sm) var(--space-md);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            border: 2px solid rgba(255, 107, 157, 0.2);
+            border-radius: 20px;
             font-size: 0.875rem;
-            background: var(--bg-primary);
+            background: white;
             color: var(--text-primary);
-            transition: border-color 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(255, 107, 157, 0.05);
         }
         
         .mobile-search-input:focus {
             outline: none;
-            border-color: var(--primary);
+            border-color: #ff6b9d;
+            box-shadow: 0 4px 16px rgba(255, 107, 157, 0.2);
+            transform: scale(1.02);
         }
         
         .mobile-filter-chips {
@@ -1595,26 +1603,31 @@
         
         .mobile-chip {
             padding: var(--space-xs) var(--space-sm);
-            background: var(--bg-primary);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
+            background: white;
+            border: 1px solid rgba(255, 107, 157, 0.3);
+            border-radius: 15px;
             font-size: 0.75rem;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
             color: var(--text-secondary);
             white-space: nowrap;
+            box-shadow: 0 1px 4px rgba(255, 107, 157, 0.1);
         }
         
         .mobile-chip:hover {
-            background: var(--bg-secondary);
-            border-color: var(--primary);
+            background: rgba(255, 107, 157, 0.1);
+            border-color: #ff6b9d;
             color: var(--text-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(255, 107, 157, 0.2);
         }
         
         .mobile-chip.active {
-            background: var(--primary);
+            background: linear-gradient(135deg, #ff6b9d, #4ecdc4);
             color: white;
-            border-color: var(--primary);
+            border-color: #ff6b9d;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 12px rgba(255, 107, 157, 0.3);
         }
 
         /* 訪問履歴ビュー */
