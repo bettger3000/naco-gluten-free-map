@@ -4500,7 +4500,33 @@
             }
         }
 
-        // 認証状態チェック
+        // 許可されたユーザーかチェック
+        async function checkUserPermission(email) {
+            try {
+                console.log('🔍 ユーザー許可チェック:', email);
+                
+                const { data, error } = await supabaseClient
+                    .from('user_profiles')
+                    .select('email, is_active')
+                    .eq('email', email)
+                    .single();
+                
+                if (error) {
+                    console.error('❌ ユーザー許可チェックエラー:', error);
+                    return false;
+                }
+                
+                const isAllowed = data && (data.is_active === true || data.is_active === null);
+                console.log('✅ ユーザー許可結果:', isAllowed);
+                return isAllowed;
+                
+            } catch (error) {
+                console.error('❌ ユーザー許可チェック例外:', error);
+                return false;
+            }
+        }
+
+        // 認証状態チェック（ホワイトリスト機能付き）
         async function checkAuthenticationStatus() {
             try {
                 console.log('🔍 認証状態をチェック中...');
@@ -4511,6 +4537,15 @@
                 if (session && session.user) {
                     currentUser = session.user.email;
                     console.log('✅ 有効なセッション:', currentUser);
+                    
+                    // ホワイトリストチェック
+                    const isPermitted = await checkUserPermission(currentUser);
+                    if (!isPermitted) {
+                        console.log('🔒 ユーザーは許可リストに登録されていません');
+                        await supabaseClient.auth.signOut();
+                        return false;
+                    }
+                    
                     return true;
                 }
                 
@@ -4520,6 +4555,15 @@
                 if (user && !userError) {
                     currentUser = user.email;
                     console.log('✅ 有効なユーザー:', currentUser);
+                    
+                    // ホワイトリストチェック
+                    const isPermitted = await checkUserPermission(currentUser);
+                    if (!isPermitted) {
+                        console.log('🔒 ユーザーは許可リストに登録されていません');
+                        await supabaseClient.auth.signOut();
+                        return false;
+                    }
+                    
                     return true;
                 }
                 
@@ -7147,10 +7191,10 @@
                 console.log('🔄 遅延認証確認完了');
             }, 200);
             
-            // 一旦デモモードで続行
+            // 認証が必要（デモモードは削除）
             if (!currentUser) {
-                currentUser = 'demo_user@example.com';
-                console.log('⏳ 認証確認を並行実行中、デモモードで開始');
+                console.log('⚠️ 認証が必要です');
+                return;
             }
             
             // Supabaseから訪問履歴を読み込み
@@ -7585,6 +7629,15 @@
                     currentUser = session.user.email;
                     console.log('✅ ログイン成功:', currentUser);
                     
+                    // ホワイトリストチェック
+                    const isPermitted = await checkUserPermission(currentUser);
+                    if (!isPermitted) {
+                        console.log('🔒 ユーザーは許可リストに登録されていません - ログアウト');
+                        alert('申し訳ございません。このアカウントはアクセス権限がありません。\n\nビヨグル倶楽部のメンバー限定のサービスです。');
+                        await supabaseClient.auth.signOut();
+                        return;
+                    }
+                    
                     // ログイン成功時は直接マップ画面を表示（リロードしない）
                     console.log('🔄 認証成功 - マップ画面を表示');
                     showMapScreen();
@@ -7608,9 +7661,10 @@
                     
                 } else if (event === 'SIGNED_OUT') {
                     console.log('🚪 ログアウト');
-                    currentUser = 'demo_user@example.com';
+                    currentUser = null;
                     userVisitHistory.clear();
-                    initializeHeaderActions();
+                    // ログイン画面に戻る
+                    showLoginScreen();
                     
                 } else if (event === 'TOKEN_REFRESHED' && session) {
                     console.log('🔄 トークン更新:', session.user.email);
@@ -7647,13 +7701,13 @@
                     return;
                 }
                 
-                // 両方とも失敗した場合、デモモードに設定
-                console.log('⚠️ 未認証状態、デモモードで続行');
-                currentUser = 'demo_user@example.com';
+                // 両方とも失敗した場合、認証が必要
+                console.log('⚠️ 未認証状態、認証が必要');
+                currentUser = null;
                 
             } catch (error) {
-                console.warn('⚠️ 認証情報エラー、デモモードで実行:', error.message || error);
-                currentUser = 'demo_user@example.com'; // フォールバック
+                console.warn('⚠️ 認証情報エラー:', error.message || error);
+                currentUser = null; // 認証が必要
             }
         }
 
@@ -7686,7 +7740,7 @@
             console.log('🔘 ログインボタンがクリックされました');
             console.log('現在のユーザー:', currentUser);
             
-            if (currentUser && currentUser !== 'demo_user@example.com') {
+            if (currentUser) {
                 console.log('ログアウト処理を開始...');
                 await signOut();
             } else {
@@ -7703,9 +7757,9 @@
                     console.error('❌ ログアウトエラー:', error);
                 } else {
                     console.log('✅ ログアウト成功');
-                    currentUser = 'demo_user';
+                    currentUser = null;
                     userVisitHistory.clear();
-                    location.reload();
+                    showLoginScreen();
                 }
             } catch (error) {
                 console.error('❌ ログアウト処理エラー:', error);
@@ -8228,7 +8282,7 @@
             console.log('🧪 テスト訪問履歴データ挿入開始...');
             
             try {
-                const testUser = 'demo_user@example.com';
+                const testUser = 'bettger1000@gmail.com'; // 実際の許可ユーザー
                 const testStoreId = 1; // みちのり亭のID
                 
                 // 1. user_profilesにテストユーザーを作成
@@ -8324,7 +8378,7 @@
                 // 4. 現在の状態
                 console.log('4. 現在の認証状態:', {
                     currentUser: currentUser,
-                    isDemo: currentUser === 'demo_user@example.com'
+                    isAuthenticated: !!currentUser
                 });
                 
             } catch (error) {
