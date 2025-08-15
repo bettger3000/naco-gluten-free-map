@@ -603,6 +603,139 @@
             }
         }
 
+        /* 画像カルーセルのスタイル */
+        .store-images {
+            margin: 16px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            background: var(--bg-light);
+        }
+        
+        .image-carousel {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+        
+        .image-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .image-slide.active {
+            opacity: 1;
+        }
+        
+        .image-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: var(--bg-light);
+        }
+        
+        .carousel-nav {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+        }
+        
+        .carousel-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .carousel-dot.active {
+            background: white;
+            transform: scale(1.2);
+        }
+        
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+        
+        .carousel-btn:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .carousel-btn.prev {
+            left: 12px;
+        }
+        
+        .carousel-btn.next {
+            right: 12px;
+        }
+        
+        .image-carousel:hover .carousel-btn {
+            opacity: 1;
+        }
+        
+        .no-images {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            background: var(--bg-light);
+            border: 2px dashed var(--border-light);
+            border-radius: 12px;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .image-upload-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .image-upload-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
         /* ボタン押下時の一時的な視覚効果 */
         .action-btn.pressing,
         .popup-action-btn.pressing {
@@ -3438,7 +3571,10 @@
             // 2. 訪問履歴データを先に読み込み
             await initVisitHistory();
             
-            // 3. 店舗データを表示（訪問履歴込み）
+            // 3. 店舗画像データを並行で読み込み
+            await initStoreImages();
+            
+            // 4. 店舗データを表示（訪問履歴・画像込み）
             loadEmbeddedStores();
             
             // 4. 地図を初期化
@@ -4021,6 +4157,7 @@
                             <button class="popup-close-btn" onclick="closePopup()" title="閉じる">×</button>
                         </div>
                         <div class="popup-body">
+                            ${createImageCarousel(storeId)}
                             <div class="popup-info">
                                 <div class="popup-row">
                                     <span class="popup-icon">📍</span>
@@ -4084,6 +4221,7 @@
                             </button>
                         </div>
                         <div class="popup-scrollable-content">
+                            ${createImageCarousel(storeId)}
                             <div class="popup-info-section">
                                 <div class="popup-category-row">
                                     <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
@@ -4560,6 +4698,7 @@
         // 訪問履歴グローバル変数
         let userVisitHistory = new Map();
         let currentUser = null;
+        let storeImages = new Map(); // 店舗画像キャッシュ
 
         // 訪問履歴機能初期化
         async function initVisitHistory() {
@@ -4600,6 +4739,296 @@
             }
             
             console.log('✅ 訪問履歴機能初期化完了');
+        }
+
+        // 店舗画像機能初期化
+        async function initStoreImages() {
+            console.log('📸 店舗画像機能初期化開始');
+            
+            try {
+                // 全ての店舗の画像を取得
+                const { data: images, error } = await supabaseClient
+                    .from('store_images')
+                    .select('*')
+                    .order('store_id', { ascending: true })
+                    .order('image_order', { ascending: true });
+                
+                if (error) {
+                    console.warn('⚠️ 画像データ取得エラー:', error);
+                    return;
+                }
+                
+                // 店舗IDごとに画像を整理
+                storeImages.clear();
+                if (images && images.length > 0) {
+                    images.forEach(image => {
+                        if (!storeImages.has(image.store_id)) {
+                            storeImages.set(image.store_id, []);
+                        }
+                        storeImages.get(image.store_id).push(image);
+                    });
+                    
+                    console.log(`✅ ${images.length}枚の画像を${storeImages.size}店舗に整理`);
+                } else {
+                    console.log('📷 画像データなし');
+                }
+                
+            } catch (error) {
+                console.warn('⚠️ 画像機能初期化エラー:', error);
+            }
+            
+            console.log('📸 店舗画像機能初期化完了');
+        }
+
+        // 店舗画像カルーセルHTML生成
+        function createImageCarousel(storeId) {
+            const images = storeImages.get(storeId) || [];
+            
+            if (images.length === 0) {
+                return `
+                    <div class="store-images">
+                        <div class="no-images">
+                            <span>📷 画像がありません</span>
+                            <button class="image-upload-btn" onclick="showImageUpload(${storeId})">
+                                <i class="fas fa-plus"></i>
+                                画像を追加
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            const slidesHtml = images.map((image, index) => `
+                <div class="image-slide ${index === 0 ? 'active' : ''}" data-slide="${index}">
+                    <img src="${image.image_url}" alt="${image.alt_text || '店舗画像'}" loading="lazy">
+                </div>
+            `).join('');
+            
+            const dotsHtml = images.length > 1 ? `
+                <div class="carousel-nav">
+                    ${images.map((_, index) => `
+                        <div class="carousel-dot ${index === 0 ? 'active' : ''}" data-slide="${index}" onclick="showSlide(${storeId}, ${index})"></div>
+                    `).join('')}
+                </div>
+            ` : '';
+            
+            const buttonsHtml = images.length > 1 ? `
+                <button class="carousel-btn prev" onclick="prevSlide(${storeId})">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carousel-btn next" onclick="nextSlide(${storeId})">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            ` : '';
+            
+            return `
+                <div class="store-images">
+                    <div class="image-carousel" data-store-id="${storeId}" data-current-slide="0">
+                        ${slidesHtml}
+                        ${dotsHtml}
+                        ${buttonsHtml}
+                    </div>
+                    ${images.length < 3 ? `
+                        <button class="image-upload-btn" onclick="showImageUpload(${storeId})">
+                            <i class="fas fa-plus"></i>
+                            画像を追加 (${images.length}/3)
+                        </button>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // カルーセル操作関数
+        function showSlide(storeId, slideIndex) {
+            const carousel = document.querySelector(`[data-store-id="${storeId}"]`);
+            if (!carousel) return;
+            
+            const images = storeImages.get(storeId) || [];
+            if (slideIndex < 0 || slideIndex >= images.length) return;
+            
+            // 現在のスライドを更新
+            carousel.dataset.currentSlide = slideIndex;
+            
+            // スライドの表示を更新
+            const slides = carousel.querySelectorAll('.image-slide');
+            const dots = carousel.querySelectorAll('.carousel-dot');
+            
+            slides.forEach((slide, index) => {
+                slide.classList.toggle('active', index === slideIndex);
+            });
+            
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === slideIndex);
+            });
+        }
+
+        function nextSlide(storeId) {
+            const carousel = document.querySelector(`[data-store-id="${storeId}"]`);
+            if (!carousel) return;
+            
+            const currentSlide = parseInt(carousel.dataset.currentSlide || '0');
+            const images = storeImages.get(storeId) || [];
+            const nextIndex = (currentSlide + 1) % images.length;
+            
+            showSlide(storeId, nextIndex);
+        }
+
+        function prevSlide(storeId) {
+            const carousel = document.querySelector(`[data-store-id="${storeId}"]`);
+            if (!carousel) return;
+            
+            const currentSlide = parseInt(carousel.dataset.currentSlide || '0');
+            const images = storeImages.get(storeId) || [];
+            const prevIndex = (currentSlide - 1 + images.length) % images.length;
+            
+            showSlide(storeId, prevIndex);
+        }
+
+        // 画像アップロード機能
+        function showImageUpload(storeId) {
+            const currentImages = storeImages.get(storeId) || [];
+            if (currentImages.length >= 3) {
+                alert('この店舗は既に3枚の画像がアップロードされています。');
+                return;
+            }
+            
+            // ファイル選択要素を動的作成
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/jpeg,image/png,image/webp';
+            fileInput.multiple = false;
+            
+            fileInput.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                // ファイル検証
+                if (!validateImageFile(file)) return;
+                
+                await uploadStoreImage(storeId, file);
+            };
+            
+            fileInput.click();
+        }
+
+        // 画像ファイル検証
+        function validateImageFile(file) {
+            const maxSize = 2 * 1024 * 1024; // 2MB
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+            
+            if (!allowedTypes.includes(file.type)) {
+                alert('JPEG、PNG、WebP形式の画像ファイルを選択してください。');
+                return false;
+            }
+            
+            if (file.size > maxSize) {
+                alert('ファイルサイズは2MB以下にしてください。');
+                return false;
+            }
+            
+            return true;
+        }
+
+        // 画像アップロード処理
+        async function uploadStoreImage(storeId, file) {
+            try {
+                console.log('📤 画像アップロード開始:', storeId, file.name);
+                
+                // ローディング表示
+                const uploadBtn = document.querySelector(`[onclick="showImageUpload(${storeId})"]`);
+                if (uploadBtn) {
+                    uploadBtn.textContent = 'アップロード中...';
+                    uploadBtn.disabled = true;
+                }
+                
+                // ファイル名生成（衝突回避）
+                const fileExt = file.name.split('.').pop();
+                const fileName = `store_${storeId}_${Date.now()}.${fileExt}`;
+                
+                // Supabase Storageにアップロード
+                const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                    .from('store-images')
+                    .upload(fileName, file, {
+                        cacheControl: '3600',
+                        upsert: false
+                    });
+                
+                if (uploadError) {
+                    console.error('Storage upload error:', uploadError);
+                    alert('画像のアップロードに失敗しました。');
+                    return;
+                }
+                
+                // 公開URLを取得
+                const { data: { publicUrl } } = supabaseClient.storage
+                    .from('store-images')
+                    .getPublicUrl(fileName);
+                
+                // データベースに画像情報を保存
+                const currentImages = storeImages.get(storeId) || [];
+                const imageOrder = currentImages.length + 1;
+                
+                const { data: dbData, error: dbError } = await supabaseClient
+                    .from('store_images')
+                    .insert({
+                        store_id: storeId,
+                        image_url: publicUrl,
+                        image_order: imageOrder,
+                        uploaded_by: currentUser || 'demo_user@example.com',
+                        alt_text: `${storeId}番店舗の画像${imageOrder}`
+                    })
+                    .select()
+                    .single();
+                
+                if (dbError) {
+                    console.error('Database insert error:', dbError);
+                    alert('画像情報の保存に失敗しました。');
+                    return;
+                }
+                
+                // ローカルキャッシュを更新
+                if (!storeImages.has(storeId)) {
+                    storeImages.set(storeId, []);
+                }
+                storeImages.get(storeId).push(dbData);
+                
+                console.log('✅ 画像アップロード完了:', dbData);
+                
+                // ポップアップが開いている場合は更新
+                const popup = document.querySelector('.leaflet-popup');
+                if (popup) {
+                    const currentStoreId = popup.querySelector('[data-store-id]');
+                    if (currentStoreId && currentStoreId.dataset.storeId == storeId) {
+                        // ポップアップ内容を再生成して更新
+                        refreshPopupImages(storeId);
+                    }
+                }
+                
+                alert('画像をアップロードしました！');
+                
+            } catch (error) {
+                console.error('画像アップロードエラー:', error);
+                alert('画像のアップロードに失敗しました。');
+            } finally {
+                // ローディング状態を解除
+                const uploadBtn = document.querySelector(`[onclick="showImageUpload(${storeId})"]`);
+                if (uploadBtn) {
+                    const currentImages = storeImages.get(storeId) || [];
+                    uploadBtn.textContent = `画像を追加 (${currentImages.length}/3)`;
+                    uploadBtn.disabled = false;
+                }
+            }
+        }
+
+        // ポップアップ内の画像部分のみを更新
+        function refreshPopupImages(storeId) {
+            const popup = document.querySelector('.leaflet-popup');
+            if (!popup) return;
+            
+            const storeImagesDiv = popup.querySelector('.store-images');
+            if (storeImagesDiv) {
+                storeImagesDiv.outerHTML = createImageCarousel(storeId);
+            }
         }
 
         // Supabaseから訪問履歴を読み込み
