@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>シンプルPINテスト</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        button {
+            background: #ff6b9d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+            width: 100%;
+        }
+        .result {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>シンプルPINテスト</h1>
+    
+    <button onclick="testSimpleQuery()">1. シンプルクエリテスト</button>
+    <button onclick="testPinQuery()">2. PIN認証クエリテスト</button>
+    <button onclick="testWithTimeout()">3. タイムアウト付きテスト</button>
+    
+    <div id="result" class="result">結果がここに表示されます</div>
+
+    <script>
+        const SUPABASE_URL = 'https://hxrmsjfvgctoaxpbukvo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4cm1zamZ2Z2N0b2F4cGJ1a3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MTI3NTAsImV4cCI6MjA3MDQ4ODc1MH0.tM1vDVVhYhh7OHlA1BTj071BfsIzeBG_HatijjtxwLw';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const resultDiv = document.getElementById('result');
+
+        async function testSimpleQuery() {
+            resultDiv.innerHTML = '🔍 シンプルクエリ実行中...';
+            console.log('🔍 シンプルクエリ開始');
+            
+            try {
+                const startTime = Date.now();
+                
+                const { data, error } = await supabase
+                    .from('user_profiles')
+                    .select('email')
+                    .limit(1);
+                
+                const duration = Date.now() - startTime;
+                
+                console.log('クエリ結果:', { data, error, duration });
+                
+                if (error) {
+                    resultDiv.innerHTML = `❌ エラー: ${JSON.stringify(error)}<br>所要時間: ${duration}ms`;
+                } else {
+                    resultDiv.innerHTML = `✅ 成功！<br>データ: ${JSON.stringify(data)}<br>所要時間: ${duration}ms`;
+                }
+            } catch (e) {
+                console.error('例外:', e);
+                resultDiv.innerHTML = `❌ 例外エラー: ${e.message}`;
+            }
+        }
+
+        async function testPinQuery() {
+            resultDiv.innerHTML = '🔍 PIN認証クエリ実行中...';
+            console.log('🔍 PIN認証クエリ開始');
+            
+            const email = 'bettger1000@gmail.com';
+            const pin = '1234';
+            
+            try {
+                const startTime = Date.now();
+                
+                // 段階的にクエリを実行
+                console.log('Step 1: email のみでクエリ');
+                const { data: data1, error: error1 } = await supabase
+                    .from('user_profiles')
+                    .select('email, pin, is_active')
+                    .eq('email', email.toLowerCase());
+                
+                console.log('Step 1 結果:', { data1, error1 });
+                
+                if (!error1 && data1) {
+                    console.log('Step 2: PIN を追加してクエリ');
+                    const { data: data2, error: error2 } = await supabase
+                        .from('user_profiles')
+                        .select('email, nickname, is_active')
+                        .eq('email', email.toLowerCase())
+                        .eq('pin', pin);
+                    
+                    console.log('Step 2 結果:', { data2, error2 });
+                    
+                    if (!error2 && data2) {
+                        console.log('Step 3: single() を追加');
+                        const { data: data3, error: error3 } = await supabase
+                            .from('user_profiles')
+                            .select('email, nickname, is_active')
+                            .eq('email', email.toLowerCase())
+                            .eq('pin', pin)
+                            .single();
+                        
+                        const duration = Date.now() - startTime;
+                        
+                        console.log('Step 3 結果:', { data3, error3 });
+                        
+                        if (error3) {
+                            resultDiv.innerHTML = `❌ エラー: ${JSON.stringify(error3)}<br>所要時間: ${duration}ms`;
+                        } else {
+                            resultDiv.innerHTML = `✅ PIN認証成功！<br>ユーザー: ${data3.email}<br>所要時間: ${duration}ms`;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('例外:', e);
+                resultDiv.innerHTML = `❌ 例外エラー: ${e.message}`;
+            }
+        }
+
+        async function testWithTimeout() {
+            resultDiv.innerHTML = '🔍 タイムアウト付きテスト実行中...';
+            console.log('🔍 タイムアウト付きテスト開始');
+            
+            try {
+                const queryPromise = supabase
+                    .from('user_profiles')
+                    .select('email, nickname, is_active')
+                    .eq('email', 'bettger1000@gmail.com')
+                    .eq('pin', '1234')
+                    .single();
+                
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('タイムアウト（5秒）')), 5000)
+                );
+                
+                const { data, error } = await Promise.race([queryPromise, timeoutPromise]);
+                
+                if (error) {
+                    resultDiv.innerHTML = `❌ エラー: ${error.message}`;
+                } else {
+                    resultDiv.innerHTML = `✅ 成功！<br>データ: ${JSON.stringify(data)}`;
+                }
+            } catch (e) {
+                console.error('例外:', e);
+                resultDiv.innerHTML = `❌ ${e.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

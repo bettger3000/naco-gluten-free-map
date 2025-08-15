@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase接続テスト</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #ff6b9d;
+        }
+        button {
+            background: #ff6b9d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #e55a8a;
+        }
+        .result {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .success {
+            color: #10b981;
+        }
+        .error {
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Supabase接続テスト</h1>
+        
+        <button onclick="testConnection()">1. 基本接続テスト</button>
+        <button onclick="testUserProfiles()">2. user_profilesテーブル確認</button>
+        <button onclick="testPinAuth()">3. PIN認証テスト</button>
+        
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        // Supabase設定
+        const SUPABASE_URL = 'https://hxrmsjfvgctoaxpbukvo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4cm1zamZ2Z2N0b2F4cGJ1a3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MTI3NTAsImV4cCI6MjA3MDQ4ODc1MH0.tM1vDVVhYhh7OHlA1BTj071BfsIzeBG_HatijjtxwLw';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        function log(message, type = 'info') {
+            const resultDiv = document.getElementById('result');
+            const timestamp = new Date().toLocaleTimeString('ja-JP');
+            const color = type === 'error' ? 'red' : type === 'success' ? 'green' : 'black';
+            resultDiv.innerHTML += `<span style="color:${color}">[${timestamp}] ${message}</span>\n`;
+        }
+
+        async function testConnection() {
+            log('=== 基本接続テスト開始 ===');
+            
+            try {
+                // まずクライアントが存在するか確認
+                if (!supabase) {
+                    log('❌ Supabaseクライアントが作成されていません', 'error');
+                    return;
+                }
+                
+                log('✅ Supabaseクライアント作成済み', 'success');
+                
+                // シンプルなクエリを実行
+                const { data, error } = await supabase
+                    .from('user_profiles')
+                    .select('count()', { count: 'exact', head: true });
+                
+                if (error) {
+                    log(`❌ 接続エラー: ${JSON.stringify(error)}`, 'error');
+                } else {
+                    log('✅ データベース接続成功', 'success');
+                }
+            } catch (e) {
+                log(`❌ 例外エラー: ${e.message}`, 'error');
+            }
+        }
+
+        async function testUserProfiles() {
+            log('\n=== user_profilesテーブル確認 ===');
+            
+            try {
+                const { data, error } = await supabase
+                    .from('user_profiles')
+                    .select('email, pin, is_active')
+                    .order('email');
+                
+                if (error) {
+                    log(`❌ クエリエラー: ${JSON.stringify(error)}`, 'error');
+                } else {
+                    log('✅ user_profilesテーブル読み取り成功', 'success');
+                    log(`📊 登録ユーザー数: ${data.length}`);
+                    data.forEach(user => {
+                        log(`  - ${user.email}: PIN=${user.pin ? '設定済み' : '未設定'}, is_active=${user.is_active}`);
+                    });
+                }
+            } catch (e) {
+                log(`❌ 例外エラー: ${e.message}`, 'error');
+            }
+        }
+
+        async function testPinAuth() {
+            log('\n=== PIN認証テスト ===');
+            
+            const email = 'bettger1000@gmail.com';
+            const pin = '1234';
+            
+            log(`📧 メール: ${email}`);
+            log(`🔑 PIN: ${pin}`);
+            
+            try {
+                log('🔍 クエリ実行中...');
+                
+                const { data, error } = await supabase
+                    .from('user_profiles')
+                    .select('email, nickname, is_active')
+                    .eq('email', email.toLowerCase())
+                    .eq('pin', pin)
+                    .eq('is_active', true)
+                    .single();
+                
+                log(`📊 クエリ結果:`);
+                log(`  data: ${JSON.stringify(data)}`);
+                log(`  error: ${JSON.stringify(error)}`);
+                
+                if (error) {
+                    if (error.code === 'PGRST116') {
+                        log('❌ 認証失敗: ユーザーが見つかりません', 'error');
+                    } else {
+                        log(`❌ エラー: ${error.message}`, 'error');
+                    }
+                } else if (data) {
+                    log('✅ PIN認証成功！', 'success');
+                    log(`  ユーザー: ${data.email}`);
+                    log(`  ニックネーム: ${data.nickname || '未設定'}`);
+                } else {
+                    log('❌ データなし', 'error');
+                }
+            } catch (e) {
+                log(`❌ 例外エラー: ${e.message}`, 'error');
+                console.error('詳細エラー:', e);
+            }
+        }
+    </script>
+</body>
+</html>
