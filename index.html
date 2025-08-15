@@ -4676,6 +4676,7 @@
 
             // 認証状態変更を監視
             const sub = supabaseClient.auth.onAuthStateChange((_evt, s) => {
+                console.log('Auth event:', _evt, s);
                 console.log('🔄 auth event:', _evt, s?.user?.email || 'なし');
                 renderFromSession(s);
             });
