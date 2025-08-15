@@ -4439,12 +4439,15 @@
                 // メールアドレスを小文字化して比較
                 const normalizedEmail = email.toLowerCase();
                 console.log('🔍 ユーザー許可チェック:', normalizedEmail);
+                console.log('📋 user_profilesテーブルクエリ実行中...');
                 
                 const { data, error } = await supabaseClient
                     .from('user_profiles')
                     .select('email, is_active')
                     .eq('email', normalizedEmail)
                     .single();
+                
+                console.log('📋 クエリ結果:', { data, error });
                 
                 if (error) {
                     console.error('❌ ユーザー許可チェックエラー:', error);
@@ -4469,9 +4472,12 @@
         async function checkAuthenticationStatus() {
             try {
                 console.log('🔍 認証状態をチェック中...');
+                console.log('🔧 Supabaseクライアント状態:', supabaseClient ? 'OK' : 'NG');
                 
                 // Supabaseセッションチェック
+                console.log('📊 セッション取得開始...');
                 const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+                console.log('📊 セッション取得完了:', { session: !!session, error: sessionError });
                 
                 if (sessionError) {
                     console.error('❌ セッションエラー:', sessionError);
@@ -4481,15 +4487,24 @@
                 if (session && session.user) {
                     currentUser = session.user.email;
                     console.log('✅ 有効なセッション:', currentUser);
+                    console.log('👤 ユーザー詳細:', {
+                        id: session.user.id,
+                        email: session.user.email,
+                        created_at: session.user.created_at
+                    });
                     
                     // ホワイトリストチェック（メールアドレスを小文字化して比較）
+                    console.log('🔍 ホワイトリストチェック開始...');
                     const isPermitted = await checkUserPermission(currentUser.toLowerCase());
+                    console.log('🔍 ホワイトリストチェック結果:', isPermitted);
+                    
                     if (!isPermitted) {
                         console.log('🔒 ユーザーは許可リストに登録されていません');
                         await supabaseClient.auth.signOut();
                         return false;
                     }
                     
+                    console.log('🎉 認証成功！');
                     return true;
                 }
                 
