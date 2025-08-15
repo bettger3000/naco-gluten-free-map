@@ -3316,8 +3316,16 @@
     </style>
 </head>
 <body>
-    <!-- メインアプリ -->
-    <div class="app-container">
+    <!-- 初期ローディング画面 -->
+    <div id="initialLoading" style="display: flex; justify-content: center; align-items: center; height: 100vh; background: linear-gradient(135deg, #ffe6f2 0%, #fff5e6 100%);">
+        <div style="text-align: center;">
+            <img src="nacoキャラクター.png" alt="naco" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 20px;">
+            <div style="font-size: 18px; color: #666;">認証状態をチェック中...</div>
+        </div>
+    </div>
+    
+    <!-- メインアプリ（初期状態では非表示） -->
+    <div class="app-container" style="display: none;" id="appContainer">
         <!-- ヘッダー -->
         <header class="app-header">
             <div class="header-content">
@@ -4688,7 +4696,28 @@
 
         // ログイン画面を表示
         function showLoginScreen() {
-            document.body.innerHTML = `
+            // 初期ローディング画面を非表示
+            const loadingScreen = document.getElementById('initialLoading');
+            if (loadingScreen) {
+                loadingScreen.style.display = 'none';
+            }
+            
+            // メインアプリを非表示
+            const appContainer = document.getElementById('appContainer');
+            if (appContainer) {
+                appContainer.style.display = 'none';
+            }
+            
+            // 既存のログイン画面があれば削除
+            const existingLogin = document.getElementById('loginContainer');
+            if (existingLogin) {
+                existingLogin.remove();
+            }
+            
+            // ログイン画面を作成してbodyに追加
+            const loginDiv = document.createElement('div');
+            loginDiv.id = 'loginContainer';
+            loginDiv.innerHTML = `
                 <div class="login-container">
                     <div class="login-card">
                         <div class="login-header">
@@ -4706,7 +4735,11 @@
                         </div>
                     </div>
                 </div>
-                <style>
+            `;
+            
+            // スタイルを追加
+            const style = document.createElement('style');
+            style.innerHTML = `
                     .login-container {
                         min-height: 100vh;
                         display: flex;
@@ -4780,18 +4813,41 @@
                         transform: translateY(-1px);
                         box-shadow: var(--shadow-lg);
                     }
-                </style>
             `;
+            
+            // bodyに追加
+            document.body.appendChild(loginDiv);
+            if (!document.getElementById('loginStyles')) {
+                style.id = 'loginStyles';
+                document.head.appendChild(style);
+            }
         }
 
         // マップ画面を表示
         function showMapScreen() {
-            // 既存のマップ画面は既に表示されているので、何もしない
             console.log('📍 マップ画面を表示');
+            
+            // 初期ローディング画面を非表示
+            const loadingScreen = document.getElementById('initialLoading');
+            if (loadingScreen) {
+                loadingScreen.style.display = 'none';
+            }
+            
+            // ログイン画面を削除
+            const loginContainer = document.getElementById('loginContainer');
+            if (loginContainer) {
+                loginContainer.remove();
+            }
+            
+            // メインアプリを表示
+            const appContainer = document.getElementById('appContainer');
+            if (appContainer) {
+                appContainer.style.display = 'block';
+            }
         }
 
-        // Google認証実行
-        async function performGoogleLogin() {
+        // Google認証実行（グローバルにアクセス可能にする）
+        window.performGoogleLogin = async function() {
             try {
                 console.log('🔐 Google認証を開始...');
                 
