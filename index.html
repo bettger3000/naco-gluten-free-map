@@ -3435,19 +3435,22 @@
             console.log('✅ 認証済みユーザー - マップ画面を表示');
             showMapScreen();
             
-            // 2. 即座に店舗データを表示
+            // 2. 訪問履歴データを先に読み込み
+            await initVisitHistory();
+            
+            // 3. 店舗データを表示（訪問履歴込み）
             loadEmbeddedStores();
             
-            // 3. 地図を初期化
+            // 4. 地図を初期化
             initMap();
             
-            // 4. イベントリスナー設定
+            // 5. イベントリスナー設定
             setupEventListeners();
             
-            // 5. データベース状態確認
+            // 6. データベース状態確認
             checkDatabaseStatus();
             
-            // 6. 認証ボタンの初期状態を設定
+            // 7. 認証ボタンの初期状態を設定
             updateAuthButton();
             
             console.log('✅ アプリ初期化完了 - 全機能利用可能');
@@ -3931,6 +3934,11 @@
                 }
             }
 
+            // 訪問ステータスをチェック
+            const visitStatus = userVisitHistory.get(`${store.id}`);
+            const isWantToGo = visitStatus === 'want_to_go';
+            const isVisited = visitStatus === 'visited';
+
             card.innerHTML = `
                 <div class="store-header">
                     <h3 class="store-name">${storeName}</h3>
@@ -3956,6 +3964,14 @@
                             <span>${storeHours}</span>
                         </div>
                     ` : ''}
+                </div>
+                <div class="store-actions">
+                    <button class="action-btn want-to-go ${isWantToGo ? 'active' : ''}" onclick="event.stopPropagation(); toggleVisitStatus(${store.id}, 'want_to_go')">
+                        💕 行きたい
+                    </button>
+                    <button class="action-btn visited ${isVisited ? 'active' : ''}" onclick="event.stopPropagation(); toggleVisitStatus(${store.id}, 'visited')">
+                        ✨ 行った
+                    </button>
                 </div>
             `;
 
