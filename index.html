@@ -3528,12 +3528,31 @@
 
     <script>
         // Supabase設定 - 正しいプロジェクト情報
-        const SUPABASE_URL = 'https://hxrmsjfvgctoaxpbukvo.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4cm1zamZ2Z2N0b2F4cGJ1a3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MTI3NTAsImV4cCI6MjA3MDQ4ODc1MH0.tM1vDVVhYhh7OHlA1BTj071BfsIzeBG_HatijjtxwLw';
+        const SUPABASE_URL = 'https://lywfaolwvkewuouvkzlk.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx5d2Zhb2x3dmtld3VvdXZremxrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU0NDU1NDksImV4cCI6MjA1MTAyMTU0OX0.q6fHdhLjk5s5LhQn2cYvHKKDbMk-K2htgQTru2zRLQw';
         
-        // Supabaseクライアント初期化
-        const { createClient } = supabase;
-        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Supabaseクライアント初期化（エラー処理付き）
+        let supabaseClient;
+        try {
+            if (typeof supabase === 'undefined') {
+                console.error('❌ Supabaseライブラリが読み込まれていません');
+                throw new Error('Supabase library not loaded');
+            }
+            const { createClient } = supabase;
+            supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                auth: {
+                    persistSession: true,
+                    autoRefreshToken: true,
+                    detectSessionInUrl: true,
+                    flowType: 'pkce'
+                }
+            });
+            console.log('✅ Supabaseクライアント初期化成功');
+        } catch (error) {
+            console.error('❌ Supabaseクライアント初期化エラー:', error);
+            // フォールバック処理
+            alert('認証システムの初期化に失敗しました。ページを再読み込みしてください。');
+        }
         
         // カテゴリー色
         const categoryColors = {
@@ -4492,18 +4511,36 @@
                 console.log('📍 Current URL:', window.location.href);
                 
                 // Supabaseクライアントの状態確認
-                console.log('🔧 Supabaseクライアント状態:', supabaseClient ? 'OK' : 'NG');
+                if (!supabaseClient) {
+                    console.error('❌ Supabaseクライアントが初期化されていません');
+                    return false;
+                }
+                console.log('🔧 Supabaseクライアント状態: OK');
                 
                 // タイムアウト付きでセッションチェック
                 console.log('🔍 Step 1: Supabaseセッション取得開始...');
-                const sessionPromise = supabaseClient.auth.getSession();
-                const sessionResult = await Promise.race([
-                    sessionPromise,
-                    new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('セッション取得タイムアウト')), 10000)
-                    )
-                ]);
-                console.log('✅ Step 1: セッション取得完了');
+                let sessionResult;
+                try {
+                    const sessionPromise = supabaseClient.auth.getSession();
+                    sessionResult = await Promise.race([
+                        sessionPromise,
+                        new Promise((_, reject) => 
+                            setTimeout(() => reject(new Error('セッション取得タイムアウト')), 15000)
+                        )
+                    ]);
+                    console.log('✅ Step 1: セッション取得完了');
+                } catch (timeoutError) {
+                    console.error('⏰ セッション取得タイムアウト:', timeoutError);
+                    // タイムアウトの場合、直接getSessionを試みる
+                    try {
+                        console.log('🔄 再試行: 直接セッション取得...');
+                        sessionResult = await supabaseClient.auth.getSession();
+                        console.log('✅ 再試行成功');
+                    } catch (retryError) {
+                        console.error('❌ 再試行も失敗:', retryError);
+                        return false;
+                    }
+                }
                 
                 const { data: { session }, error: sessionError } = sessionResult;
                 
