@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>初期PINセットアップ</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #ff6b9d;
+        }
+        button {
+            background: #ff6b9d;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+            width: 100%;
+        }
+        button:hover {
+            background: #e55a8a;
+        }
+        .success {
+            color: #10b981;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .error {
+            color: #ef4444;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .result {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 初期PINセットアップ</h1>
+        
+        <p>このツールは、初期ユーザーのPINを自動設定します。</p>
+        
+        <button onclick="setupInitialPins()">初期PIN設定を実行</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Supabase設定
+        const SUPABASE_URL = 'https://hxrmsjfvgctoaxpbukvo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4cm1zamZ2Z2N0b2F4cGJ1a3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MTI3NTAsImV4cCI6MjA3MDQ4ODc1MH0.tM1vDVVhYhh7OHlA1BTj071BfsIzeBG_HatijjtxwLw';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function setupInitialPins() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>処理中...</p>';
+            
+            const users = [
+                { email: 'bettger1000@gmail.com', pin: '1234', nickname: 'ベッタさん' },
+                { email: 'nono511shu123@gmail.com', pin: '5678', nickname: 'ののさん' }
+            ];
+            
+            let html = '<div class="result">';
+            
+            for (const user of users) {
+                try {
+                    // まず既存ユーザーか確認
+                    const { data: existingUser, error: checkError } = await supabase
+                        .from('user_profiles')
+                        .select('*')
+                        .eq('email', user.email.toLowerCase())
+                        .single();
+
+                    if (checkError && checkError.code !== 'PGRST116') {
+                        html += `<div class="error">❌ ${user.email}: エラー - ${checkError.message}</div>`;
+                        continue;
+                    }
+
+                    if (existingUser) {
+                        // 既存ユーザーのPIN更新
+                        const { error: updateError } = await supabase
+                            .from('user_profiles')
+                            .update({ 
+                                pin: user.pin,
+                                is_active: true 
+                            })
+                            .eq('email', user.email.toLowerCase());
+
+                        if (updateError) {
+                            html += `<div class="error">❌ ${user.email}: 更新エラー - ${updateError.message}</div>`;
+                        } else {
+                            html += `<div class="success">✅ ${user.email}: PIN更新成功 (PIN: ${user.pin})</div>`;
+                        }
+                    } else {
+                        // 新規ユーザー作成
+                        const { error: insertError } = await supabase
+                            .from('user_profiles')
+                            .insert([{
+                                email: user.email.toLowerCase(),
+                                pin: user.pin,
+                                nickname: user.nickname,
+                                is_active: true,
+                                created_at: new Date().toISOString()
+                            }]);
+
+                        if (insertError) {
+                            html += `<div class="error">❌ ${user.email}: 作成エラー - ${insertError.message}</div>`;
+                        } else {
+                            html += `<div class="success">✅ ${user.email}: 新規作成成功 (PIN: ${user.pin})</div>`;
+                        }
+                    }
+                } catch (err) {
+                    html += `<div class="error">❌ ${user.email}: 例外エラー - ${err.message}</div>`;
+                }
+            }
+            
+            html += '</div>';
+            html += '<p><strong>設定完了！</strong></p>';
+            html += '<p>以下の情報でログインできます：</p>';
+            html += '<ul>';
+            html += '<li>メール: bettger1000@gmail.com / PIN: 1234</li>';
+            html += '<li>メール: nono511shu123@gmail.com / PIN: 5678</li>';
+            html += '</ul>';
+            
+            resultDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

@@ -4874,13 +4874,20 @@
             }
             
             // 前回のメールアドレスを復元
-            const lastEmail = localStorage.getItem('lastLoginEmail');
-            if (lastEmail) {
-                document.getElementById('loginEmail').value = lastEmail;
-                document.getElementById('loginPin').focus();
-            } else {
-                document.getElementById('loginEmail').focus();
-            }
+            setTimeout(() => {
+                const emailInput = document.getElementById('loginEmail');
+                const pinInput = document.getElementById('loginPin');
+                
+                if (emailInput) {
+                    const lastEmail = localStorage.getItem('lastLoginEmail');
+                    if (lastEmail) {
+                        emailInput.value = lastEmail;
+                        if (pinInput) pinInput.focus();
+                    } else {
+                        emailInput.focus();
+                    }
+                }
+            }, 100);
             
             console.log('🔓 ログイン画面表示完了');
         }
