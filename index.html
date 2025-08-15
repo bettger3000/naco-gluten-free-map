@@ -3528,31 +3528,12 @@
 
     <script>
         // Supabase設定 - 正しいプロジェクト情報
-        const SUPABASE_URL = 'https://lywfaolwvkewuouvkzlk.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx5d2Zhb2x3dmtld3VvdXZremxrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU0NDU1NDksImV4cCI6MjA1MTAyMTU0OX0.q6fHdhLjk5s5LhQn2cYvHKKDbMk-K2htgQTru2zRLQw';
+        const SUPABASE_URL = 'https://hxrmsjfvgctoaxpbukvo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4cm1zamZ2Z2N0b2F4cGJ1a3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MTI3NTAsImV4cCI6MjA3MDQ4ODc1MH0.tM1vDVVhYhh7OHlA1BTj071BfsIzeBG_HatijjtxwLw';
         
-        // Supabaseクライアント初期化（エラー処理付き）
-        let supabaseClient;
-        try {
-            if (typeof supabase === 'undefined') {
-                console.error('❌ Supabaseライブラリが読み込まれていません');
-                throw new Error('Supabase library not loaded');
-            }
-            const { createClient } = supabase;
-            supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-                auth: {
-                    persistSession: true,
-                    autoRefreshToken: true,
-                    detectSessionInUrl: true,
-                    flowType: 'pkce'
-                }
-            });
-            console.log('✅ Supabaseクライアント初期化成功');
-        } catch (error) {
-            console.error('❌ Supabaseクライアント初期化エラー:', error);
-            // フォールバック処理
-            alert('認証システムの初期化に失敗しました。ページを再読み込みしてください。');
-        }
+        // Supabaseクライアント初期化
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         // カテゴリー色
         const categoryColors = {
@@ -4448,52 +4429,20 @@
         async function checkUserPermission(email) {
             try {
                 console.log('🔍 ユーザー許可チェック:', email);
-                console.log('🔍 許可チェック用テーブル: user_profiles');
                 
-                // タイムアウト付きでデータベースチェック
-                const queryPromise = supabaseClient
+                const { data, error } = await supabaseClient
                     .from('user_profiles')
                     .select('email, is_active')
                     .eq('email', email)
                     .single();
                 
-                const result = await Promise.race([
-                    queryPromise,
-                    new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('user_profiles テーブルクエリタイムアウト')), 10000)
-                    )
-                ]);
-                
-                const { data, error } = result;
-                
                 if (error) {
                     console.error('❌ ユーザー許可チェックエラー:', error);
-                    console.error('🔍 エラー詳細:', {
-                        code: error.code,
-                        message: error.message,
-                        details: error.details,
-                        hint: error.hint
-                    });
-                    
-                    // PGRST116 = 結果なし（該当ユーザー無し）
-                    if (error.code === 'PGRST116') {
-                        console.log('📋 ユーザーがuser_profilesテーブルに存在しません');
-                        return false;
-                    }
-                    
                     return false;
                 }
                 
-                console.log('✅ データベースからの応答:', data);
-                
                 const isAllowed = data && (data.is_active === true || data.is_active === null);
-                console.log('🔐 許可判定:', {
-                    email: email,
-                    found_data: !!data,
-                    is_active_value: data ? data.is_active : 'N/A',
-                    final_result: isAllowed
-                });
-                
+                console.log('✅ ユーザー許可結果:', isAllowed);
                 return isAllowed;
                 
             } catch (error) {
@@ -4506,43 +4455,9 @@
         async function checkAuthenticationStatus() {
             try {
                 console.log('🔍 認証状態をチェック中...');
-                console.log('🌐 Supabase URL:', SUPABASE_URL);
-                console.log('🔑 API Key exists:', !!SUPABASE_ANON_KEY);
-                console.log('📍 Current URL:', window.location.href);
                 
-                // Supabaseクライアントの状態確認
-                if (!supabaseClient) {
-                    console.error('❌ Supabaseクライアントが初期化されていません');
-                    return false;
-                }
-                console.log('🔧 Supabaseクライアント状態: OK');
-                
-                // タイムアウト付きでセッションチェック
-                console.log('🔍 Step 1: Supabaseセッション取得開始...');
-                let sessionResult;
-                try {
-                    const sessionPromise = supabaseClient.auth.getSession();
-                    sessionResult = await Promise.race([
-                        sessionPromise,
-                        new Promise((_, reject) => 
-                            setTimeout(() => reject(new Error('セッション取得タイムアウト')), 15000)
-                        )
-                    ]);
-                    console.log('✅ Step 1: セッション取得完了');
-                } catch (timeoutError) {
-                    console.error('⏰ セッション取得タイムアウト:', timeoutError);
-                    // タイムアウトの場合、直接getSessionを試みる
-                    try {
-                        console.log('🔄 再試行: 直接セッション取得...');
-                        sessionResult = await supabaseClient.auth.getSession();
-                        console.log('✅ 再試行成功');
-                    } catch (retryError) {
-                        console.error('❌ 再試行も失敗:', retryError);
-                        return false;
-                    }
-                }
-                
-                const { data: { session }, error: sessionError } = sessionResult;
+                // Supabaseセッションチェック
+                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
                 
                 if (sessionError) {
                     console.error('❌ セッションエラー:', sessionError);
@@ -4551,91 +4466,42 @@
                 
                 if (session && session.user) {
                     currentUser = session.user.email;
-                    console.log('✅ Step 2: 有効なセッション発見:', currentUser);
-                    console.log('👤 ユーザー詳細:', {
-                        email: session.user.email,
-                        id: session.user.id,
-                        created_at: session.user.created_at
-                    });
+                    console.log('✅ 有効なセッション:', currentUser);
                     
                     // ホワイトリストチェック
-                    console.log('🔍 Step 3: ホワイトリストチェック開始...');
-                    const permissionPromise = checkUserPermission(currentUser);
-                    const isPermitted = await Promise.race([
-                        permissionPromise,
-                        new Promise((_, reject) => 
-                            setTimeout(() => reject(new Error('許可チェックタイムアウト')), 10000)
-                        )
-                    ]);
-                    console.log('✅ Step 3: ホワイトリストチェック完了');
-                    
+                    const isPermitted = await checkUserPermission(currentUser);
                     if (!isPermitted) {
                         console.log('🔒 ユーザーは許可リストに登録されていません');
                         await supabaseClient.auth.signOut();
                         return false;
                     }
                     
-                    console.log('🎉 認証成功: ユーザーは許可されています');
                     return true;
                 }
                 
                 // フォールバック: ユーザー情報チェック
-                console.log('🔍 Step 4: フォールバック - ユーザー情報取得開始...');
-                const userPromise = supabaseClient.auth.getUser();
-                const userResult = await Promise.race([
-                    userPromise,
-                    new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('ユーザー情報取得タイムアウト')), 10000)
-                    )
-                ]);
-                console.log('✅ Step 4: ユーザー情報取得完了');
+                const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
                 
-                const { data: { user }, error: userError } = userResult;
-                
-                if (userError) {
-                    console.error('❌ ユーザーエラー:', userError);
-                    return false;
-                }
-                
-                if (user) {
+                if (user && !userError) {
                     currentUser = user.email;
-                    console.log('✅ Step 5: 有効なユーザー発見:', currentUser);
+                    console.log('✅ 有効なユーザー:', currentUser);
                     
                     // ホワイトリストチェック
-                    console.log('🔍 Step 6: ホワイトリストチェック開始...');
-                    const permissionPromise = checkUserPermission(currentUser);
-                    const isPermitted = await Promise.race([
-                        permissionPromise,
-                        new Promise((_, reject) => 
-                            setTimeout(() => reject(new Error('許可チェックタイムアウト')), 10000)
-                        )
-                    ]);
-                    console.log('✅ Step 6: ホワイトリストチェック完了');
-                    
+                    const isPermitted = await checkUserPermission(currentUser);
                     if (!isPermitted) {
                         console.log('🔒 ユーザーは許可リストに登録されていません');
                         await supabaseClient.auth.signOut();
                         return false;
                     }
                     
-                    console.log('🎉 認証成功: ユーザーは許可されています');
                     return true;
                 }
                 
-                console.log('❌ 認証セッションなし - ログイン画面へ');
+                console.log('❌ 認証セッションなし');
                 return false;
                 
             } catch (error) {
                 console.error('❌ 認証チェックエラー:', error);
-                console.error('エラー詳細:', {
-                    message: error.message,
-                    stack: error.stack,
-                    supabaseUrl: SUPABASE_URL,
-                    currentUrl: window.location.href,
-                    timestamp: new Date().toISOString()
-                });
-                
-                // エラーの場合もログイン画面へ
                 return false;
             }
         }
