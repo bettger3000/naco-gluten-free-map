@@ -3553,27 +3553,8 @@
             const { createClient } = supabase;
             console.log('🔧 createClient関数:', typeof createClient);
             
-            supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-                auth: {
-                    flowType: 'implicit',  // PKCEからImplicitに一時変更
-                    persistSession: true,
-                    autoRefreshToken: true,
-                }
-            });
-            console.log('✅ Supabaseクライアント作成成功（Implicit Flow）');
-            console.log('🔗 クライアント詳細:', {
-                url: supabaseClient.supabaseUrl,
-                key: supabaseClient.supabaseKey ? 'あり' : 'なし',
-                flowType: 'implicit',
-                persistSession: true,
-                autoRefreshToken: true
-            });
-            
-            console.log('🔧 Supabaseダッシュボード設定確認:');
-            console.log('   Site URL: https://bettger3000.github.io/naco-gluten-free-map/');
-            console.log('   Redirect URLs:');
-            console.log('     - https://bettger3000.github.io/naco-gluten-free-map/');
-            console.log('     - https://bettger3000.github.io/naco-gluten-free-map/index.html');
+            supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('✅ Supabaseクライアント作成成功（PIN認証版）');
             
             // 認証環境デバッグ情報
             (function debugAuthEnv() {
@@ -4480,162 +4461,123 @@
 
 
 
-        // PKCEコールバック処理（改善版）
-        async function handleAuthCallback() {
-            const sp = new URLSearchParams(location.search);
-            if (!sp.get('code') && !sp.get('error_description')) {
-                console.log('🔍 認証コールバック: 処理対象なし');
-                return;
-            }
-
-            console.log('🔄 PKCEコールバック処理開始...');
-            console.log('🌐 現在のURL:', location.href);
-
+        // ========== PIN認証システム ==========
+        
+        // セッション有効期限（30日）
+        const SESSION_DURATION = 30 * 24 * 60 * 60 * 1000; // 30日（ミリ秒）
+        
+        // セッション管理
+        function saveSession(email) {
+            const sessionData = {
+                email: email,
+                expires: Date.now() + SESSION_DURATION,
+                created: Date.now()
+            };
+            localStorage.setItem('pinAuthSession', JSON.stringify(sessionData));
+            console.log('✅ セッション保存:', email);
+        }
+        
+        function getSession() {
+            const sessionStr = localStorage.getItem('pinAuthSession');
+            if (!sessionStr) return null;
+            
             try {
-                if (sp.get('code')) {
-                    console.log('✅ 認証コード検出 - PKCEフロー開始');
-                    console.log('🔑 認証コード:', sp.get('code').substring(0, 10) + '...');
-                    
-                    console.log('🔄 exchangeCodeForSession実行中...');
-                    
-                    // タイムアウト付きでexchangeCodeForSessionを実行
-                    const exchangePromise = supabaseClient.auth.exchangeCodeForSession(sp.get('code'));
-                    const timeoutPromise = new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('exchangeCodeForSession タイムアウト')), 10000)
-                    );
-                    
-                    const { data, error } = await Promise.race([exchangePromise, timeoutPromise]);
-                    
-                    console.log('📊 exchangeCodeForSession結果:', { 
-                        data: data ? { 
-                            user: data.user?.email,
-                            session: !!data.session 
-                        } : null, 
-                        error: error 
-                    });
-                    
-                    if (error) {
-                        console.error('❌ コード交換エラー詳細:', error);
-                        throw error;
-                    }
-                    
-                    if (data?.session && data?.user) {
-                        console.log('🔐 セッション確立OK', data.user.email);
-                        window.authCallbackSuccess = true;
-                    } else {
-                        console.error('❌ セッション確立失敗: データが不正', { data });
-                        throw new Error('セッション確立失敗');
-                    }
+                const session = JSON.parse(sessionStr);
+                // セッション有効期限チェック
+                if (Date.now() > session.expires) {
+                    console.log('⏰ セッション期限切れ');
+                    clearSession();
+                    return null;
                 }
-                
-                if (sp.get('error_description')) {
-                    console.error('❌ 認証エラー:', sp.get('error_description'));
-                    alert('認証に失敗しました: ' + sp.get('error_description'));
-                }
-                
+                console.log('✅ 有効なセッション:', session.email);
+                return session;
             } catch (e) {
-                console.error('❌ PKCEフロー失敗', e);
-                window.authCallbackError = e;
-                
-                // タイムアウトの場合は強制的に処理を続行
-                if (e.message.includes('タイムアウト')) {
-                    console.log('⏰ タイムアウト発生 - セッション確認で続行');
-                }
-            } finally {
-                history.replaceState({}, document.title, location.pathname);
-                console.log('🧹 URLクリーンアップ完了');
+                console.error('セッション読み込みエラー:', e);
+                clearSession();
+                return null;
             }
         }
-
-
-        // 認証購読管理
-        let unsub = null;
-
-        // アプリ初期化システム（改善版）
-        async function bootstrapApp() {
-            console.log('🚀 bootstrapApp開始');
-            
-            // まずコールバック処理
-            console.log('📌 Step 1: コールバック処理実行');
-            await handleAuthCallback();
-            console.log('✅ Step 1: コールバック処理完了');
-            
-            // 現在のセッション取得
-            console.log('📌 Step 2: セッション取得開始');
-            const sessionResult = await supabaseClient.auth.getSession();
-            console.log('📊 getSession結果:', {
-                session: sessionResult.data?.session ? {
-                    user: sessionResult.data.session.user?.email,
-                    expires_at: sessionResult.data.session.expires_at
-                } : null,
-                error: sessionResult.error
-            });
-            
-            const session = sessionResult.data?.session;
-            console.log('📊 初期セッション:', session?.user?.email || 'なし');
-            renderFromSession(session);
-
-            // 認証状態変更を監視
-            const sub = supabaseClient.auth.onAuthStateChange((_evt, s) => {
-                console.log('Auth event:', _evt, s);
-                console.log('🔄 auth event:', _evt, s?.user?.email || 'なし');
-                renderFromSession(s);
-            });
-            unsub = () => sub.data.subscription.unsubscribe();
-            console.log('✅ 認証監視開始');
+        
+        function clearSession() {
+            localStorage.removeItem('pinAuthSession');
+            console.log('🧹 セッションクリア');
         }
-
-        // セッションから画面レンダリング
-        function renderFromSession(session) {
-            const email = session?.user?.email || null;
-            console.log('🎨 画面レンダリング:', email || 'ログインなし');
-            
-            if (email) {
-                checkAllowlist(email).then(ok => {
-                    if (!ok) {
-                        console.log('🔒 許可リストにないユーザー - ログアウト');
-                        supabaseClient.auth.signOut();
-                        showLoginScreen();
-                        return;
-                    }
-                    console.log('✅ 許可されたユーザー - アプリ表示');
-                    currentUser = email;
-                    showAppWithData();
-                });
-            } else {
-                console.log('🔓 未認証 - ログイン画面表示');
-                showLoginScreen();
-            }
-        }
-
-        // 統一されたホワイトリストチェック関数
-        async function checkAllowlist(email) {
-            const normalizedEmail = email.toLowerCase();
-            console.log('🔍 ホワイトリストチェック:', normalizedEmail);
+        
+        // PIN認証
+        async function authenticateWithPin(email, pin) {
+            console.log('🔐 PIN認証開始:', email);
             
             try {
                 const { data, error } = await supabaseClient
                     .from('user_profiles')
-                    .select('email, is_active')
-                    .eq('email', normalizedEmail)
+                    .select('email, nickname, is_active')
+                    .eq('email', email.toLowerCase())
+                    .eq('pin', pin)
+                    .eq('is_active', true)
                     .single();
                     
                 if (error) {
                     if (error.code === 'PGRST116') {
-                        console.log('📋 ユーザーがuser_profilesテーブルに存在しません');
-                        return false;
+                        console.log('❌ 認証失敗: メールアドレスまたはPINが正しくありません');
+                        return { success: false, message: 'メールアドレスまたはPINが正しくありません' };
                     }
-                    console.error('❌ ホワイトリストチェックエラー:', error);
-                    throw error; // その他のエラーは再スロー
+                    throw error;
                 }
                 
-                // is_activeがfalse以外（true or null）を許可
-                const isAllowed = data.is_active !== false;
-                console.log('📋 ホワイトリスト結果:', isAllowed, '(is_active:', data.is_active, ')');
-                return isAllowed;
+                if (data) {
+                    console.log('✅ PIN認証成功:', data.email);
+                    saveSession(data.email);
+                    currentUser = data.email;
+                    return { success: true, user: data };
+                }
+                
+                return { success: false, message: '認証に失敗しました' };
                 
             } catch (e) {
-                console.error('❌ ホワイトリストチェック例外:', e);
+                console.error('❌ PIN認証エラー:', e);
+                return { success: false, message: 'システムエラーが発生しました' };
+            }
+        }
+        
+        // アプリ初期化（PIN認証版）
+        async function bootstrapApp() {
+            console.log('🚀 アプリ初期化開始（PIN認証版）');
+            
+            // 既存セッションチェック
+            const session = getSession();
+            
+            if (session && session.email) {
+                console.log('📱 既存セッション検出:', session.email);
+                currentUser = session.email;
+                
+                // セッションの有効性を確認（ユーザーがまだアクティブか）
+                const isValid = await validateUser(session.email);
+                if (isValid) {
+                    showAppWithData();
+                } else {
+                    console.log('❌ ユーザーが無効化されています');
+                    clearSession();
+                    showLoginScreen();
+                }
+            } else {
+                console.log('🔓 セッションなし - ログイン画面表示');
+                showLoginScreen();
+            }
+        }
+        
+        // ユーザー有効性チェック
+        async function validateUser(email) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('user_profiles')
+                    .select('is_active')
+                    .eq('email', email.toLowerCase())
+                    .eq('is_active', true)
+                    .single();
+                    
+                return !error && data;
+            } catch (e) {
+                console.error('ユーザー検証エラー:', e);
                 return false;
             }
         }
@@ -4666,13 +4608,14 @@
             }
         }
 
-        // 購読解除
-        window.addEventListener('unload', () => { 
-            if (unsub) {
-                unsub();
-                console.log('🧹 認証購読解除');
-            }
-        });
+        // ログアウト処理（PIN認証版）
+        function logout() {
+            clearSession();
+            currentUser = null;
+            userVisitHistory.clear();
+            showLoginScreen();
+            console.log('✅ ログアウト完了');
+        }
 
         // DOM読み込み完了後にbootstrapApp実行
         document.addEventListener('DOMContentLoaded', async function() {
@@ -4861,8 +4804,32 @@
                         margin-bottom: var(--space-xl);
                         line-height: 1.6;
                     }
-                    .google-login-btn {
-                        background: #4285f4;
+                    .pin-login-form {
+                        margin-top: var(--space-lg);
+                    }
+                    .form-group {
+                        margin-bottom: var(--space-md);
+                    }
+                    .form-group label {
+                        display: block;
+                        margin-bottom: var(--space-xs);
+                        font-weight: 500;
+                        color: var(--text-primary);
+                    }
+                    .form-group input {
+                        width: 100%;
+                        padding: var(--space-sm) var(--space-md);
+                        border: 2px solid var(--border);
+                        border-radius: var(--radius-md);
+                        font-size: 1rem;
+                        transition: border-color 0.2s;
+                    }
+                    .form-group input:focus {
+                        outline: none;
+                        border-color: var(--primary);
+                    }
+                    .pin-login-btn {
+                        background: var(--gradient-primary);
                         color: white;
                         border: none;
                         padding: var(--space-md) var(--space-xl);
@@ -4876,11 +4843,23 @@
                         gap: var(--space-sm);
                         width: 100%;
                         transition: all 0.2s ease;
+                        margin-top: var(--space-lg);
                     }
-                    .google-login-btn:hover {
-                        background: #3367d6;
+                    .pin-login-btn:hover:not(:disabled) {
                         transform: translateY(-1px);
                         box-shadow: var(--shadow-lg);
+                    }
+                    .pin-login-btn:disabled {
+                        opacity: 0.7;
+                        cursor: not-allowed;
+                    }
+                    .login-error {
+                        background: #fee;
+                        color: var(--error);
+                        padding: var(--space-sm) var(--space-md);
+                        border-radius: var(--radius-md);
+                        margin-top: var(--space-md);
+                        font-size: 0.9rem;
                     }
             `;
             
@@ -4892,6 +4871,15 @@
                 style.id = 'loginStyles';
                 document.head.appendChild(style);
                 console.log('🎨 ログイン画面スタイル追加完了');
+            }
+            
+            // 前回のメールアドレスを復元
+            const lastEmail = localStorage.getItem('lastLoginEmail');
+            if (lastEmail) {
+                document.getElementById('loginEmail').value = lastEmail;
+                document.getElementById('loginPin').focus();
+            } else {
+                document.getElementById('loginEmail').focus();
             }
             
             console.log('🔓 ログイン画面表示完了');
@@ -4920,43 +4908,56 @@
             }
         }
 
-        // リダイレクト先URL正規化関数
-        function getRedirectTarget() {
-            const u = new URL(location.href);
-            u.hash = '';
-            u.search = '';
-            if (!u.pathname.endsWith('/')) u.pathname += '/';
-            return u.origin + u.pathname;
-        }
+        // 削除：Google認証用のリダイレクト関数（PIN認証では不要）
 
-        // Google認証実行（グローバルにアクセス可能にする）
-        window.performGoogleLogin = async function() {
+        // PIN認証実行（グローバルにアクセス可能にする）
+        window.performPinLogin = async function() {
+            console.log('🔐 PIN認証開始');
+            
+            const email = document.getElementById('loginEmail').value.trim();
+            const pin = document.getElementById('loginPin').value.trim();
+            const errorDiv = document.getElementById('loginError');
+            const loginBtn = document.getElementById('loginBtn');
+            
+            // バリデーション
+            if (!email) {
+                errorDiv.textContent = 'メールアドレスを入力してください';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            if (!pin || pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+                errorDiv.textContent = 'PINは4桁の数字で入力してください';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            // ローディング表示
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ログイン中...';
+            errorDiv.style.display = 'none';
+            
             try {
-                const redirectTo = getRedirectTarget();
-                console.log('🔐 Google認証を開始...');
-                console.log('🌐 現在のURL:', window.location.href);
-                console.log('🔗 正規化されたリダイレクトURL:', redirectTo);
-                console.log('📋 Supabaseプロジェクト:', SUPABASE_URL);
-                console.log('⚠️  Supabaseダッシュボードで以下設定を確認してください:');
-                console.log('   Site URL:', redirectTo);
-                console.log('   Redirect URLs:', redirectTo);
+                const result = await authenticateWithPin(email, pin);
                 
-                const { data, error } = await supabaseClient.auth.signInWithOAuth({
-                    provider: 'google',
-                    options: {
-                        redirectTo: redirectTo
-                    }
-                });
-                
-                if (error) {
-                    console.error('❌ Google認証エラー:', error);
-                    alert('認証に失敗しました。しばらく時間をおいて再度お試しください。');
+                if (result.success) {
+                    console.log('✅ ログイン成功');
+                    // 前回のメールアドレスを保存（次回ログイン時の利便性向上）
+                    localStorage.setItem('lastLoginEmail', email);
+                    showAppWithData();
                 } else {
-                    console.log('✅ Google認証リクエスト送信成功');
+                    console.log('❌ ログイン失敗:', result.message);
+                    errorDiv.textContent = result.message || '認証に失敗しました';
+                    errorDiv.style.display = 'block';
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> ログイン';
                 }
             } catch (error) {
                 console.error('❌ 認証処理エラー:', error);
-                alert('認証に失敗しました。しばらく時間をおいて再度お試しください。');
+                errorDiv.textContent = 'システムエラーが発生しました';
+                errorDiv.style.display = 'block';
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> ログイン';
             }
         }
 
@@ -6533,8 +6534,7 @@
             document.getElementById('userMenuDropdown').style.display = 'none';
             
             if (confirm('ログアウトしますか？')) {
-                supabaseClient.auth.signOut();
-                console.log('✅ ログアウト完了');
+                logout(); // PIN認証版のログアウト関数を使用
             }
         }
 
@@ -7877,27 +7877,17 @@
             
             if (currentUser) {
                 console.log('ログアウト処理を開始...');
-                await signOut();
+                logout(); // PIN認証版を使用
             } else {
                 console.log('Google認証を開始...');
                 await signInWithGoogle();
             }
         }
 
-        // ログアウト
-        async function signOut() {
-            try {
-                const { error } = await supabaseClient.auth.signOut();
-                if (error) {
-                    console.error('❌ ログアウトエラー:', error);
-                } else {
-                    console.log('✅ ログアウト成功');
-                    currentUser = null;
-                    userVisitHistory.clear();
-                    showLoginScreen();
-                }
-            } catch (error) {
-                console.error('❌ ログアウト処理エラー:', error);
+        // ログアウト（廃止：logout()関数を使用）
+        async function signOut_DEPRECATED() {
+            // PIN認証版にlogout()関数を使用してください
+            logout();
             }
         }
 

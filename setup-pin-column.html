@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIN認証セットアップ</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #ff6b9d;
+            border-bottom: 2px solid #ff6b9d;
+            padding-bottom: 10px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        button {
+            background: #ff6b9d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #e55a8a;
+        }
+        .success {
+            color: #10b981;
+            font-weight: bold;
+        }
+        .error {
+            color: #ef4444;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background: #ff6b9d;
+            color: white;
+        }
+        input {
+            padding: 5px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 PIN認証セットアップツール</h1>
+        
+        <div class="section">
+            <h2>📋 現在のuser_profilesテーブル</h2>
+            <button onclick="checkTable()">テーブル確認</button>
+            <div id="tableInfo"></div>
+        </div>
+
+        <div class="section">
+            <h2>🔧 PINカラム追加</h2>
+            <p>user_profilesテーブルにPINカラムを追加します（既に存在する場合はスキップ）</p>
+            <button onclick="addPinColumn()">PINカラム追加</button>
+            <div id="columnResult"></div>
+        </div>
+
+        <div class="section">
+            <h2>👥 ユーザーPIN設定</h2>
+            <p>登録済みユーザーにPINを設定します</p>
+            <div>
+                <label>メールアドレス: </label>
+                <input type="email" id="userEmail" placeholder="bettger1000@gmail.com">
+                <label>PIN (4桁): </label>
+                <input type="text" id="userPin" placeholder="1234" maxlength="4">
+                <button onclick="setUserPin()">PIN設定</button>
+            </div>
+            <div id="pinResult"></div>
+        </div>
+
+        <div class="section">
+            <h2>📊 登録ユーザー一覧</h2>
+            <button onclick="listUsers()">ユーザー一覧表示</button>
+            <div id="usersList"></div>
+        </div>
+    </div>
+
+    <script>
+        // Supabase設定
+        const SUPABASE_URL = 'https://hxrmsjfvgctoaxpbukvo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4cm1zamZ2Z2N0b2F4cGJ1a3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MTI3NTAsImV4cCI6MjA3MDQ4ODc1MH0.tM1vDVVhYhh7OHlA1BTj071BfsIzeBG_HatijjtxwLw';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function checkTable() {
+            const infoDiv = document.getElementById('tableInfo');
+            try {
+                // テーブルの列情報を取得
+                const { data, error } = await supabase
+                    .from('user_profiles')
+                    .select('*')
+                    .limit(1);
+                
+                if (error) {
+                    infoDiv.innerHTML = `<div class="error">エラー: ${error.message}</div>`;
+                    return;
+                }
+
+                const columns = data.length > 0 ? Object.keys(data[0]) : [];
+                infoDiv.innerHTML = `
+                    <div class="success">✅ テーブル確認成功</div>
+                    <p>現在のカラム: ${columns.join(', ')}</p>
+                    <p>PINカラム: ${columns.includes('pin') ? '✅ 存在' : '❌ 未追加'}</p>
+                `;
+            } catch (err) {
+                infoDiv.innerHTML = `<div class="error">エラー: ${err.message}</div>`;
+            }
+        }
+
+        async function addPinColumn() {
+            const resultDiv = document.getElementById('columnResult');
+            resultDiv.innerHTML = `
+                <div class="error">
+                    ⚠️ PINカラムの追加は Supabase ダッシュボードから手動で行ってください：<br>
+                    1. <a href="https://app.supabase.com/project/hxrmsjfvgctoaxpbukvo/editor" target="_blank">Supabase SQL Editor</a> を開く<br>
+                    2. 以下のSQLを実行：<br>
+                    <code style="background: #f0f0f0; padding: 10px; display: block; margin: 10px 0;">
+                    ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS pin VARCHAR(4);
+                    </code>
+                </div>
+            `;
+        }
+
+        async function setUserPin() {
+            const email = document.getElementById('userEmail').value;
+            const pin = document.getElementById('userPin').value;
+            const resultDiv = document.getElementById('pinResult');
+
+            if (!email || !pin) {
+                resultDiv.innerHTML = '<div class="error">メールアドレスとPINを入力してください</div>';
+                return;
+            }
+
+            if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+                resultDiv.innerHTML = '<div class="error">PINは4桁の数字で入力してください</div>';
+                return;
+            }
+
+            try {
+                // まず既存ユーザーか確認
+                const { data: existingUser, error: checkError } = await supabase
+                    .from('user_profiles')
+                    .select('*')
+                    .eq('email', email.toLowerCase())
+                    .single();
+
+                if (checkError && checkError.code !== 'PGRST116') {
+                    throw checkError;
+                }
+
+                if (existingUser) {
+                    // 既存ユーザーのPIN更新
+                    const { error: updateError } = await supabase
+                        .from('user_profiles')
+                        .update({ pin: pin })
+                        .eq('email', email.toLowerCase());
+
+                    if (updateError) throw updateError;
+                    
+                    resultDiv.innerHTML = `<div class="success">✅ ${email} のPINを更新しました: ${pin}</div>`;
+                } else {
+                    // 新規ユーザー作成
+                    const { error: insertError } = await supabase
+                        .from('user_profiles')
+                        .insert([{
+                            email: email.toLowerCase(),
+                            pin: pin,
+                            is_active: true,
+                            created_at: new Date().toISOString()
+                        }]);
+
+                    if (insertError) throw insertError;
+                    
+                    resultDiv.innerHTML = `<div class="success">✅ 新規ユーザー ${email} を追加しました: PIN ${pin}</div>`;
+                }
+
+                // リスト更新
+                await listUsers();
+            } catch (err) {
+                resultDiv.innerHTML = `<div class="error">エラー: ${err.message}</div>`;
+            }
+        }
+
+        async function listUsers() {
+            const listDiv = document.getElementById('usersList');
+            try {
+                const { data, error } = await supabase
+                    .from('user_profiles')
+                    .select('email, pin, is_active, created_at')
+                    .order('created_at', { ascending: true });
+
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    let html = '<table><tr><th>メールアドレス</th><th>PIN</th><th>状態</th><th>登録日</th></tr>';
+                    data.forEach(user => {
+                        html += `<tr>
+                            <td>${user.email}</td>
+                            <td>${user.pin || '未設定'}</td>
+                            <td>${user.is_active ? '✅ 有効' : '❌ 無効'}</td>
+                            <td>${user.created_at ? new Date(user.created_at).toLocaleDateString('ja-JP') : '不明'}</td>
+                        </tr>`;
+                    });
+                    html += '</table>';
+                    listDiv.innerHTML = html;
+                } else {
+                    listDiv.innerHTML = '<p>登録ユーザーがいません</p>';
+                }
+            } catch (err) {
+                listDiv.innerHTML = `<div class="error">エラー: ${err.message}</div>`;
+            }
+        }
+
+        // 初期表示
+        window.addEventListener('load', () => {
+            checkTable();
+            listUsers();
+        });
+    </script>
+</body>
+</html>
