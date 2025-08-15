@@ -3553,17 +3553,16 @@
             const { createClient } = supabase;
             console.log('🔧 createClient関数:', typeof createClient);
             
-            supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            console.log('✅ Supabaseクライアント作成成功（PIN認証版）');
+            // PIN認証専用設定（auth機能を無効化）
+            supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                auth: {
+                    persistSession: false,
+                    autoRefreshToken: false
+                }
+            });
+            console.log('✅ Supabaseクライアント作成成功（PIN認証専用、auth無効）');
             
-            // 認証環境デバッグ情報
-            (function debugAuthEnv() {
-                const u = new URL(location.href);
-                const normalized = u.origin + (u.pathname.endsWith('/') ? u.pathname : u.pathname + '/');
-                console.log('🌐 Current URL    :', location.href);
-                console.log('🔗 Redirect Target:', normalized);
-                console.log('📌 Supabase設定と完全一致が必要');
-            })();
+            console.log('🔗 Supabaseクライアント初期化完了（PIN認証専用）');
         } catch (error) {
             console.error('❌ Supabaseクライアント作成エラー:', error);
             alert('Supabase初期化エラー: ' + error.message);
@@ -4642,21 +4641,10 @@
         // アプリ初期化（認証ガード付き）
         async function initializeApp() {
             try {
-                console.log('🚀 アプリ初期化開始（認証チェック）');
+                console.log('🚀 アプリ初期化開始（PIN認証版）');
                 
-                // 1. 認証状態を確認
-                console.log('📊 認証状態チェック実行中...');
-                const isAuthenticated = await checkAuthenticationStatus();
-                console.log('📊 認証状態チェック結果:', isAuthenticated);
-                
-                if (!isAuthenticated) {
-                    console.log('🔒 未認証ユーザー - ログイン画面にリダイレクト');
-                    showLoginScreen();
-                    return;
-                }
-                
-                console.log('✅ 認証済みユーザー - マップ画面を表示');
-                showMapScreen();
+                // PIN認証システムのbootstrapAppを呼び出し
+                await bootstrapApp();
                 
                 // 1.5. プロフィール情報を読み込み（重要: ヘッダー初期化前に実行）
                 try {
@@ -7462,14 +7450,9 @@
             // Supabaseクライアントの準備を待つ
             await new Promise(resolve => setTimeout(resolve, 100));
             
-            // 認証状態変更の監視を設定
-            setupAuthStateListener();
+            // 削除：Google認証用の状態監視（PIN認証では不要）
             
-            // 認証確認を少し遅らせて実行
-            setTimeout(async () => {
-                await checkAuthenticationStatus();
-                console.log('🔄 遅延認証確認完了');
-            }, 200);
+            // 削除：Google認証用の遅延認証確認（PIN認証では不要）
             
             // 認証が必要（デモモードは削除）
             if (!currentUser) {
@@ -7900,25 +7883,21 @@
 
 
 
-        // 認証ボタンハンドラー
+        // 認証ボタンハンドラー（PIN認証版）
         async function handleAuth() {
             console.log('🔘 ログインボタンがクリックされました');
             console.log('現在のユーザー:', currentUser);
             
             if (currentUser) {
                 console.log('ログアウト処理を開始...');
-                logout(); // PIN認証版を使用
+                logout();
             } else {
-                console.log('Google認証を開始...');
-                await signInWithGoogle();
+                console.log('⚠️ 未ログイン状態 - ログイン画面を表示');
+                showLoginScreen();
             }
         }
 
-        // ログアウト（廃止：logout()関数を使用）
-        async function signOut_DEPRECATED() {
-            // PIN認証版にlogout()関数を使用してください
-            logout();
-        }
+        // 削除：廃止されたGoogle認証用ログアウト関数
 
         // オーバーレイパネル初期化
         function initOverlayPanel() {
@@ -8492,59 +8471,10 @@
         window.insertTestData = insertTestVisitHistory;
 
         // 認証状態デバッグ機能
-        async function debugAuthentication() {
-            console.log('🔍=== 認証状態デバッグ開始 ===');
-            
-            try {
-                // 1. Supabaseクライアント確認
-                console.log('1. Supabaseクライアント:', supabaseClient ? '✅ 初期化済み' : '❌ 未初期化');
-                
-                // 2. セッション確認
-                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
-                console.log('2. セッション確認:');
-                if (sessionError) {
-                    console.log('   ❌ セッションエラー:', sessionError);
-                } else if (session) {
-                    console.log('   ✅ セッション存在:', {
-                        user: session.user.email,
-                        expires_at: new Date(session.expires_at * 1000),
-                        access_token: session.access_token ? '存在' : '不在'
-                    });
-                } else {
-                    console.log('   ⚠️ セッション不在');
-                }
-                
-                // 3. ユーザー確認
-                const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
-                console.log('3. ユーザー確認:');
-                if (userError) {
-                    console.log('   ❌ ユーザーエラー:', userError);
-                } else if (user) {
-                    console.log('   ✅ ユーザー存在:', {
-                        email: user.email,
-                        id: user.id,
-                        created_at: user.created_at
-                    });
-                } else {
-                    console.log('   ⚠️ ユーザー不在');
-                }
-                
-                // 4. 現在の状態
-                console.log('4. 現在の認証状態:', {
-                    currentUser: currentUser,
-                    isAuthenticated: !!currentUser
-                });
-                
-            } catch (error) {
-                console.error('❌ デバッグ中にエラー:', error);
-            }
-            
-            console.log('🔍=== 認証状態デバッグ終了 ===');
-        }
+        // 削除：Google認証用のデバッグ関数（PIN認証では不要）
 
         // テスト実行用のグローバル関数として公開
         window.testSupabase = testSupabaseConnection;
-        window.debugAuthentication = debugAuthentication;
 
         // =======================================
         // カスタムピン機能の実装
