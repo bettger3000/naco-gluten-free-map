@@ -3574,6 +3574,15 @@
             console.log('   Redirect URLs:');
             console.log('     - https://bettger3000.github.io/naco-gluten-free-map/');
             console.log('     - https://bettger3000.github.io/naco-gluten-free-map/index.html');
+            
+            // 認証環境デバッグ情報
+            (function debugAuthEnv() {
+                const u = new URL(location.href);
+                const normalized = u.origin + (u.pathname.endsWith('/') ? u.pathname : u.pathname + '/');
+                console.log('🌐 Current URL    :', location.href);
+                console.log('🔗 Redirect Target:', normalized);
+                console.log('📌 Supabase設定と完全一致が必要');
+            })();
         } catch (error) {
             console.error('❌ Supabaseクライアント作成エラー:', error);
             alert('Supabase初期化エラー: ' + error.message);
