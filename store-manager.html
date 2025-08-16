@@ -153,6 +153,140 @@
             top: 0;
             z-index: 100;
         }
+
+        /* タブナビゲーション */
+        .admin-tabs {
+            display: flex;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: var(--space-md) var(--space-lg);
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-xs);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 107, 157, 0.1);
+            color: var(--primary);
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            font-weight: 600;
+        }
+
+        /* タブコンテンツ */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ユーザー管理パネル */
+        .users-panel {
+            background: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-md);
+            border-bottom: 1px solid var(--border-light);
+            transition: background-color 0.2s ease;
+        }
+
+        .user-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .user-item:last-child {
+            border-bottom: none;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-email {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .user-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            font-size: 0.85rem;
+        }
+
+        .user-status {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-registered {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .user-date {
+            color: var(--text-secondary);
+        }
+
+        .user-actions {
+            display: flex;
+            gap: var(--space-xs);
+        }
+
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 0.8rem;
+        }
+
+        .btn-error {
+            background: var(--error);
+            color: white;
+            border: 1px solid var(--error);
+        }
+
+        .btn-error:hover {
+            background: #dc2626;
+            border-color: #dc2626;
+        }
         
         .header-content {
             max-width: 1400px;
@@ -559,9 +693,23 @@
             </div>
         </header>
         
+        <!-- タブナビゲーション -->
+        <nav class="admin-tabs">
+            <button class="tab-btn active" data-tab="stores" onclick="switchTab('stores')">
+                <i class="fas fa-store"></i>
+                店舗管理
+            </button>
+            <button class="tab-btn" data-tab="users" onclick="switchTab('users')">
+                <i class="fas fa-users"></i>
+                ユーザー管理
+            </button>
+        </nav>
+        
         <div class="admin-content">
-            <!-- 店舗リスト -->
-            <div class="stores-panel">
+            <!-- 店舗管理タブ -->
+            <div id="storesTab" class="tab-content active">
+                <!-- 店舗リスト -->
+                <div class="stores-panel">
                 <div class="panel-header">
                     <h2 class="panel-title">店舗一覧</h2>
                     <span class="store-count">全<span id="storeCount">0</span>件</span>
@@ -669,6 +817,32 @@
                 </form>
             </div>
         </div>
+            </div> <!-- 店舗管理タブ終了 -->
+            
+            <!-- ユーザー管理タブ -->
+            <div id="usersTab" class="tab-content">
+                <div class="users-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">承認済みユーザー一覧</h2>
+                        <span class="user-count">全<span id="userCount">0</span>件</span>
+                    </div>
+                    
+                    <div class="search-box">
+                        <input type="text" class="search-input" id="userSearchInput" placeholder="メールアドレスで検索..." onkeyup="filterUsers()">
+                    </div>
+                    
+                    <div class="users-list" id="usersList">
+                        <!-- ユーザーリストがここに表示される -->
+                    </div>
+                    
+                    <div style="padding: var(--space-md); border-top: 1px solid var(--border-light);">
+                        <button class="btn btn-primary" style="width: 100%;" onclick="addNewUser()">
+                            <i class="fas fa-user-plus"></i>
+                            新規ユーザーを追加
+                        </button>
+                    </div>
+                </div>
+            </div>
     </div>
     
     <!-- 削除確認モーダル -->
@@ -750,6 +924,7 @@
         let editMarker = null;
         let selectedStoreId = null;
         let deleteTargetId = null;
+        let approvedUsers = []; // 承認済みユーザー一覧
         
         // 初期化
         document.addEventListener('DOMContentLoaded', async () => {
@@ -788,6 +963,7 @@
             
             // データ読み込み
             await loadStoresData();
+            await loadUsersData();
             
             // 地図初期化
             initEditMap();
@@ -797,6 +973,25 @@
         function logout() {
             localStorage.removeItem('adminAuth');
             location.reload();
+        }
+
+        // タブ切り替え機能
+        function switchTab(tabName) {
+            // すべてのタブボタンからactiveクラスを削除
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // すべてのタブコンテンツを非表示
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 選択されたタブボタンにactiveクラスを追加
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            
+            // 選択されたタブコンテンツを表示
+            document.getElementById(`${tabName}Tab`).classList.add('active');
         }
         
         // 店舗データ読み込み
@@ -1296,6 +1491,168 @@
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 3000);
+        }
+
+        // ========== ユーザー管理機能 ==========
+        
+        // ユーザーデータ読み込み
+        async function loadUsersData() {
+            try {
+                // LocalStorageから承認済みユーザー一覧を読み込み
+                const savedUsers = localStorage.getItem('approvedUsers');
+                if (savedUsers) {
+                    approvedUsers = JSON.parse(savedUsers);
+                } else {
+                    // 初期データ（デモ用）
+                    approvedUsers = [
+                        {
+                            id: 1,
+                            email: 'demo@example.com',
+                            registeredAt: new Date().toISOString(),
+                            hasPin: false
+                        }
+                    ];
+                    saveUsersData();
+                }
+                
+                displayUsersList();
+                updateUserCount();
+                
+            } catch (error) {
+                console.error('ユーザーデータ読み込みエラー:', error);
+                approvedUsers = [];
+            }
+        }
+
+        // ユーザーデータ保存
+        function saveUsersData() {
+            localStorage.setItem('approvedUsers', JSON.stringify(approvedUsers));
+        }
+
+        // ユーザー一覧表示
+        function displayUsersList() {
+            const usersList = document.getElementById('usersList');
+            
+            if (approvedUsers.length === 0) {
+                usersList.innerHTML = `
+                    <div style="padding: var(--space-xl); text-align: center; color: var(--text-secondary);">
+                        <i class="fas fa-users" style="font-size: 3rem; margin-bottom: var(--space-md); opacity: 0.3;"></i>
+                        <p>承認済みユーザーがありません</p>
+                    </div>
+                `;
+                return;
+            }
+
+            usersList.innerHTML = approvedUsers.map(user => `
+                <div class="user-item" data-user-id="${user.id}">
+                    <div class="user-info">
+                        <div class="user-email">
+                            <i class="fas fa-envelope"></i>
+                            ${user.email}
+                        </div>
+                        <div class="user-meta">
+                            <span class="user-status ${user.hasPin ? 'status-registered' : 'status-pending'}">
+                                <i class="fas ${user.hasPin ? 'fa-check-circle' : 'fa-clock'}"></i>
+                                ${user.hasPin ? 'PIN設定済み' : 'PIN未設定'}
+                            </span>
+                            <span class="user-date">
+                                登録: ${new Date(user.registeredAt).toLocaleDateString('ja-JP')}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="user-actions">
+                        <button class="btn btn-sm btn-secondary" onclick="resetUserPin(${user.id})" title="PIN リセット">
+                            <i class="fas fa-key"></i>
+                        </button>
+                        <button class="btn btn-sm btn-error" onclick="deleteUser(${user.id})" title="削除">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ユーザー数更新
+        function updateUserCount() {
+            document.getElementById('userCount').textContent = approvedUsers.length;
+        }
+
+        // 新規ユーザー追加
+        function addNewUser() {
+            const email = prompt('承認するメールアドレスを入力してください:');
+            if (!email) return;
+
+            // メールアドレスの形式チェック
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('有効なメールアドレスを入力してください。');
+                return;
+            }
+
+            // 重複チェック
+            if (approvedUsers.some(user => user.email === email)) {
+                alert('このメールアドレスは既に登録されています。');
+                return;
+            }
+
+            // ユーザー追加
+            const newUser = {
+                id: Date.now(),
+                email: email,
+                registeredAt: new Date().toISOString(),
+                hasPin: false
+            };
+
+            approvedUsers.push(newUser);
+            saveUsersData();
+            displayUsersList();
+            updateUserCount();
+
+            showToast(`✅ ユーザー「${email}」を追加しました`);
+        }
+
+        // ユーザー削除
+        function deleteUser(userId) {
+            const user = approvedUsers.find(u => u.id === userId);
+            if (!user) return;
+
+            if (confirm(`ユーザー「${user.email}」を削除しますか？`)) {
+                approvedUsers = approvedUsers.filter(u => u.id !== userId);
+                saveUsersData();
+                displayUsersList();
+                updateUserCount();
+
+                showToast(`🗑️ ユーザー「${user.email}」を削除しました`);
+            }
+        }
+
+        // ユーザーPINリセット
+        function resetUserPin(userId) {
+            const user = approvedUsers.find(u => u.id === userId);
+            if (!user) return;
+
+            if (confirm(`ユーザー「${user.email}」のPINをリセットしますか？`)) {
+                user.hasPin = false;
+                saveUsersData();
+                displayUsersList();
+
+                showToast(`🔑 ユーザー「${user.email}」のPINをリセットしました`);
+            }
+        }
+
+        // ユーザー検索
+        function filterUsers() {
+            const searchTerm = document.getElementById('userSearchInput').value.toLowerCase();
+            const userItems = document.querySelectorAll('.user-item');
+
+            userItems.forEach(item => {
+                const email = item.querySelector('.user-email').textContent.toLowerCase();
+                if (email.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
         }
 
         // ページ読み込み時の初期化
