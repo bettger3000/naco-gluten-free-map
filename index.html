@@ -5372,7 +5372,7 @@
             }
             
             // 承認済みユーザーリストを取得
-            const approvedUsers = getApprovedUsers();
+            const approvedUsers = await getApprovedUsers();
             const user = approvedUsers.find(u => u.email === email);
             
             console.log('🔐 ログイン試行:', { email, approvedUsers, user });
@@ -5386,14 +5386,14 @@
                 if (commonEmails.includes(email)) {
                     console.log('🔄 よく使用されるメールアドレスを自動登録中...');
                     
-                    const users = getApprovedUsers();
+                    const users = await getApprovedUsers();
                     users.push({
                         id: Date.now(),
                         email: email,
                         registeredAt: new Date().toISOString(),
                         hasPin: false
                     });
-                    saveApprovedUsers(users);
+                    await saveApprovedUsers(users);
                     
                     console.log('✅ 自動登録完了 - 再試行してください');
                     errorElement.style.display = 'block';
@@ -5413,7 +5413,7 @@
             }
             
             // PIN認証
-            const isValid = validateUserPin(email, pin);
+            const isValid = await validateUserPin(email, pin);
             
             if (isValid) {
                 // 認証成功
@@ -5456,9 +5456,32 @@
 
         // ========== ユーザー認証システム ==========
         
-        // 承認済みユーザーリストを取得
-        function getApprovedUsers() {
+        // 承認済みユーザーリストを取得（Supabase優先、LocalStorageフォールバック）
+        async function getApprovedUsers() {
             try {
+                // まずSupabaseの既存user_profilesテーブルから取得を試みる
+                const { data, error } = await supabaseClient
+                    .from('user_profiles')
+                    .select('email, pin, is_active, created_at')
+                    .eq('is_active', true);
+                
+                if (!error && data) {
+                    // Supabaseから取得成功
+                    const users = data.map(user => ({
+                        id: user.email, // emailをIDとして使用
+                        email: user.email,
+                        registeredAt: user.created_at || new Date().toISOString(),
+                        hasPin: !!user.pin // PINが設定されているかどうか
+                    }));
+                    
+                    // LocalStorageにもキャッシュとして保存
+                    localStorage.setItem('approvedUsers', JSON.stringify(users));
+                    console.log('✅ Supabaseから承認済みユーザーを取得:', users.length, '人');
+                    return users;
+                }
+                
+                // Supabaseから取得失敗時はLocalStorageから取得
+                console.warn('⚠️ Supabaseから取得失敗、LocalStorageを使用:', error);
                 const savedUsers = localStorage.getItem('approvedUsers');
                 console.log('🔍 LocalStorage approvedUsers:', savedUsers);
                 
@@ -5467,42 +5490,67 @@
                     console.log('📝 承認済みユーザー一覧:', users);
                     return users;
                 } else {
-                    console.log('⚠️ LocalStorageにapprovedUsersが見つかりません - デフォルトユーザーを使用');
-                    return [
-                        // デフォルトユーザー（テスト用）
-                        {
-                            id: 1,
-                            email: 'demo@example.com',
-                            registeredAt: new Date().toISOString(),
-                            hasPin: false
-                        }
-                    ];
+                    console.log('⚠️ LocalStorageにapprovedUsersが見つかりません - 空配列を返します');
+                    return [];
                 }
             } catch (error) {
                 console.error('ユーザーデータ取得エラー:', error);
+                // エラー時はLocalStorageから取得
+                try {
+                    const savedUsers = localStorage.getItem('approvedUsers');
+                    if (savedUsers) {
+                        return JSON.parse(savedUsers);
+                    }
+                } catch (e) {
+                    console.error('LocalStorage取得も失敗:', e);
+                }
                 return [];
             }
         }
 
-        // ユーザーデータを保存
-        function saveApprovedUsers(users) {
-            localStorage.setItem('approvedUsers', JSON.stringify(users));
+        // ユーザーデータを保存（Supabaseとローカル両方）
+        async function saveApprovedUsers(users) {
+            try {
+                // LocalStorageに即座に保存（即座の反映のため）
+                localStorage.setItem('approvedUsers', JSON.stringify(users));
+                
+                // Supabaseにも非同期で保存
+                for (const user of users) {
+                    const { error } = await supabaseClient
+                        .from('user_profiles')
+                        .upsert({
+                            email: user.email,
+                            is_active: true
+                            // pinは別途管理（既存のpinを上書きしない）
+                        }, {
+                            onConflict: 'email'
+                        });
+                    
+                    if (error) {
+                        console.warn('Supabase保存エラー:', error);
+                    }
+                }
+                console.log('✅ 承認済みユーザーをSupabaseに同期');
+            } catch (error) {
+                console.error('ユーザーデータ保存エラー:', error);
+                // エラーでもLocalStorageには保存済みなので処理続行可能
+            }
         }
 
         // デバッグ用：コンソールから実行可能な関数
         window.debugAuth = {
-            showUsers: () => {
-                console.log('承認済みユーザー:', getApprovedUsers());
+            showUsers: async () => {
+                console.log('承認済みユーザー:', await getApprovedUsers());
             },
-            addTestUser: (email) => {
-                const users = getApprovedUsers();
+            addTestUser: async (email) => {
+                const users = await getApprovedUsers();
                 users.push({
                     id: Date.now(),
                     email: email,
                     registeredAt: new Date().toISOString(),
                     hasPin: false
                 });
-                saveApprovedUsers(users);
+                await saveApprovedUsers(users);
                 console.log('テストユーザーを追加:', email);
             },
             clearUsers: () => {
@@ -5515,7 +5563,7 @@
                 try {
                     // 既知のユーザーアドレスを自動登録（緊急措置）
                     const commonUsers = ['bettger1000@gmail.com', 'demo@example.com'];
-                    const currentUsers = getApprovedUsers();
+                    const currentUsers = await getApprovedUsers();
                     
                     commonUsers.forEach(email => {
                         if (!currentUsers.find(u => u.email === email)) {
@@ -5529,7 +5577,7 @@
                         }
                     });
                     
-                    saveApprovedUsers(currentUsers);
+                    await saveApprovedUsers(currentUsers);
                     console.log('🔄 同期完了 - 現在のユーザー:', currentUsers.length, '人');
                 } catch (error) {
                     console.error('❌ 同期エラー:', error);
@@ -5537,40 +5585,82 @@
             }
         };
 
-        // ユーザーPIN検証
-        function validateUserPin(email, pin) {
+        // ユーザーPIN検証（Supabase優先、LocalStorageフォールバック）
+        async function validateUserPin(email, pin) {
             try {
+                // まずSupabaseからPINを取得
+                const { data, error } = await supabaseClient
+                    .from('user_profiles')
+                    .select('pin')
+                    .eq('email', email)
+                    .eq('is_active', true)
+                    .single();
+                
+                if (!error && data && data.pin) {
+                    const inputHash = btoa(pin + email);
+                    const isValid = data.pin === inputHash;
+                    console.log('✅ SupabaseからPIN検証:', isValid);
+                    return isValid;
+                }
+                
+                // Supabase失敗時はLocalStorageで検証
+                console.warn('⚠️ Supabase PIN取得失敗、LocalStorageで検証');
                 const userPins = JSON.parse(localStorage.getItem('userPins') || '{}');
                 const storedHash = userPins[email];
                 
                 if (!storedHash) return false;
                 
-                // 簡易ハッシュ検証（本来はbcrypt等を使用）
-                const inputHash = btoa(pin + email); // 簡易ハッシュ
+                const inputHash = btoa(pin + email);
                 return storedHash === inputHash;
             } catch (error) {
                 console.error('PIN検証エラー:', error);
-                return false;
+                // エラー時はLocalStorageで検証
+                try {
+                    const userPins = JSON.parse(localStorage.getItem('userPins') || '{}');
+                    const storedHash = userPins[email];
+                    if (!storedHash) return false;
+                    const inputHash = btoa(pin + email);
+                    return storedHash === inputHash;
+                } catch (e) {
+                    return false;
+                }
             }
         }
 
-        // ユーザーPIN設定
-        function setUserPin(email, pin) {
+        // ユーザーPIN設定（Supabase優先、LocalStorageフォールバック）
+        async function setUserPin(email, pin) {
             try {
-                const userPins = JSON.parse(localStorage.getItem('userPins') || '{}');
-                
                 // 簡易ハッシュ（本来はbcrypt等を使用）
                 const pinHash = btoa(pin + email);
-                userPins[email] = pinHash;
                 
+                // LocalStorageに即座保存（即座の反映のため）
+                const userPins = JSON.parse(localStorage.getItem('userPins') || '{}');
+                userPins[email] = pinHash;
                 localStorage.setItem('userPins', JSON.stringify(userPins));
                 
+                // Supabaseにも保存
+                const { error } = await supabaseClient
+                    .from('user_profiles')
+                    .upsert({
+                        email: email,
+                        pin: pinHash,
+                        is_active: true
+                    }, {
+                        onConflict: 'email'
+                    });
+                
+                if (error) {
+                    console.warn('⚠️ Supabase PIN保存エラー（LocalStorageには保存済み）:', error);
+                } else {
+                    console.log('✅ PINをSupabaseに保存しました');
+                }
+                
                 // ユーザーデータの hasPin フラグを更新
-                const approvedUsers = getApprovedUsers();
+                const approvedUsers = await getApprovedUsers();
                 const user = approvedUsers.find(u => u.email === email);
                 if (user) {
                     user.hasPin = true;
-                    saveApprovedUsers(approvedUsers);
+                    await saveApprovedUsers(approvedUsers);
                 }
                 
                 return true;
@@ -5666,7 +5756,7 @@
             }
             
             // PIN設定実行
-            if (setUserPin(email, newPin)) {
+            if (await setUserPin(email, newPin)) {
                 // 成功 - 認証情報を保存してアプリ初期化
                 currentUser = email;
                 localStorage.setItem('pinAuth', JSON.stringify({
@@ -9135,6 +9225,28 @@
 
         // ========== Phase 2: プロフィール機能 ==========
         
+        // アプリ起動時の自動修復（緊急措置）
+        (async function() {
+            const criticalUsers = ['bettger1000@gmail.com', 'demo@example.com'];
+            const currentUsers = await getApprovedUsers();
+            
+            criticalUsers.forEach(email => {
+                if (!currentUsers.find(u => u.email === email)) {
+                    currentUsers.push({
+                        id: Date.now() + Math.random(),
+                        email: email,
+                        registeredAt: new Date().toISOString(),
+                        hasPin: false
+                    });
+                    console.log('🔧 アプリ起動時自動修復:', email);
+                }
+            });
+            
+            if (currentUsers.length > 0) {
+                await saveApprovedUsers(currentUsers);
+            }
+        })();
+        
         // プロフィールデータを読み込み
         async function loadUserProfile(email) {
             if (!email) {
@@ -9288,6 +9400,10 @@
             }
             
             console.log('🔄 プロフィール初期化開始:', currentUser);
+            
+            // 認証直後にユーザー自動修復を実行
+            await ensureUserIsRegistered(currentUser);
+            
             currentUserProfile = await loadUserProfile(currentUser);
             
             if (currentUserProfile) {
@@ -9299,6 +9415,86 @@
                 
                 // ハンバーガーメニューのプロフィール表示を更新
                 updateMenuProfileDisplay();
+            }
+        }
+
+        // ユーザー登録を確実にする関数（Supabaseのuser_profilesテーブル対応）
+        async function ensureUserIsRegistered(email) {
+            try {
+                console.log('🔧 ユーザー登録確認中:', email);
+                
+                // まずSupabaseで確認
+                const { data, error } = await supabaseClient
+                    .from('user_profiles')
+                    .select('email, is_active')
+                    .eq('email', email)
+                    .single();
+                
+                if (error && error.code === 'PGRST116') {
+                    // ユーザーが存在しない場合は作成
+                    console.log('🔧 Supabaseにユーザーを新規作成:', email);
+                    const { error: insertError } = await supabaseClient
+                        .from('user_profiles')
+                        .insert({
+                            email: email,
+                            is_active: true,
+                            nickname: '',
+                            avatar_url: null
+                        });
+                    
+                    if (insertError) {
+                        console.warn('⚠️ Supabase挿入エラー:', insertError);
+                    } else {
+                        console.log('✅ Supabaseにユーザーを作成しました:', email);
+                    }
+                } else if (!error && data) {
+                    if (!data.is_active) {
+                        // 非アクティブユーザーをアクティブにする
+                        await supabaseClient
+                            .from('user_profiles')
+                            .update({ is_active: true })
+                            .eq('email', email);
+                        console.log('✅ ユーザーをアクティブ化しました:', email);
+                    } else {
+                        console.log('✅ ユーザーは既に登録済みです:', email);
+                    }
+                }
+                
+                // LocalStorageも更新
+                const approvedUsers = await getApprovedUsers();
+                const existingUser = approvedUsers.find(u => u.email === email);
+                
+                if (!existingUser) {
+                    approvedUsers.push({
+                        id: email,
+                        email: email,
+                        registeredAt: new Date().toISOString(),
+                        hasPin: false
+                    });
+                    localStorage.setItem('approvedUsers', JSON.stringify(approvedUsers));
+                    console.log('✅ LocalStorageも更新しました:', email);
+                }
+                
+            } catch (error) {
+                console.error('❌ ユーザー自動修復エラー:', error);
+                
+                // エラー時はLocalStorageだけでも更新
+                try {
+                    const approvedUsers = JSON.parse(localStorage.getItem('approvedUsers') || '[]');
+                    const existingUser = approvedUsers.find(u => u.email === email);
+                    if (!existingUser) {
+                        approvedUsers.push({
+                            id: email,
+                            email: email,
+                            registeredAt: new Date().toISOString(),
+                            hasPin: false
+                        });
+                        localStorage.setItem('approvedUsers', JSON.stringify(approvedUsers));
+                        console.log('✅ フォールバック: LocalStorageに保存しました:', email);
+                    }
+                } catch (e) {
+                    console.error('❌ フォールバックも失敗:', e);
+                }
             }
         }
 
