@@ -885,6 +885,30 @@
             line-height: 1.4;
             flex: 1;
         }
+        
+        /* スマホ版: 店名がタップ可能であることを示す */
+        @media (max-width: 768px) {
+            .store-card .store-name {
+                color: var(--primary-dark);
+                position: relative;
+            }
+            
+            .store-card .store-name::after {
+                content: '';
+                position: absolute;
+                bottom: -2px;
+                left: 0;
+                right: 0;
+                height: 1px;
+                background: var(--primary);
+                opacity: 0;
+                transition: opacity 0.2s;
+            }
+            
+            .store-card:active .store-name::after {
+                opacity: 0.6;
+            }
+        }
 
         .store-category {
             color: white;
@@ -5240,9 +5264,43 @@
                 </div>
             `;
             
-            card.addEventListener('click', function() {
+            card.addEventListener('click', function(event) {
+                // ボタンクリック時は処理しない
+                if (event.target.closest('.action-btn')) {
+                    return;
+                }
+                
                 selectStoreCard(store.id);
-                focusOnStore(store.id);
+                
+                // スマホ版では地図タブに切り替えて店舗にフォーカス
+                if (!isDesktop()) {
+                    // 地図タブに切り替え
+                    document.querySelectorAll('.bottom-tab').forEach(tab => {
+                        tab.classList.remove('active');
+                    });
+                    const mapTab = document.querySelector('.bottom-tab[data-view="map"]');
+                    if (mapTab) {
+                        mapTab.classList.add('active');
+                    }
+                    
+                    // 地図ビューを表示
+                    document.getElementById('mapView').style.display = 'block';
+                    document.getElementById('storeListView').style.display = 'none';
+                    
+                    // 店舗にフォーカス（少し遅延させて地図切り替えを待つ）
+                    setTimeout(() => {
+                        focusOnStore(store.id);
+                        
+                        // ポップアップを開く
+                        const marker = markers.find(m => m.storeId === store.id);
+                        if (marker) {
+                            marker.openPopup();
+                        }
+                    }, 100);
+                } else {
+                    // PC版は従来通り
+                    focusOnStore(store.id);
+                }
             });
             
             return card;
