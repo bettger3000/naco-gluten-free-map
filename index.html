@@ -4570,15 +4570,26 @@
                             `,
                             iconSize: [40, 48],
                             iconAnchor: [20, 48],
-                            popupAnchor: [-10, -70]
+                            popupAnchor: isDesktop() ? [0, -55] : [-15, -75]
                         })
                     }).addTo(map);
 
                     const popupContent = createPopupContent(store);
-                    marker.bindPopup(popupContent, {
-                        offset: [-10, -30], // ポップアップをマーカーの真上に表示（左に10px、上に30px）
+                    
+                    // PC版とスマホ版で異なるポップアップ設定
+                    const popupOptions = {
                         className: 'custom-popup'
-                    });
+                    };
+                    
+                    if (isDesktop()) {
+                        // PC版: 少し下に調整
+                        popupOptions.offset = [0, -15];
+                    } else {
+                        // スマホ版: 左上に調整
+                        popupOptions.offset = [-20, -35];
+                    }
+                    
+                    marker.bindPopup(popupContent, popupOptions);
 
                     marker.on('click', function() {
                         selectStoreCard(store.id);
