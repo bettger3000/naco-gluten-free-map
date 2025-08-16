@@ -9573,7 +9573,7 @@
         }
 
         // アバター変更
-        async function updateAvatar(avatarId, avatarType = 'preset', customData = null) {
+        async function updateAvatar(avatarId, avatarType = 'image', customData = null) {
             if (!currentUserProfile) {
                 console.error('❌ プロフィールが初期化されていません');
                 return false;
@@ -9778,7 +9778,7 @@
                 
                 // アバター更新
                 if (selectedAvatarId !== currentUserProfile.avatar) {
-                    const avatarSuccess = await updateAvatar(selectedAvatarId);
+                    const avatarSuccess = await updateAvatar(selectedAvatarId, 'image');
                     if (!avatarSuccess) {
                         throw new Error('アバター更新に失敗しました');
                     }
