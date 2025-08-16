@@ -131,6 +131,166 @@
             box-shadow: var(--shadow-md);
         }
 
+        /* ハンバーガーメニュー */
+        .hamburger-btn {
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: var(--space-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-btn:hover {
+            background: white;
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .hamburger-icon {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-btn:hover .hamburger-icon {
+            color: var(--primary);
+        }
+
+        /* サイドメニューオーバーレイ */
+        .side-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .side-menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* サイドメニュー */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 320px;
+            height: 100%;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border-left: 2px solid var(--border-light);
+            box-shadow: var(--shadow-xl);
+            z-index: 10000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .side-menu-overlay.active .side-menu {
+            transform: translateX(0);
+        }
+
+        .side-menu-header {
+            padding: var(--space-xl);
+            border-bottom: 2px solid var(--border-light);
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .side-menu-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: var(--space-xs);
+        }
+
+        .side-menu-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .side-menu-content {
+            padding: var(--space-lg);
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            padding: var(--space-md);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: var(--space-sm);
+            border: 2px solid transparent;
+        }
+
+        .menu-item:hover {
+            background: var(--bg-secondary);
+            border-color: var(--border);
+            transform: translateX(4px);
+        }
+
+        .menu-item-icon {
+            width: 24px;
+            text-align: center;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .menu-item-text {
+            flex: 1;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .menu-item-arrow {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .menu-separator {
+            height: 2px;
+            background: var(--border-light);
+            margin: var(--space-lg) 0;
+            border-radius: 1px;
+        }
+
+        .menu-item.logout {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-color: #fca5a5;
+            color: #dc2626;
+        }
+
+        .menu-item.logout:hover {
+            background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+            border-color: #dc2626;
+        }
+
+        .menu-item.logout .menu-item-icon {
+            color: #dc2626;
+        }
+
+        .menu-item.logout .menu-item-text {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
         .app-title {
             font-family: var(--font-display);
             font-size: 1.5rem;
@@ -3000,6 +3160,34 @@
         }
 
         /* モバイル対応 - 大人の可愛らしさを重視したデザイン */
+        /* モバイル版ハンバーガーメニュー */
+        @media (max-width: 768px) {
+            .side-menu {
+                width: 280px;
+            }
+            
+            .hamburger-btn {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .side-menu-header {
+                padding: var(--space-lg);
+            }
+            
+            .side-menu-content {
+                padding: var(--space-md);
+            }
+            
+            .menu-item {
+                padding: var(--space-lg) var(--space-md);
+            }
+            
+            .menu-item-text {
+                font-size: 1rem;
+            }
+        }
+
         @media (max-width: 768px) {
             .login-modal-overlay {
                 padding: 0;
@@ -3218,9 +3406,8 @@
                     <span>グルテンフリーマップ</span>
                 </div>
                 <div class="header-actions">
-                    <button id="authBtn" class="auth-btn" onclick="handleAuth()">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span id="authBtnText">ログアウト</span>
+                    <button class="hamburger-btn" onclick="toggleSideMenu()">
+                        <i class="fas fa-bars hamburger-icon"></i>
                     </button>
                 </div>
             </div>
@@ -7206,29 +7393,17 @@
             }
         }
 
-        // 認証ボタンハンドラー（PINコード認証版）
+        // 認証ボタンハンドラー（ハンバーガーメニューに移行済み）
         async function handleAuth() {
-            console.log('🔘 ログアウトボタンがクリックされました');
-            console.log('現在のユーザー:', currentUser);
-            
-            if (currentUser) {
-                console.log('ログアウト処理を開始...');
-                await signOut();
-            }
+            console.log('⚠️ 古いhandleAuth関数が呼ばれました - ハンバーガーメニューを使用してください');
+            // この関数は無効化済み - ハンバーガーメニューのhandleLogout()を使用
         }
 
         // 認証状態の表示更新
         function updateAuthButton() {
-            const authBtn = document.getElementById('authBtn');
-            const authBtnText = document.getElementById('authBtnText');
-            
-            if (currentUser) {
-                authBtnText.textContent = 'ログアウト';
-                authBtn.querySelector('i').className = 'fas fa-sign-out-alt';
-            } else {
-                authBtnText.textContent = 'ログイン';
-                authBtn.querySelector('i').className = 'fas fa-user';
-            }
+            // ハンバーガーメニューに移行したため、この関数は不要
+            // メニューの表示内容は動的に更新される
+            console.log('🔄 認証状態更新:', currentUser ? '認証済み' : '未認証');
         }
 
         // ログアウト（PINコード認証版）
@@ -8676,6 +8851,133 @@
         console.log('📊 店舗数:', embeddedStores.length, '店舗');
         console.log('🧪 Supabaseテスト: コンソールで testSupabase() を実行');
         console.log('🧪 テストデータ挿入: コンソールで insertTestData() を実行');
+
+        // ========== ハンバーガーメニュー機能 ==========
+        
+        // サイドメニューを開く
+        function toggleSideMenu() {
+            const overlay = document.getElementById('sideMenuOverlay');
+            if (overlay.classList.contains('active')) {
+                closeSideMenu();
+            } else {
+                openSideMenu();
+            }
+        }
+
+        function openSideMenu() {
+            const overlay = document.getElementById('sideMenuOverlay');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden'; // スクロール無効化
+        }
+
+        function closeSideMenu() {
+            const overlay = document.getElementById('sideMenuOverlay');
+            overlay.classList.remove('active');
+            document.body.style.overflow = ''; // スクロール復活
+        }
+
+        // ESCキーでメニューを閉じる
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeSideMenu();
+            }
+        });
+
+        // メニュー項目の関数（Phase 2で実装予定）
+        function showProfile() {
+            closeSideMenu();
+            console.log('📱 プロフィール画面を開く（Phase 2で実装予定）');
+            // TODO: Phase 2で実装
+        }
+
+        function showMyStats() {
+            closeSideMenu();
+            console.log('📊 マイ統計画面を開く（Phase 2で実装予定）');
+            // TODO: Phase 2で実装
+        }
+
+        function showMyReviews() {
+            closeSideMenu();
+            console.log('⭐ マイレビュー画面を開く（Phase 3で実装予定）');
+            // TODO: Phase 3で実装
+        }
+
+        function showAppInfo() {
+            closeSideMenu();
+            console.log('ℹ️ アプリ情報画面を開く（Phase 1で実装予定）');
+            // TODO: Phase 1で実装
+        }
+
+        // ログアウト機能（既存機能を流用）
+        function handleLogout() {
+            closeSideMenu();
+            if (confirm('ログアウトしてもよろしいですか？')) {
+                signOut();
+            }
+        }
     </script>
+
+    <!-- サイドメニュー -->
+    <div class="side-menu-overlay" id="sideMenuOverlay" onclick="closeSideMenu()">
+        <div class="side-menu" onclick="event.stopPropagation()">
+            <div class="side-menu-header">
+                <div class="side-menu-title">マイページ</div>
+                <div class="side-menu-subtitle">ビヨグル倶楽部</div>
+            </div>
+            <div class="side-menu-content">
+                <div class="menu-item" onclick="showProfile()">
+                    <div class="menu-item-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="menu-item-text">プロフィール</div>
+                    <div class="menu-item-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+                
+                <div class="menu-item" onclick="showMyStats()">
+                    <div class="menu-item-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="menu-item-text">マイ統計</div>
+                    <div class="menu-item-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+                
+                <div class="menu-item" onclick="showMyReviews()">
+                    <div class="menu-item-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="menu-item-text">マイレビュー</div>
+                    <div class="menu-item-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+                
+                <div class="menu-separator"></div>
+                
+                <div class="menu-item" onclick="showAppInfo()">
+                    <div class="menu-item-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                    <div class="menu-item-text">アプリについて</div>
+                    <div class="menu-item-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+                
+                <div class="menu-separator"></div>
+                
+                <div class="menu-item logout" onclick="handleLogout()">
+                    <div class="menu-item-icon">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                    <div class="menu-item-text">ログアウト</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>
