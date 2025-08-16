@@ -4595,8 +4595,27 @@
                         // 店舗カードを選択
                         selectStoreCard(store.id);
                         
-                        // マップの中央に店舗を移動（スムーズアニメーション）
-                        map.setView([store.latitude, store.longitude], map.getZoom(), {
+                        // ポップアップ全体が見える位置に店舗を移動
+                        const mapContainer = map.getContainer();
+                        const containerHeight = mapContainer.clientHeight;
+                        const containerWidth = mapContainer.clientWidth;
+                        
+                        let offsetY, offsetX = 0;
+                        
+                        if (isDesktop()) {
+                            // PC版: ポップアップが上に表示されるので、画面の下寄り（70%位置）に配置
+                            offsetY = containerHeight * 0.2; // 上から20%下に
+                        } else {
+                            // スマホ版: より下寄り（60%位置）に配置
+                            offsetY = containerHeight * 0.15; // 上から15%下に
+                        }
+                        
+                        // オフセット付きの位置を計算
+                        const point = map.latLngToContainerPoint([store.latitude, store.longitude]);
+                        const newPoint = L.point(containerWidth / 2, containerHeight / 2 + offsetY);
+                        const newLatLng = map.containerPointToLatLng(newPoint);
+                        
+                        map.setView(newLatLng, map.getZoom(), {
                             animate: true,
                             duration: 0.5
                         });
@@ -6309,7 +6328,26 @@
         function focusOnStore(storeId) {
             const store = stores.find(s => s.id === storeId);
             if (store && map) {
-                map.setView([store.latitude, store.longitude], 16, {
+                // ポップアップ全体が見える位置に店舗を移動
+                const mapContainer = map.getContainer();
+                const containerHeight = mapContainer.clientHeight;
+                const containerWidth = mapContainer.clientWidth;
+                
+                let offsetY;
+                
+                if (isDesktop()) {
+                    // PC版: ポップアップが上に表示されるので、画面の下寄りに配置
+                    offsetY = containerHeight * 0.2;
+                } else {
+                    // スマホ版: より下寄りに配置
+                    offsetY = containerHeight * 0.15;
+                }
+                
+                // オフセット付きの位置を計算
+                const newPoint = L.point(containerWidth / 2, containerHeight / 2 + offsetY);
+                const newLatLng = map.containerPointToLatLng(newPoint);
+                
+                map.setView(newLatLng, 16, {
                     animate: true,
                     duration: 0.8
                 });
@@ -6443,7 +6481,26 @@
             // 店舗を探してフォーカス
             const store = stores.find(s => s.id === storeId);
             if (store && map) {
-                map.setView([store.latitude, store.longitude], 16, {
+                // ポップアップ全体が見える位置に店舗を移動
+                const mapContainer = map.getContainer();
+                const containerHeight = mapContainer.clientHeight;
+                const containerWidth = mapContainer.clientWidth;
+                
+                let offsetY;
+                
+                if (isDesktop()) {
+                    // PC版: ポップアップが上に表示されるので、画面の下寄りに配置
+                    offsetY = containerHeight * 0.2;
+                } else {
+                    // スマホ版: より下寄りに配置
+                    offsetY = containerHeight * 0.15;
+                }
+                
+                // オフセット付きの位置を計算
+                const newPoint = L.point(containerWidth / 2, containerHeight / 2 + offsetY);
+                const newLatLng = map.containerPointToLatLng(newPoint);
+                
+                map.setView(newLatLng, 16, {
                     animate: true,
                     duration: 0.8
                 });
