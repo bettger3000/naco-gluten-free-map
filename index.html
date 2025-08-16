@@ -2629,15 +2629,15 @@
             display: flex;
             gap: var(--space-md);
             margin-top: var(--space-xl);
-            width: 100%;
+            justify-content: center;
+            padding: 0 var(--space-lg);
         }
 
         .nav-btn {
-            flex: 1;
-            padding: var(--space-lg) var(--space-md);
+            padding: var(--space-lg) var(--space-xl);
             border: none;
             border-radius: var(--radius-md);
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -2645,7 +2645,9 @@
             align-items: center;
             justify-content: center;
             gap: var(--space-sm);
-            min-height: 56px;
+            min-height: 52px;
+            min-width: 140px;
+            max-width: 160px;
             white-space: nowrap;
         }
 
@@ -7295,7 +7297,7 @@
                         <!-- ナビゲーションボタン -->
                         <div class="store-navigation">
                             <button class="nav-btn google-maps" onclick="openGoogleMaps(${store.latitude}, ${store.longitude})">
-                                🗺️ Googleマップで開く
+                                📍 Googleマップ
                             </button>
                             <button class="nav-btn route-search" onclick="openRouteSearch(${store.latitude}, ${store.longitude})">
                                 🧭 ルート検索
