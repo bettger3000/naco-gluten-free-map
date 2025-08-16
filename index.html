@@ -4984,7 +4984,11 @@
             const approvedUsers = getApprovedUsers();
             const user = approvedUsers.find(u => u.email === email);
             
+            console.log('🔐 ログイン試行:', { email, approvedUsers, user });
+            
             if (!user) {
+                console.log('❌ 承認されていないメールアドレス:', email);
+                console.log('📋 現在の承認済みユーザー:', approvedUsers.map(u => u.email));
                 errorElement.style.display = 'block';
                 errorElement.textContent = 'このメールアドレスは承認されていません';
                 return;
@@ -5040,15 +5044,24 @@
         function getApprovedUsers() {
             try {
                 const savedUsers = localStorage.getItem('approvedUsers');
-                return savedUsers ? JSON.parse(savedUsers) : [
-                    // デフォルトユーザー（テスト用）
-                    {
-                        id: 1,
-                        email: 'demo@example.com',
-                        registeredAt: new Date().toISOString(),
-                        hasPin: false
-                    }
-                ];
+                console.log('🔍 LocalStorage approvedUsers:', savedUsers);
+                
+                if (savedUsers) {
+                    const users = JSON.parse(savedUsers);
+                    console.log('📝 承認済みユーザー一覧:', users);
+                    return users;
+                } else {
+                    console.log('⚠️ LocalStorageにapprovedUsersが見つかりません - デフォルトユーザーを使用');
+                    return [
+                        // デフォルトユーザー（テスト用）
+                        {
+                            id: 1,
+                            email: 'demo@example.com',
+                            registeredAt: new Date().toISOString(),
+                            hasPin: false
+                        }
+                    ];
+                }
             } catch (error) {
                 console.error('ユーザーデータ取得エラー:', error);
                 return [];
@@ -5059,6 +5072,28 @@
         function saveApprovedUsers(users) {
             localStorage.setItem('approvedUsers', JSON.stringify(users));
         }
+
+        // デバッグ用：コンソールから実行可能な関数
+        window.debugAuth = {
+            showUsers: () => {
+                console.log('承認済みユーザー:', getApprovedUsers());
+            },
+            addTestUser: (email) => {
+                const users = getApprovedUsers();
+                users.push({
+                    id: Date.now(),
+                    email: email,
+                    registeredAt: new Date().toISOString(),
+                    hasPin: false
+                });
+                saveApprovedUsers(users);
+                console.log('テストユーザーを追加:', email);
+            },
+            clearUsers: () => {
+                localStorage.removeItem('approvedUsers');
+                console.log('ユーザーデータをクリア');
+            }
+        };
 
         // ユーザーPIN検証
         function validateUserPin(email, pin) {
