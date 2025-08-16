@@ -4340,13 +4340,21 @@
             suggestions.innerHTML = matches.map((place, index) => {
                 const icon = getCategoryIcon(place.category);
                 return `
-                    <div class="suggestion-item" data-index="${index}" onclick="selectPlace(${JSON.stringify(place).replace(/"/g, '&quot;')})">
+                    <div class="suggestion-item" data-index="${index}" data-place='${JSON.stringify(place)}'>
                         <span class="suggestion-icon">${icon}</span>
                         <span class="suggestion-text">${place.name}</span>
                         <span class="suggestion-category">${place.category}</span>
                     </div>
                 `;
             }).join('');
+            
+            // クリックイベントを追加
+            suggestions.querySelectorAll('.suggestion-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const placeData = JSON.parse(item.dataset.place);
+                    selectPlace(placeData);
+                });
+            });
             
             suggestions.style.display = 'block';
             searchSuggestionIndex = -1;
@@ -4384,7 +4392,9 @@
                 case 'Enter':
                     event.preventDefault();
                     if (searchSuggestionIndex >= 0 && items[searchSuggestionIndex]) {
-                        items[searchSuggestionIndex].click();
+                        const selectedItem = items[searchSuggestionIndex];
+                        const placeData = JSON.parse(selectedItem.dataset.place);
+                        selectPlace(placeData);
                     }
                     break;
                     
@@ -4408,13 +4418,23 @@
             
             // 検索入力をクリア
             const searchInput = document.getElementById('sidebarSearchInput');
-            searchInput.value = place.name;
+            if (searchInput) {
+                searchInput.value = place.name;
+            }
             hideSuggestions();
             
+            // 地図が初期化されているか確認
+            if (!map) {
+                console.error('❌ 地図が初期化されていません');
+                return;
+            }
+            
+            console.log(`📍 ${place.name}へ移動: [${place.lat}, ${place.lng}]`);
+            
             // 地図を移動（スムーズアニメーション）
-            map.setView([place.lat, place.lng], 13, {
+            map.setView([place.lat, place.lng], 14, {
                 animate: true,
-                duration: 1.0
+                duration: 1.5
             });
             
             // 選択地点にテンポラリマーカーを表示
@@ -5772,6 +5792,7 @@
         window.toggleVisitStatus = toggleVisitStatus;
         window.focusOnStore = focusOnStore;
         window.closePopup = closePopup;
+        window.selectPlace = selectPlace;
 
         // イベントリスナー設定
         function setupEventListeners() {
