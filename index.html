@@ -3946,16 +3946,16 @@
         async function initializeApp() {
             console.log('🚀 アプリ初期化開始（認証チェック）');
             
-            // 1. 認証状態を確認
-            const isAuthenticated = await checkAuthenticationStatus();
+            // 1. 認証状態を確認（一時的に無効化）
+            // const isAuthenticated = await checkAuthenticationStatus();
             
-            if (!isAuthenticated) {
-                console.log('🔒 未認証ユーザー - ログイン画面を表示');
-                showLoginModal();
-                return;
-            }
+            // if (!isAuthenticated) {
+            //     console.log('🔒 未認証ユーザー - ログイン画面を表示');
+            //     showLoginModal();
+            //     return;
+            // }
             
-            console.log('✅ 認証済みユーザー - マップ画面を表示');
+            console.log('✅ 認証チェック無効化 - マップ画面を表示');
             showMapScreen();
             
             // 2. 地図を先に初期化
