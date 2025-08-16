@@ -5,8 +5,8 @@ compatibility_flags = ["nodejs_compat"]
 
 [env.production.vars]
 # GitHub関連の設定は環境変数で管理
-GITHUB_REPO_OWNER = "kanakugimakoto"
-GITHUB_REPO_NAME = "gluten-free-map-simple"
+GITHUB_REPO_OWNER = "bettger3000"
+GITHUB_REPO_NAME = "naco-gluten-free-map"
 GITHUB_BRANCH = "main"
 GITHUB_FILE_PATH = "data/embeddedStores.json"
 
