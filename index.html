@@ -5329,14 +5329,14 @@
                                     <label for="modalPinInput">PINコード（4桁）</label>
                                     <input type="password" id="modalPinInput" placeholder="••••" maxlength="4" 
                                            pattern="[0-9]*" inputmode="numeric"
-                                           onkeypress="if(event.key==='Enter') performModalPinLogin()">
+                                           onkeypress="if(event.key==='Enter') performModalPinLogin().catch(console.error)">
                                 </div>
                                 
                                 <div id="modalLoginError" class="login-error" style="display: none;">
                                     メールアドレスまたはPINコードが正しくありません
                                 </div>
                                 
-                                <button id="modalLoginBtn" class="pin-login-btn" onclick="performModalPinLogin()">
+                                <button id="modalLoginBtn" class="pin-login-btn" onclick="performModalPinLogin().catch(console.error)">
                                     <i class="fas fa-sign-in-alt"></i>
                                     ログイン
                                 </button>
@@ -5351,7 +5351,7 @@
         }
 
         // モーダルログイン処理
-        function performModalPinLogin() {
+        async function performModalPinLogin() {
             const email = document.getElementById('modalEmailInput').value.trim();
             const pin = document.getElementById('modalPinInput').value.trim();
             const errorElement = document.getElementById('modalLoginError');
@@ -5560,14 +5560,14 @@
                                     <label for="confirmPinInput">PINコード確認</label>
                                     <input type="password" id="confirmPinInput" placeholder="••••" maxlength="4" 
                                            pattern="[0-9]*" inputmode="numeric"
-                                           onkeypress="if(event.key==='Enter') performPinSetup('${email}')">
+                                           onkeypress="if(event.key==='Enter') performPinSetup('${email}').catch(console.error)">
                                 </div>
                                 
                                 <div id="pinSetupError" class="login-error" style="display: none;">
                                     エラーメッセージ
                                 </div>
                                 
-                                <button type="button" class="pin-login-btn" onclick="performPinSetup('${email}')">
+                                <button type="button" class="pin-login-btn" onclick="performPinSetup('${email}').catch(console.error)">
                                     <i class="fas fa-key"></i>
                                     PINを設定
                                 </button>
@@ -5591,7 +5591,7 @@
         }
 
         // PIN設定処理
-        function performPinSetup(email) {
+        async function performPinSetup(email) {
             const newPin = document.getElementById('newPinInput').value.trim();
             const confirmPin = document.getElementById('confirmPinInput').value.trim();
             const errorElement = document.getElementById('pinSetupError');
@@ -9164,15 +9164,23 @@
 
         // ハンバーガーメニューのプロフィール表示を更新
         function updateMenuProfileDisplay() {
-            const menuTitle = document.querySelector('.side-menu-title');
-            const menuSubtitle = document.querySelector('.side-menu-subtitle');
-            
-            if (currentUserProfile && menuTitle && menuSubtitle) {
-                const displayName = currentUserProfile.nickname || 'ゲスト';
-                const avatar = getAvatarDisplay(currentUserProfile);
+            try {
+                const menuTitle = document.querySelector('.side-menu-title');
+                const menuSubtitle = document.querySelector('.side-menu-subtitle');
                 
-                menuTitle.textContent = `${avatar} ${displayName}`;
-                menuSubtitle.textContent = 'ビヨグル倶楽部';
+                if (currentUserProfile && menuTitle && menuSubtitle) {
+                    const displayName = currentUserProfile.nickname || 'ゲスト';
+                    const avatar = getAvatarDisplay(currentUserProfile);
+                    
+                    menuTitle.textContent = `${avatar} ${displayName}`;
+                    menuSubtitle.textContent = 'ビヨグル倶楽部';
+                } else if (menuTitle && menuSubtitle) {
+                    // プロフィール未読み込み時のフォールバック
+                    menuTitle.textContent = '🌸 ゲスト';
+                    menuSubtitle.textContent = 'ビヨグル倶楽部';
+                }
+            } catch (error) {
+                console.error('❌ メニュー表示更新エラー:', error);
             }
         }
 
@@ -9328,24 +9336,38 @@
                 return;
             }
             
-            const overlay = document.getElementById('profileModalOverlay');
-            const nicknameInput = document.getElementById('nicknameInput');
-            
-            // 現在の値を設定
-            nicknameInput.value = currentUserProfile.nickname || '';
-            selectedAvatarId = currentUserProfile.avatar || 'default';
-            
-            // アバターグリッドを生成
-            generateAvatarGrid();
-            
-            // モーダルを表示
-            overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            
-            // ニックネーム入力にフォーカス
-            setTimeout(() => {
-                nicknameInput.focus();
-            }, 300);
+            try {
+                const overlay = document.getElementById('profileModalOverlay');
+                const nicknameInput = document.getElementById('nicknameInput');
+                
+                if (!overlay || !nicknameInput) {
+                    console.error('❌ プロフィール画面の要素が見つかりません');
+                    alert('プロフィール画面を開けませんでした。ページを再読み込みしてください。');
+                    return;
+                }
+                
+                // 現在の値を設定
+                nicknameInput.value = currentUserProfile.nickname || '';
+                selectedAvatarId = currentUserProfile.avatar || 'default';
+                
+                // アバターグリッドを生成
+                generateAvatarGrid();
+                
+                // モーダルを表示
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                
+                // ニックネーム入力にフォーカス
+                setTimeout(() => {
+                    if (nicknameInput) {
+                        nicknameInput.focus();
+                    }
+                }, 300);
+                
+            } catch (error) {
+                console.error('❌ プロフィール画面オープンエラー:', error);
+                alert('プロフィール画面を開けませんでした。');
+            }
         }
 
         // プロフィール画面を閉じる
@@ -9357,17 +9379,27 @@
 
         // アバターグリッドを生成
         function generateAvatarGrid() {
-            const avatarGrid = document.getElementById('avatarGrid');
-            avatarGrid.innerHTML = '';
-            
-            PRESET_AVATARS.forEach(avatar => {
-                const avatarDiv = document.createElement('div');
-                avatarDiv.className = `avatar-option${selectedAvatarId === avatar.id ? ' selected' : ''}`;
-                avatarDiv.innerHTML = avatar.emoji;
-                avatarDiv.title = avatar.name;
-                avatarDiv.onclick = () => selectAvatar(avatar.id);
-                avatarGrid.appendChild(avatarDiv);
-            });
+            try {
+                const avatarGrid = document.getElementById('avatarGrid');
+                if (!avatarGrid) {
+                    console.error('❌ アバターグリッド要素が見つかりません');
+                    return;
+                }
+                
+                avatarGrid.innerHTML = '';
+                
+                PRESET_AVATARS.forEach(avatar => {
+                    const avatarDiv = document.createElement('div');
+                    avatarDiv.className = `avatar-option${selectedAvatarId === avatar.id ? ' selected' : ''}`;
+                    avatarDiv.innerHTML = avatar.emoji;
+                    avatarDiv.title = avatar.name;
+                    avatarDiv.onclick = () => selectAvatar(avatar.id);
+                    avatarGrid.appendChild(avatarDiv);
+                });
+                
+            } catch (error) {
+                console.error('❌ アバターグリッド生成エラー:', error);
+            }
         }
 
         // アバターを選択
