@@ -750,6 +750,33 @@
             transform: translateY(-1px);
         }
 
+        /* 管理者用画像追加セクション */
+        .admin-image-section {
+            padding: var(--space-sm);
+            text-align: center;
+            margin-bottom: var(--space-sm);
+        }
+
+        .admin-add-image-btn {
+            background: rgba(255, 107, 157, 0.1);
+            color: var(--primary);
+            border: 1px dashed var(--primary);
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .admin-add-image-btn:hover {
+            background: rgba(255, 107, 157, 0.2);
+            border-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
         /* ボタン押下時の一時的な視覚効果 */
         .action-btn.pressing,
         .popup-action-btn.pressing {
@@ -6305,20 +6332,20 @@
         function createImageCarousel(storeId) {
             const images = storeImages.get(storeId) || [];
             
+            // 画像がない場合
             if (images.length === 0) {
-                return `
-                    <div class="store-images">
-                        <div class="no-images">
-                            <span>📷 画像がありません</span>
-                            ${isAdminAuthenticated() ? `
-                                <button class="image-upload-btn" onclick="showImageUpload(${storeId})">
-                                    <i class="fas fa-plus"></i>
-                                    画像を追加
-                                </button>
-                            ` : ''}
+                // 管理者の場合のみ画像追加用のミニマルなインターフェース表示
+                if (isAdminAuthenticated()) {
+                    return `
+                        <div class="admin-image-section">
+                            <button class="admin-add-image-btn" onclick="showImageUpload(${storeId})" title="画像を追加">
+                                <i class="fas fa-camera"></i> 画像追加
+                            </button>
                         </div>
-                    </div>
-                `;
+                    `;
+                }
+                // 一般ユーザーは完全非表示
+                return '';
             }
             
             const slidesHtml = images.map((image, index) => `
