@@ -4570,7 +4570,7 @@
                             `,
                             iconSize: [40, 48],
                             iconAnchor: [20, 48],
-                            popupAnchor: isDesktop() ? [0, -55] : [-15, -60]
+                            popupAnchor: isDesktop() ? [0, -55] : [-18, -58]
                         })
                     }).addTo(map);
 
@@ -4585,8 +4585,8 @@
                         // PC版: 少し下に調整
                         popupOptions.offset = [0, -15];
                     } else {
-                        // スマホ版: 左に調整、下に移動
-                        popupOptions.offset = [-20, -20];
+                        // スマホ版: さらに左に調整
+                        popupOptions.offset = [-25, -18];
                     }
                     
                     marker.bindPopup(popupContent, popupOptions);
