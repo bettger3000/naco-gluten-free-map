@@ -4629,9 +4629,8 @@
                             offsetY = containerHeight * 0.15; // 上から15%下に
                         }
                         
-                        // オフセット付きの位置を計算
-                        const point = map.latLngToContainerPoint([store.latitude, store.longitude]);
-                        const newPoint = L.point(containerWidth / 2, containerHeight / 2 + offsetY);
+                        // オフセット付きの位置を計算（店舗アイコンを画面中央より上に配置）
+                        const newPoint = L.point(containerWidth / 2, containerHeight / 2 - offsetY);
                         const newLatLng = map.containerPointToLatLng(newPoint);
                         
                         map.setView(newLatLng, map.getZoom(), {
@@ -6362,8 +6361,8 @@
                     offsetY = containerHeight * 0.15;
                 }
                 
-                // オフセット付きの位置を計算
-                const newPoint = L.point(containerWidth / 2, containerHeight / 2 + offsetY);
+                // オフセット付きの位置を計算（店舗アイコンを画面中央より上に配置）
+                const newPoint = L.point(containerWidth / 2, containerHeight / 2 - offsetY);
                 const newLatLng = map.containerPointToLatLng(newPoint);
                 
                 map.setView(newLatLng, 16, {
@@ -6515,8 +6514,8 @@
                     offsetY = containerHeight * 0.15;
                 }
                 
-                // オフセット付きの位置を計算
-                const newPoint = L.point(containerWidth / 2, containerHeight / 2 + offsetY);
+                // オフセット付きの位置を計算（店舗アイコンを画面中央より上に配置）
+                const newPoint = L.point(containerWidth / 2, containerHeight / 2 - offsetY);
                 const newLatLng = map.containerPointToLatLng(newPoint);
                 
                 map.setView(newLatLng, 16, {
