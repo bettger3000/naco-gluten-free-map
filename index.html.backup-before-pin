@@ -2656,16 +2656,6 @@
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
-        // ==========================================
-        // PINコード認証用ユーザーリスト
-        // ==========================================
-        const AUTHORIZED_USERS = [
-            { email: 'bettger1000@gmail.com', pin: '1234' },
-            { email: 'nono511shu123@gmail.com', pin: '5678' },
-            { email: 'demo@example.com', pin: '0000' }
-            // 必要に応じてユーザーを追加
-        ];
-        
         // カテゴリー色
         const categoryColors = {
             'カフェ': '#8B4513',
@@ -3602,39 +3592,30 @@
             console.log('✅ アプリ初期化完了 - 全機能利用可能');
         }
 
-        // 認証状態チェック（PINコード認証版）
+        // 認証状態チェック
         async function checkAuthenticationStatus() {
             try {
                 console.log('🔍 認証状態をチェック中...');
                 
-                // LocalStorageから認証情報を確認
-                const savedAuth = localStorage.getItem('pinAuth');
-                if (savedAuth) {
-                    try {
-                        const authData = JSON.parse(savedAuth);
-                        // 保存されている認証情報が有効か確認
-                        if (authData && authData.email && authData.timestamp) {
-                            // 認証から24時間以内かチェック
-                            const authTime = new Date(authData.timestamp);
-                            const now = new Date();
-                            const hoursPassed = (now - authTime) / (1000 * 60 * 60);
-                            
-                            if (hoursPassed < 24) {
-                                currentUser = authData.email;
-                                console.log('✅ 有効なPIN認証セッション:', currentUser);
-                                return true;
-                            } else {
-                                console.log('⏰ PIN認証の有効期限切れ');
-                                localStorage.removeItem('pinAuth');
-                            }
-                        }
-                    } catch (e) {
-                        console.error('認証データ解析エラー:', e);
-                        localStorage.removeItem('pinAuth');
-                    }
+                // Supabaseセッションチェック
+                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+                
+                if (session && session.user) {
+                    currentUser = session.user.email;
+                    console.log('✅ 有効なセッション:', currentUser);
+                    return true;
                 }
                 
-                console.log('❌ 有効な認証セッションなし');
+                // フォールバック: ユーザー情報チェック
+                const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+                
+                if (user && !userError) {
+                    currentUser = user.email;
+                    console.log('✅ 有効なユーザー:', currentUser);
+                    return true;
+                }
+                
+                console.log('❌ 認証セッションなし');
                 return false;
                 
             } catch (error) {
@@ -3651,35 +3632,15 @@
                         <div class="login-header">
                             <img src="nacoキャラクター.png" alt="naco" class="login-logo">
                             <h1>グルテンフリーマップ</h1>
-                            <p>ビヨグル倶楽部</p>
+                            <p>ビヨフリ倶楽部</p>
                         </div>
                         <div class="login-content">
-                            <h2>会員ログイン</h2>
-                            <p>登録済みのメールアドレスと<br>PINコードを入力してください</p>
-                            
-                            <div class="login-form">
-                                <div class="input-group">
-                                    <label for="emailInput">メールアドレス</label>
-                                    <input type="email" id="emailInput" placeholder="example@email.com" 
-                                           onkeypress="if(event.key==='Enter') document.getElementById('pinInput').focus()">
-                                </div>
-                                
-                                <div class="input-group">
-                                    <label for="pinInput">PINコード（4桁）</label>
-                                    <input type="password" id="pinInput" placeholder="••••" maxlength="4" 
-                                           pattern="[0-9]*" inputmode="numeric"
-                                           onkeypress="if(event.key==='Enter') performPinLogin()">
-                                </div>
-                                
-                                <div id="loginError" class="login-error" style="display: none;">
-                                    メールアドレスまたはPINコードが正しくありません
-                                </div>
-                                
-                                <button id="loginBtn" class="pin-login-btn" onclick="performPinLogin()">
-                                    <i class="fas fa-sign-in-alt"></i>
-                                    ログイン
-                                </button>
-                            </div>
+                            <h2>ログインが必要です</h2>
+                            <p>このサイトは会員限定です。<br>Googleアカウントでログインしてください。</p>
+                            <button id="loginBtn" class="google-login-btn" onclick="performGoogleLogin()">
+                                <i class="fab fa-google"></i>
+                                Googleでログイン
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -3728,44 +3689,6 @@
                         margin-bottom: var(--space-xl);
                         line-height: 1.6;
                     }
-                    .login-form {
-                        margin-top: var(--space-xl);
-                    }
-                    .input-group {
-                        margin-bottom: var(--space-lg);
-                        text-align: left;
-                    }
-                    .input-group label {
-                        display: block;
-                        color: var(--text-secondary);
-                        font-size: 0.9rem;
-                        margin-bottom: var(--space-xs);
-                        font-weight: 500;
-                    }
-                    .input-group input {
-                        width: 100%;
-                        padding: var(--space-md);
-                        border: 2px solid var(--border-light);
-                        border-radius: var(--radius-md);
-                        font-size: 1rem;
-                        transition: all 0.3s ease;
-                        background: white;
-                        color: var(--text-primary);
-                    }
-                    .input-group input:focus {
-                        outline: none;
-                        border-color: var(--primary);
-                        box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
-                    }
-                    .login-error {
-                        color: var(--error);
-                        font-size: 0.9rem;
-                        margin-bottom: var(--space-md);
-                        padding: var(--space-sm);
-                        background: rgba(239, 68, 68, 0.1);
-                        border-radius: var(--radius-sm);
-                    }
-                    .pin-login-btn,
                     .google-login-btn {
                         background: #4285f4;
                         color: white;
@@ -3797,87 +3720,28 @@
             console.log('📍 マップ画面を表示');
         }
 
-        // PINコード認証実行
-        async function performPinLogin() {
+        // Google認証実行
+        async function performGoogleLogin() {
             try {
-                console.log('🔐 PINコード認証を開始...');
+                console.log('🔐 Google認証を開始...');
                 
-                // 入力値を取得
-                const email = document.getElementById('emailInput').value.trim().toLowerCase();
-                const pin = document.getElementById('pinInput').value.trim();
+                const { data, error } = await supabaseClient.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: 'https://bettger3000.github.io/naco-gluten-free-map/'
+                    }
+                });
                 
-                // 入力チェック
-                if (!email || !pin) {
-                    showLoginError('メールアドレスとPINコードを入力してください');
-                    return;
-                }
-                
-                if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
-                    showLoginError('PINコードは4桁の数字で入力してください');
-                    return;
-                }
-                
-                // 認証リストと照合
-                const authorizedUser = AUTHORIZED_USERS.find(
-                    user => user.email.toLowerCase() === email && user.pin === pin
-                );
-                
-                if (authorizedUser) {
-                    console.log('✅ PINコード認証成功:', email);
-                    
-                    // 認証情報をLocalStorageに保存
-                    const authData = {
-                        email: authorizedUser.email,
-                        timestamp: new Date().toISOString()
-                    };
-                    localStorage.setItem('pinAuth', JSON.stringify(authData));
-                    
-                    // currentUserを設定
-                    currentUser = authorizedUser.email;
-                    
-                    // ログイン成功メッセージ
-                    document.getElementById('loginBtn').innerHTML = '<i class="fas fa-check"></i> ログイン成功！';
-                    document.getElementById('loginBtn').disabled = true;
-                    
-                    // 少し待ってからリロード（アプリ初期化）
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
-                    
+                if (error) {
+                    console.error('❌ Google認証エラー:', error);
+                    alert('認証に失敗しました。しばらく時間をおいて再度お試しください。');
                 } else {
-                    console.log('❌ PINコード認証失敗');
-                    showLoginError('メールアドレスまたはPINコードが正しくありません');
-                    
-                    // PINコード入力欄をクリア
-                    document.getElementById('pinInput').value = '';
-                    document.getElementById('pinInput').focus();
+                    console.log('✅ Google認証リクエスト送信成功');
                 }
-                
             } catch (error) {
                 console.error('❌ 認証処理エラー:', error);
-                showLoginError('認証処理中にエラーが発生しました');
+                alert('認証に失敗しました。しばらく時間をおいて再度お試しください。');
             }
-        }
-        
-        // ログインエラー表示
-        function showLoginError(message) {
-            const errorDiv = document.getElementById('loginError');
-            if (errorDiv) {
-                errorDiv.textContent = message;
-                errorDiv.style.display = 'block';
-                
-                // 3秒後に非表示
-                setTimeout(() => {
-                    errorDiv.style.display = 'none';
-                }, 3000);
-            }
-        }
-        
-        // Google認証実行（無効化・バックアップとして残す）
-        async function performGoogleLogin() {
-            // この関数は使用しないが、コードの整合性のため残しておく
-            console.log('⚠️ Google認証は無効化されています');
-            alert('現在、PINコード認証のみ利用可能です');
         }
 
         // データベース状態確認（簡略版）
@@ -5451,14 +5315,17 @@
             }
         }
 
-        // 認証ボタンハンドラー（PINコード認証版）
+        // 認証ボタンハンドラー
         async function handleAuth() {
-            console.log('🔘 ログアウトボタンがクリックされました');
+            console.log('🔘 ログインボタンがクリックされました');
             console.log('現在のユーザー:', currentUser);
             
-            if (currentUser) {
+            if (currentUser && currentUser !== 'demo_user@example.com') {
                 console.log('ログアウト処理を開始...');
                 await signOut();
+            } else {
+                console.log('Google認証を開始...');
+                await signInWithGoogle();
             }
         }
 
@@ -5476,23 +5343,18 @@
             }
         }
 
-        // ログアウト（PINコード認証版）
+        // ログアウト
         async function signOut() {
             try {
-                console.log('✅ ログアウト処理開始');
-                
-                // LocalStorageから認証情報を削除
-                localStorage.removeItem('pinAuth');
-                
-                // メモリ上のデータをクリア
-                currentUser = null;
-                userVisitHistory.clear();
-                
-                console.log('✅ ログアウト成功');
-                
-                // ページをリロードしてログイン画面へ
-                location.reload();
-                
+                const { error } = await supabaseClient.auth.signOut();
+                if (error) {
+                    console.error('❌ ログアウトエラー:', error);
+                } else {
+                    console.log('✅ ログアウト成功');
+                    currentUser = 'demo_user';
+                    userVisitHistory.clear();
+                    location.reload();
+                }
             } catch (error) {
                 console.error('❌ ログアウト処理エラー:', error);
             }
