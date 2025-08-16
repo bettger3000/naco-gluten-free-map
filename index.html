@@ -9143,15 +9143,26 @@
             }
             
             try {
-                // LocalStorageから読み込み
+                // まずSupabaseから読み込みを試行
+                const supabaseProfile = await loadProfileFromSupabase(email);
+                if (supabaseProfile) {
+                    console.log('☁️ Supabaseプロフィールを復元:', email);
+                    // LocalStorageにもキャッシュ
+                    localStorage.setItem(`user_profile_${email}`, JSON.stringify(supabaseProfile));
+                    return supabaseProfile;
+                }
+                
+                // Supabaseに無い場合はLocalStorageから読み込み
                 const saved = localStorage.getItem(`user_profile_${email}`);
                 if (saved) {
                     const profile = JSON.parse(saved);
                     console.log('💾 ローカルプロフィールを復元:', email);
+                    // Supabaseにも保存
+                    await saveProfileToSupabase(profile);
                     return profile;
                 }
                 
-                // プロフィールが存在しない場合はデフォルト作成
+                // どちらにも無い場合はデフォルト作成
                 console.log('🆕 新規プロフィールを作成:', email);
                 const defaultProfile = createDefaultProfile(email);
                 await saveUserProfile(defaultProfile);
@@ -9160,6 +9171,52 @@
             } catch (error) {
                 console.error('❌ プロフィール読み込みエラー:', error);
                 return createDefaultProfile(email);
+            }
+        }
+
+        // Supabaseからプロフィールを読み込み（新機能）
+        async function loadProfileFromSupabase(email) {
+            try {
+                console.log('🔄 Supabaseプロフィール読み込み開始:', email);
+                
+                const { data, error } = await supabaseClient
+                    .from('user_profiles')
+                    .select('*')
+                    .eq('email', email)
+                    .single();
+
+                if (error) {
+                    if (error.code === 'PGRST116') {
+                        // データが見つからない（正常）
+                        console.log('📭 Supabaseにプロフィールなし:', email);
+                        return null;
+                    } else {
+                        console.warn('⚠️ Supabase読み込みエラー:', error);
+                        return null;
+                    }
+                }
+                
+                if (data) {
+                    // Supabaseのデータ形式をローカル形式に変換
+                    const profile = {
+                        email: data.email,
+                        nickname: data.nickname || '',
+                        avatar: data.avatar_id || 'default',
+                        avatarType: data.avatar_type || 'preset',
+                        customAvatarData: data.custom_avatar_data || null,
+                        createdAt: data.created_at || new Date().toISOString(),
+                        updatedAt: data.updated_at || new Date().toISOString()
+                    };
+                    
+                    console.log('✅ Supabaseプロフィール読み込み成功:', email);
+                    return profile;
+                }
+                
+                return null;
+                
+            } catch (error) {
+                console.warn('⚠️ Supabase読み込み例外:', error);
+                return null;
             }
         }
 
@@ -9174,15 +9231,51 @@
                 // 更新日時を設定
                 profile.updatedAt = new Date().toISOString();
                 
-                // LocalStorageに保存
+                // LocalStorageに保存（フォールバック用）
                 localStorage.setItem(`user_profile_${profile.email}`, JSON.stringify(profile));
                 
-                // TODO: Phase 2後半でSupabaseにも保存予定
+                // Supabaseにも保存（慎重に）
+                await saveProfileToSupabase(profile);
+                
                 console.log('💾 プロフィールを保存:', profile.email);
                 return true;
                 
             } catch (error) {
                 console.error('❌ プロフィール保存エラー:', error);
+                return false;
+            }
+        }
+
+        // Supabaseにプロフィールを保存（新機能）
+        async function saveProfileToSupabase(profile) {
+            try {
+                console.log('🔄 Supabaseプロフィール保存開始:', profile.email);
+                
+                // 既存のuser_profilesテーブルに慎重に保存
+                const { error } = await supabaseClient
+                    .from('user_profiles')
+                    .upsert({
+                        email: profile.email,
+                        nickname: profile.nickname || '',
+                        avatar_id: profile.avatar || 'default',
+                        avatar_type: profile.avatarType || 'preset',
+                        custom_avatar_data: profile.customAvatarData || null,
+                        is_active: true,
+                        updated_at: new Date().toISOString()
+                    }, {
+                        onConflict: 'email' // emailで重複チェック
+                    });
+
+                if (error) {
+                    console.warn('⚠️ Supabase保存エラー（LocalStorageで継続）:', error);
+                    return false;
+                } else {
+                    console.log('✅ Supabaseプロフィール保存成功:', profile.email);
+                    return true;
+                }
+                
+            } catch (error) {
+                console.warn('⚠️ Supabase保存例外（LocalStorageで継続）:', error);
                 return false;
             }
         }
