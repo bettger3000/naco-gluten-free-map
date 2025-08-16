@@ -4333,10 +4333,11 @@
                     document.getElementById('loginBtn').innerHTML = '<i class="fas fa-check"></i> ログイン成功！';
                     document.getElementById('loginBtn').disabled = true;
                     
-                    // 少し待ってからリロード（アプリ初期化）
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
+                    // 少し待ってからリロード（アプリ初期化）- 無効化
+                    console.log('✅ PIN認証成功 - リロードなしで継続');
+                    // setTimeout(() => {
+                    //     window.location.reload();
+                    // }, 1000);
                     
                 } else {
                     console.log('❌ PINコード認証失敗');
@@ -5305,11 +5306,12 @@
             // 認証状態変更の監視を設定
             setupAuthStateListener();
             
-            // 認証確認を少し遅らせて実行
-            setTimeout(async () => {
-                await checkAuthentication();
-                console.log('🔄 遅延認証確認完了');
-            }, 200);
+            // 認証確認を少し遅らせて実行（無効化）
+            console.log('🔄 Supabase認証確認無効化 - PIN認証のみ使用');
+            // setTimeout(async () => {
+            //     await checkAuthentication();
+            //     console.log('🔄 遅延認証確認完了');
+            // }, 200);
             
             // 一旦デモモードで続行
             if (!currentUser) {
@@ -5831,9 +5833,9 @@
                     currentUser = session.user.email;
                     console.log('✅ ログイン成功:', currentUser);
                     
-                    // ログイン成功時はページをリロードしてマップ画面を表示
-                    console.log('🔄 認証成功によりページをリロード');
-                    window.location.reload();
+                    // ログイン成功時はページをリロードしてマップ画面を表示（無効化）
+                    console.log('🔄 認証成功によりページをリロード（無効化）');
+                    // window.location.reload(); // 無効化
                     
                 } else if (event === 'SIGNED_OUT') {
                     console.log('🚪 ログアウト');
