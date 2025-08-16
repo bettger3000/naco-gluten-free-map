@@ -4880,15 +4880,31 @@
                 return;
             }
             
-            // 簡易認証（本来はサーバーで検証）
-            const validCredentials = [
-                { email: 'bettger1000@gmail.com', pin: '9999' },
-                { email: 'test@example.com', pin: '1234' }
-            ];
+            // PIN形式チェック
+            if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
+                errorElement.style.display = 'block';
+                errorElement.textContent = 'PINコードは4桁の数字で入力してください';
+                return;
+            }
             
-            const isValid = validCredentials.some(cred => 
-                cred.email === email && cred.pin === pin
-            );
+            // 承認済みユーザーリストを取得
+            const approvedUsers = getApprovedUsers();
+            const user = approvedUsers.find(u => u.email === email);
+            
+            if (!user) {
+                errorElement.style.display = 'block';
+                errorElement.textContent = 'このメールアドレスは承認されていません';
+                return;
+            }
+            
+            // PIN未設定の場合は設定画面に遷移
+            if (!user.hasPin) {
+                showPinSetupModal(email);
+                return;
+            }
+            
+            // PIN認証
+            const isValid = validateUserPin(email, pin);
             
             if (isValid) {
                 // 認証成功
@@ -4922,6 +4938,186 @@
             if (modal) {
                 modal.remove();
                 document.body.style.overflow = '';
+            }
+        }
+
+        // ========== ユーザー認証システム ==========
+        
+        // 承認済みユーザーリストを取得
+        function getApprovedUsers() {
+            try {
+                const savedUsers = localStorage.getItem('approvedUsers');
+                return savedUsers ? JSON.parse(savedUsers) : [
+                    // デフォルトユーザー（テスト用）
+                    {
+                        id: 1,
+                        email: 'demo@example.com',
+                        registeredAt: new Date().toISOString(),
+                        hasPin: false
+                    }
+                ];
+            } catch (error) {
+                console.error('ユーザーデータ取得エラー:', error);
+                return [];
+            }
+        }
+
+        // ユーザーデータを保存
+        function saveApprovedUsers(users) {
+            localStorage.setItem('approvedUsers', JSON.stringify(users));
+        }
+
+        // ユーザーPIN検証
+        function validateUserPin(email, pin) {
+            try {
+                const userPins = JSON.parse(localStorage.getItem('userPins') || '{}');
+                const storedHash = userPins[email];
+                
+                if (!storedHash) return false;
+                
+                // 簡易ハッシュ検証（本来はbcrypt等を使用）
+                const inputHash = btoa(pin + email); // 簡易ハッシュ
+                return storedHash === inputHash;
+            } catch (error) {
+                console.error('PIN検証エラー:', error);
+                return false;
+            }
+        }
+
+        // ユーザーPIN設定
+        function setUserPin(email, pin) {
+            try {
+                const userPins = JSON.parse(localStorage.getItem('userPins') || '{}');
+                
+                // 簡易ハッシュ（本来はbcrypt等を使用）
+                const pinHash = btoa(pin + email);
+                userPins[email] = pinHash;
+                
+                localStorage.setItem('userPins', JSON.stringify(userPins));
+                
+                // ユーザーデータの hasPin フラグを更新
+                const approvedUsers = getApprovedUsers();
+                const user = approvedUsers.find(u => u.email === email);
+                if (user) {
+                    user.hasPin = true;
+                    saveApprovedUsers(approvedUsers);
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('PIN設定エラー:', error);
+                return false;
+            }
+        }
+
+        // PIN設定画面を表示
+        function showPinSetupModal(email) {
+            const modalHTML = `
+                <div class="login-modal-overlay" id="pinSetupModalOverlay">
+                    <div class="login-modal-content">
+                        <div class="login-header">
+                            <img src="nacoキャラクター.png" alt="naco" class="login-logo">
+                            <h1>PIN設定</h1>
+                            <p>初回ログイン</p>
+                        </div>
+                        <div class="login-content">
+                            <h2>PINコードを設定してください</h2>
+                            <p>メールアドレス: <strong>${email}</strong><br>
+                            4桁の数字でPINコードを設定してください</p>
+                            
+                            <div class="login-form">
+                                <div class="input-group">
+                                    <label for="newPinInput">新しいPINコード（4桁）</label>
+                                    <input type="password" id="newPinInput" placeholder="••••" maxlength="4" 
+                                           pattern="[0-9]*" inputmode="numeric"
+                                           onkeypress="if(event.key==='Enter') document.getElementById('confirmPinInput').focus()">
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="confirmPinInput">PINコード確認</label>
+                                    <input type="password" id="confirmPinInput" placeholder="••••" maxlength="4" 
+                                           pattern="[0-9]*" inputmode="numeric"
+                                           onkeypress="if(event.key==='Enter') performPinSetup('${email}')">
+                                </div>
+                                
+                                <div id="pinSetupError" class="login-error" style="display: none;">
+                                    エラーメッセージ
+                                </div>
+                                
+                                <button type="button" class="pin-login-btn" onclick="performPinSetup('${email}')">
+                                    <i class="fas fa-key"></i>
+                                    PINを設定
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 既存のモーダルを削除
+            closeLoginModal();
+            
+            // 新しいモーダルを追加
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            document.body.style.overflow = 'hidden';
+            
+            // フォーカス設定
+            setTimeout(() => {
+                document.getElementById('newPinInput').focus();
+            }, 100);
+        }
+
+        // PIN設定処理
+        function performPinSetup(email) {
+            const newPin = document.getElementById('newPinInput').value.trim();
+            const confirmPin = document.getElementById('confirmPinInput').value.trim();
+            const errorElement = document.getElementById('pinSetupError');
+            
+            // エラーメッセージをリセット
+            errorElement.style.display = 'none';
+            
+            // 入力チェック
+            if (!newPin || !confirmPin) {
+                errorElement.style.display = 'block';
+                errorElement.textContent = 'PINコードを入力してください';
+                return;
+            }
+            
+            if (newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
+                errorElement.style.display = 'block';
+                errorElement.textContent = 'PINコードは4桁の数字で入力してください';
+                return;
+            }
+            
+            if (newPin !== confirmPin) {
+                errorElement.style.display = 'block';
+                errorElement.textContent = 'PINコードが一致しません';
+                return;
+            }
+            
+            // PIN設定実行
+            if (setUserPin(email, newPin)) {
+                // 成功 - 認証情報を保存してアプリ初期化
+                currentUser = email;
+                localStorage.setItem('pinAuth', JSON.stringify({
+                    email: email,
+                    timestamp: new Date().toISOString()
+                }));
+                
+                // モーダルを閉じる
+                const modal = document.getElementById('pinSetupModalOverlay');
+                if (modal) {
+                    modal.remove();
+                    document.body.style.overflow = '';
+                }
+                
+                // アプリを初期化
+                initializeApp();
+                
+                console.log('✅ PIN設定完了:', email);
+            } else {
+                errorElement.style.display = 'block';
+                errorElement.textContent = 'PIN設定に失敗しました';
             }
         }
 
