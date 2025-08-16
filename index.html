@@ -5014,6 +5014,10 @@
                 };
                 localStorage.setItem('pinAuth', JSON.stringify(authData));
                 
+                // ユーザー切り替え時の訪問履歴クリア
+                userVisitHistory.clear();
+                console.log('🔄 ユーザー切り替え - 訪問履歴をクリア');
+                
                 // モーダルを閉じる
                 closeLoginModal();
                 
@@ -5231,6 +5235,10 @@
                     email: email,
                     timestamp: new Date().toISOString()
                 }));
+                
+                // ユーザー切り替え時の訪問履歴クリア
+                userVisitHistory.clear();
+                console.log('🔄 新規ユーザー登録 - 訪問履歴をクリア');
                 
                 // モーダルを閉じる
                 const modal = document.getElementById('pinSetupModalOverlay');
@@ -6571,16 +6579,31 @@
             // Supabaseから訪問履歴を読み込み
             await loadVisitHistoryFromSupabase();
             
-            // ローカルストレージからのフォールバック読み込み
-            const saved = localStorage.getItem('visit_history');
-            if (saved && userVisitHistory.size === 0) {
-                try {
-                    const parsed = JSON.parse(saved);
-                    userVisitHistory = new Map(Object.entries(parsed));
-                    console.log('💾 ローカル訪問履歴を復元:', userVisitHistory.size, '件');
-                } catch (e) {
-                    console.warn('⚠️ 訪問履歴の復元に失敗:', e);
-                    userVisitHistory = new Map();
+            // ローカルストレージからのフォールバック読み込み（ユーザー別）
+            if (currentUser) {
+                const saved = localStorage.getItem(`visit_history_${currentUser}`);
+                if (saved && userVisitHistory.size === 0) {
+                    try {
+                        const parsed = JSON.parse(saved);
+                        userVisitHistory = new Map(Object.entries(parsed));
+                        console.log('💾 ユーザー別訪問履歴を復元:', currentUser, userVisitHistory.size, '件');
+                    } catch (e) {
+                        console.warn('⚠️ 訪問履歴の復元に失敗:', e);
+                        userVisitHistory = new Map();
+                    }
+                } else if (userVisitHistory.size === 0) {
+                    // 古い共有データがある場合の移行処理
+                    const oldData = localStorage.getItem('visit_history');
+                    if (oldData) {
+                        try {
+                            const parsed = JSON.parse(oldData);
+                            console.log('🔄 古い共有データを発見 - 削除処理中...');
+                            localStorage.removeItem('visit_history');
+                            console.log('🗑️ 古い共有データを削除しました（プライバシー保護）');
+                        } catch (e) {
+                            console.warn('⚠️ 古いデータの削除に失敗:', e);
+                        }
+                    }
                 }
             }
             
@@ -6957,9 +6980,12 @@
                 console.log('✅ 訪問ステータス設定:', storeId, status);
             }
             
-            // ローカルストレージにもバックアップ保存
-            const obj = Object.fromEntries(userVisitHistory);
-            localStorage.setItem('visit_history', JSON.stringify(obj));
+            // ローカルストレージにもバックアップ保存（ユーザー別）
+            if (currentUser) {
+                const obj = Object.fromEntries(userVisitHistory);
+                localStorage.setItem(`visit_history_${currentUser}`, JSON.stringify(obj));
+                console.log('💾 ユーザー別訪問履歴を保存:', currentUser);
+            }
             
             // UIを更新
             updateVisitButtonsForStore(storeId);
