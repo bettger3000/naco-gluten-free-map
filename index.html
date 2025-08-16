@@ -4614,29 +4614,39 @@
                         // 店舗カードを選択
                         selectStoreCard(store.id);
                         
-                        // ポップアップ全体が見える位置に店舗を移動
-                        const mapContainer = map.getContainer();
-                        const containerHeight = mapContainer.clientHeight;
-                        const containerWidth = mapContainer.clientWidth;
-                        
-                        let offsetY, offsetX = 0;
-                        
-                        if (isDesktop()) {
-                            // PC版: ポップアップが上に表示されるので、画面の下寄り（70%位置）に配置
-                            offsetY = containerHeight * 0.2; // 上から20%下に
-                        } else {
-                            // スマホ版: より下寄り（60%位置）に配置
-                            offsetY = containerHeight * 0.15; // 上から15%下に
-                        }
-                        
-                        // オフセット付きの位置を計算（店舗アイコンを画面中央より上に配置）
-                        const newPoint = L.point(containerWidth / 2, containerHeight / 2 - offsetY);
-                        const newLatLng = map.containerPointToLatLng(newPoint);
-                        
-                        map.setView(newLatLng, map.getZoom(), {
+                        // まず店舗位置に移動
+                        map.setView([store.latitude, store.longitude], map.getZoom(), {
                             animate: true,
                             duration: 0.5
                         });
+                        
+                        // ポップアップが見える位置に画面を調整
+                        setTimeout(() => {
+                            const mapContainer = map.getContainer();
+                            const containerHeight = mapContainer.clientHeight;
+                            
+                            // 現在の店舗位置の画面座標を取得
+                            const storePoint = map.latLngToContainerPoint([store.latitude, store.longitude]);
+                            
+                            let targetY;
+                            if (isDesktop()) {
+                                // PC版: 画面の60%位置に店舗アイコンを配置
+                                targetY = containerHeight * 0.6;
+                            } else {
+                                // スマホ版: 画面の65%位置に店舗アイコンを配置
+                                targetY = containerHeight * 0.65;
+                            }
+                            
+                            // 必要なパン量を計算
+                            const panY = storePoint.y - targetY;
+                            
+                            if (Math.abs(panY) > 10) { // 10px以上の調整が必要な場合のみ
+                                map.panBy([0, panY], { 
+                                    animate: true, 
+                                    duration: 0.3 
+                                });
+                            }
+                        }, 100);
                     });
 
                     // マーカーにstoreIdを保存
@@ -6346,29 +6356,39 @@
         function focusOnStore(storeId) {
             const store = stores.find(s => s.id === storeId);
             if (store && map) {
-                // ポップアップ全体が見える位置に店舗を移動
-                const mapContainer = map.getContainer();
-                const containerHeight = mapContainer.clientHeight;
-                const containerWidth = mapContainer.clientWidth;
-                
-                let offsetY;
-                
-                if (isDesktop()) {
-                    // PC版: ポップアップが上に表示されるので、画面の下寄りに配置
-                    offsetY = containerHeight * 0.2;
-                } else {
-                    // スマホ版: より下寄りに配置
-                    offsetY = containerHeight * 0.15;
-                }
-                
-                // オフセット付きの位置を計算（店舗アイコンを画面中央より上に配置）
-                const newPoint = L.point(containerWidth / 2, containerHeight / 2 - offsetY);
-                const newLatLng = map.containerPointToLatLng(newPoint);
-                
-                map.setView(newLatLng, 16, {
+                // まず店舗位置に移動
+                map.setView([store.latitude, store.longitude], 16, {
                     animate: true,
                     duration: 0.8
                 });
+                
+                // ポップアップが見える位置に画面を調整
+                setTimeout(() => {
+                    const mapContainer = map.getContainer();
+                    const containerHeight = mapContainer.clientHeight;
+                    
+                    // 現在の店舗位置の画面座標を取得
+                    const storePoint = map.latLngToContainerPoint([store.latitude, store.longitude]);
+                    
+                    let targetY;
+                    if (isDesktop()) {
+                        // PC版: 画面の60%位置に店舗アイコンを配置
+                        targetY = containerHeight * 0.6;
+                    } else {
+                        // スマホ版: 画面の65%位置に店舗アイコンを配置
+                        targetY = containerHeight * 0.65;
+                    }
+                    
+                    // 必要なパン量を計算
+                    const panY = storePoint.y - targetY;
+                    
+                    if (Math.abs(panY) > 10) { // 10px以上の調整が必要な場合のみ
+                        map.panBy([0, panY], { 
+                            animate: true, 
+                            duration: 0.3 
+                        });
+                    }
+                }, 200);
                 
                 // パネルを閉じる
                 const panel = document.getElementById('overlayPanel');
@@ -6499,29 +6519,39 @@
             // 店舗を探してフォーカス
             const store = stores.find(s => s.id === storeId);
             if (store && map) {
-                // ポップアップ全体が見える位置に店舗を移動
-                const mapContainer = map.getContainer();
-                const containerHeight = mapContainer.clientHeight;
-                const containerWidth = mapContainer.clientWidth;
-                
-                let offsetY;
-                
-                if (isDesktop()) {
-                    // PC版: ポップアップが上に表示されるので、画面の下寄りに配置
-                    offsetY = containerHeight * 0.2;
-                } else {
-                    // スマホ版: より下寄りに配置
-                    offsetY = containerHeight * 0.15;
-                }
-                
-                // オフセット付きの位置を計算（店舗アイコンを画面中央より上に配置）
-                const newPoint = L.point(containerWidth / 2, containerHeight / 2 - offsetY);
-                const newLatLng = map.containerPointToLatLng(newPoint);
-                
-                map.setView(newLatLng, 16, {
+                // まず店舗位置に移動
+                map.setView([store.latitude, store.longitude], 16, {
                     animate: true,
                     duration: 0.8
                 });
+                
+                // ポップアップが見える位置に画面を調整
+                setTimeout(() => {
+                    const mapContainer = map.getContainer();
+                    const containerHeight = mapContainer.clientHeight;
+                    
+                    // 現在の店舗位置の画面座標を取得
+                    const storePoint = map.latLngToContainerPoint([store.latitude, store.longitude]);
+                    
+                    let targetY;
+                    if (isDesktop()) {
+                        // PC版: 画面の60%位置に店舗アイコンを配置
+                        targetY = containerHeight * 0.6;
+                    } else {
+                        // スマホ版: 画面の65%位置に店舗アイコンを配置
+                        targetY = containerHeight * 0.65;
+                    }
+                    
+                    // 必要なパン量を計算
+                    const panY = storePoint.y - targetY;
+                    
+                    if (Math.abs(panY) > 10) { // 10px以上の調整が必要な場合のみ
+                        map.panBy([0, panY], { 
+                            animate: true, 
+                            duration: 0.3 
+                        });
+                    }
+                }, 200);
                 
                 // マーカーのポップアップを開く
                 setTimeout(() => {
