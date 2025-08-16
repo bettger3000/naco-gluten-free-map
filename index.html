@@ -2461,6 +2461,362 @@
         .hidden {
             display: none !important;
         }
+
+        /* 店舗詳細モーダル/フルスクリーン */
+        .store-detail-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: var(--space-lg);
+        }
+
+        .store-detail-modal-content {
+            background: white;
+            border-radius: var(--radius-xl);
+            max-width: 800px;
+            width: 100%;
+            height: 90vh;
+            box-shadow: var(--shadow-xl);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .store-detail-fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: white;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .store-detail-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .store-detail-header {
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--border-light);
+            background: var(--bg-secondary);
+        }
+
+        .store-detail-title h2 {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            margin: 0 0 var(--space-xs) 0;
+        }
+
+        .store-detail-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: var(--space-xs);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s ease;
+        }
+
+        .store-detail-close:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .store-detail-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-lg);
+        }
+
+        .store-detail-images {
+            margin-bottom: var(--space-xl);
+        }
+
+        .store-detail-info {
+            margin-bottom: var(--space-xl);
+            padding: var(--space-lg);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+        }
+
+        .store-detail-info h3 {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            margin: 0 0 var(--space-md) 0;
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .detail-row {
+            display: flex;
+            padding: var(--space-sm) 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+            width: 120px;
+            flex-shrink: 0;
+        }
+
+        .detail-value {
+            color: var(--text-primary);
+            flex: 1;
+        }
+
+        .detail-value a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .detail-value a:hover {
+            text-decoration: underline;
+        }
+
+        .phone-link {
+            color: var(--primary) !important;
+            font-weight: 500;
+            text-decoration: none;
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s ease;
+        }
+
+        .phone-link:hover {
+            background: var(--bg-hover);
+            text-decoration: none !important;
+        }
+
+        .gf-options, .store-description {
+            color: var(--text-primary);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .no-reviews {
+            color: var(--text-secondary);
+            font-style: italic;
+            margin: 0;
+        }
+
+        /* ナビゲーションボタン */
+        .store-navigation {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-lg);
+            margin-top: var(--space-xl);
+        }
+
+        .nav-btn {
+            padding: var(--space-lg) var(--space-md);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+            min-height: 60px;
+            width: 100%;
+        }
+
+        .nav-btn.google-maps {
+            background: #4285f4;
+            color: white;
+        }
+
+        .nav-btn.google-maps:hover {
+            background: #3367d6;
+            transform: translateY(-1px);
+        }
+
+        .nav-btn.route-search {
+            background: #34a853;
+            color: white;
+        }
+
+        .nav-btn.route-search:hover {
+            background: #2d8f47;
+            transform: translateY(-1px);
+        }
+
+
+        /* ログインモーダル */
+        .login-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20000;
+            padding: var(--space-lg);
+        }
+
+        .login-modal-content {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-2xl);
+            box-shadow: var(--shadow-xl);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .login-modal-content .login-header h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: var(--space-xs);
+        }
+
+        .login-modal-content .login-header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: var(--space-xl);
+        }
+
+        .login-modal-content .login-content h2 {
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            margin-bottom: var(--space-md);
+        }
+
+        .login-modal-content .login-content p {
+            color: var(--text-secondary);
+            margin-bottom: var(--space-xl);
+            line-height: 1.6;
+        }
+
+        .login-modal-content .login-form {
+            margin-top: var(--space-xl);
+        }
+
+        .login-modal-content .input-group {
+            margin-bottom: var(--space-lg);
+            text-align: left;
+        }
+
+        .login-modal-content .input-group label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: var(--space-xs);
+            font-weight: 500;
+        }
+
+        .login-modal-content .input-group input {
+            width: 100%;
+            padding: var(--space-md);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+
+        .login-modal-content .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-alpha);
+        }
+
+        .login-modal-content .login-error {
+            background: #fee;
+            color: #c53030;
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            margin-bottom: var(--space-md);
+            border: 1px solid #fed7d7;
+        }
+
+        .login-modal-content .pin-login-btn {
+            width: 100%;
+            padding: var(--space-md) var(--space-lg);
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-sm);
+        }
+
+        .login-modal-content .pin-login-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* モバイル対応 */
+        @media (max-width: 768px) {
+            .login-modal-overlay {
+                padding: 0;
+            }
+
+            .login-modal-content {
+                max-height: 100vh;
+                border-radius: 0;
+            }
+            .store-detail-modal {
+                padding: 0;
+            }
+
+            .store-detail-modal-content {
+                height: 100vh;
+                border-radius: 0;
+            }
+
+            .detail-label {
+                width: 100px;
+            }
+
+            .nav-btn {
+                padding: var(--space-lg);
+                font-size: 1.1rem;
+                min-height: 70px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -3594,25 +3950,25 @@
             const isAuthenticated = await checkAuthenticationStatus();
             
             if (!isAuthenticated) {
-                console.log('🔒 未認証ユーザー - ログイン画面にリダイレクト');
-                showLoginScreen();
+                console.log('🔒 未認証ユーザー - ログイン画面を表示');
+                showLoginModal();
                 return;
             }
             
             console.log('✅ 認証済みユーザー - マップ画面を表示');
             showMapScreen();
             
-            // 2. 訪問履歴データを先に読み込み
+            // 2. 地図を先に初期化
+            initMap();
+            
+            // 3. 訪問履歴データを読み込み
             await initVisitHistory();
             
-            // 3. 店舗画像データを並行で読み込み
+            // 4. 店舗画像データを並行で読み込み
             await initStoreImages();
             
-            // 4. 店舗データを表示（訪問履歴・画像込み）
+            // 5. 店舗データを表示（訪問履歴・画像込み）
             await loadEmbeddedStores();
-            
-            // 4. 地図を初期化
-            initMap();
             
             // 5. イベントリスナー設定
             setupEventListeners();
@@ -3667,8 +4023,118 @@
             }
         }
 
-        // ログイン画面を表示
+        // ログイン画面をモーダルで表示（HTMLを書き換えない）
+        function showLoginModal() {
+            const modalHTML = `
+                <div class="login-modal-overlay" id="loginModalOverlay">
+                    <div class="login-modal-content">
+                        <div class="login-header">
+                            <img src="nacoキャラクター.png" alt="naco" class="login-logo">
+                            <h1>グルテンフリーマップ</h1>
+                            <p>ビヨグル倶楽部</p>
+                        </div>
+                        <div class="login-content">
+                            <h2>会員ログイン</h2>
+                            <p>登録済みのメールアドレスと<br>PINコードを入力してください</p>
+                            
+                            <div class="login-form">
+                                <div class="input-group">
+                                    <label for="modalEmailInput">メールアドレス</label>
+                                    <input type="email" id="modalEmailInput" placeholder="example@email.com" 
+                                           onkeypress="if(event.key==='Enter') document.getElementById('modalPinInput').focus()">
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="modalPinInput">PINコード（4桁）</label>
+                                    <input type="password" id="modalPinInput" placeholder="••••" maxlength="4" 
+                                           pattern="[0-9]*" inputmode="numeric"
+                                           onkeypress="if(event.key==='Enter') performModalPinLogin()">
+                                </div>
+                                
+                                <div id="modalLoginError" class="login-error" style="display: none;">
+                                    メールアドレスまたはPINコードが正しくありません
+                                </div>
+                                
+                                <button id="modalLoginBtn" class="pin-login-btn" onclick="performModalPinLogin()">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                    ログイン
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            document.body.style.overflow = 'hidden';
+        }
+
+        // モーダルログイン処理
+        function performModalPinLogin() {
+            const email = document.getElementById('modalEmailInput').value.trim();
+            const pin = document.getElementById('modalPinInput').value.trim();
+            const errorElement = document.getElementById('modalLoginError');
+            const loginButton = document.getElementById('modalLoginBtn');
+            
+            // 入力チェック
+            if (!email || !pin) {
+                errorElement.style.display = 'block';
+                errorElement.textContent = 'メールアドレスとPINコードを入力してください';
+                return;
+            }
+            
+            // 簡易認証（本来はサーバーで検証）
+            const validCredentials = [
+                { email: 'bettger1000@gmail.com', pin: '9999' },
+                { email: 'test@example.com', pin: '1234' }
+            ];
+            
+            const isValid = validCredentials.some(cred => 
+                cred.email === email && cred.pin === pin
+            );
+            
+            if (isValid) {
+                // 認証成功
+                currentUser = email;
+                
+                // 認証情報を保存
+                const authData = {
+                    email: email,
+                    timestamp: new Date().toISOString()
+                };
+                localStorage.setItem('pinAuth', JSON.stringify(authData));
+                
+                // モーダルを閉じる
+                closeLoginModal();
+                
+                // アプリを初期化（認証後）
+                initializeApp();
+                
+                console.log('✅ モーダルログイン成功:', email);
+            } else {
+                // 認証失敗
+                errorElement.style.display = 'block';
+                errorElement.textContent = 'メールアドレスまたはPINコードが正しくありません';
+                document.getElementById('modalPinInput').value = '';
+            }
+        }
+
+        // ログインモーダルを閉じる
+        function closeLoginModal() {
+            const modal = document.getElementById('loginModalOverlay');
+            if (modal) {
+                modal.remove();
+                document.body.style.overflow = '';
+            }
+        }
+
+        // 元の関数名は残すが、新しい関数を呼ぶように変更
         function showLoginScreen() {
+            showLoginModal();
+        }
+
+        // 元の長い関数は削除（非表示にするため）
+        function showLoginScreenOld() {
             document.body.innerHTML = `
                 <div class="login-container">
                     <div class="login-card">
@@ -3931,7 +4397,10 @@
             const loadedStores = await loadStores();
             stores = loadedStores;
             
-            displayStores(stores);
+            // マップが準備完了していればマーカーを表示
+            if (map) {
+                displayStores(stores);
+            }
             
             // デバイス別UI更新
             if (isDesktop()) {
@@ -3942,7 +4411,7 @@
                 updatePanelContent('all');
             }
             
-            console.log(`✅ ${stores.length}店舗のデータを即座に表示完了`);
+            console.log(`✅ ${stores.length}店舗のデータを読み込み完了`);
         }
 
         // マップ初期化
@@ -4319,42 +4788,22 @@
                             <button class="popup-close-btn" onclick="closePopup()" title="閉じる">×</button>
                         </div>
                         <div class="popup-body">
-                            ${createImageCarousel(storeId)}
+                            ${createImageCarousel(store.id)}
                             <div class="popup-info">
                                 <div class="popup-row">
                                     <span class="popup-icon">📍</span>
                                     <span class="popup-text">${storeAddress}</span>
                                 </div>
-                                ${storeGfOptions ? `
-                                    <div class="popup-row">
-                                        <span class="popup-icon">✨</span>
-                                        <span class="popup-text">${storeGfOptions}</span>
-                                    </div>
-                                ` : ''}
                                 ${storeHours ? `
                                     <div class="popup-row">
                                         <span class="popup-icon">🕒</span>
                                         <span class="popup-text">${storeHours}</span>
                                     </div>
                                 ` : ''}
-                                ${storePhone ? `
-                                    <div class="popup-row">
-                                        <span class="popup-icon">📞</span>
-                                        <span class="popup-text">${storePhone}</span>
-                                    </div>
-                                ` : ''}
-                                ${storeWebsite ? `
-                                    <div class="popup-row">
-                                        <span class="popup-icon">🌐</span>
-                                        <span class="popup-text"><a href="${storeWebsite}" target="_blank" rel="noopener">ウェブサイト</a></span>
-                                    </div>
-                                ` : ''}
-                                ${storeDescription ? `
-                                    <div class="popup-row">
-                                        <span class="popup-icon">💬</span>
-                                        <span class="popup-text">${storeDescription}</span>
-                                    </div>
-                                ` : ''}
+                                <div class="popup-row">
+                                    <span class="popup-icon">⭐</span>
+                                    <span class="popup-text">レビューなし</span>
+                                </div>
                             </div>
                             <div class="popup-actions">
                                 <button class="action-btn want-to-go popup-action-btn ${isWantToGo ? 'active' : ''}" onclick="toggleVisitStatus(${store.id}, 'want_to_go')" data-store-id="${store.id}">
@@ -4363,8 +4812,8 @@
                                 <button class="action-btn visited popup-action-btn ${isVisited ? 'active' : ''}" onclick="toggleVisitStatus(${store.id}, 'visited')" data-store-id="${store.id}">
                                     ✨ 行った
                                 </button>
-                                <button class="action-btn popup-action-btn" onclick="focusOnStore(${store.id})">
-                                    🗺️ 地図
+                                <button class="action-btn popup-action-btn" onclick="showStoreDetail(${store.id})">
+                                    📋 店舗詳細
                                 </button>
                             </div>
                         </div>
@@ -4383,7 +4832,7 @@
                             </button>
                         </div>
                         <div class="popup-scrollable-content">
-                            ${createImageCarousel(storeId)}
+                            ${createImageCarousel(store.id)}
                             <div class="popup-info-section">
                                 <div class="popup-category-row">
                                     <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
@@ -4392,36 +4841,16 @@
                                     <span class="popup-icon">📍</span>
                                     <span class="popup-text">${storeAddress}</span>
                                 </div>
-                                ${storeGfOptions ? `
-                                    <div class="popup-row">
-                                        <span class="popup-icon">✨</span>
-                                        <span class="popup-text">${storeGfOptions}</span>
-                                    </div>
-                                ` : ''}
                                 ${storeHours ? `
                                     <div class="popup-row">
                                         <span class="popup-icon">🕒</span>
                                         <span class="popup-text">${storeHours}</span>
                                     </div>
                                 ` : ''}
-                                ${storePhone ? `
-                                    <div class="popup-row">
-                                        <span class="popup-icon">📞</span>
-                                        <span class="popup-text">${storePhone}</span>
-                                    </div>
-                                ` : ''}
-                                ${storeWebsite ? `
-                                    <div class="popup-row">
-                                        <span class="popup-icon">🌐</span>
-                                        <span class="popup-text"><a href="${storeWebsite}" target="_blank" rel="noopener">ウェブサイト</a></span>
-                                    </div>
-                                ` : ''}
-                                ${storeDescription ? `
-                                    <div class="popup-row">
-                                        <span class="popup-icon">💬</span>
-                                        <span class="popup-text">${storeDescription}</span>
-                                    </div>
-                                ` : ''}
+                                <div class="popup-row">
+                                    <span class="popup-icon">⭐</span>
+                                    <span class="popup-text">レビューなし</span>
+                                </div>
                             </div>
                             <div class="popup-actions">
                                 <button class="action-btn want-to-go popup-action-btn ${isWantToGo ? 'active' : ''}" onclick="toggleVisitStatus(${store.id}, 'want_to_go')" data-store-id="${store.id}">
@@ -4430,8 +4859,8 @@
                                 <button class="action-btn visited popup-action-btn ${isVisited ? 'active' : ''}" onclick="toggleVisitStatus(${store.id}, 'visited')" data-store-id="${store.id}">
                                     ✨ 行った
                                 </button>
-                                <button class="action-btn popup-action-btn" onclick="focusOnStore(${store.id})">
-                                    🗺️ 地図
+                                <button class="action-btn popup-action-btn" onclick="showStoreDetail(${store.id})">
+                                    📋 店舗詳細
                                 </button>
                             </div>
                         </div>
@@ -6712,6 +7141,170 @@
                 </div>
             `;
         }
+
+        // 店舗詳細表示
+        function showStoreDetail(storeId) {
+            console.log('📋 店舗詳細表示:', storeId);
+            
+            // 店舗データを取得
+            const store = stores.find(s => s.id === storeId);
+            if (!store) {
+                console.error('店舗データが見つかりません:', storeId);
+                return;
+            }
+            
+            // 詳細画面のHTML作成
+            const detailHTML = createStoreDetailHTML(store);
+            
+            // モーダル/フルスクリーン表示
+            if (isDesktop()) {
+                showStoreDetailModal(detailHTML);
+            } else {
+                showStoreDetailFullscreen(detailHTML);
+            }
+        }
+
+        // 店舗詳細HTMLを生成
+        function createStoreDetailHTML(store) {
+            const storeName = escapeHtml(store.name || '');
+            const storeAddress = escapeHtml(store.address || '');
+            const storeCategory = escapeHtml(store.category || '');
+            const storeGfOptions = store.gluten_free_options ? escapeHtml(store.gluten_free_options) : '';
+            const storeHours = store.opening_hours ? escapeHtml(store.opening_hours) : '';
+            const storePhone = store.phone ? escapeHtml(store.phone) : '';
+            const storeWebsite = store.website ? escapeHtml(store.website) : '';
+            const storeDescription = store.description ? escapeHtml(store.description) : '';
+            
+            return `
+                <div class="store-detail-content">
+                    <div class="store-detail-header">
+                        <div class="store-detail-title">
+                            <h2>${storeName}</h2>
+                            <span class="store-category" data-category="${storeCategory}">${storeCategory}</span>
+                        </div>
+                        <button class="store-detail-close" onclick="closeStoreDetail()">×</button>
+                    </div>
+                    
+                    <div class="store-detail-body">
+                        <!-- 店舗画像ギャラリー -->
+                        <div class="store-detail-images">
+                            ${createImageCarousel(store.id)}
+                        </div>
+                        
+                        <!-- 基本情報 -->
+                        <div class="store-detail-info">
+                            <h3>📍 基本情報</h3>
+                            <div class="detail-row">
+                                <span class="detail-label">住所</span>
+                                <span class="detail-value">${storeAddress}</span>
+                            </div>
+                            ${storeHours ? `
+                                <div class="detail-row">
+                                    <span class="detail-label">営業時間</span>
+                                    <span class="detail-value">${storeHours}</span>
+                                </div>
+                            ` : ''}
+                            ${storePhone ? `
+                                <div class="detail-row">
+                                    <span class="detail-label">電話番号</span>
+                                    <span class="detail-value">
+                                        <a href="tel:${storePhone}" class="phone-link">${storePhone}</a>
+                                    </span>
+                                </div>
+                            ` : ''}
+                            ${storeWebsite ? `
+                                <div class="detail-row">
+                                    <span class="detail-label">ウェブサイト</span>
+                                    <span class="detail-value"><a href="${storeWebsite}" target="_blank" rel="noopener">公式サイト</a></span>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <!-- グルテンフリー対応 -->
+                        ${storeGfOptions ? `
+                            <div class="store-detail-info">
+                                <h3>✨ グルテンフリー対応</h3>
+                                <p class="gf-options">${storeGfOptions}</p>
+                            </div>
+                        ` : ''}
+
+                        <!-- 店舗説明 -->
+                        ${storeDescription ? `
+                            <div class="store-detail-info">
+                                <h3>💬 店舗について</h3>
+                                <p class="store-description">${storeDescription}</p>
+                            </div>
+                        ` : ''}
+
+                        <!-- レビュー（将来の実装） -->
+                        <div class="store-detail-info">
+                            <h3>⭐ レビュー</h3>
+                            <p class="no-reviews">まだレビューがありません</p>
+                        </div>
+
+                        <!-- ナビゲーションボタン -->
+                        <div class="store-navigation">
+                            <button class="nav-btn google-maps" onclick="openGoogleMaps(${store.latitude}, ${store.longitude})">
+                                🗺️ Googleマップで開く
+                            </button>
+                            <button class="nav-btn route-search" onclick="openRouteSearch(${store.latitude}, ${store.longitude})">
+                                🧭 ルート検索
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // PC版：モーダル表示
+        function showStoreDetailModal(detailHTML) {
+            const modalHTML = `
+                <div class="store-detail-modal" onclick="closeStoreDetail()">
+                    <div class="store-detail-modal-content" onclick="event.stopPropagation()">
+                        ${detailHTML}
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            document.body.style.overflow = 'hidden';
+        }
+
+        // モバイル版：フルスクリーン表示
+        function showStoreDetailFullscreen(detailHTML) {
+            const fullscreenHTML = `
+                <div class="store-detail-fullscreen">
+                    ${detailHTML}
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', fullscreenHTML);
+            document.body.style.overflow = 'hidden';
+        }
+
+        // 詳細画面を閉じる
+        function closeStoreDetail() {
+            const modal = document.querySelector('.store-detail-modal');
+            const fullscreen = document.querySelector('.store-detail-fullscreen');
+            
+            if (modal) modal.remove();
+            if (fullscreen) fullscreen.remove();
+            
+            document.body.style.overflow = '';
+        }
+
+        // Googleマップで開く
+        function openGoogleMaps(lat, lng) {
+            const url = `https://maps.google.com/maps?q=${lat},${lng}`;
+            window.open(url, '_blank', 'noopener,noreferrer');
+        }
+
+        // ルート検索
+        function openRouteSearch(lat, lng) {
+            const url = `https://maps.google.com/maps?saddr=現在地&daddr=${lat},${lng}`;
+            window.open(url, '_blank', 'noopener,noreferrer');
+        }
+
         
         // パフォーマンス測定
         console.log('🚀 埋め込みデータ版グルテンフリーマップ');

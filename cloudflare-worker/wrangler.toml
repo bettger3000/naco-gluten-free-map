@@ -3,8 +3,8 @@ main = "src/index.js"
 compatibility_date = "2024-08-14"
 compatibility_flags = ["nodejs_compat"]
 
-[env.production.vars]
-# GitHub関連の設定は環境変数で管理
+[vars]
+# GitHub関連の設定は環境変数で管理  
 GITHUB_REPO_OWNER = "bettger3000"
 GITHUB_REPO_NAME = "naco-gluten-free-map"
 GITHUB_BRANCH = "main"
