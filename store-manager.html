@@ -539,6 +539,10 @@
                         <i class="fas fa-download"></i>
                         JSONエクスポート
                     </button>
+                    <button class="btn btn-primary" onclick="generateEmbeddedCode()">
+                        <i class="fas fa-code"></i>
+                        埋め込みコード生成
+                    </button>
                     <button class="btn btn-secondary" onclick="importJSON()">
                         <i class="fas fa-upload"></i>
                         JSONインポート
@@ -674,6 +678,51 @@
             <div class="modal-actions">
                 <button class="btn btn-secondary" onclick="closeDeleteModal()">キャンセル</button>
                 <button class="btn btn-danger" onclick="confirmDelete()">削除する</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 埋め込みコード表示モーダル -->
+    <div id="embeddedCodeModal" class="modal">
+        <div class="modal-content" style="max-width: 800px; max-height: 90vh;">
+            <h3 class="modal-title">📋 埋め込みコード（index.html用）</h3>
+            <div class="modal-body">
+                <p style="margin-bottom: var(--space-md); color: var(--text-secondary);">
+                    以下のコードをindex.htmlの<code>const embeddedStores = [</code>から<code>];</code>まで置き換えてください
+                </p>
+                
+                <div style="margin-bottom: var(--space-md);">
+                    <button class="btn btn-primary" onclick="copyEmbeddedCode()" style="width: 100%;">
+                        <i class="fas fa-copy"></i>
+                        クリップボードにコピー
+                    </button>
+                </div>
+                
+                <textarea id="embeddedCodeText" readonly style="
+                    width: 100%; 
+                    height: 400px; 
+                    font-family: 'Courier New', monospace; 
+                    font-size: 0.85rem; 
+                    border: 1px solid var(--border-light); 
+                    border-radius: var(--radius-sm); 
+                    padding: var(--space-md);
+                    background: #f8f9fa;
+                    resize: vertical;
+                "></textarea>
+                
+                <div style="margin-top: var(--space-md); padding: var(--space-md); background: #e3f2fd; border-radius: var(--radius-sm);">
+                    <h4 style="margin-bottom: var(--space-sm); color: #1976d2;">📝 更新手順</h4>
+                    <ol style="margin-left: var(--space-lg); color: var(--text-secondary);">
+                        <li>上記のコードをコピー</li>
+                        <li>index.htmlを開く</li>
+                        <li><code>const embeddedStores = [</code>を検索</li>
+                        <li>配列の中身（<code>[</code>から<code>];</code>まで）を置き換え</li>
+                        <li>ファイルを保存してGitにコミット・プッシュ</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeEmbeddedCodeModal()">閉じる</button>
             </div>
         </div>
     </div>
@@ -955,6 +1004,17 @@
             deleteTargetId = null;
         }
         
+        // モーダル外クリックで閉じる
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                if (e.target.id === 'deleteModal') {
+                    closeDeleteModal();
+                } else if (e.target.id === 'embeddedCodeModal') {
+                    closeEmbeddedCodeModal();
+                }
+            }
+        });
+        
         // フォームリセット
         function resetForm() {
             document.getElementById('editForm').reset();
@@ -993,6 +1053,97 @@
             
             editMarker = L.marker([lat, lng]).addTo(editMap);
             editMap.setView([lat, lng], 15);
+        }
+        
+        // 埋め込みコード生成
+        function generateEmbeddedCode() {
+            // 店舗データをJavaScript配列形式で生成
+            const embeddedCode = generateEmbeddedStoresArray();
+            
+            // モーダルに表示
+            document.getElementById('embeddedCodeText').value = embeddedCode;
+            document.getElementById('embeddedCodeModal').classList.add('active');
+        }
+        
+        // embeddedStores配列のコード生成
+        function generateEmbeddedStoresArray() {
+            let code = 'const embeddedStores = [\n';
+            
+            stores.forEach((store, index) => {
+                code += '          {\n';
+                code += `                    "id": ${store.id},\n`;
+                code += `                    "name": "${escapeString(store.name)}",\n`;
+                code += `                    "category": "${escapeString(store.category)}",\n`;
+                code += `                    "address": "${escapeString(store.address)}",\n`;
+                
+                if (store.latitude) {
+                    code += `                    "latitude": ${store.latitude},\n`;
+                }
+                if (store.longitude) {
+                    code += `                    "longitude": ${store.longitude},\n`;
+                }
+                if (store.phone) {
+                    code += `                    "phone": "${escapeString(store.phone)}",\n`;
+                }
+                if (store.website) {
+                    code += `                    "website": "${escapeString(store.website)}",\n`;
+                }
+                if (store.description) {
+                    code += `                    "description": "${escapeString(store.description)}",\n`;
+                }
+                if (store.gluten_free_options) {
+                    code += `                    "gluten_free_options": "${escapeString(store.gluten_free_options)}",\n`;
+                }
+                if (store.opening_hours) {
+                    code += `                    "opening_hours": "${escapeString(store.opening_hours)}"\n`;
+                } else {
+                    // 最後のカンマを削除
+                    code = code.replace(/,\n$/, '\n');
+                }
+                
+                code += '          }';
+                
+                // 最後の要素以外はカンマを追加
+                if (index < stores.length - 1) {
+                    code += ',';
+                }
+                code += '\n';
+            });
+            
+            code += '];';
+            
+            return code;
+        }
+        
+        // 文字列エスケープ
+        function escapeString(str) {
+            if (!str) return '';
+            return str
+                .replace(/\\/g, '\\\\')
+                .replace(/"/g, '\\"')
+                .replace(/\n/g, '\\n')
+                .replace(/\r/g, '\\r')
+                .replace(/\t/g, '\\t');
+        }
+        
+        // 埋め込みコードをクリップボードにコピー
+        async function copyEmbeddedCode() {
+            const codeText = document.getElementById('embeddedCodeText').value;
+            
+            try {
+                await navigator.clipboard.writeText(codeText);
+                showToast('クリップボードにコピーしました');
+            } catch (err) {
+                // フォールバック: テキストエリアを選択
+                document.getElementById('embeddedCodeText').select();
+                document.execCommand('copy');
+                showToast('コードを選択しました。Ctrl+Cでコピーしてください');
+            }
+        }
+        
+        // 埋め込みコードモーダルを閉じる
+        function closeEmbeddedCodeModal() {
+            document.getElementById('embeddedCodeModal').classList.remove('active');
         }
         
         // JSONエクスポート
