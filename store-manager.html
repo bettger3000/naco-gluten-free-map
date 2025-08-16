@@ -543,6 +543,10 @@
                         <i class="fas fa-code"></i>
                         埋め込みコード生成
                     </button>
+                    <button class="btn btn-warning" onclick="autoSaveToGitHub()" id="autoSaveBtn">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        自動保存
+                    </button>
                     <button class="btn btn-secondary" onclick="importJSON()">
                         <i class="fas fa-upload"></i>
                         JSONインポート
@@ -1188,6 +1192,97 @@
             
             input.click();
         }
+
+        // 自動保存設定
+        const CLOUDFLARE_WORKER_URL = 'https://gluten-free-store-updater.kanakugimakoto.workers.dev'; // デプロイ後に更新
+        
+        // GitHub自動保存機能
+        async function autoSaveToGitHub() {
+            const btn = document.getElementById('autoSaveBtn');
+            const originalText = btn.innerHTML;
+            
+            // ボタンをローディング状態に
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 保存中...';
+            
+            try {
+                // 1. データ検証
+                if (!stores || stores.length === 0) {
+                    throw new Error('保存する店舗データがありません');
+                }
+                
+                // 2. Cloudflare Worker経由でGitHubに保存
+                const response = await fetch(CLOUDFLARE_WORKER_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        stores: stores,
+                        commitMessage: `管理画面から店舗データを更新 (${stores.length}件)`
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                // 3. 成功フィードバック
+                showToast(`✅ 自動保存完了！${result.stores_count}件の店舗データを更新しました`, false);
+                console.log('✅ GitHub更新成功:', result);
+                
+                // 4. ボタンを一時的に成功状態に
+                btn.innerHTML = '<i class="fas fa-check"></i> 保存完了';
+                btn.classList.add('btn-success');
+                btn.classList.remove('btn-warning');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-warning');
+                    btn.disabled = false;
+                }, 3000);
+                
+            } catch (error) {
+                console.error('❌ 自動保存エラー:', error);
+                
+                // エラーフィードバック
+                showToast(`❌ 自動保存失敗: ${error.message}`, true);
+                
+                // ボタンを元の状態に戻す
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                
+                // エラー詳細をコンソールに表示
+                console.error('詳細エラー情報:', {
+                    message: error.message,
+                    workerUrl: CLOUDFLARE_WORKER_URL,
+                    storesCount: stores ? stores.length : 'undefined'
+                });
+            }
+        }
+        
+        // 自動保存の可用性チェック（オプション）
+        async function checkAutoSaveAvailability() {
+            try {
+                const response = await fetch(CLOUDFLARE_WORKER_URL, {
+                    method: 'OPTIONS'
+                });
+                
+                if (response.ok) {
+                    console.log('✅ 自動保存機能が利用可能です');
+                } else {
+                    console.warn('⚠️ 自動保存機能が利用できません（Worker未デプロイの可能性）');
+                    document.getElementById('autoSaveBtn').style.opacity = '0.6';
+                }
+            } catch (error) {
+                console.warn('⚠️ 自動保存機能の確認に失敗:', error.message);
+                document.getElementById('autoSaveBtn').style.opacity = '0.6';
+            }
+        }
         
         // トースト通知
         function showToast(message, isError = false) {
@@ -1202,6 +1297,12 @@
                 toast.classList.remove('show');
             }, 3000);
         }
+
+        // ページ読み込み時の初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 自動保存機能の可用性をチェック
+            setTimeout(checkAutoSaveAvailability, 1000); // 1秒後にチェック
+        });
     </script>
 </body>
 </html>
