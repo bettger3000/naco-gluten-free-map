@@ -4592,7 +4592,14 @@
                     marker.bindPopup(popupContent, popupOptions);
 
                     marker.on('click', function() {
+                        // 店舗カードを選択
                         selectStoreCard(store.id);
+                        
+                        // マップの中央に店舗を移動（スムーズアニメーション）
+                        map.setView([store.latitude, store.longitude], map.getZoom(), {
+                            animate: true,
+                            duration: 0.5
+                        });
                     });
 
                     // マーカーにstoreIdを保存
@@ -6302,7 +6309,10 @@
         function focusOnStore(storeId) {
             const store = stores.find(s => s.id === storeId);
             if (store && map) {
-                map.setView([store.latitude, store.longitude], 16);
+                map.setView([store.latitude, store.longitude], 16, {
+                    animate: true,
+                    duration: 0.8
+                });
                 
                 // パネルを閉じる
                 const panel = document.getElementById('overlayPanel');
@@ -6433,7 +6443,10 @@
             // 店舗を探してフォーカス
             const store = stores.find(s => s.id === storeId);
             if (store && map) {
-                map.setView([store.latitude, store.longitude], 16);
+                map.setView([store.latitude, store.longitude], 16, {
+                    animate: true,
+                    duration: 0.8
+                });
                 
                 // マーカーのポップアップを開く
                 setTimeout(() => {
