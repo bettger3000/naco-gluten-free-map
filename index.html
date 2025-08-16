@@ -6310,10 +6310,12 @@
                     <div class="store-images">
                         <div class="no-images">
                             <span>📷 画像がありません</span>
-                            <button class="image-upload-btn" onclick="showImageUpload(${storeId})">
-                                <i class="fas fa-plus"></i>
-                                画像を追加
-                            </button>
+                            ${isAdminAuthenticated() ? `
+                                <button class="image-upload-btn" onclick="showImageUpload(${storeId})">
+                                    <i class="fas fa-plus"></i>
+                                    画像を追加
+                                </button>
+                            ` : ''}
                         </div>
                     </div>
                 `;
@@ -6349,7 +6351,7 @@
                         ${dotsHtml}
                         ${buttonsHtml}
                     </div>
-                    ${images.length < 3 ? `
+                    ${images.length < 3 && isAdminAuthenticated() ? `
                         <button class="image-upload-btn" onclick="showImageUpload(${storeId})">
                             <i class="fas fa-plus"></i>
                             画像を追加 (${images.length}/3)
@@ -6405,8 +6407,35 @@
             showSlide(storeId, prevIndex);
         }
 
-        // 画像アップロード機能
+        // 管理者認証確認
+        function isAdminAuthenticated() {
+            const savedAuth = localStorage.getItem('pinAuth');
+            if (!savedAuth) return false;
+            
+            try {
+                const authData = JSON.parse(savedAuth);
+                if (!authData || !authData.timestamp) return false;
+                
+                // 認証から24時間以内かチェック
+                const authTime = new Date(authData.timestamp);
+                const now = new Date();
+                const hoursPassed = (now - authTime) / (1000 * 60 * 60);
+                
+                return hoursPassed < 24;
+            } catch (error) {
+                console.error('認証状態確認エラー:', error);
+                return false;
+            }
+        }
+
+        // 画像アップロード機能（管理者のみ）
         function showImageUpload(storeId) {
+            // 管理者認証チェック
+            if (!isAdminAuthenticated()) {
+                console.log('📷 管理者のみ画像アップロード可能');
+                return;
+            }
+            
             const currentImages = storeImages.get(storeId) || [];
             if (currentImages.length >= 3) {
                 alert('この店舗は既に3枚の画像がアップロードされています。');
