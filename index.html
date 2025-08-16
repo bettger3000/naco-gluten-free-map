@@ -526,6 +526,20 @@
             background: var(--success);
             border-color: var(--success);
         }
+        
+        /* 店舗詳細ボタンの視認性向上 */
+        .action-btn.store-detail {
+            background: #f8fafc;
+            border: 1.5px solid #64748b;
+            color: #334155;
+            font-weight: 500;
+        }
+        
+        .action-btn.store-detail:hover {
+            background: #e2e8f0;
+            border-color: #475569;
+            transform: translateY(-1px);
+        }
 
         /* ポップアップ内のアクションボタン */
         .popup-action-btn {
@@ -4928,8 +4942,8 @@
                                 <button class="action-btn visited popup-action-btn ${isVisited ? 'active' : ''}" onclick="toggleVisitStatus(${store.id}, 'visited')" data-store-id="${store.id}">
                                     ✨ 行った
                                 </button>
-                                <button class="action-btn popup-action-btn" onclick="showStoreDetail(${store.id})">
-                                    📋 店舗詳細
+                                <button class="action-btn popup-action-btn store-detail" onclick="showStoreDetail(${store.id})">
+                                    📍 店舗詳細
                                 </button>
                             </div>
                         </div>
@@ -4975,8 +4989,8 @@
                                 <button class="action-btn visited popup-action-btn ${isVisited ? 'active' : ''}" onclick="toggleVisitStatus(${store.id}, 'visited')" data-store-id="${store.id}">
                                     ✨ 行った
                                 </button>
-                                <button class="action-btn popup-action-btn" onclick="showStoreDetail(${store.id})">
-                                    📋 店舗詳細
+                                <button class="action-btn popup-action-btn store-detail" onclick="showStoreDetail(${store.id})">
+                                    📍 店舗詳細
                                 </button>
                             </div>
                         </div>
@@ -5220,8 +5234,8 @@
                             onclick="event.stopPropagation(); toggleVisitStatus(${store.id}, 'visited')">
                         ✨ 行った
                     </button>
-                    <button class="action-btn" onclick="event.stopPropagation(); showStoreDetail(${store.id})">
-                        📋 店舗詳細
+                    <button class="action-btn store-detail" onclick="event.stopPropagation(); showStoreDetail(${store.id})">
+                        📍 店舗詳細
                     </button>
                 </div>
             `;
@@ -6343,8 +6357,8 @@
                             onclick="toggleVisitStatus(${store.id}, 'visited')">
                         ✨ 行った
                     </button>
-                    <button class="action-btn" onclick="showStoreDetail(${store.id})">
-                        📋 店舗詳細
+                    <button class="action-btn store-detail" onclick="showStoreDetail(${store.id})">
+                        📍 店舗詳細
                     </button>
                 </div>
             `;
@@ -7316,8 +7330,8 @@
                             onclick="toggleVisitStatus(${store.id}, 'visited')">
                         ✨ 行った
                     </button>
-                    <button class="action-btn" onclick="showStoreDetail(${store.id})">
-                        📋 店舗詳細
+                    <button class="action-btn store-detail" onclick="showStoreDetail(${store.id})">
+                        📍 店舗詳細
                     </button>
                 </div>
             `;
