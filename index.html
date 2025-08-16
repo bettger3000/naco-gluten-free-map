@@ -1835,6 +1835,7 @@
         
         .mobile-search-box {
             margin-bottom: var(--space-md);
+            position: relative;
         }
         
         .mobile-search-input {
@@ -1889,6 +1890,61 @@
             border-color: #ff6b9d;
             transform: translateY(-1px);
             box-shadow: 0 3px 12px rgba(255, 107, 157, 0.3);
+        }
+
+        /* モバイル版検索候補 */
+        .mobile-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: none;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 4px;
+        }
+
+        .mobile-suggestion-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 107, 157, 0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .mobile-suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .mobile-suggestion-item:hover,
+        .mobile-suggestion-item.highlighted {
+            background: rgba(255, 107, 157, 0.1);
+            color: #c2185b;
+        }
+
+        .mobile-suggestion-icon {
+            font-size: 16px;
+            min-width: 20px;
+        }
+
+        .mobile-suggestion-text {
+            flex: 1;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .mobile-suggestion-category {
+            font-size: 12px;
+            color: #666;
+            background: rgba(255, 107, 157, 0.1);
+            padding: 2px 8px;
+            border-radius: 8px;
         }
 
         /* 訪問履歴ビュー */
@@ -3198,6 +3254,7 @@
         <div class="mobile-search-filter" id="mobileSearchFilter">
             <div class="mobile-search-box">
                 <input type="text" id="mobileSearchInput" class="mobile-search-input" placeholder="店名・エリアで検索">
+                <div id="mobileSuggestions" class="mobile-suggestions"></div>
             </div>
             <div class="mobile-filter-chips">
                 <button class="mobile-chip active" data-category="">すべて</button>
@@ -4183,6 +4240,7 @@
         let markers = [];
         let famousPlaces = []; // 地名検索用データ
         let searchSuggestionIndex = -1; // キーボード選択用
+        let mobileSuggestionIndex = -1; // モバイル版キーボード選択用
         
         // カスタムピン機能用変数
         let customPinMarker = null;
@@ -4266,23 +4324,35 @@
 
         // 検索機能のセットアップ
         function setupSearchFunctionality() {
+            // PC版検索
             const searchInput = document.getElementById('sidebarSearchInput');
             const suggestions = document.getElementById('searchSuggestions');
             
-            if (!searchInput || !suggestions) {
-                console.warn('検索要素が見つかりません');
-                return;
+            if (searchInput && suggestions) {
+                // 検索入力イベント
+                searchInput.addEventListener('input', handleSearchInput);
+                searchInput.addEventListener('keydown', handleSearchKeydown);
+                searchInput.addEventListener('blur', hideSuggestions);
             }
 
-            // 検索入力イベント
-            searchInput.addEventListener('input', handleSearchInput);
-            searchInput.addEventListener('keydown', handleSearchKeydown);
-            searchInput.addEventListener('blur', hideSuggestions);
+            // モバイル版検索
+            const mobileSearchInput = document.getElementById('mobileSearchInput');
+            const mobileSuggestions = document.getElementById('mobileSuggestions');
+            
+            if (mobileSearchInput && mobileSuggestions) {
+                // モバイル検索入力イベント
+                mobileSearchInput.addEventListener('input', handleMobileSearchInput);
+                mobileSearchInput.addEventListener('keydown', handleMobileSearchKeydown);
+                mobileSearchInput.addEventListener('blur', hideMobileSuggestions);
+            }
             
             // 候補クリック外しで非表示
             document.addEventListener('click', (e) => {
-                if (!searchInput.contains(e.target) && !suggestions.contains(e.target)) {
+                if (searchInput && suggestions && !searchInput.contains(e.target) && !suggestions.contains(e.target)) {
                     hideSuggestions();
+                }
+                if (mobileSearchInput && mobileSuggestions && !mobileSearchInput.contains(e.target) && !mobileSuggestions.contains(e.target)) {
+                    hideMobileSuggestions();
                 }
             });
         }
@@ -4410,6 +4480,155 @@
             items.forEach((item, index) => {
                 item.classList.toggle('highlighted', index === searchSuggestionIndex);
             });
+        }
+
+        // モバイル検索入力処理
+        function handleMobileSearchInput(event) {
+            const query = event.target.value.trim();
+            const mobileSuggestions = document.getElementById('mobileSuggestions');
+            
+            if (query.length < 1) {
+                hideMobileSuggestions();
+                // 通常の店舗検索を実行
+                filterStores(query);
+                return;
+            }
+
+            // 地名検索候補を表示
+            const matches = searchFamousPlaces(query);
+            
+            if (matches.length > 0) {
+                showMobileSuggestions(matches);
+            } else {
+                hideMobileSuggestions();
+            }
+            
+            // 通常の店舗検索も並行実行
+            filterStores(query);
+        }
+
+        // モバイル検索候補を表示
+        function showMobileSuggestions(matches) {
+            const mobileSuggestions = document.getElementById('mobileSuggestions');
+            
+            mobileSuggestions.innerHTML = matches.map((place, index) => {
+                const icon = getCategoryIcon(place.category);
+                return `
+                    <div class="mobile-suggestion-item" data-index="${index}" data-place='${JSON.stringify(place)}'>
+                        <span class="mobile-suggestion-icon">${icon}</span>
+                        <span class="mobile-suggestion-text">${place.name}</span>
+                        <span class="mobile-suggestion-category">${place.category}</span>
+                    </div>
+                `;
+            }).join('');
+            
+            // クリックイベントを追加
+            mobileSuggestions.querySelectorAll('.mobile-suggestion-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const placeData = JSON.parse(item.dataset.place);
+                    selectMobilePlace(placeData);
+                });
+            });
+            
+            mobileSuggestions.style.display = 'block';
+            mobileSuggestionIndex = -1;
+        }
+
+        // モバイル候補を非表示
+        function hideMobileSuggestions() {
+            const mobileSuggestions = document.getElementById('mobileSuggestions');
+            setTimeout(() => {
+                mobileSuggestions.style.display = 'none';
+                mobileSuggestionIndex = -1;
+            }, 200);
+        }
+
+        // モバイル版キーボード操作
+        function handleMobileSearchKeydown(event) {
+            const mobileSuggestions = document.getElementById('mobileSuggestions');
+            const items = mobileSuggestions.querySelectorAll('.mobile-suggestion-item');
+            
+            if (items.length === 0) return;
+            
+            switch (event.key) {
+                case 'ArrowDown':
+                    event.preventDefault();
+                    mobileSuggestionIndex = Math.min(mobileSuggestionIndex + 1, items.length - 1);
+                    updateMobileSuggestionHighlight(items);
+                    break;
+                    
+                case 'ArrowUp':
+                    event.preventDefault();
+                    mobileSuggestionIndex = Math.max(mobileSuggestionIndex - 1, -1);
+                    updateMobileSuggestionHighlight(items);
+                    break;
+                    
+                case 'Enter':
+                    event.preventDefault();
+                    if (mobileSuggestionIndex >= 0 && items[mobileSuggestionIndex]) {
+                        const selectedItem = items[mobileSuggestionIndex];
+                        const placeData = JSON.parse(selectedItem.dataset.place);
+                        selectMobilePlace(placeData);
+                    }
+                    break;
+                    
+                case 'Escape':
+                    hideMobileSuggestions();
+                    event.target.blur();
+                    break;
+            }
+        }
+
+        // モバイル候補ハイライト更新
+        function updateMobileSuggestionHighlight(items) {
+            items.forEach((item, index) => {
+                item.classList.toggle('highlighted', index === mobileSuggestionIndex);
+            });
+        }
+
+        // モバイル版地名選択時の処理
+        function selectMobilePlace(place) {
+            console.log('🗾 モバイル地名選択:', place.name);
+            
+            // 検索入力を更新
+            const mobileSearchInput = document.getElementById('mobileSearchInput');
+            if (mobileSearchInput) {
+                mobileSearchInput.value = place.name;
+            }
+            hideMobileSuggestions();
+            
+            // 地図が初期化されているか確認
+            if (!map) {
+                console.error('❌ 地図が初期化されていません');
+                return;
+            }
+            
+            console.log(`📍 ${place.name}へ移動: [${place.lat}, ${place.lng}]`);
+            
+            // 地図を移動（スムーズアニメーション）
+            map.setView([place.lat, place.lng], 14, {
+                animate: true,
+                duration: 1.5
+            });
+            
+            // モバイルでは地図タブに切り替え
+            if (!isDesktop()) {
+                // 地図タブに切り替え
+                document.querySelectorAll('.bottom-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                const mapTab = document.querySelector('.bottom-tab[data-view="map"]');
+                if (mapTab) {
+                    mapTab.classList.add('active');
+                }
+                
+                // 地図ビューを表示
+                document.getElementById('mapView').style.display = 'block';
+                document.getElementById('storeListView').style.display = 'none';
+            }
+            
+            // 選択地点にテンポラリマーカーを表示
+            showLocationMarker(place);
         }
 
         // 地名選択時の処理
