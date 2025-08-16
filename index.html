@@ -3946,16 +3946,16 @@
         async function initializeApp() {
             console.log('🚀 アプリ初期化開始（認証チェック）');
             
-            // 1. 認証状態を確認（一時的に無効化）
-            // const isAuthenticated = await checkAuthenticationStatus();
+            // 1. 認証状態を確認
+            const isAuthenticated = await checkAuthenticationStatus();
             
-            // if (!isAuthenticated) {
-            //     console.log('🔒 未認証ユーザー - ログイン画面を表示');
-            //     showLoginModal();
-            //     return;
-            // }
+            if (!isAuthenticated) {
+                console.log('🔒 未認証ユーザー - ログイン画面を表示');
+                showLoginModal();
+                return;
+            }
             
-            console.log('✅ 認証チェック無効化 - マップ画面を表示');
+            console.log('✅ 認証済みユーザー - マップ画面を表示');
             showMapScreen();
             
             // 2. 地図を先に初期化
@@ -3982,8 +3982,12 @@
             console.log('✅ アプリ初期化完了 - 全機能利用可能');
         }
 
-        // 認証状態チェック（PINコード認証版）
+        // 認証状態チェック（PINコード認証版）- 一時的に無効化
         async function checkAuthenticationStatus() {
+            console.log('🔍 認証チェック無効化 - 常にtrueを返す');
+            return true; // 常に認証済みとして扱う
+            
+            // 以下は無効化されたコード
             try {
                 console.log('🔍 認証状態をチェック中...');
                 
