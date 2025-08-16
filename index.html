@@ -3104,6 +3104,7 @@
         // ==========================================
         const AUTHORIZED_USERS = [
             { email: 'bettger1000@gmail.com', pin: '1234' },
+            { email: 'bettger1000@gmail.com', pin: '9999' }, // 追加：9999でもログイン可能
             { email: 'nono511shu123@gmail.com', pin: '5678' },
             { email: 'demo@example.com', pin: '0000' }
             // 必要に応じてユーザーを追加
@@ -4430,6 +4431,8 @@
                 const email = document.getElementById('emailInput').value.trim().toLowerCase();
                 const pin = document.getElementById('pinInput').value.trim();
                 
+                console.log('🔍 入力値確認:', { email, pin: pin ? '****' : '(空)' });
+                
                 // 入力チェック
                 if (!email || !pin) {
                     showLoginError('メールアドレスとPINコードを入力してください');
@@ -4441,9 +4444,17 @@
                     return;
                 }
                 
+                // 認証リスト確認（デバッグ用）
+                console.log('🔍 認証リスト確認:', AUTHORIZED_USERS.map(u => ({ email: u.email, pinLength: u.pin.length })));
+                
                 // 認証リストと照合
                 const authorizedUser = AUTHORIZED_USERS.find(
-                    user => user.email.toLowerCase() === email && user.pin === pin
+                    user => {
+                        const emailMatch = user.email.toLowerCase() === email;
+                        const pinMatch = user.pin === pin;
+                        console.log(`🔍 ユーザー照合 ${user.email}:`, { emailMatch, pinMatch });
+                        return emailMatch && pinMatch;
+                    }
                 );
                 
                 if (authorizedUser) {
