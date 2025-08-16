@@ -918,6 +918,25 @@
             align-items: center;
             gap: var(--space-xs);
         }
+        
+        /* スマホ版：住所テキストを小さくして一覧性を向上 */
+        @media (max-width: 768px) {
+            .store-address {
+                font-size: 0.75rem;
+                color: #666;
+                line-height: 1.2;
+            }
+            
+            /* 店舗カードもコンパクトに */
+            .store-card {
+                padding: var(--space-md);
+                margin-bottom: var(--space-sm);
+            }
+            
+            .store-header {
+                margin-bottom: var(--space-sm);
+            }
+        }
 
         .store-gf-type {
             display: inline-flex;
