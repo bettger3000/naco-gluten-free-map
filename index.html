@@ -3945,12 +3945,18 @@
         // アプリ初期化（認証ガード付き）
         async function initializeApp() {
             console.log('🚀 アプリ初期化開始（認証チェック）');
+            console.log('🔍 現在のbody.style:', window.getComputedStyle(document.body).display);
             
             // 1. 認証状態を確認
             const isAuthenticated = await checkAuthenticationStatus();
+            console.log('🔍 認証状態:', isAuthenticated);
             
             if (!isAuthenticated) {
                 console.log('🔒 未認証ユーザー - ログイン画面を表示');
+                // マップを表示してからモーダルを出す
+                showMapScreen();
+                console.log('🔍 showMapScreen完了後のbody.style:', window.getComputedStyle(document.body).display);
+                
                 showLoginModal();
                 return;
             }
@@ -3982,12 +3988,8 @@
             console.log('✅ アプリ初期化完了 - 全機能利用可能');
         }
 
-        // 認証状態チェック（PINコード認証版）- 一時的に無効化
+        // 認証状態チェック（PINコード認証版）
         async function checkAuthenticationStatus() {
-            console.log('🔍 認証チェック無効化 - 常にtrueを返す');
-            return true; // 常に認証済みとして扱う
-            
-            // 以下は無効化されたコード
             try {
                 console.log('🔍 認証状態をチェック中...');
                 
@@ -4287,8 +4289,49 @@
 
         // マップ画面を表示
         function showMapScreen() {
-            // 既存のマップ画面は既に表示されているので、何もしない
             console.log('📍 マップ画面を表示');
+            
+            // デバッグ: DOM要素の存在確認
+            const bodyElement = document.body;
+            const appContainer = document.querySelector('.app-container');
+            const header = document.querySelector('.app-header');
+            const mainContent = document.querySelector('.main-content');
+            
+            console.log('🔍 DOM要素チェック:', {
+                body: !!bodyElement,
+                appContainer: !!appContainer,
+                header: !!header,
+                mainContent: !!mainContent
+            });
+            
+            // 基本的な表示設定
+            if (bodyElement) {
+                bodyElement.style.display = 'block';
+                bodyElement.style.visibility = 'visible';
+                bodyElement.style.opacity = '1';
+                console.log('✅ body要素表示設定完了');
+            }
+            
+            if (appContainer) {
+                appContainer.style.display = 'flex';
+                appContainer.style.visibility = 'visible';
+                appContainer.style.opacity = '1';
+                console.log('✅ アプリコンテナ表示設定完了');
+            } else {
+                console.error('❌ アプリコンテナが見つかりません');
+            }
+            
+            if (header) {
+                header.style.display = 'block';
+                header.style.visibility = 'visible';
+                console.log('✅ ヘッダー表示設定完了');
+            }
+            
+            if (mainContent) {
+                mainContent.style.display = 'flex';
+                mainContent.style.visibility = 'visible';
+                console.log('✅ メインコンテンツ表示設定完了');
+            }
         }
 
         // PINコード認証実行
