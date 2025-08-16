@@ -2892,6 +2892,46 @@
             line-height: 1.6;
         }
 
+        /* 初回ログイン案内スタイル */
+        .first-time-notice {
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8ff 100%);
+            border: 2px solid #4caf50;
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-xl);
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.1);
+        }
+
+        .notice-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
+
+        .notice-header i {
+            color: #4caf50;
+            font-size: 1.2rem;
+        }
+
+        .notice-header span {
+            color: #2e7d32;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .notice-content p {
+            color: #2e7d32;
+            font-size: 0.9rem;
+            margin: var(--space-xs) 0;
+            line-height: 1.4;
+            padding-left: var(--space-lg);
+        }
+
+        .notice-content p:last-child {
+            margin-bottom: 0;
+        }
+
         .login-modal-content .login-form {
             margin-top: var(--space-xl);
         }
@@ -3018,6 +3058,46 @@
                 color: #6c757d;
                 margin-bottom: 2rem;
                 line-height: 1.7;
+            }
+
+            /* モバイル版初回ログイン案内 */
+            .first-time-notice {
+                background: linear-gradient(135deg, #e8f5e8 0%, #f0f8ff 100%);
+                border: 2px solid #4caf50;
+                border-radius: 12px;
+                padding: 1.2rem;
+                margin-bottom: 2rem;
+                box-shadow: 0 3px 10px rgba(76, 175, 80, 0.15);
+            }
+
+            .notice-header {
+                display: flex;
+                align-items: center;
+                gap: 0.6rem;
+                margin-bottom: 1rem;
+            }
+
+            .notice-header i {
+                color: #4caf50;
+                font-size: 1.3rem;
+            }
+
+            .notice-header span {
+                color: #2e7d32;
+                font-weight: 600;
+                font-size: 1.1rem;
+            }
+
+            .notice-content p {
+                color: #2e7d32;
+                font-size: 0.95rem;
+                margin: 0.4rem 0;
+                line-height: 1.5;
+                padding-left: 1.5rem;
+            }
+
+            .notice-content p:last-child {
+                margin-bottom: 0;
             }
             
             .login-modal-content .input-group {
@@ -4831,6 +4911,19 @@
                             <p>ビヨグル倶楽部</p>
                         </div>
                         <div class="login-content">
+                            <!-- 初回ログイン案内 -->
+                            <div class="first-time-notice">
+                                <div class="notice-header">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>初回ログインの方へ</span>
+                                </div>
+                                <div class="notice-content">
+                                    <p>1. 管理者から登録されたメールアドレスを入力</p>
+                                    <p>2. 適当な4桁の数字を入力（例：0000）</p>
+                                    <p>3. 自動でPIN設定画面が表示されます</p>
+                                </div>
+                            </div>
+                            
                             <h2>会員ログイン</h2>
                             <p>登録済みのメールアドレスと<br>PINコードを入力してください</p>
                             
