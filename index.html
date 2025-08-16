@@ -4241,6 +4241,8 @@
         let famousPlaces = []; // 地名検索用データ
         let searchSuggestionIndex = -1; // キーボード選択用
         let mobileSuggestionIndex = -1; // モバイル版キーボード選択用
+        let isComposing = false; // IME変換中フラグ
+        let mobileIsComposing = false; // モバイルIME変換中フラグ
         
         // カスタムピン機能用変数
         let customPinMarker = null;
@@ -4333,6 +4335,16 @@
                 searchInput.addEventListener('input', handleSearchInput);
                 searchInput.addEventListener('keydown', handleSearchKeydown);
                 searchInput.addEventListener('blur', hideSuggestions);
+                
+                // IME対応
+                searchInput.addEventListener('compositionstart', () => {
+                    isComposing = true;
+                });
+                searchInput.addEventListener('compositionend', (event) => {
+                    isComposing = false;
+                    // 変換確定後に検索実行
+                    setTimeout(() => handleSearchInput(event), 0);
+                });
             }
 
             // モバイル版検索
@@ -4344,6 +4356,16 @@
                 mobileSearchInput.addEventListener('input', handleMobileSearchInput);
                 mobileSearchInput.addEventListener('keydown', handleMobileSearchKeydown);
                 mobileSearchInput.addEventListener('blur', hideMobileSuggestions);
+                
+                // モバイルIME対応
+                mobileSearchInput.addEventListener('compositionstart', () => {
+                    mobileIsComposing = true;
+                });
+                mobileSearchInput.addEventListener('compositionend', (event) => {
+                    mobileIsComposing = false;
+                    // 変換確定後に検索実行
+                    setTimeout(() => handleMobileSearchInput(event), 0);
+                });
             }
             
             // 候補クリック外しで非表示
@@ -4359,8 +4381,15 @@
 
         // 検索入力処理
         function handleSearchInput(event) {
+            // IME変換中は処理しない
+            if (isComposing) {
+                return;
+            }
+            
             const query = event.target.value.trim();
             const suggestions = document.getElementById('searchSuggestions');
+            
+            console.log('🔍 PC検索:', query);
             
             if (query.length < 1) {
                 hideSuggestions();
@@ -4386,21 +4415,50 @@
         function searchFamousPlaces(query) {
             if (!query || famousPlaces.length === 0) return [];
             
-            const normalizedQuery = query.toLowerCase();
+            const normalizedQuery = query.toLowerCase().trim();
             
-            return famousPlaces.filter(place => {
-                // 名前での検索
+            // 特別なマッチング処理（前方一致を優先）
+            const results = famousPlaces.filter(place => {
+                // 名前での前方一致検索（優先度高）
+                if (place.name.toLowerCase().startsWith(normalizedQuery)) return true;
+                
+                // ひらがな読みでの前方一致検索
+                if (place.kana.startsWith(normalizedQuery)) return true;
+                
+                // エイリアスでの前方一致検索
+                if (place.aliases && place.aliases.some(alias => 
+                    alias.toLowerCase().startsWith(normalizedQuery))) return true;
+                
+                // 部分一致（前方一致でヒットしなかった場合）
                 if (place.name.toLowerCase().includes(normalizedQuery)) return true;
-                
-                // ひらがな読みでの検索
                 if (place.kana.includes(normalizedQuery)) return true;
-                
-                // エイリアスでの検索
                 if (place.aliases && place.aliases.some(alias => 
                     alias.toLowerCase().includes(normalizedQuery))) return true;
                 
                 return false;
-            }).slice(0, 8); // 最大8件まで表示
+            });
+            
+            // 重複除去と前方一致を優先したソート
+            const uniqueResults = results.filter((place, index, arr) => 
+                arr.findIndex(p => p.name === place.name) === index
+            );
+            
+            // 前方一致を優先してソート
+            uniqueResults.sort((a, b) => {
+                const aStartsWithName = a.name.toLowerCase().startsWith(normalizedQuery);
+                const bStartsWithName = b.name.toLowerCase().startsWith(normalizedQuery);
+                const aStartsWithKana = a.kana.startsWith(normalizedQuery);
+                const bStartsWithKana = b.kana.startsWith(normalizedQuery);
+                
+                if (aStartsWithName && !bStartsWithName) return -1;
+                if (!aStartsWithName && bStartsWithName) return 1;
+                if (aStartsWithKana && !bStartsWithKana) return -1;
+                if (!aStartsWithKana && bStartsWithKana) return 1;
+                
+                return 0;
+            });
+            
+            return uniqueResults.slice(0, 8); // 最大8件まで表示
         }
 
         // 検索候補を表示
@@ -4484,8 +4542,15 @@
 
         // モバイル検索入力処理
         function handleMobileSearchInput(event) {
+            // IME変換中は処理しない
+            if (mobileIsComposing) {
+                return;
+            }
+            
             const query = event.target.value.trim();
             const mobileSuggestions = document.getElementById('mobileSuggestions');
+            
+            console.log('📱 モバイル検索:', query);
             
             if (query.length < 1) {
                 hideMobileSuggestions();
