@@ -9313,9 +9313,10 @@
                     const profile = {
                         email: data.email,
                         nickname: data.nickname || '',
-                        avatar: data.avatar_id || 'default',
+                        avatar: data.avatar_emoji || 'default',
+                        avatarUrl: data.avatar_url || null,
                         avatarType: data.avatar_type || 'preset',
-                        customAvatarData: data.custom_avatar_data || null,
+                        bio: data.bio || '',
                         createdAt: data.created_at || new Date().toISOString(),
                         updatedAt: data.updated_at || new Date().toISOString()
                     };
@@ -9363,15 +9364,16 @@
             try {
                 console.log('🔄 Supabaseプロフィール保存開始:', profile.email);
                 
-                // 既存のuser_profilesテーブルに慎重に保存
+                // 既存のuser_profilesテーブルの実際のカラム構造に合わせて保存
                 const { error } = await supabaseClient
                     .from('user_profiles')
                     .upsert({
                         email: profile.email,
                         nickname: profile.nickname || '',
-                        avatar_id: profile.avatar || 'default',
+                        avatar_url: profile.avatarUrl || null, // 実際のカラム名
+                        bio: profile.bio || null,
                         avatar_type: profile.avatarType || 'preset',
-                        custom_avatar_data: profile.customAvatarData || null,
+                        avatar_emoji: profile.avatar || null,
                         is_active: true,
                         updated_at: new Date().toISOString()
                     }, {
