@@ -2848,11 +2848,17 @@
             box-shadow: var(--shadow-lg);
         }
 
-        /* モバイル対応 */
+        /* モバイル対応 - 大人の可愛らしさを重視したデザイン */
         @media (max-width: 768px) {
             .login-modal-overlay {
                 padding: 0;
                 align-items: flex-start;
+                background: linear-gradient(135deg, 
+                    rgba(255, 192, 203, 0.95) 0%,   /* 優しいピンク */
+                    rgba(255, 228, 225, 0.95) 35%,  /* 桜色 */
+                    rgba(245, 245, 245, 0.95) 70%,  /* 上品なグレー */
+                    rgba(255, 240, 245, 0.95) 100%  /* 薄いローズ */
+                );
             }
 
             .login-modal-content {
@@ -2861,29 +2867,131 @@
                 border-radius: 0;
                 max-width: none;
                 width: 100%;
-                padding: var(--space-xl) var(--space-lg);
+                padding: 3rem 2rem;
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                box-shadow: none;
+            }
+
+            .login-modal-content .login-header {
+                margin-bottom: 2.5rem;
             }
             
             .login-modal-content .login-header h1 {
-                font-size: 1.5rem;
+                font-size: 2rem;
+                font-weight: 600;
+                color: #d63384;
+                margin-bottom: 0.5rem;
+                letter-spacing: 0.5px;
+            }
+
+            .login-modal-content .login-header p {
+                font-size: 1.1rem;
+                color: #6c757d;
+                font-weight: 400;
+                margin-bottom: 0;
             }
             
             .login-modal-content .login-content h2 {
-                font-size: 1.2rem;
+                font-size: 1.4rem;
+                font-weight: 600;
+                color: #495057;
+                margin-bottom: 1rem;
+            }
+
+            .login-modal-content .login-content p {
+                font-size: 1rem;
+                color: #6c757d;
+                margin-bottom: 2rem;
+                line-height: 1.7;
+            }
+            
+            .login-modal-content .input-group {
+                margin-bottom: 1.8rem;
+            }
+
+            .login-modal-content .input-group label {
+                font-size: 1rem;
+                font-weight: 500;
+                color: #495057;
+                margin-bottom: 0.6rem;
             }
             
             .login-modal-content .input-group input {
-                padding: var(--space-lg);
+                padding: 1.2rem 1rem;
                 font-size: 1.1rem;
+                border: 2px solid #e9ecef;
+                border-radius: 12px;
+                background: #ffffff;
+                color: #495057;
+                transition: all 0.3s ease;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            }
+
+            .login-modal-content .input-group input:focus {
+                border-color: #d63384;
+                box-shadow: 0 0 0 3px rgba(214, 51, 132, 0.15);
+                background: #fff;
+            }
+
+            .login-modal-content .input-group input::placeholder {
+                color: #adb5bd;
+            }
+
+            /* メールアドレスフィールドの特別スタイル */
+            .login-modal-content .input-group input[type="email"] {
+                background: linear-gradient(to right, #ffffff 0%, #fef7f7 100%);
+            }
+
+            /* PINコードフィールドの特別スタイル */
+            .login-modal-content .input-group input[type="password"] {
+                background: linear-gradient(to right, #ffffff 0%, #f8f9fa 100%);
+                text-align: center;
+                font-size: 1.3rem;
+                letter-spacing: 0.3rem;
+                font-weight: 600;
             }
             
             .login-modal-content .pin-login-btn {
-                padding: var(--space-lg);
+                padding: 1.3rem 2rem;
                 font-size: 1.1rem;
-                min-height: 56px;
+                font-weight: 600;
+                min-height: 60px;
+                background: linear-gradient(135deg, #d63384 0%, #c2185b 100%);
+                border: none;
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(214, 51, 132, 0.3);
+                transition: all 0.3s ease;
+                letter-spacing: 0.5px;
+            }
+
+            .login-modal-content .pin-login-btn:hover {
+                background: linear-gradient(135deg, #c2185b 0%, #ad1457 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(214, 51, 132, 0.4);
+            }
+
+            .login-modal-content .login-error {
+                background: linear-gradient(to right, #fff5f5 0%, #fed7d7 100%);
+                color: #c53030;
+                padding: 1rem 1.2rem;
+                border-radius: 10px;
+                font-size: 0.95rem;
+                margin-bottom: 1.5rem;
+                border: 1px solid #fed7d7;
+                box-shadow: 0 2px 4px rgba(197, 48, 48, 0.1);
+            }
+
+            /* nacoキャラクターの調整 */
+            .login-modal-content .login-logo {
+                width: 80px;
+                height: 80px;
+                margin-bottom: 1rem;
+                border-radius: 50%;
+                box-shadow: 0 4px 12px rgba(214, 51, 132, 0.2);
             }
             .store-detail-modal {
                 padding: 0;
