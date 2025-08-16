@@ -1447,6 +1447,7 @@
         /* PC用検索ボックス */
         .sidebar-search {
             margin-bottom: var(--space-lg);
+            position: relative;
         }
         
         .sidebar-search-input {
@@ -1463,6 +1464,59 @@
         .sidebar-search-input:focus {
             outline: none;
             border-color: var(--primary);
+        }
+
+        /* 地名検索候補 */
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 2px;
+        }
+
+        .suggestion-item {
+            padding: var(--space-sm) var(--space-md);
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-light);
+            transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background-color: var(--bg-secondary);
+        }
+
+        .suggestion-item.highlighted {
+            background-color: var(--primary-alpha);
+        }
+
+        .suggestion-icon {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .suggestion-text {
+            flex: 1;
+        }
+
+        .suggestion-category {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            opacity: 0.8;
         }
         
         /* PC用タブ */
@@ -3052,7 +3106,8 @@
                     
                     <!-- PC用検索ボックス -->
                     <div class="sidebar-search">
-                        <input type="text" id="sidebarSearchInput" class="sidebar-search-input" placeholder="店名・エリアで検索">
+                        <input type="text" id="sidebarSearchInput" class="sidebar-search-input" placeholder="店名・地名・エリアで検索">
+                        <div id="searchSuggestions" class="search-suggestions" style="display: none;"></div>
                     </div>
                     
                     <!-- PC用タブ -->
@@ -4126,6 +4181,8 @@
         let map;
         let stores = [];
         let markers = [];
+        let famousPlaces = []; // 地名検索用データ
+        let searchSuggestionIndex = -1; // キーボード選択用
         
         // カスタムピン機能用変数
         let customPinMarker = null;
@@ -4163,25 +4220,258 @@
             // 2. 地図を先に初期化
             initMap();
             
-            // 3. 訪問履歴データを読み込み
+            // 3. 地名データを読み込み
+            await loadFamousPlaces();
+            
+            // 4. 訪問履歴データを読み込み
             await initVisitHistory();
             
-            // 4. 店舗画像データを並行で読み込み
+            // 5. 店舗画像データを並行で読み込み
             await initStoreImages();
             
-            // 5. 店舗データを表示（訪問履歴・画像込み）
+            // 6. 店舗データを表示（訪問履歴・画像込み）
             await loadEmbeddedStores();
             
-            // 5. イベントリスナー設定
+            // 7. イベントリスナー設定
             setupEventListeners();
             
-            // 6. データベース状態確認
+            // 8. データベース状態確認
             checkDatabaseStatus();
             
-            // 7. 認証ボタンの初期状態を設定
+            // 9. 認証ボタンの初期状態を設定
             updateAuthButton();
             
             console.log('✅ アプリ初期化完了 - 全機能利用可能');
+        }
+
+        // 地名データを読み込み
+        async function loadFamousPlaces() {
+            try {
+                console.log('📍 地名データを読み込み中...');
+                const response = await fetch('data/famousPlaces.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                famousPlaces = data.places || [];
+                console.log(`✅ 地名データ読み込み完了: ${famousPlaces.length}件`);
+                
+                // 検索機能を初期化
+                setupSearchFunctionality();
+            } catch (error) {
+                console.error('❌ 地名データ読み込みエラー:', error);
+                famousPlaces = []; // フォールバック
+            }
+        }
+
+        // 検索機能のセットアップ
+        function setupSearchFunctionality() {
+            const searchInput = document.getElementById('sidebarSearchInput');
+            const suggestions = document.getElementById('searchSuggestions');
+            
+            if (!searchInput || !suggestions) {
+                console.warn('検索要素が見つかりません');
+                return;
+            }
+
+            // 検索入力イベント
+            searchInput.addEventListener('input', handleSearchInput);
+            searchInput.addEventListener('keydown', handleSearchKeydown);
+            searchInput.addEventListener('blur', hideSuggestions);
+            
+            // 候補クリック外しで非表示
+            document.addEventListener('click', (e) => {
+                if (!searchInput.contains(e.target) && !suggestions.contains(e.target)) {
+                    hideSuggestions();
+                }
+            });
+        }
+
+        // 検索入力処理
+        function handleSearchInput(event) {
+            const query = event.target.value.trim();
+            const suggestions = document.getElementById('searchSuggestions');
+            
+            if (query.length < 1) {
+                hideSuggestions();
+                // 通常の店舗検索を実行
+                filterStores(query);
+                return;
+            }
+
+            // 地名検索候補を表示
+            const matches = searchFamousPlaces(query);
+            
+            if (matches.length > 0) {
+                showSuggestions(matches);
+            } else {
+                hideSuggestions();
+            }
+            
+            // 通常の店舗検索も並行実行
+            filterStores(query);
+        }
+
+        // 地名検索
+        function searchFamousPlaces(query) {
+            if (!query || famousPlaces.length === 0) return [];
+            
+            const normalizedQuery = query.toLowerCase();
+            
+            return famousPlaces.filter(place => {
+                // 名前での検索
+                if (place.name.toLowerCase().includes(normalizedQuery)) return true;
+                
+                // ひらがな読みでの検索
+                if (place.kana.includes(normalizedQuery)) return true;
+                
+                // エイリアスでの検索
+                if (place.aliases && place.aliases.some(alias => 
+                    alias.toLowerCase().includes(normalizedQuery))) return true;
+                
+                return false;
+            }).slice(0, 8); // 最大8件まで表示
+        }
+
+        // 検索候補を表示
+        function showSuggestions(matches) {
+            const suggestions = document.getElementById('searchSuggestions');
+            
+            suggestions.innerHTML = matches.map((place, index) => {
+                const icon = getCategoryIcon(place.category);
+                return `
+                    <div class="suggestion-item" data-index="${index}" onclick="selectPlace(${JSON.stringify(place).replace(/"/g, '&quot;')})">
+                        <span class="suggestion-icon">${icon}</span>
+                        <span class="suggestion-text">${place.name}</span>
+                        <span class="suggestion-category">${place.category}</span>
+                    </div>
+                `;
+            }).join('');
+            
+            suggestions.style.display = 'block';
+            searchSuggestionIndex = -1;
+        }
+
+        // 候補を非表示
+        function hideSuggestions() {
+            const suggestions = document.getElementById('searchSuggestions');
+            setTimeout(() => {
+                suggestions.style.display = 'none';
+                searchSuggestionIndex = -1;
+            }, 200);
+        }
+
+        // キーボード操作
+        function handleSearchKeydown(event) {
+            const suggestions = document.getElementById('searchSuggestions');
+            const items = suggestions.querySelectorAll('.suggestion-item');
+            
+            if (items.length === 0) return;
+            
+            switch (event.key) {
+                case 'ArrowDown':
+                    event.preventDefault();
+                    searchSuggestionIndex = Math.min(searchSuggestionIndex + 1, items.length - 1);
+                    updateSuggestionHighlight(items);
+                    break;
+                    
+                case 'ArrowUp':
+                    event.preventDefault();
+                    searchSuggestionIndex = Math.max(searchSuggestionIndex - 1, -1);
+                    updateSuggestionHighlight(items);
+                    break;
+                    
+                case 'Enter':
+                    event.preventDefault();
+                    if (searchSuggestionIndex >= 0 && items[searchSuggestionIndex]) {
+                        items[searchSuggestionIndex].click();
+                    }
+                    break;
+                    
+                case 'Escape':
+                    hideSuggestions();
+                    event.target.blur();
+                    break;
+            }
+        }
+
+        // 候補ハイライト更新
+        function updateSuggestionHighlight(items) {
+            items.forEach((item, index) => {
+                item.classList.toggle('highlighted', index === searchSuggestionIndex);
+            });
+        }
+
+        // 地名選択時の処理
+        function selectPlace(place) {
+            console.log('🗾 地名選択:', place.name);
+            
+            // 検索入力をクリア
+            const searchInput = document.getElementById('sidebarSearchInput');
+            searchInput.value = place.name;
+            hideSuggestions();
+            
+            // 地図を移動（スムーズアニメーション）
+            map.setView([place.lat, place.lng], 13, {
+                animate: true,
+                duration: 1.0
+            });
+            
+            // 選択地点にテンポラリマーカーを表示
+            showLocationMarker(place);
+        }
+
+        // 地名選択時の位置マーカー表示
+        function showLocationMarker(place) {
+            // 既存のロケーションマーカーを削除
+            if (window.locationMarker) {
+                map.removeLayer(window.locationMarker);
+            }
+            
+            // 新しいマーカーを作成
+            const icon = getCategoryIcon(place.category);
+            window.locationMarker = L.marker([place.lat, place.lng], {
+                icon: L.divIcon({
+                    html: `
+                        <div style="
+                            background: linear-gradient(135deg, #ff6b9d 0%, #c2185b 100%);
+                            color: white;
+                            border-radius: 20px;
+                            padding: 8px 12px;
+                            font-size: 14px;
+                            font-weight: 600;
+                            box-shadow: 0 4px 12px rgba(255, 107, 157, 0.4);
+                            border: 2px solid white;
+                            white-space: nowrap;
+                        ">
+                            ${icon} ${place.name}
+                        </div>
+                    `,
+                    className: 'location-marker',
+                    iconSize: [null, 40],
+                    iconAnchor: [null, 40]
+                })
+            }).addTo(map);
+            
+            // 3秒後にマーカーをフェードアウト
+            setTimeout(() => {
+                if (window.locationMarker) {
+                    map.removeLayer(window.locationMarker);
+                    window.locationMarker = null;
+                }
+            }, 5000);
+        }
+
+        // カテゴリアイコン取得
+        function getCategoryIcon(category) {
+            const icons = {
+                '駅・交通': '🚉',
+                '繁華街': '🏙️', 
+                '観光地': '🗾',
+                '空港': '✈️',
+                'テーマパーク': '🎢'
+            };
+            return icons[category] || '📍';
         }
 
         // 認証状態チェック（PINコード認証版）
