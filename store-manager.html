@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>管理画面 - グルテンフリーマップ</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #ff6b9d;
+            --primary-dark: #e55a8a;
+            --secondary: #40e0d0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --bg-primary: #fdf2f8;
+            --bg-secondary: #f9fafb;
+            --bg-glass: rgba(255, 255, 255, 0.95);
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --border-light: #e5e7eb;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --space-xs: 0.5rem;
+            --space-sm: 0.75rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+        
+        /* ログイン画面 */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-lg);
+        }
+        
+        .login-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            box-shadow: var(--shadow-lg);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .login-title {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: var(--space-md);
+        }
+        
+        .login-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: var(--space-xl);
+        }
+        
+        .input-group {
+            margin-bottom: var(--space-lg);
+            text-align: left;
+        }
+        
+        .input-group label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: var(--space-xs);
+            font-weight: 500;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: var(--space-md);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: var(--space-md);
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .login-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .login-error {
+            color: var(--error);
+            font-size: 0.9rem;
+            margin-bottom: var(--space-md);
+            padding: var(--space-sm);
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: var(--radius-sm);
+            display: none;
+        }
+        
+        /* 管理画面 */
+        .admin-container {
+            display: none;
+            min-height: 100vh;
+            background: var(--bg-secondary);
+        }
+        
+        .admin-header {
+            background: white;
+            box-shadow: var(--shadow-md);
+            padding: var(--space-md) var(--space-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: var(--space-md);
+        }
+        
+        .btn {
+            padding: var(--space-sm) var(--space-md);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-light);
+        }
+        
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+        
+        /* メインコンテンツ */
+        .admin-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-lg);
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: var(--space-lg);
+        }
+        
+        /* 店舗リスト */
+        .stores-panel {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            padding: var(--space-lg);
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .panel-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .store-count {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .search-box {
+            padding: 0 var(--space-lg) var(--space-md);
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: var(--space-sm) var(--space-md);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+        }
+        
+        .stores-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .store-item {
+            padding: var(--space-md) var(--space-lg);
+            border-bottom: 1px solid var(--border-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .store-item:hover {
+            background: var(--bg-primary);
+        }
+        
+        .store-item.selected {
+            background: var(--bg-primary);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .store-info {
+            flex: 1;
+        }
+        
+        .store-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .store-category {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .store-address {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .store-actions {
+            display: flex;
+            gap: var(--space-xs);
+        }
+        
+        .icon-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .icon-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .icon-btn.delete:hover {
+            background: var(--error);
+        }
+        
+        /* 編集フォーム */
+        .edit-panel {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: var(--space-lg);
+            position: sticky;
+            top: 80px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+        
+        .form-group {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: var(--space-xs);
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: var(--space-sm);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
+        }
+        
+        /* 地図 */
+        .map-container {
+            margin-bottom: var(--space-lg);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 2px solid var(--border-light);
+        }
+        
+        #editMap {
+            height: 300px;
+            width: 100%;
+        }
+        
+        .map-hint {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: var(--space-xs);
+        }
+        
+        /* フォームボタン */
+        .form-actions {
+            display: flex;
+            gap: var(--space-sm);
+            margin-top: var(--space-xl);
+        }
+        
+        .form-actions .btn {
+            flex: 1;
+        }
+        
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-title {
+            font-size: 1.3rem;
+            margin-bottom: var(--space-md);
+            color: var(--primary);
+        }
+        
+        .modal-body {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: var(--space-sm);
+            justify-content: flex-end;
+        }
+        
+        /* トースト通知 */
+        .toast {
+            position: fixed;
+            bottom: var(--space-lg);
+            right: var(--space-lg);
+            background: var(--success);
+            color: white;
+            padding: var(--space-md) var(--space-lg);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            display: none;
+            align-items: center;
+            gap: var(--space-sm);
+            z-index: 2000;
+        }
+        
+        .toast.show {
+            display: flex;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .toast.error {
+            background: var(--error);
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* レスポンシブ */
+        @media (max-width: 1024px) {
+            .admin-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .edit-panel {
+                position: static;
+                max-height: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ログイン画面 -->
+    <div id="loginContainer" class="login-container">
+        <div class="login-card">
+            <h1 class="login-title">🔐 管理画面</h1>
+            <p class="login-subtitle">グルテンフリーマップ店舗管理</p>
+            
+            <div class="input-group">
+                <label for="adminPin">管理者PINコード（6桁）</label>
+                <input type="password" id="adminPin" placeholder="••••••" maxlength="6" pattern="[0-9]*" inputmode="numeric">
+            </div>
+            
+            <div id="loginError" class="login-error">
+                PINコードが正しくありません
+            </div>
+            
+            <button class="login-btn" onclick="adminLogin()">
+                <i class="fas fa-sign-in-alt"></i>
+                ログイン
+            </button>
+        </div>
+    </div>
+    
+    <!-- 管理画面 -->
+    <div id="adminContainer" class="admin-container">
+        <header class="admin-header">
+            <div class="header-content">
+                <h1 class="header-title">🗺️ グルテンフリーマップ管理画面</h1>
+                <div class="header-actions">
+                    <button class="btn btn-success" onclick="exportJSON()">
+                        <i class="fas fa-download"></i>
+                        JSONエクスポート
+                    </button>
+                    <button class="btn btn-secondary" onclick="importJSON()">
+                        <i class="fas fa-upload"></i>
+                        JSONインポート
+                    </button>
+                    <button class="btn btn-secondary" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        ログアウト
+                    </button>
+                </div>
+            </div>
+        </header>
+        
+        <div class="admin-content">
+            <!-- 店舗リスト -->
+            <div class="stores-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">店舗一覧</h2>
+                    <span class="store-count">全<span id="storeCount">0</span>件</span>
+                </div>
+                
+                <div class="search-box">
+                    <input type="text" class="search-input" id="searchInput" placeholder="店名・住所で検索..." onkeyup="filterStores()">
+                </div>
+                
+                <div class="stores-list" id="storesList">
+                    <!-- 店舗リストがここに表示される -->
+                </div>
+                
+                <div style="padding: var(--space-md); border-top: 1px solid var(--border-light);">
+                    <button class="btn btn-primary" style="width: 100%;" onclick="addNewStore()">
+                        <i class="fas fa-plus"></i>
+                        新規店舗を追加
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 編集フォーム -->
+            <div class="edit-panel">
+                <h3 style="margin-bottom: var(--space-lg);">店舗情報編集</h3>
+                
+                <form id="editForm">
+                    <input type="hidden" id="storeId">
+                    
+                    <div class="form-group">
+                        <label class="form-label">店舗名 *</label>
+                        <input type="text" class="form-input" id="storeName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">カテゴリー *</label>
+                        <select class="form-select" id="storeCategory" required>
+                            <option value="カフェ">☕ カフェ</option>
+                            <option value="和食">🍱 和食</option>
+                            <option value="洋食">🍽️ 洋食</option>
+                            <option value="パン屋">🥐 パン屋</option>
+                            <option value="スイーツ">🧁 スイーツ</option>
+                            <option value="販売店">🛒 販売店</option>
+                            <option value="その他">その他</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">住所 *</label>
+                        <input type="text" class="form-input" id="storeAddress" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">座標（地図をクリックして設定）</label>
+                        <div class="map-container">
+                            <div id="editMap"></div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm);">
+                            <div>
+                                <label class="form-label">緯度</label>
+                                <input type="number" class="form-input" id="storeLat" step="0.0001">
+                            </div>
+                            <div>
+                                <label class="form-label">経度</label>
+                                <input type="number" class="form-input" id="storeLng" step="0.0001">
+                            </div>
+                        </div>
+                        <p class="map-hint">💡 地図をクリックして位置を設定するか、座標を直接入力してください</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">電話番号</label>
+                        <input type="tel" class="form-input" id="storePhone">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">ウェブサイト</label>
+                        <input type="url" class="form-input" id="storeWebsite">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">営業時間</label>
+                        <input type="text" class="form-input" id="storeHours" placeholder="例: 11:00-20:00">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">グルテンフリー対応</label>
+                        <textarea class="form-textarea" id="storeGfOptions" placeholder="グルテンフリーメニューの詳細など"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">説明</label>
+                        <textarea class="form-textarea" id="storeDescription" placeholder="お店の特徴など"></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-success" onclick="saveStore()">
+                            <i class="fas fa-save"></i>
+                            保存
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                            <i class="fas fa-times"></i>
+                            キャンセル
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 削除確認モーダル -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title">削除確認</h3>
+            <div class="modal-body">
+                <p>この店舗を削除してもよろしいですか？</p>
+                <p style="color: var(--error); margin-top: var(--space-sm);">※この操作は取り消せません</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeDeleteModal()">キャンセル</button>
+                <button class="btn btn-danger" onclick="confirmDelete()">削除する</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- トースト通知 -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">保存しました</span>
+    </div>
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script>
+        // 管理者PINコード（実際の運用では環境変数等で管理）
+        const ADMIN_PIN = '999999';
+        
+        // グローバル変数
+        let stores = [];
+        let editMap = null;
+        let editMarker = null;
+        let selectedStoreId = null;
+        let deleteTargetId = null;
+        
+        // 初期化
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 認証チェック
+            const isAuthenticated = localStorage.getItem('adminAuth');
+            if (isAuthenticated) {
+                await showAdminPanel();
+            }
+            
+            // EnterキーでログインPIN
+            document.getElementById('adminPin').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') adminLogin();
+            });
+        });
+        
+        // 管理者ログイン
+        async function adminLogin() {
+            const pin = document.getElementById('adminPin').value;
+            
+            if (pin === ADMIN_PIN) {
+                localStorage.setItem('adminAuth', 'true');
+                await showAdminPanel();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+                document.getElementById('adminPin').value = '';
+                setTimeout(() => {
+                    document.getElementById('loginError').style.display = 'none';
+                }, 3000);
+            }
+        }
+        
+        // 管理画面表示
+        async function showAdminPanel() {
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('adminContainer').style.display = 'block';
+            
+            // データ読み込み
+            await loadStoresData();
+            
+            // 地図初期化
+            initEditMap();
+        }
+        
+        // ログアウト
+        function logout() {
+            localStorage.removeItem('adminAuth');
+            location.reload();
+        }
+        
+        // 店舗データ読み込み
+        async function loadStoresData() {
+            // ローカルストレージから編集中データがあれば読み込み
+            const savedData = localStorage.getItem('editingStores');
+            if (savedData) {
+                stores = JSON.parse(savedData);
+                showToast('編集中のデータを復元しました', false);
+            } else {
+                // index.htmlからデータをコピー
+                stores = await getInitialStores();
+            }
+            
+            displayStores();
+        }
+        
+        // 初期店舗データをindex.htmlから取得
+        async function getInitialStores() {
+            try {
+                // index.htmlからembeddedStoresデータを取得
+                const response = await fetch('./index.html');
+                const htmlText = await response.text();
+                
+                // embeddedStoresの配列部分を抽出
+                const storesMatch = htmlText.match(/const embeddedStores = \[([\s\S]*?)\];/);
+                
+                if (storesMatch) {
+                    // JSON形式に変換して解析
+                    const storesArrayText = '[' + storesMatch[1] + ']';
+                    const storesData = eval(storesArrayText); // 注意: 本番では安全な方法を使用
+                    
+                    console.log(`✅ ${storesData.length}店舗のデータを読み込みました`);
+                    return storesData;
+                }
+            } catch (error) {
+                console.warn('⚠️ index.htmlからのデータ読み込み失敗:', error);
+            }
+            
+            // フォールバック: 基本的なサンプルデータ
+            return [
+                {
+                    id: 1,
+                    name: "成城石井 名古屋近鉄パッセ店",
+                    category: "販売店",
+                    address: "愛知県名古屋市中村区名駅１丁目２−２ 近鉄パッセB1F",
+                    latitude: 35.1709,
+                    longitude: 136.8815,
+                    phone: "052-5660-701",
+                    website: "https://www.seijoishii.co.jp/",
+                    description: "",
+                    gluten_free_options: "",
+                    opening_hours: "10:00-21:00"
+                }
+            ];
+        }
+        
+        // 店舗リスト表示
+        function displayStores() {
+            const list = document.getElementById('storesList');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            const filteredStores = stores.filter(store => 
+                store.name.toLowerCase().includes(searchTerm) ||
+                store.address.toLowerCase().includes(searchTerm)
+            );
+            
+            list.innerHTML = filteredStores.map(store => `
+                <div class="store-item ${selectedStoreId === store.id ? 'selected' : ''}" onclick="selectStore(${store.id})">
+                    <div class="store-info">
+                        <div class="store-name">${store.name}</div>
+                        <span class="store-category">${store.category}</span>
+                        <div class="store-address">${store.address}</div>
+                    </div>
+                    <div class="store-actions">
+                        <button class="icon-btn" onclick="editStore(${store.id}); event.stopPropagation();">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="icon-btn delete" onclick="deleteStore(${store.id}); event.stopPropagation();">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('storeCount').textContent = filteredStores.length;
+        }
+        
+        // 店舗検索
+        function filterStores() {
+            displayStores();
+        }
+        
+        // 店舗選択
+        function selectStore(id) {
+            selectedStoreId = id;
+            editStore(id);
+        }
+        
+        // 店舗編集
+        function editStore(id) {
+            const store = stores.find(s => s.id === id);
+            if (!store) return;
+            
+            selectedStoreId = id;
+            
+            // フォームに値をセット
+            document.getElementById('storeId').value = store.id;
+            document.getElementById('storeName').value = store.name;
+            document.getElementById('storeCategory').value = store.category;
+            document.getElementById('storeAddress').value = store.address;
+            document.getElementById('storeLat').value = store.latitude || '';
+            document.getElementById('storeLng').value = store.longitude || '';
+            document.getElementById('storePhone').value = store.phone || '';
+            document.getElementById('storeWebsite').value = store.website || '';
+            document.getElementById('storeHours').value = store.opening_hours || '';
+            document.getElementById('storeGfOptions').value = store.gluten_free_options || '';
+            document.getElementById('storeDescription').value = store.description || '';
+            
+            // 地図更新
+            if (store.latitude && store.longitude) {
+                updateMapMarker(store.latitude, store.longitude);
+            }
+            
+            displayStores();
+        }
+        
+        // 新規店舗追加
+        function addNewStore() {
+            const newId = Math.max(...stores.map(s => s.id), 0) + 1;
+            
+            const newStore = {
+                id: newId,
+                name: '新規店舗',
+                category: 'カフェ',
+                address: '',
+                latitude: null,
+                longitude: null,
+                phone: '',
+                website: '',
+                description: '',
+                gluten_free_options: '',
+                opening_hours: ''
+            };
+            
+            stores.push(newStore);
+            displayStores();
+            editStore(newId);
+            
+            // 店名入力欄にフォーカス
+            document.getElementById('storeName').focus();
+            document.getElementById('storeName').select();
+        }
+        
+        // 店舗保存
+        function saveStore() {
+            const id = parseInt(document.getElementById('storeId').value);
+            const storeIndex = stores.findIndex(s => s.id === id);
+            
+            if (storeIndex === -1) return;
+            
+            // フォームから値を取得
+            stores[storeIndex] = {
+                id: id,
+                name: document.getElementById('storeName').value,
+                category: document.getElementById('storeCategory').value,
+                address: document.getElementById('storeAddress').value,
+                latitude: parseFloat(document.getElementById('storeLat').value) || null,
+                longitude: parseFloat(document.getElementById('storeLng').value) || null,
+                phone: document.getElementById('storePhone').value,
+                website: document.getElementById('storeWebsite').value,
+                opening_hours: document.getElementById('storeHours').value,
+                gluten_free_options: document.getElementById('storeGfOptions').value,
+                description: document.getElementById('storeDescription').value
+            };
+            
+            // ローカルストレージに保存
+            localStorage.setItem('editingStores', JSON.stringify(stores));
+            
+            displayStores();
+            showToast('保存しました');
+        }
+        
+        // 店舗削除
+        function deleteStore(id) {
+            deleteTargetId = id;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+        
+        // 削除確認
+        function confirmDelete() {
+            if (deleteTargetId) {
+                stores = stores.filter(s => s.id !== deleteTargetId);
+                localStorage.setItem('editingStores', JSON.stringify(stores));
+                
+                if (selectedStoreId === deleteTargetId) {
+                    resetForm();
+                }
+                
+                displayStores();
+                showToast('削除しました');
+                closeDeleteModal();
+            }
+        }
+        
+        // 削除モーダルを閉じる
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            deleteTargetId = null;
+        }
+        
+        // フォームリセット
+        function resetForm() {
+            document.getElementById('editForm').reset();
+            document.getElementById('storeId').value = '';
+            selectedStoreId = null;
+            
+            if (editMarker) {
+                editMap.removeLayer(editMarker);
+                editMarker = null;
+            }
+            
+            displayStores();
+        }
+        
+        // 地図初期化
+        function initEditMap() {
+            editMap = L.map('editMap').setView([35.6762, 139.6503], 10);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(editMap);
+            
+            // 地図クリックイベント
+            editMap.on('click', function(e) {
+                updateMapMarker(e.latlng.lat, e.latlng.lng);
+                document.getElementById('storeLat').value = e.latlng.lat.toFixed(4);
+                document.getElementById('storeLng').value = e.latlng.lng.toFixed(4);
+            });
+        }
+        
+        // 地図マーカー更新
+        function updateMapMarker(lat, lng) {
+            if (editMarker) {
+                editMap.removeLayer(editMarker);
+            }
+            
+            editMarker = L.marker([lat, lng]).addTo(editMap);
+            editMap.setView([lat, lng], 15);
+        }
+        
+        // JSONエクスポート
+        function exportJSON() {
+            const dataStr = JSON.stringify(stores, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `stores_${new Date().toISOString().slice(0,10)}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showToast('JSONファイルをダウンロードしました');
+        }
+        
+        // JSONインポート
+        function importJSON() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = event => {
+                    try {
+                        const importedData = JSON.parse(event.target.result);
+                        stores = importedData;
+                        localStorage.setItem('editingStores', JSON.stringify(stores));
+                        displayStores();
+                        showToast('インポートしました');
+                    } catch (error) {
+                        showToast('JSONファイルの読み込みに失敗しました', true);
+                    }
+                };
+                
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+        
+        // トースト通知
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.classList.toggle('error', isError);
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
