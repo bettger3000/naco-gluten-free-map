@@ -4570,13 +4570,13 @@
                             `,
                             iconSize: [40, 48],
                             iconAnchor: [20, 48],
-                            popupAnchor: [0, -60]
+                            popupAnchor: [-10, -70]
                         })
                     }).addTo(map);
 
                     const popupContent = createPopupContent(store);
                     marker.bindPopup(popupContent, {
-                        offset: [0, -20], // ポップアップをマーカーの真上に表示
+                        offset: [-10, -30], // ポップアップをマーカーの真上に表示（左に10px、上に30px）
                         className: 'custom-popup'
                     });
 
