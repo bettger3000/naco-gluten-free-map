@@ -3160,6 +3160,58 @@
             padding-bottom: var(--space-sm);
             border-bottom: 1px solid var(--border-light);
         }
+        
+        .review-header-right {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+        
+        .review-actions {
+            display: flex;
+            gap: var(--space-xs);
+        }
+        
+        .review-action-btn {
+            background: none;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            padding: var(--space-xs);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 12px;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .review-action-btn:hover {
+            background: var(--bg-secondary);
+            border-color: var(--border-primary);
+        }
+        
+        .review-action-btn.edit-btn:hover {
+            color: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+        
+        .review-action-btn.delete-btn:hover {
+            color: #ef4444;
+            border-color: #ef4444;
+        }
+        
+        .review-edit-form {
+            width: 100%;
+        }
+        
+        .review-edit-form .review-textarea {
+            width: 100%;
+            min-height: 80px;
+            resize: vertical;
+        }
 
         .review-user {
             display: flex;
@@ -10219,6 +10271,10 @@
                 const createdDate = new Date(review.created_at).toLocaleDateString('ja-JP');
                 const isUpdated = review.updated_at !== review.created_at;
                 
+                // 現在のユーザーがレビューの投稿者かチェック
+                const currentUserEmail = getCurrentUser();
+                const isOwner = currentUserEmail && review.user_email === currentUserEmail;
+                
                 return `
                     <div class="review-item">
                         <div class="review-header">
@@ -10226,11 +10282,23 @@
                                 <span class="review-avatar">${getAvatarEmoji(review.user_avatar)}</span>
                                 <span class="review-nickname">${escapeHtml(review.user_nickname)}</span>
                             </div>
-                            <div class="review-date">
-                                ${createdDate}${isUpdated ? ' (編集済み)' : ''}
+                            <div class="review-header-right">
+                                <div class="review-date">
+                                    ${createdDate}${isUpdated ? ' (編集済み)' : ''}
+                                </div>
+                                ${isOwner ? `
+                                    <div class="review-actions">
+                                        <button class="review-action-btn edit-btn" onclick="editReview(${review.id}, '${escapeHtml(review.content).replace(/'/g, "\\'")}')">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="review-action-btn delete-btn" onclick="deleteReview(${review.id})">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                ` : ''}
                             </div>
                         </div>
-                        <div class="review-content">
+                        <div class="review-content" id="review-content-${review.id}">
                             ${escapeHtml(review.content)}
                         </div>
                     </div>
@@ -10393,6 +10461,199 @@
             } catch (error) {
                 console.error('レビュー更新エラー:', error);
             }
+        }
+
+        // レビュー編集機能
+        function editReview(reviewId, currentContent) {
+            console.log('📝 レビュー編集開始:', reviewId);
+            
+            // 現在のレビューコンテンツ要素を取得
+            const contentElement = document.getElementById(`review-content-${reviewId}`);
+            if (!contentElement) {
+                console.error('レビューコンテンツ要素が見つかりません:', reviewId);
+                return;
+            }
+            
+            // 編集フォームに置き換え
+            const editFormHTML = `
+                <div class="review-edit-form">
+                    <textarea 
+                        id="edit-textarea-${reviewId}"
+                        class="review-textarea"
+                        maxlength="2000"
+                        placeholder="感想を編集してください..."
+                        oninput="updateEditCharCount(${reviewId})"
+                    >${currentContent}</textarea>
+                    <div class="review-form-footer">
+                        <span class="char-count" id="edit-char-count-${reviewId}">残り: ${2000 - currentContent.length}文字</span>
+                        <div class="review-form-buttons">
+                            <button class="btn-cancel" onclick="cancelEditReview(${reviewId}, '${currentContent.replace(/'/g, "\\'")}')">キャンセル</button>
+                            <button class="btn-submit" onclick="saveEditReview(${reviewId})">保存</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            contentElement.innerHTML = editFormHTML;
+            
+            // テキストエリアにフォーカス
+            const textarea = document.getElementById(`edit-textarea-${reviewId}`);
+            if (textarea) {
+                textarea.focus();
+                textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+            }
+        }
+
+        // 編集キャンセル
+        function cancelEditReview(reviewId, originalContent) {
+            const contentElement = document.getElementById(`review-content-${reviewId}`);
+            if (contentElement) {
+                contentElement.innerHTML = escapeHtml(originalContent);
+            }
+        }
+
+        // 編集時の文字数カウント更新
+        function updateEditCharCount(reviewId) {
+            const textarea = document.getElementById(`edit-textarea-${reviewId}`);
+            const charCount = document.getElementById(`edit-char-count-${reviewId}`);
+            
+            if (textarea && charCount) {
+                const remaining = 2000 - textarea.value.length;
+                charCount.textContent = `残り: ${remaining}文字`;
+                charCount.style.color = remaining < 100 ? '#ef4444' : remaining < 300 ? '#f59e0b' : '#6b7280';
+            }
+        }
+
+        // レビュー保存（編集）
+        async function saveEditReview(reviewId) {
+            const textarea = document.getElementById(`edit-textarea-${reviewId}`);
+            const currentUserEmail = getCurrentUser();
+            
+            if (!currentUserEmail) {
+                alert('ユーザー認証が必要です。再度ログインしてください。');
+                return;
+            }
+            
+            if (!textarea) {
+                console.error('編集テキストエリアが見つかりません');
+                return;
+            }
+            
+            const newContent = textarea.value.trim();
+            if (!newContent) {
+                alert('感想を入力してください');
+                return;
+            }
+            
+            if (newContent.length > 2000) {
+                alert('感想は2000文字以内で入力してください');
+                return;
+            }
+            
+            try {
+                // ボタンを無効化
+                const saveBtn = textarea.parentElement.querySelector('.btn-submit');
+                if (saveBtn) {
+                    saveBtn.disabled = true;
+                    saveBtn.textContent = '保存中...';
+                }
+                
+                console.log('💾 レビュー更新開始:', reviewId);
+                
+                // Supabaseでレビューを更新
+                const { error } = await supabaseClient
+                    .from('reviews')
+                    .update({
+                        content: newContent,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', reviewId)
+                    .eq('user_email', currentUserEmail); // セキュリティ: 所有者のみ更新可能
+                
+                if (error) {
+                    console.error('レビュー更新エラー:', error);
+                    alert('レビューの更新に失敗しました。もう一度お試しください。');
+                    return;
+                }
+                
+                console.log('✅ レビュー更新成功:', reviewId);
+                alert('感想を更新しました！');
+                
+                // レビュー表示を更新
+                const storeId = getCurrentStoreId();
+                if (storeId) {
+                    await refreshStoreReviews(storeId);
+                }
+                
+            } catch (error) {
+                console.error('レビュー更新例外:', error);
+                alert('更新中にエラーが発生しました');
+            }
+        }
+
+        // レビュー削除機能
+        async function deleteReview(reviewId) {
+            if (!confirm('この感想を削除してもよろしいですか？\n削除した感想は復元できません。')) {
+                return;
+            }
+            
+            const currentUserEmail = getCurrentUser();
+            
+            if (!currentUserEmail) {
+                alert('ユーザー認証が必要です。再度ログインしてください。');
+                return;
+            }
+            
+            try {
+                console.log('🗑️ レビュー削除開始:', reviewId);
+                
+                // Supabaseでレビューを論理削除
+                const { error } = await supabaseClient
+                    .from('reviews')
+                    .update({
+                        is_deleted: true,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', reviewId)
+                    .eq('user_email', currentUserEmail); // セキュリティ: 所有者のみ削除可能
+                
+                if (error) {
+                    console.error('レビュー削除エラー:', error);
+                    alert('レビューの削除に失敗しました。もう一度お試しください。');
+                    return;
+                }
+                
+                console.log('✅ レビュー削除成功:', reviewId);
+                alert('感想を削除しました');
+                
+                // レビュー表示を更新
+                const storeId = getCurrentStoreId();
+                if (storeId) {
+                    await refreshStoreReviews(storeId);
+                }
+                
+            } catch (error) {
+                console.error('レビュー削除例外:', error);
+                alert('削除中にエラーが発生しました');
+            }
+        }
+
+        // 現在表示中の店舗IDを取得するヘルパー関数
+        function getCurrentStoreId() {
+            // URL fragment やモーダルから店舗IDを取得
+            const modal = document.querySelector('.store-detail-modal, .store-detail-fullscreen');
+            if (modal) {
+                // レビューコンテナから店舗IDを推測
+                const reviewForm = modal.querySelector('.review-form-container');
+                if (reviewForm) {
+                    const submitBtn = reviewForm.querySelector('.btn-submit[onclick*="submitReview"]');
+                    if (submitBtn) {
+                        const match = submitBtn.getAttribute('onclick').match(/submitReview\((\d+)\)/);
+                        return match ? parseInt(match[1]) : null;
+                    }
+                }
+            }
+            return null;
         }
 
         // ESCキーでプロフィール画面を閉じる
