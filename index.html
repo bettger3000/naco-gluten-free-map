@@ -10594,9 +10594,9 @@
                 
                 // 現在のユーザー情報を取得
                 const currentUserEmail = getCurrentUser();
-                const userProfile = getUserProfile(currentUserEmail);
-                const avatarEmoji = getAvatarEmoji(userProfile?.avatar || 'cat');
-                const nickname = userProfile?.nickname || currentUserEmail?.split('@')[0] || 'ユーザー';
+                // シンプルにデフォルト値を使用（マイレビューは自分のレビューのみ）
+                const avatarEmoji = getAvatarEmoji('cat'); // デフォルト猫アバター
+                const nickname = currentUserEmail?.split('@')[0] || 'ユーザー';
                 
                 return `
                     <div class="my-review-card">
