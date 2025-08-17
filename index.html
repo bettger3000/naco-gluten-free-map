@@ -4617,6 +4617,14 @@
         // JSONファイルから店舗データを読み込む
         async function loadStores() {
             try {
+                // ローカルファイルの場合はCORSエラーを回避
+                if (window.location.protocol === 'file:') {
+                    console.log('⚠️ ローカルファイルモード: 埋め込みデータを使用');
+                    embeddedStores = getEmbeddedStoresData();
+                    console.log('✅ 店舗データ読み込み完了:', embeddedStores.length, '件');
+                    return embeddedStores;
+                }
+                
                 const response = await fetch('./data/embeddedStores.json');
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -4627,10 +4635,45 @@
                 return stores;
             } catch (error) {
                 console.error('❌ 店舗データの読み込みに失敗:', error);
-                // フォールバック: 空配列を返す
-                embeddedStores = [];
-                return [];
+                console.log('⚠️ フォールバック: 埋め込みデータを使用');
+                // フォールバック: 埋め込みデータを使用
+                embeddedStores = getEmbeddedStoresData();
+                console.log('✅ 店舗データ読み込み完了:', embeddedStores.length, '件');
+                return embeddedStores;
             }
+        }
+        
+        // 埋め込み店舗データを返す関数（CORSエラー回避用）
+        function getEmbeddedStoresData() {
+            // JSONファイルの内容を直接返す
+            return [
+                {
+                    "id": 6,
+                    "name": "みちのり弁当（Gluten-Free Michinori Bento）",
+                    "category": "和食",
+                    "address": "名古屋市西区浄心１丁目４−６",
+                    "latitude": 35.1938,
+                    "longitude": 136.8901,
+                    "phone": "052-5086-615",
+                    "website": "https://gf-michinori.jp/",
+                    "description": "📍グルテンフリーのお弁当専門店です。\n     テイクアウトのみでご提供しております🍱\n\n     ご注文をいただいてからお作りいたしますので、\n     事前にお電話でご予約いただくと、スムーズにお渡しできます✨",
+                    "gluten_free_options": "完全GF",
+                    "opening_hours": "11時00分～19時00分"
+                },
+                // 他の店舗データはSupabaseから取得するため、最小限のデータのみ
+            ];
+        }
+        
+        // 埋め込み地名データを返す関数（CORSエラー回避用）
+        function getFamousPlacesData() {
+            // 主要な地名データを直接返す
+            return [
+                { "name": "名古屋駅", "kana": "なごやえき", "aliases": ["なごや", "名古屋"], "lat": 35.1709, "lng": 136.8816, "category": "駅・交通" },
+                { "name": "栄", "kana": "さかえ", "aliases": [], "lat": 35.1698, "lng": 136.9095, "category": "繁華街" },
+                { "name": "大須", "kana": "おおす", "aliases": ["大須観音"], "lat": 35.1596, "lng": 136.9003, "category": "観光地" },
+                { "name": "金山駅", "kana": "かなやまえき", "aliases": ["かなやま", "金山"], "lat": 35.1429, "lng": 136.9008, "category": "駅・交通" },
+                { "name": "伏見", "kana": "ふしみ", "aliases": [], "lat": 35.1694, "lng": 136.8981, "category": "ビジネス街" }
+            ];
         }
         
         // 【バックアップ】元の埋め込み配列（現在は未使用）
@@ -5521,6 +5564,16 @@
         async function loadFamousPlaces() {
             try {
                 console.log('📍 地名データを読み込み中...');
+                
+                // ローカルファイルの場合はCORSエラーを回避
+                if (window.location.protocol === 'file:') {
+                    console.log('⚠️ ローカルファイルモード: 埋め込みデータを使用');
+                    famousPlaces = getFamousPlacesData();
+                    console.log(`✅ 地名データ読み込み完了: ${famousPlaces.length}件`);
+                    setupSearchFunctionality();
+                    return;
+                }
+                
                 const response = await fetch('data/famousPlaces.json');
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -5533,7 +5586,10 @@
                 setupSearchFunctionality();
             } catch (error) {
                 console.error('❌ 地名データ読み込みエラー:', error);
-                famousPlaces = []; // フォールバック
+                console.log('⚠️ フォールバック: 埋め込みデータを使用');
+                famousPlaces = getFamousPlacesData();
+                console.log(`✅ 地名データ読み込み完了: ${famousPlaces.length}件`);
+                setupSearchFunctionality();
             }
         }
 
@@ -10226,10 +10282,12 @@
         // nickname が null のレコードを修正する緊急措置関数
         async function fixNullNicknames() {
             try {
-                // nickname が null のレコードを検索
+                console.log('🔍 fixNullNicknames開始: nickname IS NULL のレコードを検索中...');
+                
+                // nickname が null のレコードを検索（詳細なログ付き）
                 const { data: nullNicknameUsers, error: selectError } = await supabaseClient
                     .from('user_profiles')
-                    .select('email')
+                    .select('email, nickname')
                     .is('nickname', null);
                 
                 if (selectError) {
@@ -10237,11 +10295,26 @@
                     return;
                 }
                 
+                console.log('📊 null nickname検索結果:', nullNicknameUsers);
+                console.log('📊 検索件数:', nullNicknameUsers?.length || 0);
+                
                 if (nullNicknameUsers && nullNicknameUsers.length > 0) {
                     console.log('🔧 null nicknameを修正中:', nullNicknameUsers.length, '件');
                     
+                    // 特定のユーザーが含まれているかチェック
+                    const targetEmail = 'bettger1000@gmail.com';
+                    const targetUser = nullNicknameUsers.find(user => user.email === targetEmail);
+                    if (targetUser) {
+                        console.error('❗ 問題発見: bettger1000@gmail.comがnull nickname検索に引っかかっています!');
+                        console.error('❗ ユーザーデータ:', targetUser);
+                        console.error('❗ nickname値:', targetUser.nickname, '型:', typeof targetUser.nickname);
+                        console.error('❗ null判定:', targetUser.nickname === null);
+                    }
+                    
                     // 各レコードを修正
                     for (const user of nullNicknameUsers) {
+                        console.log('🔧 処理対象ユーザー:', user.email, 'nickname:', user.nickname);
+                        
                         const defaultNickname = user.email.split('@')[0] || 'ユーザー';
                         const { error: updateError } = await supabaseClient
                             .from('user_profiles')
@@ -10254,6 +10327,8 @@
                             console.log('✅ nickname修正完了:', user.email, '->', defaultNickname);
                         }
                     }
+                } else {
+                    console.log('✅ null nicknameのレコードはありません。処理をスキップします。');
                 }
             } catch (error) {
                 console.warn('⚠️ fixNullNicknames例外:', error);
@@ -10265,10 +10340,10 @@
             try {
                 console.log('🔧 ユーザー登録確認中:', email);
                 
-                // 緊急措置: nickname が null のレコードを修正
-                console.log('⏳ fixNullNicknames実行開始...');
-                await fixNullNicknames();
-                console.log('✅ fixNullNicknames実行完了');
+                // fixNullNicknames関数を一時的に無効化（問題解決まで）
+                console.log('⚠️ fixNullNicknames関数は一時的に無効化されています');
+                // await fixNullNicknames(); // 無効化
+                console.log('✅ fixNullNicknames実行スキップ');
                 
                 // まずSupabaseで確認
                 const { data, error } = await supabaseClient
