@@ -4016,79 +4016,37 @@
         }
 
         .my-review-card {
-            background: linear-gradient(135deg, #FFFFFF 0%, #FEFCFE 100%);
-            border-radius: 16px;
-            margin-bottom: 32px;
-            box-shadow: 0 4px 20px rgba(219, 162, 181, 0.12);
-            border: 1px solid rgba(219, 162, 181, 0.2);
+            background: var(--bg-primary);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-lg);
+            border: 1px solid var(--border-light);
+            transition: all 0.2s ease;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            position: relative;
-        }
-
-        .my-review-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #ff6b9d, #40e0d0);
-            opacity: 0.6;
         }
 
         .my-review-card:hover {
-            transform: translateY(-3px) scale(1.01);
-            box-shadow: 0 8px 30px rgba(219, 162, 181, 0.25);
-            border-color: rgba(219, 162, 181, 0.4);
-        }
-
-        .my-review-card:hover::before {
-            opacity: 1;
-            background: linear-gradient(90deg, #ff6b9d, #40e0d0, #ff6b9d);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
         }
 
         .review-card-header {
-            background: linear-gradient(135deg, #FFFFFF 0%, #FFF8FC 100%);
-            padding: 32px 36px 28px 36px;
-            border-bottom: 1px solid rgba(219, 162, 181, 0.1);
-            position: relative;
-        }
-
-        .review-card-header::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 36px;
-            right: 36px;
-            height: 1px;
-            background: linear-gradient(90deg, transparent 0%, rgba(255, 107, 157, 0.2) 20%, rgba(64, 224, 208, 0.2) 80%, transparent 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-lg) var(--space-lg) var(--space-sm) var(--space-lg);
+            margin-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border-light);
         }
 
         .store-name-link {
-            display: inline-block;
-            color: #2d2d2d;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            color: var(--text-primary);
             text-decoration: none;
-            font-weight: 700;
-            font-size: 1.4rem;
-            letter-spacing: 0.3px;
-            transition: all 0.3s ease;
-            position: relative;
-            padding: 0;
-            margin-bottom: 8px;
-            font-family: 'Helvetica Neue', 'Yu Gothic', sans-serif;
-        }
-
-        .store-name-link::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #ff6b9d, #40e0d0);
-            transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            border-radius: 2px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
         }
 
         .store-name-link::before {
@@ -4105,12 +4063,7 @@
         }
 
         .store-name-link:hover {
-            color: #ff6b9d;
-            transform: translateY(-1px);
-        }
-
-        .store-name-link:hover::after {
-            width: 100%;
+            color: var(--primary);
         }
 
         .store-name-link:hover::before {
@@ -4118,145 +4071,109 @@
         }
 
         .store-name-link i {
-            font-size: 1.1rem;
-            margin-left: 8px;
-            opacity: 0.8;
-            transition: all 0.3s ease;
-            color: #ff6b9d;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
         }
 
         .store-name-link:hover i {
-            transform: translateX(3px);
-            color: #40e0d0;
+            color: var(--primary);
         }
 
         .store-info {
-            margin-top: 12px;
-            font-size: 0.9rem;
-            color: #666;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
+            margin-top: var(--space-xs);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
         }
 
         .store-category, .store-address {
-            background: linear-gradient(135deg, rgba(255, 107, 157, 0.08), rgba(64, 224, 208, 0.08));
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            color: #555;
-            border: 1px solid rgba(219, 162, 181, 0.15);
+            display: inline-block;
+            margin-right: var(--space-sm);
         }
 
         .review-card-body {
-            padding: 36px;
-            background: linear-gradient(135deg, #FFFFFF 0%, #FEFEFE 100%);
+            padding: 0 var(--space-lg) var(--space-lg) var(--space-lg);
         }
 
         .review-content {
-            background: linear-gradient(135deg, #FDFCFD 0%, #F9F7F9 100%);
-            padding: 28px 32px;
-            border-radius: 16px;
-            margin-bottom: 28px;
-            border: 1px solid rgba(219, 162, 181, 0.15);
-            font-size: 1.05rem;
-            line-height: 1.75;
-            color: #2d2d2d;
-            font-family: 'Yu Gothic', 'Hiragino Sans', sans-serif;
-            position: relative;
-            box-shadow: 0 3px 15px rgba(219, 162, 181, 0.08);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
             word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-
-        .review-content::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #ff6b9d, #40e0d0);
-            border-radius: 16px 16px 0 0;
         }
 
         .review-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: var(--space-lg);
-            padding-top: var(--space-md);
-            border-top: 1px solid rgba(219, 162, 181, 0.1);
+            margin-top: var(--space-md);
         }
 
-        .review-dates {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
+        .review-user {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .review-avatar {
+            font-size: 1.5rem;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-secondary);
+            border-radius: 50%;
+        }
+
+        .review-nickname {
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.95rem;
         }
 
         .review-date {
-            display: flex;
-            align-items: center;
-            gap: var(--space-xs);
-            margin-bottom: var(--space-xs);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 400;
         }
 
-        .review-date i {
-            font-size: 0.75rem;
-            opacity: 0.7;
+        .review-header-right {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
         }
 
         .review-actions {
             display: flex;
-            gap: var(--space-sm);
+            gap: var(--space-xs);
         }
 
         .review-action-btn {
-            padding: var(--space-sm) var(--space-md);
-            border: none;
-            border-radius: var(--radius-md);
-            font-size: 0.85rem;
-            font-weight: 500;
+            background: none;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            padding: var(--space-xs);
+            color: var(--text-secondary);
             cursor: pointer;
             transition: all 0.2s ease;
+            font-size: 12px;
+            width: 28px;
+            height: 28px;
             display: flex;
             align-items: center;
-            gap: var(--space-xs);
-            min-width: 70px;
             justify-content: center;
         }
 
-        .edit-btn {
-            background: linear-gradient(135deg, rgba(255, 107, 157, 0.08) 0%, rgba(64, 224, 208, 0.08) 100%);
-            color: #ff6b9d;
-            border: 1px solid rgba(255, 107, 157, 0.3);
-            font-weight: 600;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .edit-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
+        .review-action-btn:hover {
+            background: var(--bg-secondary);
+            border-color: var(--border-primary);
         }
 
         .edit-btn:hover {
-            background: linear-gradient(135deg, #ff6b9d 0%, #40e0d0 100%);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
-            border-color: transparent;
-        }
-
-        .edit-btn:hover::before {
-            left: 100%;
+            color: var(--accent-primary);
+            border-color: var(--accent-primary);
         }
 
         /* 削除ボタンは編集画面内に移動するため、ここでは非表示 */
@@ -10660,8 +10577,8 @@
         function createMyReviewsHTML(reviews) {
             if (!reviews || reviews.length === 0) {
                 return `
-                    <div class="my-reviews-empty">
-                        <div class="empty-icon">📝</div>
+                    <div class="reviews-empty">
+                        <i class="fas fa-comment-dots"></i>
                         <h3>まだレビューがありません</h3>
                         <p>お気に入りの店舗で感想を書いてみませんか？</p>
                     </div>
@@ -10675,34 +10592,46 @@
                 const storeAddress = review.stores?.address || '';
                 const storeCategory = review.stores?.category_id || '';
                 
+                // 現在のユーザー情報を取得
+                const currentUserEmail = getCurrentUser();
+                const userProfile = getUserProfile(currentUserEmail);
+                const avatarEmoji = getAvatarEmoji(userProfile?.avatar || 'cat');
+                const nickname = userProfile?.nickname || currentUserEmail?.split('@')[0] || 'ユーザー';
+                
                 return `
                     <div class="my-review-card">
-                        <div class="my-review-header">
-                            <div class="store-info-section">
-                                <button class="store-link-btn" onclick="goToStoreFromReview(${review.store_id})">
-                                    <span class="store-name">${escapeHtml(storeName)}</span>
-                                    <span class="store-details">
-                                        ${storeCategory ? `${escapeHtml(storeCategory)} • ` : ''}${escapeHtml(storeAddress)}
-                                    </span>
-                                    <i class="fas fa-map-marker-alt store-location-icon"></i>
-                                </button>
+                        <div class="review-card-header">
+                            <div class="store-name-container">
+                                <a href="#" class="store-name-link" onclick="goToStoreFromReview(${review.store_id}); return false;">
+                                    ${escapeHtml(storeName)}
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </a>
+                                <div class="store-info">
+                                    ${storeCategory ? `<span class="store-category">${escapeHtml(storeCategory)}</span>` : ''}
+                                    ${storeAddress ? `<span class="store-address">${escapeHtml(storeAddress)}</span>` : ''}
+                                </div>
                             </div>
-                            <div class="my-review-actions">
-                                <button class="my-review-action-btn edit-btn" onclick="editMyReview(${review.id}, '${escapeHtml(review.content).replace(/'/g, "\\'")}')">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="my-review-action-btn delete-btn" onclick="deleteMyReview(${review.id})">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                            <div class="review-header-right">
+                                <div class="review-actions">
+                                    <button class="review-action-btn edit-btn" onclick="editReview(${review.id}, '${escapeHtml(review.content).replace(/'/g, "\\'")}')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        <div class="my-review-content" id="my-review-content-${review.id}">
-                            ${escapeHtml(review.content)}
-                        </div>
-                        <div class="my-review-footer">
-                            <span class="review-date">
-                                ${createdDate}${isUpdated ? ' (編集済み)' : ''}
-                            </span>
+                        <div class="review-card-body">
+                            <div class="review-content" id="review-content-${review.id}">
+                                ${escapeHtml(review.content)}
+                            </div>
+                            <div class="review-meta">
+                                <div class="review-user">
+                                    <div class="review-avatar">${avatarEmoji}</div>
+                                    <div>
+                                        <div class="review-nickname">${escapeHtml(nickname)}</div>
+                                        <div class="review-date">${createdDate}${isUpdated ? ' (編集済み)' : ''}</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 `;
