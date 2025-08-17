@@ -10107,8 +10107,8 @@
                 const supabaseProfile = await loadProfileFromSupabase(email);
                 if (supabaseProfile) {
                     console.log('☁️ Supabaseプロフィールを復元:', email);
-                    // LocalStorageにもキャッシュ
-                    localStorage.setItem(`user_profile_${email}`, JSON.stringify(supabaseProfile));
+                    // LocalStorageへのキャッシュは無効化（データ不整合を防ぐため）
+                    // localStorage.setItem(`user_profile_${email}`, JSON.stringify(supabaseProfile));
                     return supabaseProfile;
                 }
                 
@@ -10201,10 +10201,10 @@
                 // 更新日時を設定
                 profile.updatedAt = new Date().toISOString();
                 
-                // LocalStorageに保存（フォールバック用）
-                localStorage.setItem(`user_profile_${profile.email}`, JSON.stringify(profile));
+                // LocalStorageへの保存は無効化（データ不整合を防ぐため）
+                // localStorage.setItem(`user_profile_${profile.email}`, JSON.stringify(profile));
                 
-                // Supabaseにも保存（慎重に）
+                // Supabaseにのみ保存
                 await saveProfileToSupabase(profile);
                 
                 console.log('💾 プロフィールを保存:', profile.email);
@@ -10266,6 +10266,13 @@
             }
             
             console.log('🔄 プロフィール初期化開始:', user);
+            
+            // 既存のLocalStorageキャッシュを強制クリア
+            const cacheKey = `user_profile_${user}`;
+            if (localStorage.getItem(cacheKey)) {
+                console.warn('🗑️ 既存のLocalStorageキャッシュを削除:', cacheKey);
+                localStorage.removeItem(cacheKey);
+            }
             
             // 認証直後にユーザー自動修復を実行
             await ensureUserIsRegistered(user);
