@@ -10432,14 +10432,28 @@
                 
                 // 店舗情報を追加で取得
                 const storeIds = [...new Set(reviewsData.map(r => r.store_id))];
-                const { data: storesData, error: storesError } = await supabaseClient
-                    .from('stores')
-                    .select('id, name, address, category')
-                    .in('id', storeIds);
+                console.log('🏪 取得する店舗IDs:', storeIds);
                 
-                if (storesError) {
-                    console.error('店舗データ取得エラー:', storesError);
-                    // 店舗情報がなくてもレビューは表示
+                let storesData = [];
+                if (storeIds.length > 0) {
+                    // 各店舗IDが有効な数値であることを確認
+                    const validStoreIds = storeIds.filter(id => id != null && !isNaN(id));
+                    console.log('✅ 有効な店舗IDs:', validStoreIds);
+                    
+                    if (validStoreIds.length > 0) {
+                        const { data: stores, error: storesError } = await supabaseClient
+                            .from('stores')
+                            .select('id, name, address, category')
+                            .in('id', validStoreIds);
+                        
+                        if (storesError) {
+                            console.error('店舗データ取得エラー:', storesError);
+                            // エラーでも続行（フォールバックで対応）
+                        } else {
+                            storesData = stores || [];
+                            console.log('✅ 店舗データ取得成功:', storesData.length, '件');
+                        }
+                    }
                 }
                 
                 // レビューと店舗情報を結合
