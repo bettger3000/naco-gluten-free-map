@@ -4050,7 +4050,7 @@
 
         .review-card-header {
             background: linear-gradient(135deg, #FFFFFF 0%, #FFF8FC 100%);
-            padding: 28px 32px;
+            padding: 32px 36px 28px 36px;
             border-bottom: 1px solid rgba(219, 162, 181, 0.1);
             position: relative;
         }
@@ -4059,44 +4059,36 @@
             content: '';
             position: absolute;
             bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
+            left: 36px;
+            right: 36px;
             height: 1px;
-            background: linear-gradient(90deg, transparent, #DBA2B5, transparent);
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 107, 157, 0.2) 20%, rgba(64, 224, 208, 0.2) 80%, transparent 100%);
         }
 
         .store-name-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            color: #ff6b9d;
+            display: inline-block;
+            color: #2d2d2d;
             text-decoration: none;
-            font-weight: 600;
-            font-size: 1.25rem;
-            letter-spacing: 0.5px;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            font-weight: 700;
+            font-size: 1.4rem;
+            letter-spacing: 0.3px;
+            transition: all 0.3s ease;
             position: relative;
-            padding: 12px 20px;
-            border-radius: 25px;
-            background: linear-gradient(135deg, rgba(255, 107, 157, 0.08) 0%, rgba(64, 224, 208, 0.08) 100%);
-            border: 2px solid transparent;
-            background-clip: padding-box;
+            padding: 0;
+            margin-bottom: 8px;
+            font-family: 'Helvetica Neue', 'Yu Gothic', sans-serif;
         }
 
-        .store-name-link::before {
+        .store-name-link::after {
             content: '';
             position: absolute;
-            inset: 0;
-            padding: 2px;
-            background: linear-gradient(135deg, #ff6b9d, #40e0d0);
-            border-radius: 25px;
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask-composite: xor;
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            opacity: 0;
-            transition: opacity 0.4s ease;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff6b9d, #40e0d0);
+            transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border-radius: 2px;
         }
 
         .store-name-link::before {
@@ -4113,14 +4105,12 @@
         }
 
         .store-name-link:hover {
-            color: #e55a8a;
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 8px 25px rgba(255, 107, 157, 0.3);
-            background: linear-gradient(135deg, rgba(255, 107, 157, 0.15) 0%, rgba(64, 224, 208, 0.15) 100%);
+            color: #ff6b9d;
+            transform: translateY(-1px);
         }
 
-        .store-name-link:hover::before {
-            opacity: 1;
+        .store-name-link:hover::after {
+            width: 100%;
         }
 
         .store-name-link:hover::before {
@@ -4128,60 +4118,67 @@
         }
 
         .store-name-link i {
-            font-size: 0.85rem;
-            opacity: 0.7;
-            transition: transform 0.3s ease;
+            font-size: 1.1rem;
+            margin-left: 8px;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+            color: #ff6b9d;
         }
 
         .store-name-link:hover i {
-            transform: translateX(2px);
+            transform: translateX(3px);
+            color: #40e0d0;
         }
 
         .store-info {
-            margin-top: var(--space-sm);
-            font-size: 0.85rem;
-            color: var(--text-secondary);
+            margin-top: 12px;
+            font-size: 0.9rem;
+            color: #666;
             display: flex;
+            align-items: center;
+            gap: 12px;
             flex-wrap: wrap;
-            gap: var(--space-sm);
         }
 
         .store-category, .store-address {
-            background: rgba(219, 162, 181, 0.08);
-            padding: 2px var(--space-sm);
-            border-radius: var(--radius-sm);
-            font-size: 0.8rem;
+            background: linear-gradient(135deg, rgba(255, 107, 157, 0.08), rgba(64, 224, 208, 0.08));
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #555;
+            border: 1px solid rgba(219, 162, 181, 0.15);
         }
 
         .review-card-body {
-            padding: 32px;
+            padding: 36px;
             background: linear-gradient(135deg, #FFFFFF 0%, #FEFEFE 100%);
         }
 
         .review-content {
-            background: linear-gradient(135deg, #FFF8FC 0%, #F8F4F8 100%);
-            padding: 24px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            border-left: 4px solid;
-            border-image: linear-gradient(135deg, #ff6b9d, #40e0d0) 1;
-            font-size: 1rem;
-            line-height: 1.8;
-            color: #3a3a3a;
+            background: linear-gradient(135deg, #FDFCFD 0%, #F9F7F9 100%);
+            padding: 28px 32px;
+            border-radius: 16px;
+            margin-bottom: 28px;
+            border: 1px solid rgba(219, 162, 181, 0.15);
+            font-size: 1.05rem;
+            line-height: 1.75;
+            color: #2d2d2d;
             font-family: 'Yu Gothic', 'Hiragino Sans', sans-serif;
             position: relative;
-            box-shadow: 0 2px 10px rgba(219, 162, 181, 0.08);
+            box-shadow: 0 3px 15px rgba(219, 162, 181, 0.08);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
         }
 
         .review-content::before {
-            content: '"';
+            content: '';
             position: absolute;
-            top: -5px;
-            left: -2px;
-            font-size: 3rem;
-            color: rgba(255, 107, 157, 0.2);
-            font-family: serif;
-            pointer-events: none;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff6b9d, #40e0d0);
+            border-radius: 16px 16px 0 0;
         }
 
         .review-meta {
