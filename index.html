@@ -7367,6 +7367,13 @@
             { id: 'art', emoji: '🎨', name: 'アート' },
             { id: 'rainbow', emoji: '🌈', name: '虹' }
         ];
+        
+        // アバターIDから絵文字を取得する関数
+        function getAvatarEmoji(avatarId) {
+            if (!avatarId) return '🌸'; // デフォルト
+            const preset = PRESET_AVATARS.find(a => a.id === avatarId);
+            return preset ? preset.emoji : '🌸';
+        }
 
         // 訪問履歴機能初期化
         async function initVisitHistory() {
@@ -10149,14 +10156,14 @@
                             return {
                                 ...review,
                                 user_nickname: userProfile?.nickname || '匿名ユーザー',
-                                user_avatar: userProfile?.avatar_emoji || '👤'
+                                user_avatar: userProfile?.avatar_emoji || 'default'
                             };
                         } catch (err) {
                             console.warn('ユーザー情報取得エラー:', err);
                             return {
                                 ...review,
                                 user_nickname: '匿名ユーザー',
-                                user_avatar: '👤'
+                                user_avatar: 'default'
                             };
                         }
                     })
@@ -10216,7 +10223,7 @@
                     <div class="review-item">
                         <div class="review-header">
                             <div class="review-user">
-                                <span class="review-avatar">${review.user_avatar}</span>
+                                <span class="review-avatar">${getAvatarEmoji(review.user_avatar)}</span>
                                 <span class="review-nickname">${escapeHtml(review.user_nickname)}</span>
                             </div>
                             <div class="review-date">
