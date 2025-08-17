@@ -10156,9 +10156,9 @@
             try {
                 console.log('🔄 Supabaseプロフィール保存開始:', profile.email);
                 
-                // nicknameが空の場合、デフォルト値を設定
+                // nicknameがnullまたはundefinedの場合のみ、デフォルト値を設定
                 const defaultNickname = profile.email.split('@')[0] || 'ユーザー';
-                const safeNickname = profile.nickname || defaultNickname;
+                const safeNickname = (profile.nickname !== null && profile.nickname !== undefined) ? profile.nickname : defaultNickname;
                 
                 console.log('💾 保存するnickname:', safeNickname);
                 
