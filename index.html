@@ -10117,9 +10117,12 @@
                 if (saved) {
                     const profile = JSON.parse(saved);
                     console.log('💾 ローカルプロフィールを復元:', email);
-                    // Supabaseにも保存
-                    await saveProfileToSupabase(profile);
-                    return profile;
+                    console.warn('⚠️ LocalStorageのデータは使用しません（古い可能性があるため）');
+                    // LocalStorageの古いデータは削除
+                    localStorage.removeItem(`user_profile_${email}`);
+                    // Supabaseにはアップロードしない（古いデータで上書きを防ぐ）
+                    // await saveProfileToSupabase(profile); // この行を無効化
+                    // return profile; // LocalStorageのデータは返さない
                 }
                 
                 // どちらにも無い場合はデフォルト作成
@@ -10217,12 +10220,14 @@
         async function saveProfileToSupabase(profile) {
             try {
                 console.log('🔄 Supabaseプロフィール保存開始:', profile.email);
+                console.log('📝 受け取ったプロフィール:', profile);
+                console.log('📝 受け取ったnickname:', `"${profile.nickname}"`, '型:', typeof profile.nickname);
                 
                 // nicknameがnullまたはundefinedの場合のみ、デフォルト値を設定
                 const defaultNickname = profile.email.split('@')[0] || 'ユーザー';
                 const safeNickname = (profile.nickname !== null && profile.nickname !== undefined) ? profile.nickname : defaultNickname;
                 
-                console.log('💾 保存するnickname:', safeNickname);
+                console.log('💾 保存するnickname:', `"${safeNickname}"`);
                 
                 // 既存のuser_profilesテーブルの実際のカラム構造に合わせて保存
                 const { error } = await supabaseClient
