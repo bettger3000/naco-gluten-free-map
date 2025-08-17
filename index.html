@@ -10450,7 +10450,7 @@
                                 
                                 const { data: storeData, error: storeError } = await supabaseClient
                                     .from('stores')
-                                    .select('id, name, address, category')
+                                    .select('id, name, address, category_id')
                                     .eq('id', numericStoreId)
                                     .single();
                                 
@@ -10479,7 +10479,7 @@
                     stores: storesData?.find(store => store.id === review.store_id) || {
                         name: '店舗情報なし',
                         address: '',
-                        category: ''
+                        category_id: null
                     }
                 }));
                 
@@ -10534,7 +10534,7 @@
                 const isUpdated = review.updated_at !== review.created_at;
                 const storeName = review.stores?.name || '店舗名不明';
                 const storeAddress = review.stores?.address || '';
-                const storeCategory = review.stores?.category || '';
+                const storeCategory = review.stores?.category_id || '';
                 
                 return `
                     <div class="my-review-card">
