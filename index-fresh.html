@@ -3347,7 +3347,7 @@
             gap: var(--space-sm);
         }
 
-        .btn-cancel, .btn-submit, .btn-delete {
+        .btn-cancel, .btn-submit {
             padding: var(--space-sm) var(--space-lg);
             border-radius: var(--radius-sm);
             font-size: 0.9rem;
@@ -3384,20 +3384,6 @@
             transform: none;
         }
 
-        .btn-delete {
-            background: #fff5f5;
-            color: #ef4444;
-            border: 1px solid #fecaca;
-        }
-
-        .btn-delete:hover {
-            background: #ef4444;
-            color: white;
-            border-color: #ef4444;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-        }
-
 
         /* モバイル対応 */
         @media (max-width: 768px) {
@@ -3411,7 +3397,7 @@
                 justify-content: center;
             }
             
-            .btn-cancel, .btn-submit, .btn-delete {
+            .btn-cancel, .btn-submit {
                 flex: 1;
                 max-width: 120px;
             }
@@ -3877,100 +3863,87 @@
             }
         }
 
-        /* マイレビューモーダル - 洗練された大人の女性向けデザイン */
+        /* マイレビューモーダル - エレガントで大人可愛いデザイン */
         .my-reviews-modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(40, 40, 40, 0.4);
-            backdrop-filter: blur(20px);
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 15000;
             padding: var(--space-lg);
-            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeIn 0.3s ease-out;
         }
 
         .my-reviews-content {
-            background: #FFFFFF;
-            border-radius: 16px;
-            max-width: 920px;
+            background: linear-gradient(145deg, #fdfbf7 0%, #fff5f8 100%);
+            border-radius: var(--radius-2xl);
+            max-width: 900px;
             width: 100%;
             max-height: 85vh;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 20px 40px rgba(219, 162, 181, 0.15), 
+                        0 8px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(219, 162, 181, 0.1);
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            animation: slideInUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: slideInUp 0.4s ease-out;
         }
 
         .my-reviews-header {
-            background: linear-gradient(135deg, #F8F6F3 0%, #FAF8F4 100%);
-            color: #4A4A4A;
-            padding: 28px 36px;
+            background: linear-gradient(135deg, var(--primary) 0%, #e6b3d1 100%);
+            color: white;
+            padding: var(--space-xl) var(--space-2xl);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: relative;
-            border-bottom: 1px solid #E8E5E0;
-        }
-
-        .my-reviews-header::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+            box-shadow: 0 2px 10px rgba(219, 162, 181, 0.2);
         }
 
         .my-reviews-title {
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 1.25rem;
-            font-weight: 400;
-            letter-spacing: 2px;
-            font-family: 'Helvetica Neue', 'Yu Gothic', sans-serif;
+            gap: var(--space-md);
+            font-size: 1.4rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
 
         .my-reviews-title i {
-            font-size: 1.1rem;
-            opacity: 0.85;
-            color: #DBA2B5;
+            font-size: 1.6rem;
+            opacity: 0.9;
         }
 
         .my-reviews-close {
-            background: transparent;
-            border: 1px solid #D4CFC7;
-            color: #8A8A8A;
-            font-size: 1rem;
-            width: 36px;
-            height: 36px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 1.3rem;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .my-reviews-close:hover {
-            background: #F5F2EF;
-            border-color: #DBA2B5;
-            color: #DBA2B5;
-            transform: rotate(90deg);
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
         }
 
         .my-reviews-body {
             flex: 1;
             overflow-y: auto;
-            padding: 36px;
-            background: #FAFAF8;
+            padding: var(--space-xl) var(--space-2xl);
         }
 
         .reviews-empty {
@@ -3999,76 +3972,71 @@
 
         .my-review-card {
             background: white;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-            border: 1px solid #E8E5E0;
+            border-radius: var(--radius-xl);
+            margin-bottom: var(--space-xl);
+            box-shadow: 0 4px 12px rgba(219, 162, 181, 0.08),
+                        0 2px 6px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(219, 162, 181, 0.1);
             overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
             position: relative;
         }
 
         .my-review-card:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-            border-color: #D4CFC7;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(219, 162, 181, 0.15),
+                        0 4px 12px rgba(0, 0, 0, 0.08);
         }
 
         .review-card-header {
-            background: white;
-            padding: 24px 28px;
-            border-bottom: 1px solid #F0EDE8;
+            background: linear-gradient(135deg, #fff8fa 0%, #fef4f7 100%);
+            padding: var(--space-lg) var(--space-xl);
+            border-bottom: 1px solid rgba(219, 162, 181, 0.1);
         }
 
         .store-name-link {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            color: #DBA2B5;
+            gap: var(--space-sm);
+            color: var(--primary);
             text-decoration: none;
             font-weight: 600;
-            font-size: 1.15rem;
-            letter-spacing: 0.3px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            padding: 8px 12px;
-            border-radius: 8px;
-            background: rgba(219, 162, 181, 0.08);
+            font-size: 1.1rem;
+            padding: var(--space-xs) var(--space-md);
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, rgba(219, 162, 181, 0.08) 0%, rgba(255, 192, 203, 0.1) 100%);
             border: 1px solid rgba(219, 162, 181, 0.15);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .store-name-link::before {
             content: '';
             position: absolute;
             top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(219, 162, 181, 0.1);
-            border-radius: 8px;
-            opacity: 0;
-            transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s ease;
         }
 
         .store-name-link:hover {
-            color: #C45A8A;
+            color: #c45a8a;
+            background: linear-gradient(135deg, rgba(219, 162, 181, 0.15) 0%, rgba(255, 192, 203, 0.2) 100%);
             border-color: rgba(219, 162, 181, 0.3);
             transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(219, 162, 181, 0.15);
+            box-shadow: 0 4px 12px rgba(219, 162, 181, 0.2);
         }
 
         .store-name-link:hover::before {
-            opacity: 1;
+            left: 100%;
         }
 
         .store-name-link i {
-            font-size: 0.85rem;
-            opacity: 0.7;
-            transition: transform 0.3s ease;
-        }
-
-        .store-name-link:hover i {
-            transform: translateX(2px);
+            font-size: 0.9rem;
+            opacity: 0.8;
         }
 
         .store-info {
@@ -4088,19 +4056,18 @@
         }
 
         .review-card-body {
-            padding: 28px;
+            padding: var(--space-xl);
         }
 
         .review-content {
-            background: #F8F6F3;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 3px solid #8B7355;
+            background: #fafafa;
+            padding: var(--space-lg);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-lg);
+            border-left: 4px solid var(--primary);
             font-size: 0.95rem;
-            line-height: 1.8;
-            color: #4A4A4A;
-            font-family: 'Yu Gothic', 'Hiragino Sans', sans-serif;
+            line-height: 1.7;
+            color: var(--text-primary);
         }
 
         .review-meta {
@@ -4150,21 +4117,25 @@
         }
 
         .edit-btn {
-            background: transparent;
-            color: #7A9A82;
-            border: 1px solid #7A9A82;
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            color: white;
         }
 
         .edit-btn:hover {
-            background: #7A9A82;
-            color: white;
+            background: linear-gradient(135deg, #45b7aa 0%, #3d8b7a 100%);
             transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(122, 154, 130, 0.25);
+            box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3);
         }
 
-        /* 削除ボタンは編集画面内に移動するため、ここでは非表示 */
         .delete-btn {
-            display: none;
+            background: linear-gradient(135deg, #ff7675 0%, #d63031 100%);
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: linear-gradient(135deg, #fd6c6c 0%, #c92a2a 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 118, 117, 0.3);
         }
 
         /* アニメーション */
@@ -4184,42 +4155,41 @@
             }
         }
 
-        /* モバイル対応 - 洗練されたレスポンシブデザイン */
+        /* モバイル対応 */
         @media (max-width: 768px) {
             .my-reviews-modal {
-                padding: 16px;
+                padding: var(--space-md);
             }
 
             .my-reviews-content {
-                max-height: 92vh;
-                border-radius: 12px;
+                max-height: 90vh;
+                border-radius: var(--radius-xl);
             }
 
             .my-reviews-header {
-                padding: 20px 24px;
+                padding: var(--space-lg);
+                border-radius: var(--radius-xl) var(--radius-xl) 0 0;
             }
 
             .my-reviews-title {
-                font-size: 1.1rem;
-                letter-spacing: 1px;
+                font-size: 1.2rem;
             }
 
             .my-reviews-body {
-                padding: 24px;
+                padding: var(--space-lg);
             }
 
             .my-review-card {
-                margin-bottom: 20px;
-                border-radius: 8px;
+                margin-bottom: var(--space-lg);
             }
 
             .review-card-header, .review-card-body {
-                padding: 20px;
+                padding: var(--space-lg);
             }
 
             .store-name-link {
                 font-size: 1rem;
-                letter-spacing: 0.2px;
+                padding: var(--space-sm) var(--space-md);
             }
 
             .review-meta {
@@ -6196,16 +6166,14 @@
                 
                 // Supabaseにも非同期で保存
                 for (const user of users) {
-                    // nicknameのデフォルト値を生成
-                    const defaultNickname = user.email.split('@')[0] || 'ユーザー';
-                    
                     const { error } = await supabaseClient
                         .from('user_profiles')
                         .upsert({
                             email: user.email,
-                            nickname: defaultNickname,
                             is_active: true
                             // pinは別途管理（既存のpinを上書きしない）
+                        }, {
+                            onConflict: 'email'
                         });
                     
                     if (error) {
@@ -6321,16 +6289,14 @@
                 localStorage.setItem('userPins', JSON.stringify(userPins));
                 
                 // Supabaseにも保存
-                // nicknameのデフォルト値を生成
-                const defaultNickname = email.split('@')[0] || 'ユーザー';
-                
                 const { error } = await supabaseClient
                     .from('user_profiles')
                     .upsert({
                         email: email,
-                        nickname: defaultNickname,
                         pin: pinHash,
                         is_active: true
+                    }, {
+                        onConflict: 'email'
                     });
                 
                 if (error) {
@@ -7908,7 +7874,7 @@
                     .from('store_images')
                     .select('*')
                     .order('store_id', { ascending: true })
-                    .order('created_at', { ascending: true });
+                    .order('image_order', { ascending: true });
                 
                 if (error) {
                     console.warn('⚠️ 画像データ取得エラー:', error);
@@ -8142,15 +8108,16 @@
                 
                 // データベースに画像情報を保存
                 const currentImages = storeImages.get(storeId) || [];
-                const imageNumber = currentImages.length + 1;
+                const imageOrder = currentImages.length + 1;
                 
                 const { data: dbData, error: dbError } = await supabaseClient
                     .from('store_images')
                     .insert({
                         store_id: storeId,
                         image_url: publicUrl,
+                        image_order: imageOrder,
                         uploaded_by: getCurrentUser() || 'demo_user@example.com',
-                        alt_text: `${storeId}番店舗の画像${imageNumber}`
+                        alt_text: `${storeId}番店舗の画像${imageOrder}`
                     })
                     .select()
                     .single();
@@ -10113,6 +10080,8 @@
                         avatar_emoji: profile.avatar || null,
                         is_active: true,
                         updated_at: new Date().toISOString()
+                    }, {
+                        onConflict: 'email' // emailで重複チェック
                     });
 
                 if (error) {
@@ -10440,81 +10409,28 @@
             console.log('✅ ユーザー確認OK、レビュー取得開始');
             
             try {
-                // まずユーザーのレビューを取得（店舗情報なし）
-                const { data: reviewsData, error: reviewsError } = await supabaseClient
+                // ユーザーのレビューを取得
+                const { data: reviews, error } = await supabaseClient
                     .from('reviews')
-                    .select('id, store_id, content, created_at, updated_at')
+                    .select(`
+                        id,
+                        store_id,
+                        content,
+                        created_at,
+                        updated_at,
+                        stores!inner(name, address, category)
+                    `)
                     .eq('user_email', currentUserEmail)
                     .eq('is_deleted', false)
                     .order('created_at', { ascending: false });
                 
-                if (reviewsError) {
-                    console.error('マイレビュー取得エラー:', reviewsError);
+                if (error) {
+                    console.error('マイレビュー取得エラー:', error);
                     alert('レビューの取得に失敗しました');
                     return;
                 }
                 
-                if (!reviewsData || reviewsData.length === 0) {
-                    console.log('📝 レビューなし');
-                    showMyReviewsModal([]);
-                    return;
-                }
-                
-                // 店舗情報を追加で取得（確実な方法で）
-                const storeIds = [...new Set(reviewsData.map(r => r.store_id))];
-                console.log('🏪 取得する店舗IDs:', storeIds);
-                
-                let storesData = [];
-                if (storeIds.length > 0) {
-                    // 各店舗IDが有効な数値であることを確認
-                    const validStoreIds = storeIds.filter(id => id != null && !isNaN(Number(id)));
-                    console.log('✅ 有効な店舗IDs:', validStoreIds);
-                    
-                    if (validStoreIds.length > 0) {
-                        // INクエリの代わりに個別クエリを並行実行（確実な方法）
-                        const storePromises = validStoreIds.map(async (storeId) => {
-                            try {
-                                // 確実に数値として扱う
-                                const numericStoreId = Number(storeId);
-                                console.log(`🔍 店舗ID ${numericStoreId} を取得中...`);
-                                
-                                const { data: storeData, error: storeError } = await supabaseClient
-                                    .from('stores')
-                                    .select('id, name, address, category_id')
-                                    .eq('id', numericStoreId)
-                                    .single();
-                                
-                                if (storeError) {
-                                    console.warn(`⚠️ 店舗ID ${storeId} 取得エラー:`, storeError);
-                                    return null;
-                                }
-                                
-                                return storeData;
-                            } catch (error) {
-                                console.warn(`⚠️ 店舗ID ${storeId} 例外:`, error);
-                                return null;
-                            }
-                        });
-                        
-                        // 全ての店舗データを並行取得
-                        const storeResults = await Promise.all(storePromises);
-                        storesData = storeResults.filter(store => store !== null);
-                        console.log('✅ 店舗データ取得成功:', storesData.length, '/', validStoreIds.length, '件');
-                    }
-                }
-                
-                // レビューと店舗情報を結合
-                const reviewsWithStores = reviewsData.map(review => ({
-                    ...review,
-                    stores: storesData?.find(store => store.id === review.store_id) || {
-                        name: '店舗情報なし',
-                        address: '',
-                        category_id: null
-                    }
-                }));
-                
-                console.log('✅ マイレビューデータ準備完了:', reviewsWithStores.length, '件');
-                showMyReviewsModal(reviewsWithStores);
+                showMyReviewsModal(reviews || []);
                 
             } catch (error) {
                 console.error('マイレビュー取得例外:', error);
@@ -10564,7 +10480,7 @@
                 const isUpdated = review.updated_at !== review.created_at;
                 const storeName = review.stores?.name || '店舗名不明';
                 const storeAddress = review.stores?.address || '';
-                const storeCategory = review.stores?.category_id || '';
+                const storeCategory = review.stores?.category || '';
                 
                 return `
                     <div class="my-review-card">
@@ -11276,7 +11192,6 @@
                         <div class="review-form-buttons">
                             <button class="btn-cancel" onclick="cancelEditReview(${reviewId}, '${currentContent.replace(/'/g, "\\'")}')">キャンセル</button>
                             <button class="btn-submit" onclick="saveEditReview(${reviewId})">保存</button>
-                            <button class="btn-delete" onclick="confirmDeleteFromEdit(${reviewId})">削除</button>
                         </div>
                     </div>
                 </div>
@@ -11422,53 +11337,6 @@
                 
             } catch (error) {
                 console.error('レビュー削除例外:', error);
-                alert('削除中にエラーが発生しました');
-            }
-        }
-
-        // 編集画面からの削除確認
-        async function confirmDeleteFromEdit(reviewId) {
-            if (!confirm('この感想を削除してもよろしいですか？\n削除した感想は復元できません。')) {
-                return;
-            }
-            
-            const currentUserEmail = getCurrentUser();
-            
-            if (!currentUserEmail) {
-                alert('ユーザー認証が必要です。再度ログインしてください。');
-                return;
-            }
-            
-            try {
-                console.log('🗑️ 編集画面からレビュー削除開始:', reviewId);
-                
-                // Supabaseでレビューを論理削除
-                const { error } = await supabaseClient
-                    .from('reviews')
-                    .update({
-                        is_deleted: true,
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq('id', reviewId)
-                    .eq('user_email', currentUserEmail); // セキュリティ: 所有者のみ削除可能
-                
-                if (error) {
-                    console.error('レビュー削除エラー:', error);
-                    alert('レビューの削除に失敗しました。もう一度お試しください。');
-                    return;
-                }
-                
-                console.log('✅ 編集画面からレビュー削除成功:', reviewId);
-                alert('感想を削除しました');
-                
-                // レビュー表示を更新
-                const storeId = getCurrentStoreId();
-                if (storeId) {
-                    await refreshStoreReviews(storeId);
-                }
-                
-            } catch (error) {
-                console.error('編集画面からレビュー削除例外:', error);
                 alert('削除中にエラーが発生しました');
             }
         }
