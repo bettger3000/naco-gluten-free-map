@@ -7337,12 +7337,16 @@
         let currentUserProfile = null; // 現在のユーザープロフィール
         
         // プロフィールデータ構造
-        const createDefaultProfile = (email) => ({
-            email: email,
-            nickname: '', // 空文字列で未設定状態
-            avatar: 'default', // デフォルトアバター
-            avatarType: 'preset', // 'preset' または 'custom'
-            customAvatarData: null, // Base64画像データ
+        const createDefaultProfile = (email) => {
+            // メールアドレスからデフォルトニックネームを生成
+            const defaultNickname = email.split('@')[0] || 'ユーザー';
+            
+            return {
+                email: email,
+                nickname: defaultNickname, // メールアドレスの@より前の部分
+                avatar: 'default', // デフォルトアバター
+                avatarType: 'preset', // 'preset' または 'custom'
+                customAvatarData: null, // Base64画像データ
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         });
@@ -9619,12 +9623,18 @@
             try {
                 console.log('🔄 Supabaseプロフィール保存開始:', profile.email);
                 
+                // nicknameが空の場合、デフォルト値を設定
+                const defaultNickname = profile.email.split('@')[0] || 'ユーザー';
+                const safeNickname = profile.nickname || defaultNickname;
+                
+                console.log('💾 保存するnickname:', safeNickname);
+                
                 // 既存のuser_profilesテーブルの実際のカラム構造に合わせて保存
                 const { error } = await supabaseClient
                     .from('user_profiles')
                     .upsert({
                         email: profile.email,
-                        nickname: profile.nickname || '',
+                        nickname: safeNickname, // 確実にnullでない値を設定
                         avatar_url: profile.avatarUrl || null, // 実際のカラム名
                         bio: profile.bio || null,
                         avatar_type: profile.avatarType || 'image',
@@ -9676,10 +9686,50 @@
             }
         }
 
+        // nickname が null のレコードを修正する緊急措置関数
+        async function fixNullNicknames() {
+            try {
+                // nickname が null のレコードを検索
+                const { data: nullNicknameUsers, error: selectError } = await supabaseClient
+                    .from('user_profiles')
+                    .select('email')
+                    .is('nickname', null);
+                
+                if (selectError) {
+                    console.warn('⚠️ null nickname検索エラー:', selectError);
+                    return;
+                }
+                
+                if (nullNicknameUsers && nullNicknameUsers.length > 0) {
+                    console.log('🔧 null nicknameを修正中:', nullNicknameUsers.length, '件');
+                    
+                    // 各レコードを修正
+                    for (const user of nullNicknameUsers) {
+                        const defaultNickname = user.email.split('@')[0] || 'ユーザー';
+                        const { error: updateError } = await supabaseClient
+                            .from('user_profiles')
+                            .update({ nickname: defaultNickname })
+                            .eq('email', user.email);
+                        
+                        if (updateError) {
+                            console.error('❌ nickname修正エラー:', user.email, updateError);
+                        } else {
+                            console.log('✅ nickname修正完了:', user.email, '->', defaultNickname);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.warn('⚠️ fixNullNicknames例外:', error);
+            }
+        }
+        
         // ユーザー登録を確実にする関数（Supabaseのuser_profilesテーブル対応）
         async function ensureUserIsRegistered(email) {
             try {
                 console.log('🔧 ユーザー登録確認中:', email);
+                
+                // 緊急措置: nickname が null のレコードを修正
+                await fixNullNicknames();
                 
                 // まずSupabaseで確認
                 const { data, error } = await supabaseClient
@@ -9691,12 +9741,13 @@
                 if (error && error.code === 'PGRST116') {
                     // ユーザーが存在しない場合は作成
                     console.log('🔧 Supabaseにユーザーを新規作成:', email);
+                    const defaultNickname = email.split('@')[0] || 'ユーザー';
                     const { error: insertError } = await supabaseClient
                         .from('user_profiles')
                         .insert({
                             email: email,
                             is_active: true,
-                            nickname: '',
+                            nickname: defaultNickname, // デフォルトニックネームを設定
                             avatar_url: null
                         });
                     
