@@ -5983,6 +5983,9 @@
                     timestamp: new Date().toISOString()
                 }));
                 
+                // currentUserをLocalStorageに保存（レビュー投稿機能用）
+                localStorage.setItem('currentUser', JSON.stringify({ email: email }));
+                
                 // ユーザー切り替え時の訪問履歴クリア
                 userVisitHistory.clear();
                 console.log('🔄 新規ユーザー登録 - 訪問履歴をクリア');
@@ -6251,6 +6254,9 @@
                     
                     // currentUserを設定
                     currentUser = authorizedUser.email;
+                    
+                    // currentUserをLocalStorageに保存（レビュー投稿機能用）
+                    localStorage.setItem('currentUser', JSON.stringify({ email: authorizedUser.email }));
                     
                     // ログイン成功メッセージ
                     document.getElementById('loginBtn').innerHTML = '<i class="fas fa-check"></i> ログイン成功！';
@@ -8003,6 +8009,7 @@
                 
                 // LocalStorageから認証情報を削除
                 localStorage.removeItem('pinAuth');
+                localStorage.removeItem('currentUser');
                 
                 // メモリ上のデータをクリア
                 currentUser = null;
