@@ -3862,6 +3862,381 @@
                 min-height: 70px;
             }
         }
+
+        /* マイレビューモーダル - エレガントで大人可愛いデザイン */
+        .my-reviews-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 15000;
+            padding: var(--space-lg);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .my-reviews-content {
+            background: linear-gradient(145deg, #fdfbf7 0%, #fff5f8 100%);
+            border-radius: var(--radius-2xl);
+            max-width: 900px;
+            width: 100%;
+            max-height: 85vh;
+            box-shadow: 0 20px 40px rgba(219, 162, 181, 0.15), 
+                        0 8px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(219, 162, 181, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: slideInUp 0.4s ease-out;
+        }
+
+        .my-reviews-header {
+            background: linear-gradient(135deg, var(--primary) 0%, #e6b3d1 100%);
+            color: white;
+            padding: var(--space-xl) var(--space-2xl);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+            box-shadow: 0 2px 10px rgba(219, 162, 181, 0.2);
+        }
+
+        .my-reviews-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            font-size: 1.4rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .my-reviews-title i {
+            font-size: 1.6rem;
+            opacity: 0.9;
+        }
+
+        .my-reviews-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 1.3rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .my-reviews-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .my-reviews-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-xl) var(--space-2xl);
+        }
+
+        .reviews-empty {
+            text-align: center;
+            padding: var(--space-2xl) var(--space-xl);
+            color: var(--text-secondary);
+        }
+
+        .reviews-empty i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: var(--space-lg);
+            opacity: 0.7;
+        }
+
+        .reviews-empty h3 {
+            font-size: 1.2rem;
+            margin-bottom: var(--space-md);
+            color: var(--text-primary);
+        }
+
+        .reviews-empty p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .my-review-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            margin-bottom: var(--space-xl);
+            box-shadow: 0 4px 12px rgba(219, 162, 181, 0.08),
+                        0 2px 6px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(219, 162, 181, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .my-review-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(219, 162, 181, 0.15),
+                        0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .review-card-header {
+            background: linear-gradient(135deg, #fff8fa 0%, #fef4f7 100%);
+            padding: var(--space-lg) var(--space-xl);
+            border-bottom: 1px solid rgba(219, 162, 181, 0.1);
+        }
+
+        .store-name-link {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: var(--space-xs) var(--space-md);
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, rgba(219, 162, 181, 0.08) 0%, rgba(255, 192, 203, 0.1) 100%);
+            border: 1px solid rgba(219, 162, 181, 0.15);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .store-name-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .store-name-link:hover {
+            color: #c45a8a;
+            background: linear-gradient(135deg, rgba(219, 162, 181, 0.15) 0%, rgba(255, 192, 203, 0.2) 100%);
+            border-color: rgba(219, 162, 181, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(219, 162, 181, 0.2);
+        }
+
+        .store-name-link:hover::before {
+            left: 100%;
+        }
+
+        .store-name-link i {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .store-info {
+            margin-top: var(--space-sm);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+        }
+
+        .store-category, .store-address {
+            background: rgba(219, 162, 181, 0.08);
+            padding: 2px var(--space-sm);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+        }
+
+        .review-card-body {
+            padding: var(--space-xl);
+        }
+
+        .review-content {
+            background: #fafafa;
+            padding: var(--space-lg);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-lg);
+            border-left: 4px solid var(--primary);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+        }
+
+        .review-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+            padding-top: var(--space-md);
+            border-top: 1px solid rgba(219, 162, 181, 0.1);
+        }
+
+        .review-dates {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .review-date {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            margin-bottom: var(--space-xs);
+        }
+
+        .review-date i {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
+        .review-actions {
+            display: flex;
+            gap: var(--space-sm);
+        }
+
+        .review-action-btn {
+            padding: var(--space-sm) var(--space-md);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            min-width: 70px;
+            justify-content: center;
+        }
+
+        .edit-btn {
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: linear-gradient(135deg, #45b7aa 0%, #3d8b7a 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3);
+        }
+
+        .delete-btn {
+            background: linear-gradient(135deg, #ff7675 0%, #d63031 100%);
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: linear-gradient(135deg, #fd6c6c 0%, #c92a2a 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 118, 117, 0.3);
+        }
+
+        /* アニメーション */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* モバイル対応 */
+        @media (max-width: 768px) {
+            .my-reviews-modal {
+                padding: var(--space-md);
+            }
+
+            .my-reviews-content {
+                max-height: 90vh;
+                border-radius: var(--radius-xl);
+            }
+
+            .my-reviews-header {
+                padding: var(--space-lg);
+                border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+            }
+
+            .my-reviews-title {
+                font-size: 1.2rem;
+            }
+
+            .my-reviews-body {
+                padding: var(--space-lg);
+            }
+
+            .my-review-card {
+                margin-bottom: var(--space-lg);
+            }
+
+            .review-card-header, .review-card-body {
+                padding: var(--space-lg);
+            }
+
+            .store-name-link {
+                font-size: 1rem;
+                padding: var(--space-sm) var(--space-md);
+            }
+
+            .review-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--space-md);
+            }
+
+            .review-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .store-info {
+                flex-direction: column;
+                gap: var(--space-xs);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .my-reviews-modal {
+                padding: var(--space-sm);
+            }
+
+            .my-reviews-header {
+                padding: var(--space-md);
+            }
+
+            .my-reviews-title {
+                font-size: 1.1rem;
+                gap: var(--space-sm);
+            }
+
+            .my-reviews-body {
+                padding: var(--space-md);
+            }
+
+            .review-card-header, .review-card-body {
+                padding: var(--space-md);
+            }
+
+            .review-action-btn {
+                padding: var(--space-xs) var(--space-sm);
+                font-size: 0.8rem;
+                min-width: 60px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -4991,6 +5366,10 @@
         // DOM読み込み完了後に即座に初期化
         document.addEventListener('DOMContentLoaded', function() {
             console.log('⚡ 埋め込みデータ版 - 高速起動');
+            
+            // デバッグ: 関数の存在確認
+            console.log('🔧 showMyReviews関数の存在:', typeof showMyReviews !== 'undefined');
+            
             initializeApp();
         });
 
@@ -10010,10 +10389,334 @@
             // TODO: Phase 2で実装
         }
 
-        function showMyReviews() {
+        // マイレビュー画面表示
+        async function showMyReviews() {
+            console.log('🔍 showMyReviews関数が呼び出されました');
             closeSideMenu();
-            console.log('⭐ マイレビュー画面を開く（Phase 3で実装予定）');
-            // TODO: Phase 3で実装
+            console.log('⭐ マイレビュー画面を開く');
+            
+            const currentUserEmail = getCurrentUser();
+            console.log('👤 現在のユーザー:', currentUserEmail);
+            console.log('👤 currentUser変数:', currentUser);
+            console.log('👤 localStorage:', localStorage.getItem('currentUser'));
+            
+            if (!currentUserEmail) {
+                console.log('❌ ユーザーが見つかりません');
+                alert('ログインが必要です');
+                return;
+            }
+            
+            console.log('✅ ユーザー確認OK、レビュー取得開始');
+            
+            try {
+                // ユーザーのレビューを取得
+                const { data: reviews, error } = await supabaseClient
+                    .from('reviews')
+                    .select(`
+                        id,
+                        store_id,
+                        content,
+                        created_at,
+                        updated_at,
+                        stores!inner(name, address, category)
+                    `)
+                    .eq('user_email', currentUserEmail)
+                    .eq('is_deleted', false)
+                    .order('created_at', { ascending: false });
+                
+                if (error) {
+                    console.error('マイレビュー取得エラー:', error);
+                    alert('レビューの取得に失敗しました');
+                    return;
+                }
+                
+                showMyReviewsModal(reviews || []);
+                
+            } catch (error) {
+                console.error('マイレビュー取得例外:', error);
+                alert('レビューの取得中にエラーが発生しました');
+            }
+        }
+
+        // マイレビューモーダル表示
+        function showMyReviewsModal(reviews) {
+            const modalHTML = `
+                <div class="my-reviews-modal" onclick="closeMyReviews()">
+                    <div class="my-reviews-content" onclick="event.stopPropagation()">
+                        <div class="my-reviews-header">
+                            <h2 class="my-reviews-title">
+                                <span class="my-reviews-icon">⭐</span>
+                                マイレビュー
+                            </h2>
+                            <button class="close-btn" onclick="closeMyReviews()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="my-reviews-body">
+                            ${createMyReviewsHTML(reviews)}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            document.body.style.overflow = 'hidden';
+        }
+
+        // マイレビュー HTML生成
+        function createMyReviewsHTML(reviews) {
+            if (!reviews || reviews.length === 0) {
+                return `
+                    <div class="my-reviews-empty">
+                        <div class="empty-icon">📝</div>
+                        <h3>まだレビューがありません</h3>
+                        <p>お気に入りの店舗で感想を書いてみませんか？</p>
+                    </div>
+                `;
+            }
+            
+            const reviewsHTML = reviews.map(review => {
+                const createdDate = new Date(review.created_at).toLocaleDateString('ja-JP');
+                const isUpdated = review.updated_at !== review.created_at;
+                const storeName = review.stores?.name || '店舗名不明';
+                const storeAddress = review.stores?.address || '';
+                const storeCategory = review.stores?.category || '';
+                
+                return `
+                    <div class="my-review-card">
+                        <div class="my-review-header">
+                            <div class="store-info-section">
+                                <button class="store-link-btn" onclick="goToStoreFromReview(${review.store_id})">
+                                    <span class="store-name">${escapeHtml(storeName)}</span>
+                                    <span class="store-details">
+                                        ${storeCategory ? `${escapeHtml(storeCategory)} • ` : ''}${escapeHtml(storeAddress)}
+                                    </span>
+                                    <i class="fas fa-map-marker-alt store-location-icon"></i>
+                                </button>
+                            </div>
+                            <div class="my-review-actions">
+                                <button class="my-review-action-btn edit-btn" onclick="editMyReview(${review.id}, '${escapeHtml(review.content).replace(/'/g, "\\'")}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="my-review-action-btn delete-btn" onclick="deleteMyReview(${review.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="my-review-content" id="my-review-content-${review.id}">
+                            ${escapeHtml(review.content)}
+                        </div>
+                        <div class="my-review-footer">
+                            <span class="review-date">
+                                ${createdDate}${isUpdated ? ' (編集済み)' : ''}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            return `
+                <div class="my-reviews-list">
+                    <div class="my-reviews-count">
+                        ${reviews.length}件のレビュー
+                    </div>
+                    ${reviewsHTML}
+                </div>
+            `;
+        }
+
+        // マイレビュー画面を閉じる
+        function closeMyReviews() {
+            const modal = document.querySelector('.my-reviews-modal');
+            if (modal) {
+                modal.remove();
+                document.body.style.overflow = '';
+            }
+        }
+
+        // レビューから店舗へのナビゲーション
+        function goToStoreFromReview(storeId) {
+            console.log('🗺️ 店舗へ移動:', storeId);
+            
+            // マイレビューモーダルを閉じる
+            closeMyReviews();
+            
+            // 少し待ってから店舗詳細を表示
+            setTimeout(() => {
+                showStoreDetail(storeId);
+            }, 300);
+        }
+
+        // マイレビューの編集
+        function editMyReview(reviewId, currentContent) {
+            console.log('📝 マイレビュー編集開始:', reviewId);
+            
+            const contentElement = document.getElementById(`my-review-content-${reviewId}`);
+            if (!contentElement) {
+                console.error('マイレビューコンテンツ要素が見つかりません:', reviewId);
+                return;
+            }
+            
+            // 編集フォームに置き換え
+            const editFormHTML = `
+                <div class="my-review-edit-form">
+                    <textarea 
+                        id="my-edit-textarea-${reviewId}"
+                        class="review-textarea"
+                        maxlength="2000"
+                        placeholder="感想を編集してください..."
+                        oninput="updateMyEditCharCount(${reviewId})"
+                    >${currentContent}</textarea>
+                    <div class="review-form-footer">
+                        <span class="char-count" id="my-edit-char-count-${reviewId}">残り: ${2000 - currentContent.length}文字</span>
+                        <div class="review-form-buttons">
+                            <button class="btn-cancel" onclick="cancelEditMyReview(${reviewId}, '${currentContent.replace(/'/g, "\\'")}')">キャンセル</button>
+                            <button class="btn-submit" onclick="saveEditMyReview(${reviewId})">保存</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            contentElement.innerHTML = editFormHTML;
+            
+            // テキストエリアにフォーカス
+            const textarea = document.getElementById(`my-edit-textarea-${reviewId}`);
+            if (textarea) {
+                textarea.focus();
+                textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+            }
+        }
+
+        // マイレビュー編集キャンセル
+        function cancelEditMyReview(reviewId, originalContent) {
+            const contentElement = document.getElementById(`my-review-content-${reviewId}`);
+            if (contentElement) {
+                contentElement.innerHTML = escapeHtml(originalContent);
+            }
+        }
+
+        // マイレビュー編集時の文字数カウント更新
+        function updateMyEditCharCount(reviewId) {
+            const textarea = document.getElementById(`my-edit-textarea-${reviewId}`);
+            const charCount = document.getElementById(`my-edit-char-count-${reviewId}`);
+            
+            if (textarea && charCount) {
+                const remaining = 2000 - textarea.value.length;
+                charCount.textContent = `残り: ${remaining}文字`;
+                charCount.style.color = remaining < 100 ? '#ef4444' : remaining < 300 ? '#f59e0b' : '#6b7280';
+            }
+        }
+
+        // マイレビュー保存（編集）
+        async function saveEditMyReview(reviewId) {
+            const textarea = document.getElementById(`my-edit-textarea-${reviewId}`);
+            const currentUserEmail = getCurrentUser();
+            
+            if (!currentUserEmail) {
+                alert('ユーザー認証が必要です。再度ログインしてください。');
+                return;
+            }
+            
+            if (!textarea) {
+                console.error('編集テキストエリアが見つかりません');
+                return;
+            }
+            
+            const newContent = textarea.value.trim();
+            if (!newContent) {
+                alert('感想を入力してください');
+                return;
+            }
+            
+            if (newContent.length > 2000) {
+                alert('感想は2000文字以内で入力してください');
+                return;
+            }
+            
+            try {
+                // ボタンを無効化
+                const saveBtn = textarea.parentElement.querySelector('.btn-submit');
+                if (saveBtn) {
+                    saveBtn.disabled = true;
+                    saveBtn.textContent = '保存中...';
+                }
+                
+                console.log('💾 マイレビュー更新開始:', reviewId);
+                
+                // Supabaseでレビューを更新
+                const { error } = await supabaseClient
+                    .from('reviews')
+                    .update({
+                        content: newContent,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', reviewId)
+                    .eq('user_email', currentUserEmail);
+                
+                if (error) {
+                    console.error('マイレビュー更新エラー:', error);
+                    alert('レビューの更新に失敗しました。もう一度お試しください。');
+                    return;
+                }
+                
+                console.log('✅ マイレビュー更新成功:', reviewId);
+                alert('感想を更新しました！');
+                
+                // マイレビュー画面を再読み込み
+                setTimeout(async () => {
+                    await showMyReviews();
+                }, 500);
+                
+            } catch (error) {
+                console.error('マイレビュー更新例外:', error);
+                alert('更新中にエラーが発生しました');
+            }
+        }
+
+        // マイレビュー削除
+        async function deleteMyReview(reviewId) {
+            if (!confirm('この感想を削除してもよろしいですか？\n削除した感想は復元できません。')) {
+                return;
+            }
+            
+            const currentUserEmail = getCurrentUser();
+            
+            if (!currentUserEmail) {
+                alert('ユーザー認証が必要です。再度ログインしてください。');
+                return;
+            }
+            
+            try {
+                console.log('🗑️ マイレビュー削除開始:', reviewId);
+                
+                // Supabaseでレビューを論理削除
+                const { error } = await supabaseClient
+                    .from('reviews')
+                    .update({
+                        is_deleted: true,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', reviewId)
+                    .eq('user_email', currentUserEmail);
+                
+                if (error) {
+                    console.error('マイレビュー削除エラー:', error);
+                    alert('レビューの削除に失敗しました。もう一度お試しください。');
+                    return;
+                }
+                
+                console.log('✅ マイレビュー削除成功:', reviewId);
+                alert('感想を削除しました');
+                
+                // マイレビュー画面を再読み込み
+                setTimeout(async () => {
+                    await showMyReviews();
+                }, 500);
+                
+            } catch (error) {
+                console.error('マイレビュー削除例外:', error);
+                alert('削除中にエラーが発生しました');
+            }
         }
 
         function showAppInfo() {
@@ -10695,7 +11398,7 @@
                     </div>
                 </div>
                 
-                <div class="menu-item" onclick="showMyReviews()">
+                <div class="menu-item" onclick="console.log('🖱️ マイレビューがクリックされました'); showMyReviews();">
                     <div class="menu-item-icon">
                         <i class="fas fa-star"></i>
                     </div>
