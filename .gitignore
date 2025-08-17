@@ -1,0 +1,29 @@
+# Development and debug files
+debug-*.html
+test-*.html
+verify-*.html
+check-*.html
+fix-*.html
+create_*.sql
+CORRECT_IMPLEMENTATION_PLAN.md
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.DS_Store
+
+# Editor files
+.vscode/
+.idea/
+
+# Local environment
+.env
+.env.local
+
+# Node modules (if any)
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
