@@ -6172,8 +6172,6 @@
                             email: user.email,
                             is_active: true
                             // pinは別途管理（既存のpinを上書きしない）
-                        }, {
-                            onConflict: 'email'
                         });
                     
                     if (error) {
@@ -6295,8 +6293,6 @@
                         email: email,
                         pin: pinHash,
                         is_active: true
-                    }, {
-                        onConflict: 'email'
                     });
                 
                 if (error) {
@@ -10079,8 +10075,6 @@
                         avatar_emoji: profile.avatar || null,
                         is_active: true,
                         updated_at: new Date().toISOString()
-                    }, {
-                        onConflict: 'email' // emailで重複チェック
                     });
 
                 if (error) {
