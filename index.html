@@ -10128,7 +10128,8 @@
                 // どちらにも無い場合はデフォルト作成
                 console.log('🆕 新規プロフィールを作成:', email);
                 const defaultProfile = createDefaultProfile(email);
-                await saveUserProfile(defaultProfile);
+                // アドバイス実装：新規作成時のみ保存を許可（ユーザー操作扱い）
+                await saveUserProfile(defaultProfile, { source: 'new_user_creation', isDirty: true });
                 return defaultProfile;
                 
             } catch (error) {
@@ -10143,6 +10144,7 @@
         async function loadProfileFromSupabase(email) {
             try {
                 console.log('🔄 Supabaseプロフィール読み込み開始:', email);
+                console.log('📊 [診断] loadProfileFromSupabase呼び出し - タイムスタンプ:', new Date().toISOString());
                 
                 const { data, error } = await supabaseClient
                     .from('user_profiles')
@@ -10164,10 +10166,10 @@
                 if (data) {
                     console.log('📊 Supabase生データ:', data);
                     
-                    // Supabaseのデータ形式をローカル形式に変換
+                    // アドバイス実装：SSOT原則 - データベース値をそのまま保持
                     const profile = {
                         email: data.email,
-                        nickname: data.nickname || '',
+                        nickname: data.nickname, // データベース値をそのまま保持（nullも含む）
                         avatar: data.avatar_emoji || 'default',
                         avatarUrl: data.avatar_url || null,
                         avatarType: data.avatar_type || 'preset',
@@ -10191,13 +10193,28 @@
         }
 
         // プロフィールデータを保存
-        async function saveUserProfile(profile) {
+        async function saveUserProfile(profile, options = {}) {
             if (!profile || !profile.email) {
                 console.error('❌ 無効なプロフィールデータ');
                 return false;
             }
             
+            const { source = 'unknown', isDirty = true } = options;
+            
+            // アドバイス実装：起動時やクリーンなデータの自動保存を防ぐ
+            if (!isDirty) {
+                console.log('📊 [セーフティ] クリーンなデータのため保存をスキップ:', profile.email);
+                return true; // 保存不要だが成功扱い
+            }
+            
+            if (source === 'startup' || source === 'initialization' || source === 'load') {
+                console.warn('⚠️ [セーフティ] 起動時の保存をブロック:', source);
+                return true; // 保存不要だが成功扱い
+            }
+            
             try {
+                console.log('📊 [診断] saveUserProfile呼び出し - source:', source, 'isDirty:', isDirty);
+                
                 // 更新日時を設定
                 profile.updatedAt = new Date().toISOString();
                 
@@ -10205,7 +10222,7 @@
                 // localStorage.setItem(`user_profile_${profile.email}`, JSON.stringify(profile));
                 
                 // Supabaseにのみ保存
-                await saveProfileToSupabase(profile);
+                await saveProfileToSupabase(profile, source);
                 
                 console.log('💾 プロフィールを保存:', profile.email);
                 return true;
@@ -10217,11 +10234,19 @@
         }
 
         // Supabaseにプロフィールを保存（新機能）
-        async function saveProfileToSupabase(profile) {
+        async function saveProfileToSupabase(profile, source = 'unknown') {
             try {
                 console.log('🔄 Supabaseプロフィール保存開始:', profile.email);
+                console.log('📊 [診断] saveProfileToSupabase呼び出し元:', source);
+                console.log('📊 [診断] 保存タイムスタンプ:', new Date().toISOString());
                 console.log('📝 受け取ったプロフィール:', profile);
                 console.log('📝 受け取ったnickname:', `"${profile.nickname}"`, '型:', typeof profile.nickname);
+                
+                // アドバイス実装：起動時の自動保存を禁止
+                if (source === 'startup' || source === 'initialization') {
+                    console.warn('⚠️ [セーフティ] 起動時の自動保存は禁止されています:', source);
+                    return false;
+                }
                 
                 // nicknameがnullまたはundefinedの場合のみ、デフォルト値を設定
                 const defaultNickname = profile.email.split('@')[0] || 'ユーザー';
@@ -10257,6 +10282,16 @@
             }
         }
 
+        // アドバイス実装：表示用ニックネーム取得（フォールバック処理を分離）
+        function getDisplayNickname(profile) {
+            if (!profile) return 'ゲスト';
+            if (profile.nickname && profile.nickname.trim() !== '') {
+                return profile.nickname;
+            }
+            // フォールバックはUI表示のみ、データベースには保存しない
+            return profile.email ? profile.email.split('@')[0] : 'ユーザー';
+        }
+        
         // 現在のユーザープロフィールを初期化
         async function initUserProfile() {
             const user = getCurrentUser();
@@ -10282,7 +10317,8 @@
             if (currentUserProfile) {
                 console.log('✅ プロフィール初期化完了:', {
                     email: currentUserProfile.email,
-                    nickname: currentUserProfile.nickname || '未設定',
+                    nickname: `"${currentUserProfile.nickname}"` || '未設定',
+                    displayNickname: getDisplayNickname(currentUserProfile),
                     avatar: currentUserProfile.avatar
                 });
                 
@@ -10444,7 +10480,8 @@
                 const menuSubtitle = document.querySelector('.side-menu-subtitle');
                 
                 if (currentUserProfile && menuTitle && menuSubtitle) {
-                    const displayName = currentUserProfile.nickname || 'ゲスト';
+                    // アドバイス実装：安全な表示用フォールバック
+                    const displayName = getDisplayNickname(currentUserProfile);
                     const avatar = getAvatarDisplay(currentUserProfile);
                     
                     menuTitle.textContent = `${avatar} ${displayName}`;
@@ -10493,7 +10530,11 @@
             
             try {
                 currentUserProfile.nickname = newNickname.trim();
-                const success = await saveUserProfile(currentUserProfile);
+                // アドバイス実装：ユーザー操作による明示的な保存
+                const success = await saveUserProfile(currentUserProfile, { 
+                    source: 'user_action_nickname', 
+                    isDirty: true 
+                });
                 
                 if (success) {
                     updateMenuProfileDisplay();
@@ -10521,7 +10562,11 @@
                 currentUserProfile.avatarType = avatarType;
                 currentUserProfile.customAvatarData = customData;
                 
-                const success = await saveUserProfile(currentUserProfile);
+                // アドバイス実装：ユーザー操作による明示的な保存
+                const success = await saveUserProfile(currentUserProfile, { 
+                    source: 'user_action_avatar', 
+                    isDirty: true 
+                });
                 
                 if (success) {
                     updateMenuProfileDisplay();
