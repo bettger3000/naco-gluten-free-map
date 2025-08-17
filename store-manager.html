@@ -914,7 +914,18 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
+    <!-- Supabase JS（ユーザー管理同期用） -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    
     <script>
+        // Supabase設定（読み取り専用で安全）
+        const SUPABASE_URL = 'https://hxrmsjfvgctoaxpbukvo.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4cm1zamZ2Z2N0b2F4cGJ1a3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ5MTI3NTAsImV4cCI6MjA3MDQ4ODc1MH0.tM1vDVVhYhh7OHlA1BTj071BfsIzeBG_HatijjtxwLw';
+        
+        // Supabaseクライアント初期化（必要最小限の権限）
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
         // 管理者PINコード（実際の運用では環境変数等で管理）
         const ADMIN_PIN = '999999';
         
@@ -1524,9 +1535,35 @@
             }
         }
 
-        // ユーザーデータ保存
-        function saveUsersData() {
+        // ユーザーデータ保存（Supabaseとも同期）
+        async function saveUsersData() {
+            // LocalStorageに保存
             localStorage.setItem('approvedUsers', JSON.stringify(approvedUsers));
+            
+            // Supabaseにも同期（既存データを保護しながら）
+            try {
+                for (const user of approvedUsers) {
+                    // 既存のニックネームを保護
+                    const { data: existingProfile } = await supabaseClient
+                        .from('user_profiles')
+                        .select('nickname')
+                        .eq('email', user.email)
+                        .single();
+                    
+                    const safeNickname = existingProfile?.nickname || (user.email.split('@')[0] || 'ユーザー');
+                    
+                    await supabaseClient
+                        .from('user_profiles')
+                        .upsert({
+                            email: user.email,
+                            nickname: safeNickname,
+                            is_active: true
+                        });
+                }
+                console.log('✅ Supabaseと同期完了');
+            } catch (error) {
+                console.warn('⚠️ Supabase同期エラー（LocalStorageには保存済み）:', error);
+            }
         }
 
         // ユーザー一覧表示
