@@ -3863,87 +3863,97 @@
             }
         }
 
-        /* マイレビューモーダル - エレガントで大人可愛いデザイン */
+        /* マイレビューモーダル - 洗練された大人の女性向けデザイン */
         .my-reviews-modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
+            background: rgba(40, 40, 40, 0.4);
+            backdrop-filter: blur(20px);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 15000;
             padding: var(--space-lg);
-            animation: fadeIn 0.3s ease-out;
+            animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .my-reviews-content {
-            background: linear-gradient(145deg, #fdfbf7 0%, #fff5f8 100%);
-            border-radius: var(--radius-2xl);
-            max-width: 900px;
+            background: #FFFFFF;
+            border-radius: 16px;
+            max-width: 920px;
             width: 100%;
             max-height: 85vh;
-            box-shadow: 0 20px 40px rgba(219, 162, 181, 0.15), 
-                        0 8px 20px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(219, 162, 181, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            animation: slideInUp 0.4s ease-out;
+            animation: slideInUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .my-reviews-header {
-            background: linear-gradient(135deg, var(--primary) 0%, #e6b3d1 100%);
+            background: linear-gradient(135deg, #8B7355 0%, #A68B6A 100%);
             color: white;
-            padding: var(--space-xl) var(--space-2xl);
+            padding: 28px 36px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
-            box-shadow: 0 2px 10px rgba(219, 162, 181, 0.2);
+            position: relative;
+        }
+
+        .my-reviews-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
         }
 
         .my-reviews-title {
             display: flex;
             align-items: center;
-            gap: var(--space-md);
-            font-size: 1.4rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
+            gap: 12px;
+            font-size: 1.25rem;
+            font-weight: 400;
+            letter-spacing: 2px;
+            font-family: 'Helvetica Neue', 'Yu Gothic', sans-serif;
         }
 
         .my-reviews-title i {
-            font-size: 1.6rem;
-            opacity: 0.9;
+            font-size: 1.1rem;
+            opacity: 0.85;
         }
 
         .my-reviews-close {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
-            font-size: 1.3rem;
-            width: 40px;
-            height: 40px;
+            font-size: 1rem;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .my-reviews-close:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: rotate(90deg);
         }
 
         .my-reviews-body {
             flex: 1;
             overflow-y: auto;
-            padding: var(--space-xl) var(--space-2xl);
+            padding: 36px;
+            background: #FAFAF8;
         }
 
         .reviews-empty {
@@ -3972,71 +3982,68 @@
 
         .my-review-card {
             background: white;
-            border-radius: var(--radius-xl);
-            margin-bottom: var(--space-xl);
-            box-shadow: 0 4px 12px rgba(219, 162, 181, 0.08),
-                        0 2px 6px rgba(0, 0, 0, 0.04);
-            border: 1px solid rgba(219, 162, 181, 0.1);
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            border: 1px solid #E8E5E0;
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
         }
 
         .my-review-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(219, 162, 181, 0.15),
-                        0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            border-color: #D4CFC7;
         }
 
         .review-card-header {
-            background: linear-gradient(135deg, #fff8fa 0%, #fef4f7 100%);
-            padding: var(--space-lg) var(--space-xl);
-            border-bottom: 1px solid rgba(219, 162, 181, 0.1);
+            background: white;
+            padding: 24px 28px;
+            border-bottom: 1px solid #F0EDE8;
         }
 
         .store-name-link {
             display: inline-flex;
             align-items: center;
-            gap: var(--space-sm);
-            color: var(--primary);
+            gap: 8px;
+            color: #5A4A3A;
             text-decoration: none;
-            font-weight: 600;
-            font-size: 1.1rem;
-            padding: var(--space-xs) var(--space-md);
-            border-radius: var(--radius-md);
-            background: linear-gradient(135deg, rgba(219, 162, 181, 0.08) 0%, rgba(255, 192, 203, 0.1) 100%);
-            border: 1px solid rgba(219, 162, 181, 0.15);
-            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 1.15rem;
+            letter-spacing: 0.3px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
-            overflow: hidden;
+            padding-bottom: 2px;
         }
 
         .store-name-link::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transition: left 0.5s ease;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: #8B7355;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .store-name-link:hover {
-            color: #c45a8a;
-            background: linear-gradient(135deg, rgba(219, 162, 181, 0.15) 0%, rgba(255, 192, 203, 0.2) 100%);
-            border-color: rgba(219, 162, 181, 0.3);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(219, 162, 181, 0.2);
+            color: #8B7355;
         }
 
         .store-name-link:hover::before {
-            left: 100%;
+            width: 100%;
         }
 
         .store-name-link i {
-            font-size: 0.9rem;
-            opacity: 0.8;
+            font-size: 0.85rem;
+            opacity: 0.7;
+            transition: transform 0.3s ease;
+        }
+
+        .store-name-link:hover i {
+            transform: translateX(2px);
         }
 
         .store-info {
@@ -4056,18 +4063,19 @@
         }
 
         .review-card-body {
-            padding: var(--space-xl);
+            padding: 28px;
         }
 
         .review-content {
-            background: #fafafa;
-            padding: var(--space-lg);
-            border-radius: var(--radius-md);
-            margin-bottom: var(--space-lg);
-            border-left: 4px solid var(--primary);
+            background: #F8F6F3;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 3px solid #8B7355;
             font-size: 0.95rem;
-            line-height: 1.7;
-            color: var(--text-primary);
+            line-height: 1.8;
+            color: #4A4A4A;
+            font-family: 'Yu Gothic', 'Hiragino Sans', sans-serif;
         }
 
         .review-meta {
@@ -4117,25 +4125,29 @@
         }
 
         .edit-btn {
-            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
-            color: white;
+            background: transparent;
+            color: #7A9A82;
+            border: 1px solid #7A9A82;
         }
 
         .edit-btn:hover {
-            background: linear-gradient(135deg, #45b7aa 0%, #3d8b7a 100%);
+            background: #7A9A82;
+            color: white;
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3);
+            box-shadow: 0 2px 8px rgba(122, 154, 130, 0.25);
         }
 
         .delete-btn {
-            background: linear-gradient(135deg, #ff7675 0%, #d63031 100%);
-            color: white;
+            background: transparent;
+            color: #B87979;
+            border: 1px solid #B87979;
         }
 
         .delete-btn:hover {
-            background: linear-gradient(135deg, #fd6c6c 0%, #c92a2a 100%);
+            background: #B87979;
+            color: white;
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(255, 118, 117, 0.3);
+            box-shadow: 0 2px 8px rgba(184, 121, 121, 0.25);
         }
 
         /* アニメーション */
@@ -4155,41 +4167,42 @@
             }
         }
 
-        /* モバイル対応 */
+        /* モバイル対応 - 洗練されたレスポンシブデザイン */
         @media (max-width: 768px) {
             .my-reviews-modal {
-                padding: var(--space-md);
+                padding: 16px;
             }
 
             .my-reviews-content {
-                max-height: 90vh;
-                border-radius: var(--radius-xl);
+                max-height: 92vh;
+                border-radius: 12px;
             }
 
             .my-reviews-header {
-                padding: var(--space-lg);
-                border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+                padding: 20px 24px;
             }
 
             .my-reviews-title {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
+                letter-spacing: 1px;
             }
 
             .my-reviews-body {
-                padding: var(--space-lg);
+                padding: 24px;
             }
 
             .my-review-card {
-                margin-bottom: var(--space-lg);
+                margin-bottom: 20px;
+                border-radius: 8px;
             }
 
             .review-card-header, .review-card-body {
-                padding: var(--space-lg);
+                padding: 20px;
             }
 
             .store-name-link {
                 font-size: 1rem;
-                padding: var(--space-sm) var(--space-md);
+                letter-spacing: 0.2px;
             }
 
             .review-meta {
