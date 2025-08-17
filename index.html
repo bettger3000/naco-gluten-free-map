@@ -3132,6 +3132,90 @@
             margin: 0;
         }
 
+        /* ========== レビューシステムのスタイル ========== */
+        .reviews-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+        }
+
+        .review-item {
+            background: var(--bg-primary);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            border: 1px solid var(--border-light);
+            transition: all 0.2s ease;
+        }
+
+        .review-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-md);
+            padding-bottom: var(--space-sm);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .review-user {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .review-avatar {
+            font-size: 1.5rem;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-secondary);
+            border-radius: 50%;
+        }
+
+        .review-nickname {
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .review-date {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 400;
+        }
+
+        .review-content {
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* モバイル対応 */
+        @media (max-width: 768px) {
+            .review-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--space-xs);
+            }
+            
+            .review-user {
+                width: 100%;
+            }
+            
+            .review-date {
+                font-size: 0.8rem;
+                margin-left: 40px;
+            }
+        }
+
         /* ナビゲーションボタン */
         .store-navigation {
             display: flex;
@@ -9053,7 +9137,7 @@
         }
 
         // 店舗詳細表示
-        function showStoreDetail(storeId) {
+        async function showStoreDetail(storeId) {
             console.log('📋 店舗詳細表示:', storeId);
             
             // 店舗データを取得
@@ -9063,8 +9147,11 @@
                 return;
             }
             
+            // レビューデータを取得
+            const reviews = await getStoreReviews(storeId);
+            
             // 詳細画面のHTML作成
-            const detailHTML = createStoreDetailHTML(store);
+            const detailHTML = createStoreDetailHTML(store, reviews);
             
             // モーダル/フルスクリーン表示
             if (isDesktop()) {
@@ -9075,7 +9162,7 @@
         }
 
         // 店舗詳細HTMLを生成
-        function createStoreDetailHTML(store) {
+        function createStoreDetailHTML(store, reviews = []) {
             const storeName = escapeHtml(store.name || '');
             const storeAddress = escapeHtml(store.address || '');
             const storeCategory = escapeHtml(store.category || '');
@@ -9146,11 +9233,8 @@
                             </div>
                         ` : ''}
 
-                        <!-- レビュー（将来の実装） -->
-                        <div class="store-detail-info">
-                            <h3>⭐ レビュー</h3>
-                            <p class="no-reviews">まだレビューがありません</p>
-                        </div>
+                        <!-- レビュー -->
+                        ${createReviewsHTML(reviews)}
 
                         <!-- ナビゲーションボタン -->
                         <div class="store-navigation">
@@ -9801,6 +9885,109 @@
             } finally {
                 saveBtn.disabled = false;
             }
+        }
+
+        // ========== レビューシステム ==========
+        
+        // 店舗のレビューを安全に取得
+        async function getStoreReviews(storeId) {
+            try {
+                console.log('📝 レビュー取得開始:', storeId);
+                
+                const { data, error } = await supabaseClient
+                    .from('reviews')
+                    .select(`
+                        id,
+                        content,
+                        created_at,
+                        updated_at,
+                        user_email
+                    `)
+                    .eq('store_id', storeId)
+                    .eq('is_deleted', false)
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.warn('⚠️ レビュー取得エラー:', error);
+                    return [];
+                }
+
+                // ユーザー情報と結合
+                const reviewsWithUserInfo = await Promise.all(
+                    (data || []).map(async (review) => {
+                        try {
+                            const { data: userProfile } = await supabaseClient
+                                .from('user_profiles')
+                                .select('nickname, avatar_emoji')
+                                .eq('email', review.user_email)
+                                .single();
+
+                            return {
+                                ...review,
+                                user_nickname: userProfile?.nickname || '匿名ユーザー',
+                                user_avatar: userProfile?.avatar_emoji || '👤'
+                            };
+                        } catch (err) {
+                            console.warn('ユーザー情報取得エラー:', err);
+                            return {
+                                ...review,
+                                user_nickname: '匿名ユーザー',
+                                user_avatar: '👤'
+                            };
+                        }
+                    })
+                );
+
+                console.log('✅ レビュー取得成功:', reviewsWithUserInfo.length, '件');
+                return reviewsWithUserInfo;
+
+            } catch (error) {
+                console.error('❌ レビュー取得例外:', error);
+                return [];
+            }
+        }
+
+        // レビューHTMLを生成
+        function createReviewsHTML(reviews) {
+            if (!reviews || reviews.length === 0) {
+                return `
+                    <div class="store-detail-info">
+                        <h3>💬 みんなの感想</h3>
+                        <p class="no-reviews">まだ感想が投稿されていません</p>
+                    </div>
+                `;
+            }
+
+            const reviewsHTML = reviews.map(review => {
+                const createdDate = new Date(review.created_at).toLocaleDateString('ja-JP');
+                const isUpdated = review.updated_at !== review.created_at;
+                
+                return `
+                    <div class="review-item">
+                        <div class="review-header">
+                            <div class="review-user">
+                                <span class="review-avatar">${review.user_avatar}</span>
+                                <span class="review-nickname">${escapeHtml(review.user_nickname)}</span>
+                            </div>
+                            <div class="review-date">
+                                ${createdDate}${isUpdated ? ' (編集済み)' : ''}
+                            </div>
+                        </div>
+                        <div class="review-content">
+                            ${escapeHtml(review.content)}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="store-detail-info">
+                    <h3>💬 みんなの感想 (${reviews.length}件)</h3>
+                    <div class="reviews-list">
+                        ${reviewsHTML}
+                    </div>
+                </div>
+            `;
         }
 
         // ESCキーでプロフィール画面を閉じる
