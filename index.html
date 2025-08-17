@@ -10562,8 +10562,8 @@
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
-                        <div class="my-reviews-body">
-                            ${createMyReviewsHTML(reviews)}
+                        <div class="my-reviews-body" id="my-reviews-body">
+                            読み込み中...
                         </div>
                     </div>
                 </div>
@@ -10571,10 +10571,24 @@
             
             document.body.insertAdjacentHTML('beforeend', modalHTML);
             document.body.style.overflow = 'hidden';
+            
+            // 非同期でレビューHTML生成
+            createMyReviewsHTML(reviews).then(reviewsHTML => {
+                const bodyElement = document.getElementById('my-reviews-body');
+                if (bodyElement) {
+                    bodyElement.innerHTML = reviewsHTML;
+                }
+            }).catch(error => {
+                console.error('マイレビューHTML生成エラー:', error);
+                const bodyElement = document.getElementById('my-reviews-body');
+                if (bodyElement) {
+                    bodyElement.innerHTML = '<p style="color: red;">レビューの表示でエラーが発生しました</p>';
+                }
+            });
         }
 
-        // マイレビュー HTML生成
-        function createMyReviewsHTML(reviews) {
+        // マイレビュー HTML生成（非同期でユーザー情報を含む）
+        async function createMyReviewsHTML(reviews) {
             if (!reviews || reviews.length === 0) {
                 return `
                     <div class="reviews-empty">
@@ -10585,18 +10599,35 @@
                 `;
             }
             
+            // 現在のユーザー情報をSupabaseから取得
+            const currentUserEmail = getCurrentUser();
+            let userProfile = null;
+            let avatarEmoji = '🐱'; // デフォルト
+            let nickname = currentUserEmail?.split('@')[0] || 'ユーザー'; // フォールバック
+            
+            try {
+                // Supabaseからユーザープロファイルを取得
+                const { data, error } = await supabaseClient
+                    .from('user_profiles')
+                    .select('nickname, avatar, avatar_url')
+                    .eq('email', currentUserEmail)
+                    .single();
+                
+                if (!error && data) {
+                    userProfile = data;
+                    nickname = userProfile.nickname || nickname; // Supabaseのnicknameを優先
+                    avatarEmoji = getAvatarEmoji(userProfile.avatar || 'cat');
+                }
+            } catch (error) {
+                console.warn('⚠️ ユーザープロファイル取得失敗、デフォルト値使用:', error);
+            }
+            
             const reviewsHTML = reviews.map(review => {
                 const createdDate = new Date(review.created_at).toLocaleDateString('ja-JP');
                 const isUpdated = review.updated_at !== review.created_at;
                 const storeName = review.stores?.name || '店舗名不明';
                 const storeAddress = review.stores?.address || '';
                 const storeCategory = review.stores?.category_id || '';
-                
-                // 現在のユーザー情報を取得
-                const currentUserEmail = getCurrentUser();
-                // シンプルにデフォルト値を使用（マイレビューは自分のレビューのみ）
-                const avatarEmoji = getAvatarEmoji('cat'); // デフォルト猫アバター
-                const nickname = currentUserEmail?.split('@')[0] || 'ユーザー';
                 
                 return `
                     <div class="my-review-card">
