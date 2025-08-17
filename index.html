@@ -5985,6 +5985,7 @@
                 
                 // currentUserをLocalStorageに保存（レビュー投稿機能用）
                 localStorage.setItem('currentUser', JSON.stringify({ email: email }));
+                console.log('📝 PIN設定時にcurrentUserをLocalStorageに保存:', email);
                 
                 // ユーザー切り替え時の訪問履歴クリア
                 userVisitHistory.clear();
@@ -6257,6 +6258,7 @@
                     
                     // currentUserをLocalStorageに保存（レビュー投稿機能用）
                     localStorage.setItem('currentUser', JSON.stringify({ email: authorizedUser.email }));
+                    console.log('🔐 currentUserをLocalStorageに保存:', authorizedUser.email);
                     
                     // ログイン成功メッセージ
                     document.getElementById('loginBtn').innerHTML = '<i class="fas fa-check"></i> ログイン成功！';
@@ -10167,6 +10169,7 @@
             // デバッグ: 現在のユーザー情報確認
             const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
             console.log('フォーム表示時のユーザー情報:', currentUser);
+            console.log('localStorage確認:', localStorage.getItem('currentUser'));
             
             if (form.style.display === 'none') {
                 form.style.display = 'block';
