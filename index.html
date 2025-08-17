@@ -7874,7 +7874,7 @@
                     .from('store_images')
                     .select('*')
                     .order('store_id', { ascending: true })
-                    .order('image_order', { ascending: true });
+                    .order('created_at', { ascending: true });
                 
                 if (error) {
                     console.warn('⚠️ 画像データ取得エラー:', error);
@@ -8108,16 +8108,15 @@
                 
                 // データベースに画像情報を保存
                 const currentImages = storeImages.get(storeId) || [];
-                const imageOrder = currentImages.length + 1;
+                const imageNumber = currentImages.length + 1;
                 
                 const { data: dbData, error: dbError } = await supabaseClient
                     .from('store_images')
                     .insert({
                         store_id: storeId,
                         image_url: publicUrl,
-                        image_order: imageOrder,
                         uploaded_by: getCurrentUser() || 'demo_user@example.com',
-                        alt_text: `${storeId}番店舗の画像${imageOrder}`
+                        alt_text: `${storeId}番店舗の画像${imageNumber}`
                     })
                     .select()
                     .single();
