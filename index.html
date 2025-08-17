@@ -5487,8 +5487,8 @@
                             const hoursPassed = (now - authTime) / (1000 * 60 * 60);
                             
                             if (hoursPassed < 24) {
-                                currentUser = authData.email;
-                                console.log('✅ 有効なPIN認証セッション:', currentUser);
+                                setCurrentUser(authData.email);
+                                console.log('✅ 有効なPIN認証セッション:', getCurrentUser());
                                 return true;
                             } else {
                                 console.log('⏰ PIN認証の有効期限切れ');
@@ -5636,7 +5636,7 @@
             
             if (isValid) {
                 // 認証成功
-                currentUser = email;
+                setCurrentUser(email);
                 
                 // 認証情報を保存
                 const authData = {
@@ -5977,15 +5977,11 @@
             // PIN設定実行
             if (await setUserPin(email, newPin)) {
                 // 成功 - 認証情報を保存してアプリ初期化
-                currentUser = email;
+                setCurrentUser(email);
                 localStorage.setItem('pinAuth', JSON.stringify({
                     email: email,
                     timestamp: new Date().toISOString()
                 }));
-                
-                // currentUserをLocalStorageに保存（レビュー投稿機能用）
-                localStorage.setItem('currentUser', JSON.stringify({ email: email }));
-                console.log('📝 PIN設定時にcurrentUserをLocalStorageに保存:', email);
                 
                 // ユーザー切り替え時の訪問履歴クリア
                 userVisitHistory.clear();
@@ -6253,12 +6249,8 @@
                     };
                     localStorage.setItem('pinAuth', JSON.stringify(authData));
                     
-                    // currentUserを設定
-                    currentUser = authorizedUser.email;
-                    
-                    // currentUserをLocalStorageに保存（レビュー投稿機能用）
-                    localStorage.setItem('currentUser', JSON.stringify({ email: authorizedUser.email }));
-                    console.log('🔐 currentUserをLocalStorageに保存:', authorizedUser.email);
+                    // currentUserを統一設定
+                    setCurrentUser(authorizedUser.email);
                     
                     // ログイン成功メッセージ
                     document.getElementById('loginBtn').innerHTML = '<i class="fas fa-check"></i> ログイン成功！';
@@ -7307,6 +7299,39 @@
         let userVisitHistory = new Map();
         let currentUser = null;
         let storeImages = new Map(); // 店舗画像キャッシュ
+        
+        // ユーザー情報の統一管理関数
+        function setCurrentUser(email) {
+            currentUser = email;
+            if (email) {
+                localStorage.setItem('currentUser', JSON.stringify({ email: email }));
+                console.log('👤 currentUser統一設定:', email);
+            } else {
+                localStorage.removeItem('currentUser');
+                console.log('👤 currentUserクリア');
+            }
+        }
+        
+        function getCurrentUser() {
+            // グローバル変数を優先し、なければlocalStorageから取得
+            if (currentUser) {
+                return currentUser;
+            }
+            
+            const stored = localStorage.getItem('currentUser');
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    currentUser = parsed.email;
+                    return currentUser;
+                } catch (e) {
+                    console.warn('localStorage currentUserの解析に失敗:', e);
+                    localStorage.removeItem('currentUser');
+                }
+            }
+            
+            return null;
+        }
 
         // Phase 2: プロフィール関連グローバル変数
         let currentUserProfile = null; // 現在のユーザープロフィール
@@ -7356,8 +7381,8 @@
             // }, 200);
             
             // 一旦デモモードで続行
-            if (!currentUser) {
-                currentUser = 'demo_user@example.com';
+            if (!getCurrentUser()) {
+                setCurrentUser('demo_user@example.com');
                 console.log('⏳ 認証確認を並行実行中、デモモードで開始');
             }
             
@@ -7365,13 +7390,14 @@
             await loadVisitHistoryFromSupabase();
             
             // ローカルストレージからのフォールバック読み込み（ユーザー別）
-            if (currentUser) {
-                const saved = localStorage.getItem(`visit_history_${currentUser}`);
+            const user = getCurrentUser();
+            if (user) {
+                const saved = localStorage.getItem(`visit_history_${user}`);
                 if (saved && userVisitHistory.size === 0) {
                     try {
                         const parsed = JSON.parse(saved);
                         userVisitHistory = new Map(Object.entries(parsed));
-                        console.log('💾 ユーザー別訪問履歴を復元:', currentUser, userVisitHistory.size, '件');
+                        console.log('💾 ユーザー別訪問履歴を復元:', user, userVisitHistory.size, '件');
                     } catch (e) {
                         console.warn('⚠️ 訪問履歴の復元に失敗:', e);
                         userVisitHistory = new Map();
@@ -7647,7 +7673,7 @@
                         store_id: storeId,
                         image_url: publicUrl,
                         image_order: imageOrder,
-                        uploaded_by: currentUser || 'demo_user@example.com',
+                        uploaded_by: getCurrentUser() || 'demo_user@example.com',
                         alt_text: `${storeId}番店舗の画像${imageOrder}`
                     })
                     .select()
@@ -7712,7 +7738,7 @@
                 const { data, error } = await supabaseClient
                     .from('visit_history')
                     .select('store_id, status')
-                    .eq('user_email', currentUser);
+                    .eq('user_email', getCurrentUser());
 
                 if (error) {
                     console.error('❌ Supabase読み込みエラー:', error);
@@ -7745,7 +7771,7 @@
                 }, 100);
             }
             
-            if (!currentUser) {
+            if (!getCurrentUser()) {
                 alert('ユーザー認証が必要です');
                 return;
             }
@@ -7766,10 +7792,11 @@
             }
             
             // ローカルストレージにもバックアップ保存（ユーザー別）
-            if (currentUser) {
+            const user = getCurrentUser();
+            if (user) {
                 const obj = Object.fromEntries(userVisitHistory);
-                localStorage.setItem(`visit_history_${currentUser}`, JSON.stringify(obj));
-                console.log('💾 ユーザー別訪問履歴を保存:', currentUser);
+                localStorage.setItem(`visit_history_${user}`, JSON.stringify(obj));
+                console.log('💾 ユーザー別訪問履歴を保存:', user);
             }
             
             // UIを更新
@@ -7796,7 +7823,7 @@
                 const { error: deleteError } = await supabaseClient
                     .from('visit_history')
                     .delete()
-                    .eq('user_email', currentUser)
+                    .eq('user_email', getCurrentUser())
                     .eq('store_id', storeId);
 
                 if (deleteError) {
@@ -7808,7 +7835,7 @@
                     .from('visit_history')
                     .insert([
                         {
-                            user_email: currentUser,
+                            user_email: getCurrentUser(),
                             store_id: storeId,
                             status: status,
                             visited_date: status === 'visited' ? new Date().toISOString().split('T')[0] : null,
@@ -7836,7 +7863,7 @@
                 const { error } = await supabaseClient
                     .from('visit_history')
                     .delete()
-                    .eq('user_email', currentUser)
+                    .eq('user_email', getCurrentUser())
                     .eq('store_id', storeId);
 
                 if (error) {
@@ -7909,8 +7936,8 @@
                 console.log('🔄 認証状態変更:', event, session ? `user: ${session.user.email}` : 'no session');
                 
                 if (event === 'SIGNED_IN' && session) {
-                    currentUser = session.user.email;
-                    console.log('✅ ログイン成功:', currentUser);
+                    setCurrentUser(session.user.email);
+                    console.log('✅ ログイン成功:', getCurrentUser());
                     
                     // ログイン成功時はページをリロードしてマップ画面を表示（無効化）
                     console.log('🔄 認証成功によりページをリロード（無効化）');
@@ -7918,13 +7945,13 @@
                     
                 } else if (event === 'SIGNED_OUT') {
                     console.log('🚪 ログアウト');
-                    currentUser = 'demo_user@example.com';
+                    setCurrentUser('demo_user@example.com');
                     userVisitHistory.clear();
                     updateAuthButton();
                     
                 } else if (event === 'TOKEN_REFRESHED' && session) {
                     console.log('🔄 トークン更新:', session.user.email);
-                    currentUser = session.user.email;
+                    setCurrentUser(session.user.email);
                     updateAuthButton();
                 }
             });
@@ -7941,8 +7968,8 @@
                 if (sessionError) {
                     console.warn('⚠️ セッション確認エラー:', sessionError.message);
                 } else if (session && session.user) {
-                    currentUser = session.user.email;
-                    console.log('✅ セッションから認証済みユーザーを確認:', currentUser);
+                    setCurrentUser(session.user.email);
+                    console.log('✅ セッションから認証済みユーザーを確認:', getCurrentUser());
                     return;
                 }
                 
@@ -7952,18 +7979,18 @@
                 if (userError) {
                     console.warn('⚠️ ユーザー確認エラー、デモモードで続行:', userError.message);
                 } else if (user && user.email) {
-                    currentUser = user.email;
-                    console.log('✅ 認証済みユーザー:', currentUser);
+                    setCurrentUser(user.email);
+                    console.log('✅ 認証済みユーザー:', getCurrentUser());
                     return;
                 }
                 
                 // 両方とも失敗した場合、デモモードに設定
                 console.log('⚠️ 未認証状態、デモモードで続行');
-                currentUser = 'demo_user@example.com';
+                setCurrentUser('demo_user@example.com');
                 
             } catch (error) {
                 console.warn('⚠️ 認証情報エラー、デモモードで実行:', error.message || error);
-                currentUser = 'demo_user@example.com'; // フォールバック
+                setCurrentUser('demo_user@example.com'); // フォールバック
             }
         }
 
@@ -8001,7 +8028,7 @@
         function updateAuthButton() {
             // ハンバーガーメニューに移行したため、この関数は不要
             // メニューの表示内容は動的に更新される
-            console.log('🔄 認証状態更新:', currentUser ? '認証済み' : '未認証');
+            console.log('🔄 認証状態更新:', getCurrentUser() ? '認証済み' : '未認証');
         }
 
         // ログアウト（PINコード認証版）
@@ -8014,7 +8041,7 @@
                 localStorage.removeItem('currentUser');
                 
                 // メモリ上のデータをクリア
-                currentUser = null;
+                setCurrentUser(null);
                 userVisitHistory.clear();
                 
                 console.log('✅ ログアウト成功');
@@ -8692,8 +8719,8 @@
                 
                 // 4. 現在の状態
                 console.log('4. 現在の認証状態:', {
-                    currentUser: currentUser,
-                    isDemo: currentUser === 'demo_user@example.com'
+                    currentUser: getCurrentUser(),
+                    isDemo: getCurrentUser() === 'demo_user@example.com'
                 });
                 
             } catch (error) {
@@ -9624,17 +9651,18 @@
 
         // 現在のユーザープロフィールを初期化
         async function initUserProfile() {
-            if (!currentUser) {
+            const user = getCurrentUser();
+            if (!user) {
                 console.warn('⚠️ ユーザー認証されていません');
                 return;
             }
             
-            console.log('🔄 プロフィール初期化開始:', currentUser);
+            console.log('🔄 プロフィール初期化開始:', user);
             
             // 認証直後にユーザー自動修復を実行
-            await ensureUserIsRegistered(currentUser);
+            await ensureUserIsRegistered(user);
             
-            currentUserProfile = await loadUserProfile(currentUser);
+            currentUserProfile = await loadUserProfile(user);
             
             if (currentUserProfile) {
                 console.log('✅ プロフィール初期化完了:', {
@@ -10167,8 +10195,8 @@
             const btn = document.querySelector('.btn-add-review');
             
             // デバッグ: 現在のユーザー情報確認
-            const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-            console.log('フォーム表示時のユーザー情報:', currentUser);
+            const currentUserEmail = getCurrentUser();
+            console.log('フォーム表示時のユーザー情報:', currentUserEmail);
             console.log('localStorage確認:', localStorage.getItem('currentUser'));
             
             if (form.style.display === 'none') {
@@ -10205,12 +10233,12 @@
 
         // レビュー投稿処理
         async function submitReview(storeId) {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            const currentUserEmail = getCurrentUser();
             
             // 安全性チェック
-            if (!currentUser || !currentUser.email) {
+            if (!currentUserEmail) {
                 alert('ユーザー情報が見つかりません。再度ログインしてください。');
-                console.error('currentUser:', currentUser);
+                console.error('currentUser:', currentUserEmail);
                 return;
             }
 
@@ -10235,7 +10263,7 @@
 
                 console.log('レビュー投稿開始:', {
                     store_id: storeId,
-                    user_email: currentUser.email,
+                    user_email: currentUserEmail,
                     content_length: content.length
                 });
 
@@ -10244,7 +10272,7 @@
                     .from('reviews')
                     .insert({
                         store_id: storeId,
-                        user_email: currentUser.email,
+                        user_email: currentUserEmail,
                         content: content,
                         is_deleted: false,
                         created_at: new Date().toISOString(),
@@ -10253,7 +10281,26 @@
 
                 if (error) {
                     console.error('レビュー投稿エラー:', error);
-                    alert('投稿に失敗しました。もう一度お試しください。');
+                    console.error('エラー詳細:', {
+                        message: error.message,
+                        details: error.details,
+                        hint: error.hint,
+                        code: error.code
+                    });
+                    
+                    // より詳細なエラーメッセージ
+                    let errorMessage = '投稿に失敗しました。';
+                    if (error.message.includes('duplicate')) {
+                        errorMessage = '既にレビューを投稿済みです。';
+                    } else if (error.message.includes('permission') || error.message.includes('unauthorized')) {
+                        errorMessage = '投稿する権限がありません。再度ログインしてください。';
+                    } else if (error.message.includes('foreign key')) {
+                        errorMessage = '店舗情報が見つかりません。';
+                    } else if (error.message.includes('network')) {
+                        errorMessage = 'ネットワークエラーです。接続を確認してください。';
+                    }
+                    
+                    alert(errorMessage);
                     return;
                 }
 
