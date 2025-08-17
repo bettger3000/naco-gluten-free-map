@@ -10430,29 +10430,46 @@
                     return;
                 }
                 
-                // 店舗情報を追加で取得
+                // 店舗情報を追加で取得（確実な方法で）
                 const storeIds = [...new Set(reviewsData.map(r => r.store_id))];
                 console.log('🏪 取得する店舗IDs:', storeIds);
                 
                 let storesData = [];
                 if (storeIds.length > 0) {
                     // 各店舗IDが有効な数値であることを確認
-                    const validStoreIds = storeIds.filter(id => id != null && !isNaN(id));
+                    const validStoreIds = storeIds.filter(id => id != null && !isNaN(Number(id)));
                     console.log('✅ 有効な店舗IDs:', validStoreIds);
                     
                     if (validStoreIds.length > 0) {
-                        const { data: stores, error: storesError } = await supabaseClient
-                            .from('stores')
-                            .select('id, name, address, category')
-                            .in('id', validStoreIds);
+                        // INクエリの代わりに個別クエリを並行実行（確実な方法）
+                        const storePromises = validStoreIds.map(async (storeId) => {
+                            try {
+                                // 確実に数値として扱う
+                                const numericStoreId = Number(storeId);
+                                console.log(`🔍 店舗ID ${numericStoreId} を取得中...`);
+                                
+                                const { data: storeData, error: storeError } = await supabaseClient
+                                    .from('stores')
+                                    .select('id, name, address, category')
+                                    .eq('id', numericStoreId)
+                                    .single();
+                                
+                                if (storeError) {
+                                    console.warn(`⚠️ 店舗ID ${storeId} 取得エラー:`, storeError);
+                                    return null;
+                                }
+                                
+                                return storeData;
+                            } catch (error) {
+                                console.warn(`⚠️ 店舗ID ${storeId} 例外:`, error);
+                                return null;
+                            }
+                        });
                         
-                        if (storesError) {
-                            console.error('店舗データ取得エラー:', storesError);
-                            // エラーでも続行（フォールバックで対応）
-                        } else {
-                            storesData = stores || [];
-                            console.log('✅ 店舗データ取得成功:', storesData.length, '件');
-                        }
+                        // 全ての店舗データを並行取得
+                        const storeResults = await Promise.all(storePromises);
+                        storesData = storeResults.filter(store => store !== null);
+                        console.log('✅ 店舗データ取得成功:', storesData.length, '/', validStoreIds.length, '件');
                     }
                 }
                 
