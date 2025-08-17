@@ -6313,14 +6313,25 @@
                 
                 // Supabaseにも非同期で保存
                 for (const user of users) {
-                    // nicknameのデフォルト値を生成
-                    const defaultNickname = user.email.split('@')[0] || 'ユーザー';
+                    console.log('🚨 [発見] saveApprovedUsers実行中 - ユーザー:', user.email);
+                    
+                    // 🛡️ 既存のニックネームを保持する安全な保存
+                    // 既存データを取得
+                    const { data: existingProfile } = await supabaseClient
+                        .from('user_profiles')
+                        .select('nickname')
+                        .eq('email', user.email)
+                        .single();
+                    
+                    // 既存ニックネームがあれば保持、なければデフォルト
+                    const safeNickname = existingProfile?.nickname || (user.email.split('@')[0] || 'ユーザー');
+                    console.log('🛡️ [保護] 保持するnickname:', `"${safeNickname}"`);
                     
                     const { error } = await supabaseClient
                         .from('user_profiles')
                         .upsert({
                             email: user.email,
-                            nickname: defaultNickname,
+                            nickname: safeNickname, // 既存値を保持
                             is_active: true
                             // pinは別途管理（既存のpinを上書きしない）
                         });
@@ -6438,14 +6449,24 @@
                 localStorage.setItem('userPins', JSON.stringify(userPins));
                 
                 // Supabaseにも保存
-                // nicknameのデフォルト値を生成
-                const defaultNickname = email.split('@')[0] || 'ユーザー';
+                console.log('🚨 [発見] setUserPin実行中 - ユーザー:', email);
+                
+                // 🛡️ 既存のニックネームを保持する安全な保存
+                const { data: existingProfile } = await supabaseClient
+                    .from('user_profiles')
+                    .select('nickname')
+                    .eq('email', email)
+                    .single();
+                
+                // 既存ニックネームがあれば保持、なければデフォルト
+                const safeNickname = existingProfile?.nickname || (email.split('@')[0] || 'ユーザー');
+                console.log('🛡️ [保護] 保持するnickname:', `"${safeNickname}"`);
                 
                 const { error } = await supabaseClient
                     .from('user_profiles')
                     .upsert({
                         email: email,
-                        nickname: defaultNickname,
+                        nickname: safeNickname, // 既存値を保持
                         pin: pinHash,
                         is_active: true
                     });
@@ -10242,6 +10263,9 @@
                 console.log('📝 受け取ったプロフィール:', profile);
                 console.log('📝 受け取ったnickname:', `"${profile.nickname}"`, '型:', typeof profile.nickname);
                 
+                // 🚨 呼び出し元のスタックトレースを記録（重要な診断情報）
+                console.log('📍 [診断] スタックトレース:', new Error().stack);
+                
                 // アドバイス実装：起動時の自動保存を禁止
                 if (source === 'startup' || source === 'initialization') {
                     console.warn('⚠️ [セーフティ] 起動時の自動保存は禁止されています:', source);
@@ -10254,19 +10278,25 @@
                 
                 console.log('💾 保存するnickname:', `"${safeNickname}"`);
                 
+                // 🚨 重要：Supabase書き込み前の最終確認
+                const upsertData = {
+                    email: profile.email,
+                    nickname: safeNickname, // 確実にnullでない値を設定
+                    avatar_url: profile.avatarUrl || null, // 実際のカラム名
+                    bio: profile.bio || null,
+                    avatar_type: profile.avatarType || 'image',
+                    avatar_emoji: profile.avatar || null,
+                    is_active: true,
+                    updated_at: new Date().toISOString()
+                };
+                
+                console.log('🚨 [重要] Supabaseに送信するデータ:', upsertData);
+                console.log('🚨 [重要] 送信するnickname:', `"${upsertData.nickname}"`);
+                
                 // 既存のuser_profilesテーブルの実際のカラム構造に合わせて保存
                 const { error } = await supabaseClient
                     .from('user_profiles')
-                    .upsert({
-                        email: profile.email,
-                        nickname: safeNickname, // 確実にnullでない値を設定
-                        avatar_url: profile.avatarUrl || null, // 実際のカラム名
-                        bio: profile.bio || null,
-                        avatar_type: profile.avatarType || 'image',
-                        avatar_emoji: profile.avatar || null,
-                        is_active: true,
-                        updated_at: new Date().toISOString()
-                    });
+                    .upsert(upsertData);
 
                 if (error) {
                     console.warn('⚠️ Supabase保存エラー（LocalStorageで継続）:', error);
