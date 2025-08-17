@@ -10266,7 +10266,9 @@
                 console.log('🔧 ユーザー登録確認中:', email);
                 
                 // 緊急措置: nickname が null のレコードを修正
+                console.log('⏳ fixNullNicknames実行開始...');
                 await fixNullNicknames();
+                console.log('✅ fixNullNicknames実行完了');
                 
                 // まずSupabaseで確認
                 const { data, error } = await supabaseClient
@@ -10277,7 +10279,7 @@
                 
                 if (error && error.code === 'PGRST116') {
                     // ユーザーが存在しない場合は作成
-                    console.log('🔧 Supabaseにユーザーを新規作成:', email);
+                    console.log('🆕 ユーザーが存在しないため新規作成:', email);
                     const defaultNickname = email.split('@')[0] || 'ユーザー';
                     const { error: insertError } = await supabaseClient
                         .from('user_profiles')
@@ -10294,16 +10296,20 @@
                         console.log('✅ Supabaseにユーザーを作成しました:', email);
                     }
                 } else if (!error && data) {
+                    console.log('👤 既存ユーザー発見:', data);
                     if (!data.is_active) {
                         // 非アクティブユーザーをアクティブにする
+                        console.log('🔄 非アクティブユーザーをアクティブ化:', email);
                         await supabaseClient
                             .from('user_profiles')
                             .update({ is_active: true })
                             .eq('email', email);
                         console.log('✅ ユーザーをアクティブ化しました:', email);
                     } else {
-                        console.log('✅ ユーザーは既に登録済みです:', email);
+                        console.log('✅ ユーザーは既に登録済みでアクティブです:', email);
                     }
+                } else {
+                    console.error('❌ ユーザー確認でエラー:', error);
                 }
                 
                 // LocalStorageも更新
