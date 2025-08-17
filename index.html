@@ -3332,35 +3332,6 @@
             transform: none;
         }
 
-        .review-login-prompt {
-            text-align: center;
-            padding: var(--space-xl);
-            background: var(--bg-secondary);
-            border-radius: var(--radius-md);
-            margin: var(--space-lg) 0;
-        }
-
-        .review-login-prompt p {
-            color: var(--text-secondary);
-            margin-bottom: var(--space-md);
-        }
-
-        .btn-login {
-            background: linear-gradient(135deg, #ff6b9d 0%, #40e0d0 100%);
-            color: white;
-            border: none;
-            padding: var(--space-md) var(--space-xl);
-            border-radius: var(--radius-md);
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-login:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
-        }
 
         /* モバイル対応 */
         @media (max-width: 768px) {
@@ -10113,11 +10084,8 @@
 
         // レビューHTMLを生成（投稿フォーム付き）
         function createReviewsHTML(reviews, storeId) {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-            const isLoggedIn = !!currentUser;
-            
-            // 投稿フォームHTML
-            const reviewFormHTML = isLoggedIn ? `
+            // 登録済みユーザーのみアクセス可能なので、常に投稿フォームを表示
+            const reviewFormHTML = `
                 <div class="review-form-container" id="reviewFormContainer">
                     <button class="btn-add-review" onclick="toggleReviewForm(${storeId})">
                         ＋ 感想を書く
@@ -10138,11 +10106,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            ` : `
-                <div class="review-login-prompt">
-                    <p>感想を投稿するにはログインが必要です</p>
-                    <button class="btn-login" onclick="showLoginModal()">ログインする</button>
                 </div>
             `;
             
@@ -10229,10 +10192,6 @@
         // レビュー投稿処理
         async function submitReview(storeId) {
             const currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-            if (!currentUser) {
-                alert('ログインが必要です');
-                return;
-            }
 
             const content = document.getElementById('reviewContent').value.trim();
             if (!content) {
