@@ -10410,28 +10410,50 @@
             console.log('✅ ユーザー確認OK、レビュー取得開始');
             
             try {
-                // ユーザーのレビューを取得
-                const { data: reviews, error } = await supabaseClient
+                // まずユーザーのレビューを取得（店舗情報なし）
+                const { data: reviewsData, error: reviewsError } = await supabaseClient
                     .from('reviews')
-                    .select(`
-                        id,
-                        store_id,
-                        content,
-                        created_at,
-                        updated_at,
-                        stores!inner(name, address, category)
-                    `)
+                    .select('id, store_id, content, created_at, updated_at')
                     .eq('user_email', currentUserEmail)
                     .eq('is_deleted', false)
                     .order('created_at', { ascending: false });
                 
-                if (error) {
-                    console.error('マイレビュー取得エラー:', error);
+                if (reviewsError) {
+                    console.error('マイレビュー取得エラー:', reviewsError);
                     alert('レビューの取得に失敗しました');
                     return;
                 }
                 
-                showMyReviewsModal(reviews || []);
+                if (!reviewsData || reviewsData.length === 0) {
+                    console.log('📝 レビューなし');
+                    showMyReviewsModal([]);
+                    return;
+                }
+                
+                // 店舗情報を追加で取得
+                const storeIds = [...new Set(reviewsData.map(r => r.store_id))];
+                const { data: storesData, error: storesError } = await supabaseClient
+                    .from('stores')
+                    .select('id, name, address, category')
+                    .in('id', storeIds);
+                
+                if (storesError) {
+                    console.error('店舗データ取得エラー:', storesError);
+                    // 店舗情報がなくてもレビューは表示
+                }
+                
+                // レビューと店舗情報を結合
+                const reviewsWithStores = reviewsData.map(review => ({
+                    ...review,
+                    stores: storesData?.find(store => store.id === review.store_id) || {
+                        name: '店舗情報なし',
+                        address: '',
+                        category: ''
+                    }
+                }));
+                
+                console.log('✅ マイレビューデータ準備完了:', reviewsWithStores.length, '件');
+                showMyReviewsModal(reviewsWithStores);
                 
             } catch (error) {
                 console.error('マイレビュー取得例外:', error);
