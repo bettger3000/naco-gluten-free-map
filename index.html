@@ -6166,10 +6166,14 @@
                 
                 // Supabaseにも非同期で保存
                 for (const user of users) {
+                    // nicknameのデフォルト値を生成
+                    const defaultNickname = user.email.split('@')[0] || 'ユーザー';
+                    
                     const { error } = await supabaseClient
                         .from('user_profiles')
                         .upsert({
                             email: user.email,
+                            nickname: defaultNickname,
                             is_active: true
                             // pinは別途管理（既存のpinを上書きしない）
                         });
@@ -6287,10 +6291,14 @@
                 localStorage.setItem('userPins', JSON.stringify(userPins));
                 
                 // Supabaseにも保存
+                // nicknameのデフォルト値を生成
+                const defaultNickname = email.split('@')[0] || 'ユーザー';
+                
                 const { error } = await supabaseClient
                     .from('user_profiles')
                     .upsert({
                         email: email,
+                        nickname: defaultNickname,
                         pin: pinHash,
                         is_active: true
                     });
