@@ -679,6 +679,121 @@
             }
         }
 
+        /* 画像拡大表示モーダル */
+        .image-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            padding: var(--space-lg);
+        }
+
+        .image-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .image-modal-content {
+            position: relative;
+            max-width: 90vw;
+            max-height: 85vh;
+            animation: zoomIn 0.3s ease;
+        }
+
+        .image-modal-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .image-modal-close {
+            position: absolute;
+            top: -45px;
+            right: 0;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #333;
+            transition: all 0.2s ease;
+        }
+
+        .image-modal-close:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .image-modal-info {
+            position: absolute;
+            bottom: -50px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* 店舗画像をクリック可能にするスタイル */
+        .store-image-clickable {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .store-image-clickable:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* スマホ版での調整 */
+        @media (max-width: 768px) {
+            .image-modal-content {
+                max-width: 95vw;
+                max-height: 80vh;
+            }
+            
+            .image-modal-close {
+                top: -35px;
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+            
+            .image-modal-info {
+                bottom: -40px;
+                font-size: 0.8rem;
+            }
+        }
+
         .app-title {
             font-family: var(--font-display);
             font-size: 1.5rem;
@@ -12237,6 +12352,132 @@
                 }
             }
             return null;
+        }
+
+        // ===========================================
+        // レベル1 画像拡大表示機能
+        // ===========================================
+        
+        // 画像モーダルを表示
+        function showImageModal(imageSrc, storeName, storeAddress) {
+            // モーダルHTML構造を作成
+            const modalHTML = `
+                <div class="image-modal" id="imageModal" onclick="closeImageModal()">
+                    <div class="image-modal-content" onclick="event.stopPropagation()">
+                        <div class="image-modal-header">
+                            <button class="image-modal-close" onclick="closeImageModal()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="image-modal-body">
+                            <img src="${imageSrc}" alt="${storeName}" class="image-modal-img" />
+                        </div>
+                        <div class="image-modal-info">
+                            <div class="image-modal-store-name">${storeName}</div>
+                            <div class="image-modal-store-address">${storeAddress}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // DOMに追加
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // アニメーション開始
+            const modal = document.getElementById('imageModal');
+            requestAnimationFrame(() => {
+                modal.classList.add('active');
+            });
+            
+            // ESCキーで閉じる
+            document.addEventListener('keydown', escapeHandler);
+        }
+        
+        // 画像モーダルを閉じる
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            if (modal) {
+                modal.classList.remove('active');
+                
+                // アニメーション完了後にDOMから削除
+                setTimeout(() => {
+                    if (modal && modal.parentNode) {
+                        modal.parentNode.removeChild(modal);
+                    }
+                }, 300);
+            }
+            
+            // ESCキーハンドラーを削除
+            document.removeEventListener('keydown', escapeHandler);
+        }
+        
+        // ESCキー処理
+        function escapeHandler(event) {
+            if (event.key === 'Escape') {
+                closeImageModal();
+            }
+        }
+        
+        // 店舗画像をクリック可能にする（既存の画像に適用）
+        function makeStoreImagesClickable() {
+            // 店舗詳細の画像を取得
+            const storeImages = document.querySelectorAll('.store-image, .store-detail-image, .store-detail-content img');
+            
+            storeImages.forEach(img => {
+                // 既にクリック可能な場合はスキップ
+                if (img.classList.contains('clickable-image')) {
+                    return;
+                }
+                
+                // クリック可能にマーク
+                img.classList.add('clickable-image');
+                
+                // クリックイベントを追加
+                img.addEventListener('click', function() {
+                    // 店舗情報を取得
+                    const storeContainer = img.closest('.store-detail-modal, .store-detail-fullscreen, .store-item');
+                    let storeName = '店舗画像';
+                    let storeAddress = '';
+                    
+                    if (storeContainer) {
+                        const nameElement = storeContainer.querySelector('.store-name, .store-detail-name, h3');
+                        const addressElement = storeContainer.querySelector('.store-address, .store-detail-address');
+                        
+                        if (nameElement) {
+                            storeName = nameElement.textContent.trim();
+                        }
+                        if (addressElement) {
+                            storeAddress = addressElement.textContent.trim();
+                        }
+                    }
+                    
+                    // 画像モーダルを表示
+                    showImageModal(img.src, storeName, storeAddress);
+                });
+                
+                // ホバーエフェクトのスタイルを追加
+                img.style.cursor = 'pointer';
+            });
+        }
+        
+        // ページ読み込み時に実行
+        document.addEventListener('DOMContentLoaded', function() {
+            makeStoreImagesClickable();
+        });
+        
+        // 動的に追加される店舗詳細モーダルの画像も対応
+        const originalShowStoreDetail = window.showStoreDetail;
+        if (originalShowStoreDetail) {
+            window.showStoreDetail = function(storeId) {
+                const result = originalShowStoreDetail.apply(this, arguments);
+                
+                // モーダル表示後に画像をクリック可能にする
+                setTimeout(() => {
+                    makeStoreImagesClickable();
+                }, 100);
+                
+                return result;
+            };
         }
 
         // ESCキーでプロフィール画面を閉じる
