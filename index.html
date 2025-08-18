@@ -666,6 +666,19 @@
             border: 1px solid #bee5eb;
         }
 
+        /* メニューアバター画像のレスポンシブ対応 */
+        .menu-avatar-image {
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .menu-avatar-image {
+                width: 36px !important;
+                height: 36px !important;
+                margin-right: 10px !important;
+            }
+        }
+
         .app-title {
             font-family: var(--font-display);
             font-size: 1.5rem;
@@ -10783,7 +10796,7 @@
                     
                     // 画像アバターの場合は小さな画像を表示
                     if (currentUserProfile.avatarType === 'image' && currentUserProfile.avatarUrl) {
-                        menuTitle.innerHTML = `<img src="${currentUserProfile.avatarUrl}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" onerror="this.style.display='none'; this.nextSibling.style.display='inline';">${displayName}`;
+                        menuTitle.innerHTML = `<img src="${currentUserProfile.avatarUrl}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);" onerror="this.style.display='none'; this.nextSibling.style.display='inline';" class="menu-avatar-image">${displayName}`;
                     } else {
                         // プリセット絵文字の場合
                         const avatar = getAvatarDisplay(currentUserProfile);
