@@ -1,0 +1,14 @@
+name = "avatar-upload-worker"
+main = "src/index.js"
+compatibility_date = "2024-08-18"
+compatibility_flags = ["nodejs_compat"]
+
+[[r2_buckets]]
+binding = "R2_BUCKET"
+bucket_name = "gluten-free-avatars"
+
+[vars]
+# 公開URL
+PUBLIC_URL = "https://pub-42410d5d2a514b56a139d945cf8eb47f.r2.dev"
+# 許可されたオリジン
+ALLOWED_ORIGINS = "https://bettger3000.github.io,http://localhost:3000,file://"

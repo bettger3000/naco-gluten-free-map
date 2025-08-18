@@ -495,177 +495,6 @@
             transform: none;
         }
 
-        /* アバターアップロード用スタイル */
-        .avatar-tabs {
-            display: flex;
-            margin-bottom: var(--space-md);
-            border-bottom: 2px solid var(--border-light);
-        }
-
-        .avatar-tab {
-            flex: 1;
-            padding: var(--space-md);
-            background: none;
-            border: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-bottom: 2px solid transparent;
-        }
-
-        .avatar-tab.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-            font-weight: 600;
-        }
-
-        .avatar-tab:hover {
-            color: var(--primary);
-            background: rgba(255, 107, 157, 0.05);
-        }
-
-        .avatar-content {
-            margin-top: var(--space-lg);
-        }
-
-        .upload-section {
-            text-align: center;
-        }
-
-        .current-avatar {
-            margin-bottom: var(--space-lg);
-            padding: var(--space-lg);
-            border: 2px dashed var(--border-light);
-            border-radius: var(--radius-lg);
-            background: var(--bg-secondary);
-        }
-
-        .current-avatar img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            box-shadow: var(--shadow-md);
-        }
-
-        .current-avatar #currentAvatarPlaceholder {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        .upload-area {
-            border: 2px dashed var(--border-light);
-            border-radius: var(--radius-lg);
-            padding: var(--space-xl);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: white;
-            margin-bottom: var(--space-lg);
-        }
-
-        .upload-area:hover {
-            border-color: var(--primary);
-            background: rgba(255, 107, 157, 0.02);
-        }
-
-        .upload-area i {
-            font-size: 2rem;
-            color: var(--primary);
-            margin-bottom: var(--space-sm);
-            display: block;
-        }
-
-        .upload-area p {
-            margin: var(--space-xs) 0;
-            color: var(--text-primary);
-        }
-
-        .upload-hint {
-            font-size: 0.8rem !important;
-            color: var(--text-secondary) !important;
-        }
-
-        .preview-section {
-            background: var(--bg-secondary);
-            padding: var(--space-lg);
-            border-radius: var(--radius-lg);
-            margin-top: var(--space-lg);
-        }
-
-        .preview-section h4 {
-            margin-bottom: var(--space-md);
-            color: var(--text-primary);
-        }
-
-        .preview-section img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            box-shadow: var(--shadow-md);
-            margin-bottom: var(--space-md);
-        }
-
-        .preview-section #fileInfo {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-bottom: var(--space-md);
-        }
-
-        .upload-btn {
-            background: var(--gradient-primary);
-            color: white;
-            border: none;
-            padding: var(--space-sm) var(--space-lg);
-            border-radius: var(--radius-md);
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: var(--space-xs);
-        }
-
-        .upload-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .upload-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .upload-status {
-            margin-top: var(--space-md);
-            padding: var(--space-sm);
-            border-radius: var(--radius-md);
-            font-size: 0.9rem;
-            text-align: center;
-        }
-
-        .upload-status.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .upload-status.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .upload-status.info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
-
         .app-title {
             font-family: var(--font-display);
             font-size: 1.5rem;
@@ -690,46 +519,6 @@
         @media (max-width: 480px) {
             .app-title {
                 font-size: 1.3rem;
-            }
-            
-            /* 超小型デバイス向けプロフィールモーダル追加対応 */
-            .profile-modal {
-                margin: var(--space-xs);
-                padding: var(--space-md);
-                max-height: 98vh;
-            }
-            
-            .profile-modal-title {
-                font-size: 1.2rem;
-            }
-            
-            /* アバタータブをさらに小さく */
-            .avatar-tabs {
-                flex-direction: row; /* 横並びに戻す */
-                gap: var(--space-xs);
-            }
-            
-            .avatar-tab {
-                padding: var(--space-xs);
-                font-size: 0.8rem;
-            }
-            
-            .upload-area {
-                padding: var(--space-md);
-            }
-            
-            .upload-area i {
-                font-size: 1.3rem;
-            }
-            
-            .current-avatar img {
-                width: 50px;
-                height: 50px;
-            }
-            
-            .preview-section img {
-                width: 70px;
-                height: 70px;
             }
         }
         
@@ -3915,63 +3704,6 @@
             
             .avatar-option {
                 font-size: 1.5rem;
-            }
-            
-            /* アバターアップロード機能のモバイル対応 */
-            .avatar-tabs {
-                flex-direction: column;
-                gap: var(--space-xs);
-            }
-            
-            .avatar-tab {
-                padding: var(--space-sm);
-                font-size: 0.9rem;
-            }
-            
-            .current-avatar {
-                padding: var(--space-md);
-                margin-bottom: var(--space-md);
-            }
-            
-            .current-avatar img {
-                width: 60px;
-                height: 60px;
-            }
-            
-            .upload-area {
-                padding: var(--space-lg);
-                margin-bottom: var(--space-md);
-            }
-            
-            .upload-area i {
-                font-size: 1.5rem;
-            }
-            
-            .upload-area p {
-                font-size: 0.9rem;
-            }
-            
-            .upload-hint {
-                font-size: 0.75rem !important;
-            }
-            
-            .preview-section {
-                padding: var(--space-md);
-            }
-            
-            .preview-section img {
-                width: 80px;
-                height: 80px;
-            }
-            
-            .upload-btn {
-                padding: var(--space-sm);
-                font-size: 0.85rem;
-            }
-            
-            .upload-status {
-                font-size: 0.8rem;
-                padding: var(--space-xs) var(--space-sm);
             }
         }
 
@@ -10780,16 +10512,9 @@
                 if (currentUserProfile && menuTitle && menuSubtitle) {
                     // アドバイス実装：安全な表示用フォールバック
                     const displayName = getDisplayNickname(currentUserProfile);
+                    const avatar = getAvatarDisplay(currentUserProfile);
                     
-                    // 画像アバターの場合は小さな画像を表示
-                    if (currentUserProfile.avatarType === 'image' && currentUserProfile.avatarUrl) {
-                        menuTitle.innerHTML = `<img src="${currentUserProfile.avatarUrl}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-right: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" onerror="this.style.display='none'; this.nextSibling.style.display='inline';">${displayName}`;
-                    } else {
-                        // プリセット絵文字の場合
-                        const avatar = getAvatarDisplay(currentUserProfile);
-                        menuTitle.textContent = `${avatar} ${displayName}`;
-                    }
-                    
+                    menuTitle.textContent = `${avatar} ${displayName}`;
                     menuSubtitle.textContent = 'ビヨグル倶楽部';
                 } else if (menuTitle && menuSubtitle) {
                     // プロフィール未読み込み時のフォールバック
@@ -10805,10 +10530,7 @@
         function getAvatarDisplay(profile) {
             if (!profile) return '🌸';
             
-            if (profile.avatarType === 'image' && profile.avatarUrl) {
-                // アップロード画像の場合は代替として絵文字を返す（表示は別途処理）
-                return '📷';
-            } else if (profile.avatarType === 'custom' && profile.customAvatarData) {
+            if (profile.avatarType === 'custom' && profile.customAvatarData) {
                 // カスタム画像の場合は代替として絵文字を返す（表示は別途処理）
                 return '📷';
             } else {
@@ -10866,17 +10588,8 @@
             }
             
             try {
-                if (avatarType === 'image' && customData) {
-                    // カスタム画像アップロードの場合
-                    currentUserProfile.avatarUrl = customData;
-                    currentUserProfile.avatarType = 'image';
-                    currentUserProfile.avatar = null; // プリセットIDはクリア
-                } else {
-                    // プリセットアバターの場合
-                    currentUserProfile.avatar = avatarId;
-                    currentUserProfile.avatarType = avatarType;
-                    currentUserProfile.avatarUrl = null; // カスタムURLはクリア
-                }
+                currentUserProfile.avatar = avatarId;
+                currentUserProfile.avatarType = avatarType;
                 currentUserProfile.customAvatarData = customData;
                 
                 // アドバイス実装：ユーザー操作による明示的な保存
@@ -11475,158 +11188,6 @@
             });
         }
 
-        // ========== アバターアップロード機能 ==========
-        const AVATAR_WORKER_URL = 'https://avatar-upload-worker.bettger1000.workers.dev';
-        let selectedFile = null;
-        let uploadedAvatarUrl = null;
-
-        // アバタータブの切り替え
-        function showAvatarTab(tabType) {
-            // タブの状態更新
-            document.querySelectorAll('.avatar-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.classList.add('active');
-
-            // コンテンツの表示/非表示
-            document.getElementById('presetAvatars').style.display = tabType === 'preset' ? 'block' : 'none';
-            document.getElementById('uploadAvatar').style.display = tabType === 'upload' ? 'block' : 'none';
-
-            // アップロードタブを開いた時の初期化
-            if (tabType === 'upload') {
-                updateCurrentAvatarPreview();
-            }
-        }
-
-        // 現在のアバター表示を更新
-        function updateCurrentAvatarPreview() {
-            const currentImage = document.getElementById('currentAvatarImage');
-            const placeholder = document.getElementById('currentAvatarPlaceholder');
-
-            if (currentUserProfile?.avatarUrl) {
-                currentImage.src = currentUserProfile.avatarUrl;
-                currentImage.style.display = 'block';
-                placeholder.style.display = 'none';
-            } else {
-                currentImage.style.display = 'none';
-                placeholder.style.display = 'block';
-            }
-        }
-
-        // ファイル選択の処理
-        document.addEventListener('DOMContentLoaded', function() {
-            const fileInput = document.getElementById('avatarFileInput');
-            if (fileInput) {
-                fileInput.addEventListener('change', function(e) {
-                    const file = e.target.files[0];
-                    if (!file) return;
-
-                    // ファイルサイズチェック（500KB以下）
-                    if (file.size > 500 * 1024) {
-                        showUploadStatus('ファイルサイズが大きすぎます（最大500KB）', 'error');
-                        return;
-                    }
-
-                    // ファイル形式チェック
-                    if (!file.type.startsWith('image/')) {
-                        showUploadStatus('画像ファイルを選択してください', 'error');
-                        return;
-                    }
-
-                    selectedFile = file;
-                    showPreview(file);
-                });
-            }
-        });
-
-        // プレビュー表示
-        function showPreview(file) {
-            const previewSection = document.getElementById('previewSection');
-            const previewImage = document.getElementById('previewImage');
-            const fileInfo = document.getElementById('fileInfo');
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                previewImage.src = e.target.result;
-                fileInfo.textContent = `${file.name} (${Math.round(file.size / 1024)}KB)`;
-                previewSection.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // アバターアップロード実行
-        async function uploadAvatar() {
-            if (!selectedFile) {
-                showUploadStatus('ファイルが選択されていません', 'error');
-                return;
-            }
-
-            const uploadBtn = document.getElementById('uploadBtn');
-            uploadBtn.disabled = true;
-            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> アップロード中...';
-            
-            showUploadStatus('アップロード中...', 'info');
-
-            try {
-                const formData = new FormData();
-                formData.append('image', selectedFile);
-                formData.append('email', getCurrentUser() || 'anonymous');
-
-                const response = await fetch(`${AVATAR_WORKER_URL}/upload`, {
-                    method: 'POST',
-                    body: formData,
-                    // タイムアウト設定
-                    signal: AbortSignal.timeout(30000) // 30秒
-                });
-
-                const result = await response.json();
-
-                if (response.ok && result.success) {
-                    uploadedAvatarUrl = result.url;
-                    showUploadStatus('アップロード成功！保存ボタンをクリックしてプロフィールに反映してください。', 'success');
-                    
-                    // プレビューを更新
-                    document.getElementById('currentAvatarImage').src = result.url;
-                    document.getElementById('currentAvatarImage').style.display = 'block';
-                    document.getElementById('currentAvatarPlaceholder').style.display = 'none';
-                    
-                    // アップロードタイプをセット
-                    selectedAvatarId = 'uploaded';
-                } else {
-                    throw new Error(result.error || 'アップロード失敗');
-                }
-            } catch (error) {
-                console.error('アップロードエラー:', error);
-                
-                // エラーの種類に応じたメッセージ
-                let errorMessage = 'アップロードに失敗しました。';
-                if (error.name === 'AbortError') {
-                    errorMessage = 'アップロードがタイムアウトしました。ネットワーク接続を確認してください。';
-                } else if (error.name === 'TypeError') {
-                    errorMessage = 'ネットワークエラーが発生しました。接続を確認してください。';
-                } else if (error.message.includes('File too large')) {
-                    errorMessage = 'ファイルサイズが大きすぎます（最大500KB）。';
-                } else if (error.message) {
-                    errorMessage = `エラー: ${error.message}`;
-                }
-                
-                showUploadStatus(errorMessage, 'error');
-                
-                // フォールバック: プリセットタブに戻す提案
-                showUploadStatus(errorMessage + '<br><small>プリセットアバターをご利用ください。</small>', 'error');
-            } finally {
-                uploadBtn.disabled = false;
-                uploadBtn.innerHTML = '<i class="fas fa-upload"></i> アップロード';
-            }
-        }
-
-        // アップロードステータス表示
-        function showUploadStatus(message, type) {
-            const statusDiv = document.getElementById('uploadStatus');
-            statusDiv.className = `upload-status ${type}`;
-            statusDiv.innerHTML = message;
-        }
-
         // プロフィールを保存
         async function saveProfile() {
             const nicknameInput = document.getElementById('nicknameInput');
@@ -11648,15 +11209,8 @@
                 }
                 
                 // アバター更新
-                if (selectedAvatarId === 'uploaded' && uploadedAvatarUrl) {
-                    // 画像アップロードの場合
-                    const avatarSuccess = await updateAvatar(null, 'image', uploadedAvatarUrl);
-                    if (!avatarSuccess) {
-                        throw new Error('アバター更新に失敗しました');
-                    }
-                } else if (selectedAvatarId !== currentUserProfile.avatar) {
-                    // プリセットアバターの場合
-                    const avatarSuccess = await updateAvatar(selectedAvatarId, 'emoji');
+                if (selectedAvatarId !== currentUserProfile.avatar) {
+                    const avatarSuccess = await updateAvatar(selectedAvatarId, 'image');
                     if (!avatarSuccess) {
                         throw new Error('アバター更新に失敗しました');
                     }
@@ -12317,51 +11871,8 @@
                     <i class="fas fa-smile"></i>
                     アバター
                 </div>
-                
-                <!-- アバター選択タブ -->
-                <div class="avatar-tabs">
-                    <button class="avatar-tab active" onclick="showAvatarTab('preset')">
-                        <i class="fas fa-smile"></i> プリセット
-                    </button>
-                    <button class="avatar-tab" onclick="showAvatarTab('upload')">
-                        <i class="fas fa-upload"></i> 画像アップロード
-                    </button>
-                </div>
-                
-                <!-- プリセットアバター -->
-                <div class="avatar-content" id="presetAvatars">
-                    <div class="avatar-grid" id="avatarGrid">
-                        <!-- JavaScriptで動的生成 -->
-                    </div>
-                </div>
-                
-                <!-- 画像アップロード -->
-                <div class="avatar-content" id="uploadAvatar" style="display: none;">
-                    <div class="upload-section">
-                        <div class="current-avatar" id="currentAvatarPreview">
-                            <img id="currentAvatarImage" src="" alt="現在のアバター" style="display: none;">
-                            <div id="currentAvatarPlaceholder">現在のアバター画像はありません</div>
-                        </div>
-                        
-                        <div class="upload-area" onclick="document.getElementById('avatarFileInput').click()">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <p>クリックして画像を選択</p>
-                            <p class="upload-hint">JPG, PNG, GIF (最大500KB)</p>
-                        </div>
-                        
-                        <input type="file" id="avatarFileInput" accept="image/*" style="display: none;">
-                        
-                        <div class="preview-section" id="previewSection" style="display: none;">
-                            <h4>プレビュー</h4>
-                            <img id="previewImage" alt="プレビュー">
-                            <p id="fileInfo"></p>
-                            <button class="upload-btn" id="uploadBtn" onclick="uploadAvatar()">
-                                <i class="fas fa-upload"></i> アップロード
-                            </button>
-                        </div>
-                        
-                        <div class="upload-status" id="uploadStatus"></div>
-                    </div>
+                <div class="avatar-grid" id="avatarGrid">
+                    <!-- JavaScriptで動的生成 -->
                 </div>
             </div>
 
