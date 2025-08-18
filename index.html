@@ -3671,7 +3671,7 @@
             gap: var(--space-md);
             margin-top: var(--space-xl);
             justify-content: center;
-            padding: 0 var(--space-lg);
+            padding: 0 var(--space-lg) var(--space-xl) var(--space-lg);
         }
 
         .nav-btn {
@@ -4189,6 +4189,17 @@
                 padding: var(--space-lg);
                 font-size: 1.1rem;
                 min-height: 70px;
+            }
+            
+            /* スマホ版店舗ナビゲーションの下部余白強化 */
+            .store-navigation {
+                margin-bottom: calc(var(--space-xl) + env(safe-area-inset-bottom, 20px));
+                padding-bottom: calc(var(--space-xl) + env(safe-area-inset-bottom, 20px));
+            }
+            
+            /* フルスクリーンモードでのスクロール領域調整 */
+            .store-detail-fullscreen .store-detail-content {
+                padding-bottom: calc(var(--space-xl) + env(safe-area-inset-bottom, 20px));
             }
         }
 
