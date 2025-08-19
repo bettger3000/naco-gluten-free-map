@@ -1126,20 +1126,70 @@
             
             try {
                 // フォームに値をセット
-                document.getElementById('storeId').value = store.id;
-                document.getElementById('storeName').value = store.name;
-                document.getElementById('storeCategory').value = store.category;
-                document.getElementById('storeAddress').value = store.address;
-                document.getElementById('storeLat').value = store.latitude || '';
-                document.getElementById('storeLng').value = store.longitude || '';
-                document.getElementById('storePhone').value = store.phone || '';
-                document.getElementById('storeWebsite').value = store.website || '';
-                document.getElementById('storeImageUrl').value = store.image_url || '';
-                document.getElementById('storeHours').value = store.opening_hours || '';
-                document.getElementById('storeGfOptions').value = store.gluten_free_options || '';
-                document.getElementById('storeDescription').value = store.description || '';
+                const formElements = {
+                    storeId: document.getElementById('storeId'),
+                    storeName: document.getElementById('storeName'),
+                    storeCategory: document.getElementById('storeCategory'),
+                    storeAddress: document.getElementById('storeAddress'),
+                    storeLat: document.getElementById('storeLat'),
+                    storeLng: document.getElementById('storeLng'),
+                    storePhone: document.getElementById('storePhone'),
+                    storeWebsite: document.getElementById('storeWebsite'),
+                    storeImageUrl: document.getElementById('storeImageUrl'),
+                    storeHours: document.getElementById('storeHours'),
+                    storeGfOptions: document.getElementById('storeGfOptions'),
+                    storeDescription: document.getElementById('storeDescription')
+                };
                 
-                console.log('フォーム値設定完了');
+                // 要素の存在チェック
+                for (const [key, element] of Object.entries(formElements)) {
+                    if (!element) {
+                        console.error(`フォーム要素が見つかりません: ${key}`);
+                    }
+                }
+                
+                // 値の設定
+                if (formElements.storeId) formElements.storeId.value = store.id;
+                if (formElements.storeName) formElements.storeName.value = store.name;
+                if (formElements.storeCategory) formElements.storeCategory.value = store.category;
+                if (formElements.storeAddress) formElements.storeAddress.value = store.address;
+                if (formElements.storeLat) formElements.storeLat.value = store.latitude || '';
+                if (formElements.storeLng) formElements.storeLng.value = store.longitude || '';
+                if (formElements.storePhone) formElements.storePhone.value = store.phone || '';
+                if (formElements.storeWebsite) formElements.storeWebsite.value = store.website || '';
+                if (formElements.storeImageUrl) formElements.storeImageUrl.value = store.image_url || '';
+                if (formElements.storeHours) formElements.storeHours.value = store.opening_hours || '';
+                if (formElements.storeGfOptions) formElements.storeGfOptions.value = store.gluten_free_options || '';
+                if (formElements.storeDescription) formElements.storeDescription.value = store.description || '';
+                
+                // 編集パネルを表示（visibility確認）
+                const editPanel = document.querySelector('.edit-panel');
+                if (editPanel) {
+                    console.log('編集パネルの表示状態:', {
+                        display: window.getComputedStyle(editPanel).display,
+                        visibility: window.getComputedStyle(editPanel).visibility,
+                        opacity: window.getComputedStyle(editPanel).opacity
+                    });
+                    
+                    // スクロールして編集フォームを表示
+                    editPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+                
+                console.log('フォーム値設定完了 - 店舗名:', formElements.storeName?.value);
+                
+                // 入力フィールドが編集可能かチェック
+                if (formElements.storeName) {
+                    console.log('店舗名フィールドの状態:', {
+                        disabled: formElements.storeName.disabled,
+                        readOnly: formElements.storeName.readOnly,
+                        value: formElements.storeName.value,
+                        type: formElements.storeName.type
+                    });
+                    
+                    // 強制的に編集可能にする
+                    formElements.storeName.disabled = false;
+                    formElements.storeName.readOnly = false;
+                }
                 
                 // 地図更新（エラーがあってもフォームは動作するように）
                 if (store.latitude && store.longitude && typeof updateMapMarker === 'function') {
@@ -1152,6 +1202,15 @@
                 
                 displayStores();
                 showToast('編集モードです', false);
+                
+                // 最初の入力フィールドにフォーカス
+                setTimeout(() => {
+                    if (formElements.storeName && !formElements.storeName.disabled) {
+                        formElements.storeName.focus();
+                        formElements.storeName.select();
+                        console.log('店舗名フィールドにフォーカスを設定しました');
+                    }
+                }, 100);
             } catch (error) {
                 console.error('編集エラー:', error);
                 alert('編集フォームの表示に失敗しました。コンソールを確認してください。');
