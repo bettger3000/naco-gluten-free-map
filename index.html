@@ -776,6 +776,10 @@
 
         /* スマホ版での調整 */
         @media (max-width: 768px) {
+            .image-modal {
+                padding: var(--space-md);
+            }
+            
             .image-modal-content {
                 max-width: 95vw;
                 max-height: 80vh;
@@ -786,11 +790,45 @@
                 width: 35px;
                 height: 35px;
                 font-size: 1rem;
+                /* タッチしやすいように少し大きく */
+                width: 40px;
+                height: 40px;
             }
             
             .image-modal-info {
                 bottom: -40px;
                 font-size: 0.8rem;
+                padding: 0 var(--space-sm);
+            }
+            
+            /* スマホでのタッチ対応 */
+            .store-image-clickable {
+                /* ホバー効果を無効化してタッチのみに */
+                transform: none;
+                transition: transform 0.1s ease;
+            }
+            
+            .store-image-clickable:active {
+                transform: scale(0.98);
+            }
+        }
+
+        /* 極小スマホ対応 */
+        @media (max-width: 360px) {
+            .image-modal-content {
+                max-width: 98vw;
+                max-height: 75vh;
+            }
+            
+            .image-modal-close {
+                top: -30px;
+                width: 36px;
+                height: 36px;
+            }
+            
+            .image-modal-info {
+                bottom: -35px;
+                font-size: 0.75rem;
             }
         }
 
@@ -12365,7 +12403,7 @@
                 <div class="image-modal" id="imageModal" onclick="closeImageModal()">
                     <div class="image-modal-content" onclick="event.stopPropagation()">
                         <div class="image-modal-header">
-                            <button class="image-modal-close" onclick="closeImageModal()">
+                            <button class="image-modal-close" onclick="closeImageModal()" ontouchend="closeImageModal()">
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
@@ -12389,6 +12427,9 @@
                 modal.classList.add('active');
             });
             
+            // スマホでのボディスクロールを無効化
+            document.body.style.overflow = 'hidden';
+            
             // ESCキーで閉じる
             document.addEventListener('keydown', escapeHandler);
         }
@@ -12406,6 +12447,9 @@
                     }
                 }, 300);
             }
+            
+            // ボディスクロールを復元
+            document.body.style.overflow = '';
             
             // ESCキーハンドラーを削除
             document.removeEventListener('keydown', escapeHandler);
@@ -12432,8 +12476,10 @@
                 // クリック可能にマーク
                 img.classList.add('clickable-image');
                 
-                // クリックイベントを追加
-                img.addEventListener('click', function() {
+                // クリック・タッチイベントを追加
+                const handleImageClick = function(e) {
+                    e.preventDefault(); // デフォルトの画像保存などを防ぐ
+                    
                     // 店舗情報を取得
                     const storeContainer = img.closest('.store-detail-modal, .store-detail-fullscreen, .store-item');
                     let storeName = '店舗画像';
@@ -12453,7 +12499,10 @@
                     
                     // 画像モーダルを表示
                     showImageModal(img.src, storeName, storeAddress);
-                });
+                };
+                
+                img.addEventListener('click', handleImageClick);
+                img.addEventListener('touchend', handleImageClick); // タッチデバイス対応
                 
                 // ホバーエフェクトのスタイルを追加
                 img.style.cursor = 'pointer';
