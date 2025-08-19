@@ -350,9 +350,6 @@
             max-width: 1400px;
             margin: 0 auto;
             padding: var(--space-lg);
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: var(--space-lg);
         }
         
         /* 店舗リスト */
@@ -472,13 +469,14 @@
         /* 編集フォーム */
         .edit-panel {
             background: white;
+            border: 2px solid var(--primary);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-md);
             padding: var(--space-lg);
-            position: sticky;
-            top: 80px;
-            max-height: calc(100vh - 100px);
+            min-height: 500px;
             overflow-y: auto;
+            display: block !important;
+            visibility: visible !important;
         }
         
         .form-group {
@@ -629,10 +627,6 @@
         
         /* レスポンシブ */
         @media (max-width: 1024px) {
-            .admin-content {
-                grid-template-columns: 1fr;
-            }
-            
             #storesTab > div {
                 grid-template-columns: 1fr !important;
             }
@@ -713,7 +707,7 @@
         <div class="admin-content">
             <!-- 店舗管理タブ -->
             <div id="storesTab" class="tab-content active">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-lg);">
+                <div style="display: grid; grid-template-columns: 1fr 400px; gap: 20px; align-items: start;">
                     <!-- 店舗リスト -->
                     <div class="stores-panel">
                 <div class="panel-header">
