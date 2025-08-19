@@ -633,9 +633,14 @@
                 grid-template-columns: 1fr;
             }
             
+            #storesTab > div {
+                grid-template-columns: 1fr !important;
+            }
+            
             .edit-panel {
                 position: static;
                 max-height: none;
+                margin-top: var(--space-lg);
             }
         }
     </style>
@@ -708,8 +713,9 @@
         <div class="admin-content">
             <!-- 店舗管理タブ -->
             <div id="storesTab" class="tab-content active">
-                <!-- 店舗リスト -->
-                <div class="stores-panel">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-lg);">
+                    <!-- 店舗リスト -->
+                    <div class="stores-panel">
                 <div class="panel-header">
                     <h2 class="panel-title">店舗一覧</h2>
                     <span class="store-count">全<span id="storeCount">0</span>件</span>
@@ -729,10 +735,10 @@
                         新規店舗を追加
                     </button>
                 </div>
-            </div>
-            
-            <!-- 編集フォーム -->
-            <div class="edit-panel">
+                    </div>
+                    
+                    <!-- 編集フォーム -->
+                    <div class="edit-panel">
                 <h3 style="margin-bottom: var(--space-lg);">店舗情報編集</h3>
                 
                 <form id="editForm">
@@ -820,8 +826,8 @@
                         </button>
                     </div>
                 </form>
-            </div>
-        </div>
+                    </div>
+                </div>
             </div> <!-- 店舗管理タブ終了 -->
             
             <!-- ユーザー管理タブ -->
