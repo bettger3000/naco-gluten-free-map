@@ -790,6 +790,11 @@
                     </div>
                     
                     <div class="form-group">
+                        <label class="form-label">画像URL</label>
+                        <input type="url" class="form-input" id="storeImageUrl" placeholder="店舗画像のURL">
+                    </div>
+                    
+                    <div class="form-group">
                         <label class="form-label">営業時間</label>
                         <input type="text" class="form-input" id="storeHours" placeholder="例: 11:00-20:00">
                     </div>
@@ -1118,6 +1123,7 @@
             document.getElementById('storeLng').value = store.longitude || '';
             document.getElementById('storePhone').value = store.phone || '';
             document.getElementById('storeWebsite').value = store.website || '';
+            document.getElementById('storeImageUrl').value = store.image_url || '';
             document.getElementById('storeHours').value = store.opening_hours || '';
             document.getElementById('storeGfOptions').value = store.gluten_free_options || '';
             document.getElementById('storeDescription').value = store.description || '';
@@ -1143,6 +1149,7 @@
                 longitude: null,
                 phone: '',
                 website: '',
+                image_url: '',
                 description: '',
                 gluten_free_options: '',
                 opening_hours: ''
@@ -1174,6 +1181,7 @@
                 longitude: parseFloat(document.getElementById('storeLng').value) || null,
                 phone: document.getElementById('storePhone').value,
                 website: document.getElementById('storeWebsite').value,
+                image_url: document.getElementById('storeImageUrl').value,
                 opening_hours: document.getElementById('storeHours').value,
                 gluten_free_options: document.getElementById('storeGfOptions').value,
                 description: document.getElementById('storeDescription').value
