@@ -1109,31 +1109,47 @@
         
         // 店舗編集
         function editStore(id) {
+            console.log('編集開始 - 店舗ID:', id);
             const store = stores.find(s => s.id === id);
-            if (!store) return;
+            if (!store) {
+                console.error('店舗が見つかりません:', id);
+                return;
+            }
             
             selectedStoreId = id;
             
-            // フォームに値をセット
-            document.getElementById('storeId').value = store.id;
-            document.getElementById('storeName').value = store.name;
-            document.getElementById('storeCategory').value = store.category;
-            document.getElementById('storeAddress').value = store.address;
-            document.getElementById('storeLat').value = store.latitude || '';
-            document.getElementById('storeLng').value = store.longitude || '';
-            document.getElementById('storePhone').value = store.phone || '';
-            document.getElementById('storeWebsite').value = store.website || '';
-            document.getElementById('storeImageUrl').value = store.image_url || '';
-            document.getElementById('storeHours').value = store.opening_hours || '';
-            document.getElementById('storeGfOptions').value = store.gluten_free_options || '';
-            document.getElementById('storeDescription').value = store.description || '';
-            
-            // 地図更新
-            if (store.latitude && store.longitude) {
-                updateMapMarker(store.latitude, store.longitude);
+            try {
+                // フォームに値をセット
+                document.getElementById('storeId').value = store.id;
+                document.getElementById('storeName').value = store.name;
+                document.getElementById('storeCategory').value = store.category;
+                document.getElementById('storeAddress').value = store.address;
+                document.getElementById('storeLat').value = store.latitude || '';
+                document.getElementById('storeLng').value = store.longitude || '';
+                document.getElementById('storePhone').value = store.phone || '';
+                document.getElementById('storeWebsite').value = store.website || '';
+                document.getElementById('storeImageUrl').value = store.image_url || '';
+                document.getElementById('storeHours').value = store.opening_hours || '';
+                document.getElementById('storeGfOptions').value = store.gluten_free_options || '';
+                document.getElementById('storeDescription').value = store.description || '';
+                
+                console.log('フォーム値設定完了');
+                
+                // 地図更新（エラーがあってもフォームは動作するように）
+                if (store.latitude && store.longitude && typeof updateMapMarker === 'function') {
+                    try {
+                        updateMapMarker(store.latitude, store.longitude);
+                    } catch (mapError) {
+                        console.warn('地図の更新に失敗しましたが、編集は続行できます:', mapError);
+                    }
+                }
+                
+                displayStores();
+                showToast('編集モードです', false);
+            } catch (error) {
+                console.error('編集エラー:', error);
+                alert('編集フォームの表示に失敗しました。コンソールを確認してください。');
             }
-            
-            displayStores();
         }
         
         // 新規店舗追加
@@ -1249,28 +1265,50 @@
         
         // 地図初期化
         function initEditMap() {
-            editMap = L.map('editMap').setView([35.6762, 139.6503], 10);
-            
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(editMap);
-            
-            // 地図クリックイベント
-            editMap.on('click', function(e) {
-                updateMapMarker(e.latlng.lat, e.latlng.lng);
-                document.getElementById('storeLat').value = e.latlng.lat.toFixed(4);
-                document.getElementById('storeLng').value = e.latlng.lng.toFixed(4);
-            });
+            try {
+                const mapElement = document.getElementById('editMap');
+                if (!mapElement) {
+                    console.warn('地図要素が見つかりません');
+                    return;
+                }
+                
+                editMap = L.map('editMap').setView([35.6762, 139.6503], 10);
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(editMap);
+                
+                // 地図クリックイベント
+                editMap.on('click', function(e) {
+                    updateMapMarker(e.latlng.lat, e.latlng.lng);
+                    document.getElementById('storeLat').value = e.latlng.lat.toFixed(4);
+                    document.getElementById('storeLng').value = e.latlng.lng.toFixed(4);
+                });
+                
+                console.log('地図初期化完了');
+            } catch (error) {
+                console.error('地図の初期化に失敗しました:', error);
+                console.warn('地図機能は使用できませんが、その他の編集は可能です');
+            }
         }
         
         // 地図マーカー更新
         function updateMapMarker(lat, lng) {
-            if (editMarker) {
-                editMap.removeLayer(editMarker);
+            try {
+                if (!editMap) {
+                    console.warn('地図が初期化されていません');
+                    return;
+                }
+                
+                if (editMarker) {
+                    editMap.removeLayer(editMarker);
+                }
+                
+                editMarker = L.marker([lat, lng]).addTo(editMap);
+                editMap.setView([lat, lng], 15);
+            } catch (error) {
+                console.error('マーカー更新エラー:', error);
             }
-            
-            editMarker = L.marker([lat, lng]).addTo(editMap);
-            editMap.setView([lat, lng], 15);
         }
         
         // 埋め込みコード生成
