@@ -5059,7 +5059,7 @@
         // 🚀 店舗データ（JSONファイルから読み込み）
         let embeddedStores = [];
         
-        // JSONファイルから店舗データを読み込む
+        // JSONファイルから店舗データを読み込む（パフォーマンス最適化版）
         async function loadStores() {
             try {
                 // ローカルファイルの場合はCORSエラーを回避
@@ -5070,14 +5070,12 @@
                     return embeddedStores;
                 }
                 
-                const response = await fetch('./data/embeddedStores.json');
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const stores = await response.json();
+                // メインデータを読み込み
+                const stores = await loadStoresWithOptimization();
                 embeddedStores = stores;
                 console.log('✅ 店舗データ読み込み完了:', stores.length, '件');
                 return stores;
+                
             } catch (error) {
                 console.error('❌ 店舗データの読み込みに失敗:', error);
                 console.log('⚠️ フォールバック: 埋め込みデータを使用');
@@ -5086,6 +5084,70 @@
                 console.log('✅ 店舗データ読み込み完了:', embeddedStores.length, '件');
                 return embeddedStores;
             }
+        }
+        
+        // 最適化されたデータ読み込み
+        async function loadStoresWithOptimization() {
+            const dataSources = [
+                './data/embeddedStores.json',
+                './embeddedStores.json'  // バックアップ
+            ];
+            
+            for (const source of dataSources) {
+                try {
+                    const response = await fetch(source);
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const stores = await response.json();
+                    
+                    // データの検証と最適化
+                    const validatedStores = validateAndOptimizeStores(stores);
+                    console.log(`📊 データ最適化: ${stores.length} → ${validatedStores.length} 件`);
+                    
+                    return validatedStores;
+                    
+                } catch (error) {
+                    console.warn(`⚠️ ${source} 読み込み失敗:`, error.message);
+                }
+            }
+            
+            throw new Error('すべてのデータソースが利用できません');
+        }
+        
+        // 店舗データの検証と最適化
+        function validateAndOptimizeStores(stores) {
+            if (!Array.isArray(stores)) {
+                throw new Error('データ形式が不正です');
+            }
+            
+            return stores
+                .filter(store => {
+                    // 必須フィールドのチェック
+                    if (!store.id || !store.name || !store.address) {
+                        console.warn('不正なデータをスキップ:', store);
+                        return false;
+                    }
+                    return true;
+                })
+                .map(store => {
+                    // データの正規化
+                    return {
+                        ...store,
+                        id: parseInt(store.id),
+                        latitude: store.latitude ? parseFloat(store.latitude) : null,
+                        longitude: store.longitude ? parseFloat(store.longitude) : null,
+                        // 空文字列をnullに変換
+                        phone: store.phone || null,
+                        website: store.website || null,
+                        image_url: store.image_url || null,
+                        opening_hours: store.opening_hours || null,
+                        gluten_free_options: store.gluten_free_options || null,
+                        description: store.description || null
+                    };
+                })
+                .sort((a, b) => a.id - b.id); // ID順でソート
         }
         
         // 埋め込み店舗データを返す関数（CORSエラー回避用）
