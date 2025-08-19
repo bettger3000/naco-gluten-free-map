@@ -1025,42 +1025,67 @@
             displayStores();
         }
         
-        // 初期店舗データをindex.htmlから取得
+        // 初期店舗データをJSONファイルから安全に取得
         async function getInitialStores() {
-            try {
-                // index.htmlからembeddedStoresデータを取得
-                const response = await fetch('./index.html');
-                const htmlText = await response.text();
-                
-                // embeddedStoresの配列部分を抽出
-                const storesMatch = htmlText.match(/const embeddedStores = \[([\s\S]*?)\];/);
-                
-                if (storesMatch) {
-                    // JSON形式に変換して解析
-                    const storesArrayText = '[' + storesMatch[1] + ']';
-                    const storesData = eval(storesArrayText); // 注意: 本番では安全な方法を使用
+            const fallbackChain = [
+                './data/embeddedStores.json',
+                './embeddedStores.json', // バックアップ場所
+            ];
+            
+            for (const url of fallbackChain) {
+                try {
+                    console.log(`📡 データ読み込み試行: ${url}`);
+                    const response = await fetch(url);
                     
-                    console.log(`✅ ${storesData.length}店舗のデータを読み込みました`);
-                    return storesData;
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const storesData = await response.json();
+                    
+                    // データ検証
+                    if (!Array.isArray(storesData) || storesData.length === 0) {
+                        throw new Error('無効なデータ形式または空のデータ');
+                    }
+                    
+                    // 必須フィールドチェック
+                    const validStores = storesData.filter(store => 
+                        store.id && store.name && store.address
+                    );
+                    
+                    if (validStores.length !== storesData.length) {
+                        console.warn(`⚠️ ${storesData.length - validStores.length}件の不正なデータをスキップしました`);
+                    }
+                    
+                    console.log(`✅ ${validStores.length}店舗のデータを読み込みました (${url})`);
+                    return validStores;
+                    
+                } catch (error) {
+                    console.warn(`⚠️ ${url}からのデータ読み込み失敗:`, error.message);
                 }
-            } catch (error) {
-                console.warn('⚠️ index.htmlからのデータ読み込み失敗:', error);
             }
             
-            // フォールバック: 基本的なサンプルデータ
+            // 最終フォールバック: 最小限のサンプルデータ
+            console.error('❌ すべてのデータソースが利用できません。サンプルデータを使用します。');
+            return getMinimalSampleData();
+        }
+        
+        // 最小限のサンプルデータ
+        function getMinimalSampleData() {
             return [
                 {
                     id: 1,
-                    name: "成城石井 名古屋近鉄パッセ店",
-                    category: "販売店",
-                    address: "愛知県名古屋市中村区名駅１丁目２−２ 近鉄パッセB1F",
-                    latitude: 35.1709,
-                    longitude: 136.8815,
-                    phone: "052-5660-701",
-                    website: "https://www.seijoishii.co.jp/",
-                    description: "",
+                    name: "サンプル店舗",
+                    category: "カフェ",
+                    address: "愛知県名古屋市中区栄",
+                    latitude: 35.1681,
+                    longitude: 136.9069,
+                    phone: "",
+                    website: "",
+                    image_url: "",
+                    description: "これはサンプルデータです。実際のデータを読み込んでください。",
                     gluten_free_options: "",
-                    opening_hours: "10:00-21:00"
+                    opening_hours: ""
                 }
             ];
         }
@@ -1239,34 +1264,108 @@
             document.getElementById('storeName').select();
         }
         
-        // 店舗保存
+        // 店舗保存（エラーハンドリング強化）
         function saveStore() {
-            const id = parseInt(document.getElementById('storeId').value);
-            const storeIndex = stores.findIndex(s => s.id === id);
-            
-            if (storeIndex === -1) return;
-            
-            // フォームから値を取得
-            stores[storeIndex] = {
-                id: id,
-                name: document.getElementById('storeName').value,
-                category: document.getElementById('storeCategory').value,
-                address: document.getElementById('storeAddress').value,
-                latitude: parseFloat(document.getElementById('storeLat').value) || null,
-                longitude: parseFloat(document.getElementById('storeLng').value) || null,
-                phone: document.getElementById('storePhone').value,
-                website: document.getElementById('storeWebsite').value,
-                image_url: document.getElementById('storeImageUrl').value,
-                opening_hours: document.getElementById('storeHours').value,
-                gluten_free_options: document.getElementById('storeGfOptions').value,
-                description: document.getElementById('storeDescription').value
+            try {
+                const id = parseInt(document.getElementById('storeId').value);
+                if (!id || isNaN(id)) {
+                    throw new Error('無効な店舗IDです');
+                }
+                
+                const storeIndex = stores.findIndex(s => s.id === id);
+                if (storeIndex === -1) {
+                    throw new Error('店舗が見つかりません');
+                }
+                
+                // フォームデータの検証
+                const formData = getFormData();
+                validateStoreData(formData);
+                
+                // データを更新
+                stores[storeIndex] = formData;
+                
+                // ローカルストレージに保存
+                localStorage.setItem('editingStores', JSON.stringify(stores));
+                localStorage.setItem('lastSaved', new Date().toISOString());
+                
+                displayStores();
+                showToast(`店舗「${formData.name}」を保存しました`, false);
+                
+                console.log('✅ 店舗保存完了:', formData.name);
+                
+            } catch (error) {
+                console.error('❌ 店舗保存エラー:', error);
+                showToast(`保存に失敗しました: ${error.message}`, true);
+            }
+        }
+        
+        // フォームデータを安全に取得
+        function getFormData() {
+            const getValue = (id) => {
+                const element = document.getElementById(id);
+                return element ? element.value.trim() : '';
             };
             
-            // ローカルストレージに保存
-            localStorage.setItem('editingStores', JSON.stringify(stores));
+            const getNumberValue = (id) => {
+                const value = getValue(id);
+                return value ? parseFloat(value) : null;
+            };
             
-            displayStores();
-            showToast('保存しました');
+            return {
+                id: parseInt(getValue('storeId')),
+                name: getValue('storeName'),
+                category: getValue('storeCategory'),
+                address: getValue('storeAddress'),
+                latitude: getNumberValue('storeLat'),
+                longitude: getNumberValue('storeLng'),
+                phone: getValue('storePhone'),
+                website: getValue('storeWebsite'),
+                image_url: getValue('storeImageUrl'),
+                opening_hours: getValue('storeHours'),
+                gluten_free_options: getValue('storeGfOptions'),
+                description: getValue('storeDescription')
+            };
+        }
+        
+        // 店舗データの検証
+        function validateStoreData(data) {
+            if (!data.name) {
+                throw new Error('店舗名は必須です');
+            }
+            
+            if (!data.category) {
+                throw new Error('カテゴリーは必須です');
+            }
+            
+            if (!data.address) {
+                throw new Error('住所は必須です');
+            }
+            
+            if (data.latitude && (data.latitude < -90 || data.latitude > 90)) {
+                throw new Error('緯度は-90から90の間で入力してください');
+            }
+            
+            if (data.longitude && (data.longitude < -180 || data.longitude > 180)) {
+                throw new Error('経度は-180から180の間で入力してください');
+            }
+            
+            if (data.website && !isValidUrl(data.website)) {
+                throw new Error('ウェブサイトのURLが無効です');
+            }
+            
+            if (data.image_url && !isValidUrl(data.image_url)) {
+                throw new Error('画像URLが無効です');
+            }
+        }
+        
+        // URL検証
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
         }
         
         // 店舗削除

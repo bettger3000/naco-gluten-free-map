@@ -5090,22 +5090,23 @@
         
         // 埋め込み店舗データを返す関数（CORSエラー回避用）
         function getEmbeddedStoresData() {
-            // JSONファイルの内容を直接返す
+            // 最小限のフォールバックデータ（JSONファイル読み込み失敗時のみ使用）
+            console.warn('⚠️ フォールバック: 埋め込みデータを使用（JSONファイルが利用できません）');
             return [
                 {
-                    "id": 6,
-                    "name": "みちのり弁当（Gluten-Free Michinori Bento）",
-                    "category": "和食",
-                    "address": "名古屋市西区浄心１丁目４−６",
-                    "latitude": 35.1938,
-                    "longitude": 136.8901,
-                    "phone": "052-5086-615",
-                    "website": "https://gf-michinori.jp/",
-                    "description": "📍グルテンフリーのお弁当専門店です。\n     テイクアウトのみでご提供しております🍱\n\n     ご注文をいただいてからお作りいたしますので、\n     事前にお電話でご予約いただくと、スムーズにお渡しできます✨",
-                    "gluten_free_options": "完全GF",
-                    "opening_hours": "11時00分～19時00分"
-                },
-                // 他の店舗データはSupabaseから取得するため、最小限のデータのみ
+                    id: 1,
+                    name: "サンプル店舗（フォールバック）",
+                    category: "カフェ",
+                    address: "愛知県名古屋市中区栄",
+                    latitude: 35.1681,
+                    longitude: 136.9069,
+                    phone: "",
+                    website: "",
+                    image_url: "",
+                    description: "⚠️ これはフォールバックデータです。data/embeddedStores.jsonが読み込めない場合に表示されます。",
+                    gluten_free_options: "",
+                    opening_hours: ""
+                }
             ];
         }
         
