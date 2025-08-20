@@ -7516,10 +7516,10 @@
             });
             markers = [];
 
-            storesData.forEach(store => {
+            for (const store of storesData) {
                 if (!store.latitude || !store.longitude) {
                     console.warn(`店舗「${store.name}」の座標が無効です`);
-                    return;
+                    continue;
                 }
 
                 try {
@@ -7624,7 +7624,7 @@
                 } catch (error) {
                     console.error(`店舗「${store.name}」のマーカー作成エラー:`, error);
                 }
-            });
+            }
 
             console.log(`📍 ${markers.length}個のマーカーを地図に表示`);
         }
