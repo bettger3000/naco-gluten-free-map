@@ -2618,6 +2618,21 @@
                 </div>
             `;
                 document.body.appendChild(modal);
+                
+                // モーダルを表示
+                modal.style.display = 'block';
+                modal.style.position = 'fixed';
+                modal.style.top = '0';
+                modal.style.left = '0';
+                modal.style.width = '100%';
+                modal.style.height = '100%';
+                modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                modal.style.zIndex = '1000';
+                modal.style.display = 'flex';
+                modal.style.alignItems = 'center';
+                modal.style.justifyContent = 'center';
+                
+                console.log('CSV modal appended to body and displayed');
             } catch (error) {
                 console.error('Error in showCsvUploadModal:', error);
                 showToast('❌ CSVアップロード画面の表示に失敗しました', 'error');
