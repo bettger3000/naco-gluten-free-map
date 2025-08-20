@@ -3695,6 +3695,7 @@
             white-space: pre-wrap;
             word-wrap: break-word;
             text-align: left !important;
+            text-align: left !important;
         }
 
         /* モバイル対応 */
@@ -4523,13 +4524,13 @@
             color: var(--text-secondary);
         }
         
-        /* 最終的なレビューテキスト左寄せ強制ルール */
-        .store-detail-modal-content .review-content,
-        .store-detail-fullscreen .review-content,
-        .my-reviews-modal .review-content,
-        .review-card-body .review-content,
-        .reviews-list .review-content,
-        [id^="review-content-"] {
+        /* 最終的なレビューテキスト左寄せ強制ルール - 最高詳細度 */
+        html body .store-detail-modal-content .review-content,
+        html body .store-detail-fullscreen .review-content,
+        html body .my-reviews-modal .review-content,
+        html body .review-card-body .review-content,
+        html body .reviews-list .review-content,
+        html body [id^="review-content-"] {
             text-align: left !important;
             direction: ltr !important;
             unicode-bidi: embed !important;
@@ -4639,6 +4640,7 @@
             font-size: 0.95rem;
             white-space: pre-wrap;
             word-wrap: break-word;
+            text-align: left !important;
             text-align: left !important;
         }
 
