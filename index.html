@@ -3554,6 +3554,16 @@
             text-align: left !important;
         }
 
+        /* 最強の強制ルール - 詳細度を最大に */
+        body .store-detail-modal-content .review-content,
+        body .store-detail-fullscreen .review-content,
+        body [id^="review-content-"],
+        body div[id^="review-content-"] {
+            text-align: left !important;
+            direction: ltr !important;
+            unicode-bidi: embed !important;
+        }
+
         .review-item {
             background: var(--bg-primary);
             border-radius: var(--radius-md);
