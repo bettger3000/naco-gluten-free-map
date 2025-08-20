@@ -1070,11 +1070,14 @@
         
         // 管理画面表示
         window.showAdminPanel = async function() {
+            console.log('showAdminPanel called');
             document.getElementById('loginContainer').style.display = 'none';
             document.getElementById('adminContainer').style.display = 'block';
             
             // データ読み込み
+            console.log('About to load stores data');
             await loadStoresData();
+            console.log('Stores data loaded');
             await loadUsersData();
             
             // 地図初期化
@@ -1082,6 +1085,7 @@
             
             // GitHub機能初期化
             initializeGitHubFeatures();
+            console.log('Admin panel initialization complete');
         }
         
         // ログアウト
@@ -1111,16 +1115,21 @@
         
         // 店舗データ読み込み
         async function loadStoresData() {
+            console.log('loadStoresData called');
             // ローカルストレージから編集中データがあれば読み込み
             const savedData = localStorage.getItem('editingStores');
             if (savedData) {
                 stores = JSON.parse(savedData);
+                console.log('Loaded from localStorage:', stores.length, 'stores');
                 showToast('編集中のデータを復元しました', false);
             } else {
                 // index.htmlからデータをコピー
+                console.log('Loading initial stores...');
                 stores = await getInitialStores();
+                console.log('Loaded initial stores:', stores.length);
             }
             
+            console.log('About to call displayStoresList');
             displayStoresList();
         }
         
@@ -1191,13 +1200,21 @@
         
         // 店舗リスト表示
         function displayStoresList() {
+            console.log('displayStoresList called, stores count:', stores.length);
             const list = document.getElementById('storesList');
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            if (!list) {
+                console.error('storesList element not found!');
+                return;
+            }
+            
+            const searchInput = document.getElementById('searchInput');
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
             
             const filteredStores = stores.filter(store => 
                 store.name.toLowerCase().includes(searchTerm) ||
                 store.address.toLowerCase().includes(searchTerm)
             );
+            console.log('Filtered stores count:', filteredStores.length);
             
             list.innerHTML = filteredStores.map(store => `
                 <div class="store-item ${selectedStoreId === store.id ? 'selected' : ''}" onclick="selectStore(${store.id})">
