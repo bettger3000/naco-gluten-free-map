@@ -674,6 +674,20 @@
                         if (typeof initEditMap === 'function') initEditMap();
                         if (typeof initializeGitHubFeatures === 'function') initializeGitHubFeatures();
                         if (typeof displayStoresList === 'function') displayStoresList();
+                        
+                        // CSVボタンのイベントリスナーを設定
+                        setTimeout(() => {
+                            const csvBtn = document.getElementById('csvUploadBtn');
+                            if (csvBtn) {
+                                csvBtn.onclick = function() {
+                                    console.log('CSV button clicked via onclick');
+                                    if (typeof window.showCsvUploadModal === 'function') {
+                                        window.showCsvUploadModal();
+                                    }
+                                };
+                                console.log('CSV button onclick handler attached');
+                            }
+                        }, 100);
                     }
                 } else {
                     document.getElementById('loginError').style.display = 'block';
@@ -1085,6 +1099,30 @@
             
             // GitHub機能初期化
             initializeGitHubFeatures();
+            
+            // CSVアップロードボタンのイベントリスナーを設定
+            setTimeout(() => {
+                const csvBtn = document.getElementById('csvUploadBtn');
+                if (csvBtn) {
+                    // 既存のイベントリスナーを削除
+                    csvBtn.removeEventListener('click', csvBtn.csvClickHandler);
+                    
+                    // 新しいイベントリスナーを設定
+                    csvBtn.csvClickHandler = function() {
+                        console.log('CSV button clicked - calling showCsvUploadModal');
+                        if (typeof window.showCsvUploadModal === 'function') {
+                            window.showCsvUploadModal();
+                        } else {
+                            console.error('showCsvUploadModal function not found');
+                        }
+                    };
+                    csvBtn.addEventListener('click', csvBtn.csvClickHandler);
+                    console.log('CSV button event listener attached in showAdminPanel');
+                } else {
+                    console.error('CSV button not found in showAdminPanel');
+                }
+            }, 100);
+            
             console.log('Admin panel initialization complete');
         }
         
@@ -3146,27 +3184,7 @@ https://maps.google.com/maps/place/...,,,,,,,,,完全対応,米粉パン・米�
             // 自動保存機能の可用性をチェック
             setTimeout(checkAutoSaveAvailability, 1000); // 1秒後にチェック
             
-            // CSV一括アップロードボタンのイベントリスナー
-            const csvBtn = document.getElementById('csvUploadBtn');
-            if (csvBtn) {
-                csvBtn.addEventListener('click', function() {
-                    console.log('CSV button clicked via event listener');
-                    if (typeof showCsvUploadModal === 'function') {
-                        showCsvUploadModal();
-                    } else {
-                        console.error('showCsvUploadModal is not defined');
-                        // 直接実行を試みる
-                        try {
-                            window.showCsvUploadModal();
-                        } catch (e) {
-                            console.error('Failed to call showCsvUploadModal:', e);
-                        }
-                    }
-                });
-                console.log('CSV button event listener attached');
-            } else {
-                console.log('CSV button not found in DOM');
-            }
+            // CSV一括アップロードボタンのイベントリスナーは showAdminPanel 内で設定されます
         });
     </script>
 </body>
