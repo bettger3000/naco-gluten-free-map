@@ -4522,6 +4522,18 @@
             padding: var(--space-2xl) var(--space-xl);
             color: var(--text-secondary);
         }
+        
+        /* 最終的なレビューテキスト左寄せ強制ルール */
+        .store-detail-modal-content .review-content,
+        .store-detail-fullscreen .review-content,
+        .my-reviews-modal .review-content,
+        .review-card-body .review-content,
+        .reviews-list .review-content,
+        [id^="review-content-"] {
+            text-align: left !important;
+            direction: ltr !important;
+            unicode-bidi: embed !important;
+        }
 
         .reviews-empty i {
             font-size: 3rem;
