@@ -2832,12 +2832,14 @@ https://maps.google.com/maps/place/...,,,,,,,,,完全対応,米粉パン・米�
         
         // CSVアップロード処理
         window.processCsvUpload = async function() {
+            console.log('processCsvUpload started with csvData:', csvData);
             const skipDuplicates = document.getElementById('skipDuplicates').checked;
             const duplicates = skipDuplicates ? checkDuplicates() : [];
             const duplicateNames = duplicates.map(d => d.csvStore.店舗名);
             
             // 処理対象データ
             const dataToProcess = csvData.filter(row => !duplicateNames.includes(row.店舗名));
+            console.log('Data to process:', dataToProcess.length, 'records');
             
             if (dataToProcess.length === 0) {
                 showToast('⚠️ インポートする新規店舗がありません', 'warning');
@@ -2863,10 +2865,12 @@ https://maps.google.com/maps/place/...,,,,,,,,,完全対応,米粉パン・米�
                 
                 for (const row of batch) {
                     try {
+                        console.log('Processing row:', row);
                         let storeData = {};
                         
                         // GoogleマップURLがある場合は解析
                         if (row.GoogleマップURL && row.GoogleマップURL.trim()) {
+                            console.log('Processing Google Maps URL:', row.GoogleマップURL);
                             const googleData = await parseGoogleMapUrl(row.GoogleマップURL);
                             storeData = {
                                 name: row.店舗名 || googleData.name || '未設定',
@@ -2876,6 +2880,7 @@ https://maps.google.com/maps/place/...,,,,,,,,,完全対応,米粉パン・米�
                                 hours: row.営業時間 || '',
                                 closed: row.定休日 || '',
                                 website: row.ウェブサイト || '',
+                                instagram: row['Instagram URL'] || '',
                                 image_url: row.画像URL || '',
                                 latitude: parseFloat(row.緯度) || googleData.latitude || null,
                                 longitude: parseFloat(row.経度) || googleData.longitude || null,
@@ -2893,6 +2898,7 @@ https://maps.google.com/maps/place/...,,,,,,,,,完全対応,米粉パン・米�
                                 hours: row.営業時間 || '',
                                 closed: row.定休日 || '',
                                 website: row.ウェブサイト || '',
+                                instagram: row['Instagram URL'] || '',
                                 image_url: row.画像URL || '',
                                 latitude: parseFloat(row.緯度) || null,
                                 longitude: parseFloat(row.経度) || null
@@ -2903,6 +2909,7 @@ https://maps.google.com/maps/place/...,,,,,,,,,完全対応,米粉パン・米�
                         const newStore = {
                             id: Math.max(...stores.map(s => s.id), 0) + 1,
                             ...storeData,
+                            instagram: row['Instagram URL'] || '',
                             gluten_free_level: row.グルテンフリー対応度 || '要確認',
                             gluten_free_menu: row.対応メニュー || '',
                             notes: row.備考 || ''
