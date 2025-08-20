@@ -2405,7 +2405,7 @@
         }
 
         // CSV一括アップロード機能
-        function showCsvUploadModal() {
+        window.showCsvUploadModal = function() {
             console.log('showCsvUploadModal called');
             try {
                 const modal = document.createElement('div');
@@ -2521,7 +2521,7 @@
         }
 
         // CSVテンプレートダウンロード
-        function downloadCsvTemplate(event) {
+        window.downloadCsvTemplate = function(event) {
             event.preventDefault();
             const csvContent = `GoogleマップURL,店舗名,カテゴリー,住所,電話番号,営業時間,定休日,ウェブサイト,画像URL,グルテンフリー対応度,対応メニュー,備考,緯度,経度
 https://maps.google.com/maps/place/...,,,,,,,,,完全対応,米粉パン・米粉ケーキ,専門店,,
@@ -2542,7 +2542,7 @@ https://maps.google.com/maps/place/...,,,,,,,,,完全対応,米粉パン・米�
         let csvHeaders = [];
         
         // CSVファイル処理
-        function handleCsvFile(input) {
+        window.handleCsvFile = function(input) {
             const file = input.files[0];
             if (!file) return;
             
@@ -2624,7 +2624,7 @@ https://maps.google.com/maps/place/...,,,,,,,,,完全対応,米粉パン・米�
         }
         
         // CSVプレビュー表示
-        function showCsvPreview() {
+        window.showCsvPreview = function() {
             // 重複チェック
             const duplicates = checkDuplicates();
             
@@ -2765,7 +2765,7 @@ https://maps.google.com/maps/place/...,,,,,,,,,完全対応,米粉パン・米�
         }
         
         // CSVアップロード処理
-        async function processCsvUpload() {
+        window.processCsvUpload = async function() {
             const skipDuplicates = document.getElementById('skipDuplicates').checked;
             const duplicates = skipDuplicates ? checkDuplicates() : [];
             const duplicateNames = duplicates.map(d => d.csvStore.店舗名);
@@ -2936,7 +2936,7 @@ https://maps.google.com/maps/place/...,,,,,,,,,完全対応,米粉パン・米�
         }
         
         // CSVアップロードリセット
-        function resetCsvUpload() {
+        window.resetCsvUpload = function() {
             csvData = [];
             csvHeaders = [];
             document.getElementById('csvFileInput').value = '';
