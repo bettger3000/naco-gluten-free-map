@@ -2426,10 +2426,16 @@
                             </div>
                             
                             <div style="background: var(--bg-secondary); padding: var(--space-md); border-radius: var(--radius-md); margin-top: var(--space-lg);">
-                                <h5>📋 CSVフォーマット（必須列）</h5>
+                                <h5>📋 CSVフォーマット</h5>
                                 <code style="display: block; font-size: 0.8rem; margin: var(--space-sm) 0;">
-                                    店舗名,カテゴリー,住所,電話番号,営業時間,定休日,ウェブサイト,画像URL,グルテンフリー対応度,対応メニュー,備考,緯度,経度
+                                    GoogleマップURL,店舗名,カテゴリー,住所,電話番号,営業時間,定休日,ウェブサイト,画像URL,グルテンフリー対応度,対応メニュー,備考,緯度,経度
                                 </code>
+                                <div style="background: #e0f2fe; padding: var(--space-sm); border-radius: var(--radius-sm); margin: var(--space-md) 0;">
+                                    <strong>💡 使い方：</strong><br>
+                                    • GoogleマップURLがある場合：URLから店舗情報を自動取得<br>
+                                    • URLがない場合：各項目を手動入力<br>
+                                    • 必須：「GoogleマップURL」または「店舗名＋住所」
+                                </div>
                                 <div style="margin-top: var(--space-md);">
                                     <a href="#" onclick="downloadCsvTemplate(event)" style="color: var(--primary);">
                                         <i class="fas fa-download"></i> テンプレートをダウンロード
@@ -2511,9 +2517,10 @@
         // CSVテンプレートダウンロード
         function downloadCsvTemplate(event) {
             event.preventDefault();
-            const csvContent = `店舗名,カテゴリー,住所,電話番号,営業時間,定休日,ウェブサイト,画像URL,グルテンフリー対応度,対応メニュー,備考,緯度,経度
-グルテンフリーカフェ,カフェ,東京都渋谷区1-1-1,03-1234-5678,10:00-20:00,月曜日,https://example.com,https://example.com/image.jpg,完全対応,米粉パン・米粉ケーキ,完全グルテンフリー専門店,35.6762,139.6503
-サンプルレストラン,洋食,東京都新宿区2-2-2,03-9876-5432,11:00-22:00,なし,,,一部対応,グルテンフリーパスタ,要事前予約,,`;
+            const csvContent = `GoogleマップURL,店舗名,カテゴリー,住所,電話番号,営業時間,定休日,ウェブサイト,画像URL,グルテンフリー対応度,対応メニュー,備考,緯度,経度
+https://maps.google.com/maps/place/...,,,,,,,,,完全対応,米粉パン・米粉ケーキ,専門店,,
+,グルテンフリーカフェ,カフェ,東京都渋谷区1-1-1,03-1234-5678,10:00-20:00,月曜日,https://example.com,https://example.com/image.jpg,完全対応,米粉パン・米粉ケーキ,完全グルテンフリー専門店,35.6762,139.6503
+,サンプルレストラン,洋食,東京都新宿区2-2-2,03-9876-5432,11:00-22:00,なし,,,一部対応,グルテンフリーパスタ,要事前予約,,`;
             
             const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
@@ -2783,29 +2790,66 @@
                 
                 for (const row of batch) {
                     try {
+                        let storeData = {};
+                        
+                        // GoogleマップURLがある場合は解析
+                        if (row.GoogleマップURL && row.GoogleマップURL.trim()) {
+                            const googleData = await parseGoogleMapUrl(row.GoogleマップURL);
+                            storeData = {
+                                name: row.店舗名 || googleData.name || '未設定',
+                                category: row.カテゴリー || 'その他',
+                                address: row.住所 || googleData.address || '',
+                                phone: row.電話番号 || '',
+                                hours: row.営業時間 || '',
+                                closed: row.定休日 || '',
+                                website: row.ウェブサイト || '',
+                                image_url: row.画像URL || '',
+                                latitude: parseFloat(row.緯度) || googleData.latitude || null,
+                                longitude: parseFloat(row.経度) || googleData.longitude || null,
+                                place_id: googleData.place_id || ''
+                            };
+                            
+                            importLog.innerHTML += `<div style="color: #3b82f6;">🔍 GoogleマップURLから情報取得: ${storeData.name}</div>`;
+                        } else {
+                            // 通常のCSVデータ処理
+                            storeData = {
+                                name: row.店舗名 || '未設定',
+                                category: row.カテゴリー || 'その他',
+                                address: row.住所 || '',
+                                phone: row.電話番号 || '',
+                                hours: row.営業時間 || '',
+                                closed: row.定休日 || '',
+                                website: row.ウェブサイト || '',
+                                image_url: row.画像URL || '',
+                                latitude: parseFloat(row.緯度) || null,
+                                longitude: parseFloat(row.経度) || null
+                            };
+                        }
+                        
                         // 店舗データ作成
                         const newStore = {
                             id: Math.max(...stores.map(s => s.id), 0) + 1,
-                            name: row.店舗名 || '未設定',
-                            category: row.カテゴリー || 'その他',
-                            address: row.住所 || '',
-                            phone: row.電話番号 || '',
-                            hours: row.営業時間 || '',
-                            closed: row.定休日 || '',
-                            website: row.ウェブサイト || '',
-                            image_url: row.画像URL || '',
+                            ...storeData,
                             gluten_free_level: row.グルテンフリー対応度 || '要確認',
                             gluten_free_menu: row.対応メニュー || '',
-                            notes: row.備考 || '',
-                            latitude: parseFloat(row.緯度) || null,
-                            longitude: parseFloat(row.経度) || null
+                            notes: row.備考 || ''
                         };
                         
-                        // 座標がない場合は住所から取得を試みる（簡易版）
+                        // 座標がない場合は住所から取得を試みる
                         if (!newStore.latitude || !newStore.longitude) {
-                            // デフォルト座標（東京）
-                            newStore.latitude = 35.6762 + (Math.random() - 0.5) * 0.1;
-                            newStore.longitude = 139.6503 + (Math.random() - 0.5) * 0.1;
+                            if (newStore.address) {
+                                // 住所から座標を推定（簡易版）
+                                const coords = await geocodeAddress(newStore.address);
+                                if (coords) {
+                                    newStore.latitude = coords.lat;
+                                    newStore.longitude = coords.lng;
+                                    importLog.innerHTML += `<div style="color: #10b981;">📍 住所から座標取得: ${newStore.address}</div>`;
+                                }
+                            } else {
+                                // デフォルト座標（東京）
+                                newStore.latitude = 35.6762 + (Math.random() - 0.5) * 0.1;
+                                newStore.longitude = 139.6503 + (Math.random() - 0.5) * 0.1;
+                            }
                         }
                         
                         stores.push(newStore);
@@ -2893,6 +2937,83 @@
             document.getElementById('csvStep2').style.display = 'none';
             document.getElementById('csvStep3').style.display = 'none';
             document.getElementById('csvStep4').style.display = 'none';
+        }
+        
+        // 住所から座標を取得（簡易版）
+        async function geocodeAddress(address) {
+            if (!address) return null;
+            
+            try {
+                // 日本の主要都市の座標マッピング（簡易版）
+                const cityCoords = {
+                    '東京': { lat: 35.6762, lng: 139.6503 },
+                    '横浜': { lat: 35.4437, lng: 139.6380 },
+                    '大阪': { lat: 34.6937, lng: 135.5023 },
+                    '名古屋': { lat: 35.1815, lng: 136.9066 },
+                    '札幌': { lat: 43.0642, lng: 141.3469 },
+                    '福岡': { lat: 33.5904, lng: 130.4017 },
+                    '神戸': { lat: 34.6901, lng: 135.1955 },
+                    '京都': { lat: 35.0116, lng: 135.7681 },
+                    '仙台': { lat: 38.2682, lng: 140.8694 },
+                    '広島': { lat: 34.3853, lng: 132.4553 },
+                    '千葉': { lat: 35.6074, lng: 140.1065 },
+                    'さいたま': { lat: 35.8617, lng: 139.6455 },
+                    '川崎': { lat: 35.5308, lng: 139.7029 },
+                    '新宿': { lat: 35.6938, lng: 139.7036 },
+                    '渋谷': { lat: 35.6580, lng: 139.7016 },
+                    '品川': { lat: 35.6284, lng: 139.7387 },
+                    '池袋': { lat: 35.7295, lng: 139.7109 },
+                    '上野': { lat: 35.7141, lng: 139.7774 },
+                    '浅草': { lat: 35.7118, lng: 139.7966 },
+                    '銀座': { lat: 35.6717, lng: 139.7642 },
+                    '六本木': { lat: 35.6628, lng: 139.7315 },
+                    '原宿': { lat: 35.6702, lng: 139.7026 },
+                    '秋葉原': { lat: 35.6984, lng: 139.7731 },
+                    '吉祥寺': { lat: 35.7032, lng: 139.5798 },
+                    '町田': { lat: 35.5438, lng: 139.4386 },
+                    '立川': { lat: 35.6978, lng: 139.4140 },
+                    '八王子': { lat: 35.6586, lng: 139.3161 }
+                };
+                
+                // 住所から都市名を抽出
+                for (const [city, coords] of Object.entries(cityCoords)) {
+                    if (address.includes(city)) {
+                        // 都市の座標に少しランダムな偏差を加える
+                        return {
+                            lat: coords.lat + (Math.random() - 0.5) * 0.05,
+                            lng: coords.lng + (Math.random() - 0.5) * 0.05
+                        };
+                    }
+                }
+                
+                // 都道府県レベルでの判定
+                if (address.includes('東京都')) {
+                    return {
+                        lat: 35.6762 + (Math.random() - 0.5) * 0.2,
+                        lng: 139.6503 + (Math.random() - 0.5) * 0.2
+                    };
+                } else if (address.includes('大阪府')) {
+                    return {
+                        lat: 34.6937 + (Math.random() - 0.5) * 0.2,
+                        lng: 135.5023 + (Math.random() - 0.5) * 0.2
+                    };
+                } else if (address.includes('神奈川県')) {
+                    return {
+                        lat: 35.4437 + (Math.random() - 0.5) * 0.2,
+                        lng: 139.6380 + (Math.random() - 0.5) * 0.2
+                    };
+                }
+                
+                // デフォルトは東京
+                return {
+                    lat: 35.6762 + (Math.random() - 0.5) * 0.3,
+                    lng: 139.6503 + (Math.random() - 0.5) * 0.3
+                };
+                
+            } catch (error) {
+                console.error('Geocoding error:', error);
+                return null;
+            }
         }
 
         // ページ読み込み時の初期化
