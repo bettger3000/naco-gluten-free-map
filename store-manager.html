@@ -655,7 +655,7 @@
                 PINコードが正しくありません
             </div>
             
-            <button class="login-btn" onclick="adminLogin()">
+            <button class="login-btn" id="loginButton">
                 <i class="fas fa-sign-in-alt"></i>
                 ログイン
             </button>
@@ -1005,10 +1005,19 @@
                 await showAdminPanel();
             }
             
+            // ログインボタンのイベントリスナー
+            const loginBtn = document.getElementById('loginButton');
+            if (loginBtn) {
+                loginBtn.addEventListener('click', adminLogin);
+            }
+            
             // EnterキーでログインPIN
-            document.getElementById('adminPin').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') adminLogin();
-            });
+            const pinInput = document.getElementById('adminPin');
+            if (pinInput) {
+                pinInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') adminLogin();
+                });
+            }
         });
         
         // 管理者ログイン
