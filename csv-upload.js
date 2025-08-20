@@ -1,8 +1,11 @@
-// CSV一括アップロード機能モジュール
-// 完全に独立して動作し、既存コードと干渉しない設計
+// CSV一括アップロード機能モジュール - 無効化
+// store-manager.html内の実装を使用するため、このファイルは無効化されています
 
 (function() {
     'use strict';
+    
+    console.log('csv-upload.js is disabled - using store-manager.html implementation');
+    return; // 以下のコードを実行しない
     
     // CSV機能の名前空間
     window.CSVUploader = {

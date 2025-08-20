@@ -2762,29 +2762,50 @@ https://maps.google.com/maps/place/...,,,,,,,,,完全対応,米粉パン・米�
         function checkDuplicates() {
             const duplicates = [];
             
+            // storesが空の場合は重複なし
+            if (!stores || stores.length === 0) {
+                console.log('No existing stores, no duplicates possible');
+                return duplicates;
+            }
+            
             csvData.forEach(csvStore => {
+                // CSVデータが有効かチェック
+                if (!csvStore.店舗名 || csvStore.店舗名.trim() === '') {
+                    return; // 店舗名がない場合はスキップ
+                }
+                
+                let isDuplicate = false;
                 stores.forEach(existingStore => {
+                    // 既存データが有効かチェック
+                    if (!existingStore.name || existingStore.name.trim() === '') {
+                        return; // 既存店舗名がない場合はスキップ
+                    }
+                    
                     // 店舗名と住所の類似度をチェック
                     const nameSimilarity = calculateSimilarity(
-                        csvStore.店舗名 || '', 
-                        existingStore.name || ''
+                        csvStore.店舗名.trim(), 
+                        existingStore.name.trim()
                     );
                     const addressSimilarity = calculateSimilarity(
                         csvStore.住所 || '', 
                         existingStore.address || ''
                     );
                     
-                    // 70%以上の類似度で重複とみなす
-                    if (nameSimilarity > 70 || (nameSimilarity > 50 && addressSimilarity > 70)) {
-                        duplicates.push({
-                            csvStore: csvStore,
-                            existingStore: existingStore,
-                            similarity: Math.max(nameSimilarity, addressSimilarity)
-                        });
+                    // より厳しい条件で重複判定（90%以上の類似度、または80%以上で住所も類似）
+                    if (nameSimilarity > 90 || (nameSimilarity > 80 && addressSimilarity > 80)) {
+                        if (!isDuplicate) { // 同じCSV店舗が複数回追加されるのを防ぐ
+                            duplicates.push({
+                                csvStore: csvStore,
+                                existingStore: existingStore,
+                                similarity: Math.max(nameSimilarity, addressSimilarity)
+                            });
+                            isDuplicate = true;
+                        }
                     }
                 });
             });
             
+            console.log(`Found ${duplicates.length} potential duplicates out of ${csvData.length} CSV records`);
             return duplicates;
         }
         
@@ -2832,17 +2853,28 @@ https://maps.google.com/maps/place/...,,,,,,,,,完全対応,米粉パン・米�
         
         // CSVアップロード処理
         window.processCsvUpload = async function() {
-            console.log('processCsvUpload started with csvData:', csvData);
+            console.log('=== CSVアップロード処理開始 ===');
+            console.log('csvData:', csvData);
+            console.log('Current stores:', stores);
+            console.log('Stores count:', stores ? stores.length : 0);
+            
             const skipDuplicates = document.getElementById('skipDuplicates').checked;
+            console.log('Skip duplicates:', skipDuplicates);
+            
             const duplicates = skipDuplicates ? checkDuplicates() : [];
+            console.log('Duplicates found:', duplicates);
+            
             const duplicateNames = duplicates.map(d => d.csvStore.店舗名);
+            console.log('Duplicate names:', duplicateNames);
             
             // 処理対象データ
             const dataToProcess = csvData.filter(row => !duplicateNames.includes(row.店舗名));
-            console.log('Data to process:', dataToProcess.length, 'records');
+            console.log('Data to process:', dataToProcess.length, 'records out of', csvData.length, 'total');
+            console.log('Processing data:', dataToProcess);
             
             if (dataToProcess.length === 0) {
-                showToast('⚠️ インポートする新規店舗がありません', 'warning');
+                console.warn('No data to process after duplicate check');
+                showToast('⚠️ インポートする新規店舗がありません。重複チェックを無効にしてみてください。', 'warning');
                 return;
             }
             
@@ -2868,52 +2900,51 @@ https://maps.google.com/maps/place/...,,,,,,,,,完全対応,米粉パン・米�
                         console.log('Processing row:', row);
                         let storeData = {};
                         
-                        // GoogleマップURLがある場合は解析
+                        console.log('Processing CSV row:', row);
+                        
+                        // 基本データ処理（Googleマップ有無に関わらず共通）
+                        storeData = {
+                            name: row.店舗名 || '未設定',
+                            category: row.カテゴリー || 'その他',
+                            address: row.住所 || '',
+                            phone: row.電話番号 || '',
+                            hours: row.営業時間 || '',
+                            closed: row.定休日 || '',
+                            website: row.ウェブサイト || '',
+                            instagram: row['Instagram URL'] || '',
+                            image_url: row.画像URL || '',
+                            gluten_free_level: row.グルテンフリー対応度 || '要確認',
+                            gluten_free_menu: row.対応メニュー || '',
+                            notes: row.備考 || '',
+                            latitude: parseFloat(row.緯度) || null,
+                            longitude: parseFloat(row.経度) || null,
+                            place_id: ''
+                        };
+                        
+                        // GoogleマップURLがある場合は追加情報を取得
                         if (row.GoogleマップURL && row.GoogleマップURL.trim()) {
                             console.log('Processing Google Maps URL:', row.GoogleマップURL);
                             const googleData = await parseGoogleMapUrl(row.GoogleマップURL);
-                            storeData = {
-                                name: row.店舗名 || googleData.name || '未設定',
-                                category: row.カテゴリー || 'その他',
-                                address: row.住所 || googleData.address || '',
-                                phone: row.電話番号 || '',
-                                hours: row.営業時間 || '',
-                                closed: row.定休日 || '',
-                                website: row.ウェブサイト || '',
-                                instagram: row['Instagram URL'] || '',
-                                image_url: row.画像URL || '',
-                                latitude: parseFloat(row.緯度) || googleData.latitude || null,
-                                longitude: parseFloat(row.経度) || googleData.longitude || null,
-                                place_id: googleData.place_id || ''
-                            };
-                            
-                            importLog.innerHTML += `<div style="color: #3b82f6;">🔍 GoogleマップURLから情報取得: ${storeData.name}</div>`;
-                        } else {
-                            // 通常のCSVデータ処理
-                            storeData = {
-                                name: row.店舗名 || '未設定',
-                                category: row.カテゴリー || 'その他',
-                                address: row.住所 || '',
-                                phone: row.電話番号 || '',
-                                hours: row.営業時間 || '',
-                                closed: row.定休日 || '',
-                                website: row.ウェブサイト || '',
-                                instagram: row['Instagram URL'] || '',
-                                image_url: row.画像URL || '',
-                                latitude: parseFloat(row.緯度) || null,
-                                longitude: parseFloat(row.経度) || null
-                            };
+                            if (googleData) {
+                                // GoogleマップデータでCSVデータを補完（CSVデータを優先）
+                                storeData.name = storeData.name === '未設定' ? (googleData.name || '未設定') : storeData.name;
+                                storeData.address = storeData.address || googleData.address || '';
+                                storeData.latitude = storeData.latitude || googleData.latitude || null;
+                                storeData.longitude = storeData.longitude || googleData.longitude || null;
+                                storeData.place_id = googleData.place_id || '';
+                                
+                                importLog.innerHTML += `<div style="color: #3b82f6;">🔍 GoogleマップURLから情報取得: ${storeData.name}</div>`;
+                            }
                         }
                         
-                        // 店舗データ作成
+                        // 店舗データ作成（IDを安全に生成）
+                        const newId = stores.length > 0 ? Math.max(...stores.map(s => s.id || 0)) + 1 : 1;
                         const newStore = {
-                            id: Math.max(...stores.map(s => s.id), 0) + 1,
-                            ...storeData,
-                            instagram: row['Instagram URL'] || '',
-                            gluten_free_level: row.グルテンフリー対応度 || '要確認',
-                            gluten_free_menu: row.対応メニュー || '',
-                            notes: row.備考 || ''
+                            id: newId,
+                            ...storeData
                         };
+                        
+                        console.log('Created new store data:', newStore);
                         
                         // 座標がない場合は住所から取得を試みる
                         if (!newStore.latitude || !newStore.longitude) {
@@ -2932,7 +2963,11 @@ https://maps.google.com/maps/place/...,,,,,,,,,完全対応,米粉パン・米�
                             }
                         }
                         
+                        console.log('Adding store to stores array. Current length:', stores.length);
                         stores.push(newStore);
+                        console.log('Store added. New length:', stores.length);
+                        console.log('Added store:', newStore);
+                        
                         successCount++;
                         
                         // ログ追加
@@ -2958,6 +2993,11 @@ https://maps.google.com/maps/place/...,,,,,,,,,完全対応,米粉パン・米�
                 }
             }
             
+            console.log('=== CSVアップロード処理完了 ===');
+            console.log('Success count:', successCount);
+            console.log('Error count:', errorCount);
+            console.log('Final stores count:', stores.length);
+            
             // データ保存
             saveStoresData();
             displayStoresList();
@@ -2975,6 +3015,11 @@ https://maps.google.com/maps/place/...,,,,,,,,,完全対応,米粉パン・米�
                     </div>
                     <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: var(--space-lg);">
                         ${successCount} 件の店舗を追加しました
+                    </div>
+                    <div style="margin-bottom: var(--space-md); padding: var(--space-sm); background: var(--bg-secondary); border-radius: var(--radius-md);">
+                        <div style="font-size: 0.9rem; color: var(--text-secondary);">
+                            処理結果: ${csvData.length}件中 ${dataToProcess.length}件を処理対象として選択し、${successCount}件を正常に追加
+                        </div>
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-md); text-align: center;">
                         <div>
