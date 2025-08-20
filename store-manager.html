@@ -649,17 +649,7 @@
             <div class="input-group">
                 <label for="adminPin">管理者PINコード（6桁）</label>
                 <input type="password" id="adminPin" placeholder="••••••" maxlength="6" pattern="[0-9]*" inputmode="numeric" onkeypress="if(event.key==='Enter'){
-                    const pin = this.value;
-                    if (pin === '999999') {
-                        localStorage.setItem('adminAuth', 'true');
-                        window.location.reload();
-                    } else {
-                        document.getElementById('loginError').style.display = 'block';
-                        this.value = '';
-                        setTimeout(() => {
-                            document.getElementById('loginError').style.display = 'none';
-                        }, 3000);
-                    }
+                    document.querySelector('.login-btn').click();
                 }">
             </div>
             
@@ -667,13 +657,24 @@
                 PINコードが正しくありません
             </div>
             
-            <button class="login-btn" onclick="(function(){
+            <button class="login-btn" onclick="(async function(){
                 const pin = document.getElementById('adminPin').value;
                 if (pin === '999999') {
                     localStorage.setItem('adminAuth', 'true');
                     document.getElementById('loginContainer').style.display = 'none';
                     document.getElementById('adminContainer').style.display = 'block';
-                    window.location.reload();
+                    
+                    // 管理画面の初期化
+                    if (typeof window.showAdminPanel === 'function') {
+                        await window.showAdminPanel();
+                    } else {
+                        // フォールバック：基本的な初期化
+                        if (typeof loadStoresData === 'function') await loadStoresData();
+                        if (typeof loadUsersData === 'function') await loadUsersData();
+                        if (typeof initEditMap === 'function') initEditMap();
+                        if (typeof initializeGitHubFeatures === 'function') initializeGitHubFeatures();
+                        if (typeof displayStoresList === 'function') displayStoresList();
+                    }
                 } else {
                     document.getElementById('loginError').style.display = 'block';
                     document.getElementById('adminPin').value = '';
