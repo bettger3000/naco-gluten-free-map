@@ -974,6 +974,9 @@
     <!-- Supabase JS（ユーザー管理同期用） -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     
+    <!-- CSV Upload Module -->
+    <script src="csv-upload.js"></script>
+    
     <script>
         // Supabase設定（読み取り専用で安全）
         const SUPABASE_URL = 'https://hxrmsjfvgctoaxpbukvo.supabase.co';
@@ -2404,8 +2407,8 @@
             showToast('✅ Googleマップから店舗を追加しました。詳細情報を入力してください。', 'success');
         }
 
-        // CSV一括アップロード機能
-        window.showCsvUploadModal = function() {
+        // CSV機能は csv-upload.js モジュールに移動
+        // window.showCsvUploadModal は CSVUploader.showModal() として実装
             console.log('showCsvUploadModal called');
             try {
                 const modal = document.createElement('div');
