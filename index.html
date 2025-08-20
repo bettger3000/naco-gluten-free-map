@@ -3570,6 +3570,18 @@
             unicode-bidi: embed !important;
         }
 
+        /* 全てのレビューコンテンツを強制左揃え - 継承を完全に無視 */
+        * .review-content,
+        * [id^="review-content-"],
+        .review-card-body .review-content,
+        .my-review-card .review-content,
+        .store-name-container .review-content,
+        .store-name-link .review-content,
+        div[class*="review"] div[class*="content"] {
+            text-align: left !important;
+            direction: ltr !important;
+        }
+
         .review-item {
             background: var(--bg-primary);
             border-radius: var(--radius-md);
