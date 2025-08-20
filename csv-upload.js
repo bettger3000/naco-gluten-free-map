@@ -57,7 +57,7 @@
                                 <div style="margin-top: 2rem; padding: 1rem; background: #f0f9ff; border-radius: 8px;">
                                     <h5>📋 CSVフォーマット</h5>
                                     <code style="display: block; padding: 0.5rem; background: white; border-radius: 4px; font-size: 0.8rem;">
-GoogleマップURL,店舗名,カテゴリー,住所,電話番号,営業時間,定休日,ウェブサイト,画像URL,グルテンフリー対応度,対応メニュー,備考
+GoogleマップURL,店舗名,カテゴリー,住所,電話番号,営業時間,定休日,ウェブサイト,Instagram URL,画像URL,グルテンフリー対応度,対応メニュー,備考
                                     </code>
                                     <button class="btn btn-secondary" style="margin-top: 1rem;" onclick="CSVUploader.downloadTemplate()">
                                         <i class="fas fa-download"></i> テンプレートをダウンロード
@@ -128,9 +128,9 @@ GoogleマップURL,店舗名,カテゴリー,住所,電話番号,営業時間,�
         
         // テンプレートダウンロード
         downloadTemplate: function() {
-            const template = `GoogleマップURL,店舗名,カテゴリー,住所,電話番号,営業時間,定休日,ウェブサイト,画像URL,グルテンフリー対応度,対応メニュー,備考
+            const template = `GoogleマップURL,店舗名,カテゴリー,住所,電話番号,営業時間,定休日,ウェブサイト,Instagram URL,画像URL,グルテンフリー対応度,対応メニュー,備考
 https://maps.google.com/...,,,,,,,,,完全対応,米粉パン・米粉ケーキ,専門店
-,サンプル店舗,カフェ,東京都渋谷区1-1-1,03-1234-5678,10:00-20:00,月曜日,https://example.com,,一部対応,グルテンフリーパスタ,要予約`;
+,サンプル店舗,カフェ,東京都渋谷区1-1-1,03-1234-5678,10:00-20:00,月曜日,https://example.com,https://instagram.com/sample,,一部対応,グルテンフリーパスタ,要予約`;
             
             const blob = new Blob(['\uFEFF' + template], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
@@ -312,6 +312,7 @@ https://maps.google.com/...,,,,,,,,,完全対応,米粉パン・米粉ケーキ,
                 hours: row.営業時間 || '',
                 closed: row.定休日 || '',
                 website: row.ウェブサイト || '',
+                instagram: row['Instagram URL'] || '',
                 image_url: row.画像URL || '',
                 gluten_free_level: row.グルテンフリー対応度 || '要確認',
                 gluten_free_menu: row.対応メニュー || '',

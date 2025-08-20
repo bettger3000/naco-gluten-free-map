@@ -833,6 +833,11 @@
                     </div>
                     
                     <div class="form-group">
+                        <label class="form-label">Instagram URL</label>
+                        <input type="url" class="form-input" id="storeInstagram" placeholder="https://instagram.com/...">
+                    </div>
+                    
+                    <div class="form-group">
                         <label class="form-label">画像URL</label>
                         <input type="url" class="form-input" id="storeImageUrl" placeholder="店舗画像のURL">
                     </div>
@@ -1248,6 +1253,7 @@
                     storeLng: document.getElementById('storeLng'),
                     storePhone: document.getElementById('storePhone'),
                     storeWebsite: document.getElementById('storeWebsite'),
+                    storeInstagram: document.getElementById('storeInstagram'),
                     storeImageUrl: document.getElementById('storeImageUrl'),
                     storeHours: document.getElementById('storeHours'),
                     storeGfOptions: document.getElementById('storeGfOptions'),
@@ -1270,6 +1276,7 @@
                 if (formElements.storeLng) formElements.storeLng.value = store.longitude || '';
                 if (formElements.storePhone) formElements.storePhone.value = store.phone || '';
                 if (formElements.storeWebsite) formElements.storeWebsite.value = store.website || '';
+                if (formElements.storeInstagram) formElements.storeInstagram.value = store.instagram || '';
                 if (formElements.storeImageUrl) formElements.storeImageUrl.value = store.image_url || '';
                 if (formElements.storeHours) formElements.storeHours.value = store.opening_hours || '';
                 if (formElements.storeGfOptions) formElements.storeGfOptions.value = store.gluten_free_options || '';
@@ -1414,6 +1421,7 @@
                 longitude: getNumberValue('storeLng'),
                 phone: getValue('storePhone'),
                 website: getValue('storeWebsite'),
+                instagram: getValue('storeInstagram'),
                 image_url: getValue('storeImageUrl'),
                 opening_hours: getValue('storeHours'),
                 gluten_free_options: getValue('storeGfOptions'),
@@ -1595,6 +1603,7 @@
                 }
                 if (store.website) {
                     code += `                    "website": "${escapeString(store.website)}",\n`;
+                    code += `                    "instagram": "${escapeString(store.instagram)}",\n`;
                 }
                 if (store.description) {
                     code += `                    "description": "${escapeString(store.description)}",\n`;
