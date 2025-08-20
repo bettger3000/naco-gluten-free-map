@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>グルテンフリーマップ | ビヨフリ倶楽部</title>
+    <title>グルテンフリーマップ | ビヨフリ倶楽部 - v2</title>
     
     <!-- アイコン設定 -->
     <link rel="icon" type="image/png" href="nacoキャラクター.png">
@@ -4847,62 +4847,13 @@
             }
         }
         
-        /* 🔥 DEFINITIVE SOLUTION - Maximum specificity left alignment for review text */
-        html body div[class*="review"] div[class*="content"],
-        html body div[id*="review-content"],
-        html body .review-content,
-        html body div.review-content,
-        html body [id^="review-content-"],
-        html body [class*="review-content"],
-        html body * .review-content,
-        html body * [id^="review-content-"],
-        html body * [class*="review-content"],
-        html body .store-detail-modal-content .review-content,
-        html body .store-detail-fullscreen .review-content,
-        html body .my-reviews-modal .review-content,
-        html body .review-card-body .review-content,
-        html body .reviews-list .review-content,
-        html body .review-item .review-content,
-        html body .my-review-card .review-content {
+        /* 🔥 超最終的なレビューテキスト左寄せ強制 - ブラウザキャッシュ対応 */
+        * [class*="review-content"],
+        * [id*="review-content"],
+        .review-content,
+        div.review-content,
+        [id^="review-content-"] {
             text-align: left !important;
-            direction: ltr !important;
-            unicode-bidi: embed !important;
-            display: block !important;
-            width: 100% !important;
-            text-indent: 0 !important;
-            padding-left: 0 !important;
-            margin-left: 0 !important;
-            text-align-last: left !important;
-            background-color: #ffffcc !important; /* デバッグ用黄色背景 */
-            border: 2px solid red !important; /* デバッグ用赤枠 */
-        }
-        
-        /* Prevent any parent containers from center-aligning review text */
-        html body .reviews-empty {
-            text-align: center;
-            padding: var(--space-2xl) var(--space-xl);
-            color: var(--text-secondary);
-        }
-        
-        html body .reviews-empty * .review-content,
-        html body .reviews-empty * [id^="review-content-"],
-        html body .reviews-empty * [class*="review-content"] {
-            text-align: left !important;
-        }
-        
-        /* Override any potential CSS framework classes */
-        html body .text-center .review-content,
-        html body .text-center [id^="review-content-"],
-        html body .text-center [class*="review-content"],
-        html body .justify-content-center .review-content,
-        html body .justify-content-center [id^="review-content-"],
-        html body .justify-content-center [class*="review-content"],
-        html body .d-flex.justify-content-center .review-content,
-        html body .d-flex.justify-content-center [id^="review-content-"],
-        html body .d-flex.justify-content-center [class*="review-content"] {
-            text-align: left !important;
-            justify-self: flex-start !important;
-            align-self: flex-start !important;
         }
     </style>
 </head>
@@ -11517,8 +11468,6 @@
                 const bodyElement = document.getElementById('my-reviews-body');
                 if (bodyElement) {
                     bodyElement.innerHTML = reviewsHTML;
-                    // Force left alignment after content is loaded
-                    setTimeout(() => forceReviewTextAlign(), 0);
                 }
             }).catch(error => {
                 console.error('マイレビューHTML生成エラー:', error);
@@ -11687,8 +11636,6 @@
             const contentElement = document.getElementById(`my-review-content-${reviewId}`);
             if (contentElement) {
                 contentElement.innerHTML = escapeHtml(originalContent);
-                // Force left alignment after content restore
-                setTimeout(() => forceReviewTextAlign(), 0);
             }
         }
 
@@ -12427,8 +12374,6 @@
                 
                 if (reviewsContainer) {
                     reviewsContainer.outerHTML = createReviewsHTML(reviews, storeId);
-                    // Force left alignment after store reviews are loaded
-                    setTimeout(() => forceReviewTextAlign(), 0);
                 }
             } catch (error) {
                 console.error('レビュー更新エラー:', error);
@@ -12482,8 +12427,6 @@
             const contentElement = document.getElementById(`review-content-${reviewId}`);
             if (contentElement) {
                 contentElement.innerHTML = escapeHtml(originalContent);
-                // Force left alignment after content restore  
-                setTimeout(() => forceReviewTextAlign(), 0);
             }
         }
 
@@ -12973,102 +12916,32 @@
     </div>
 
     <script>
-        // 🔥 DEFINITIVE SOLUTION - Force review text left alignment with maximum power
+        // 🔥 レビューテキストの左寄せを強制実行 - ブラウザキャッシュ完全対応
         function forceReviewTextAlign() {
-            // Get all possible review content elements with multiple selectors
-            const selectors = [
-                '[class*="review-content"]', 
-                '[id*="review-content"]',
-                '.review-content',
-                'div.review-content',
-                '[id^="review-content-"]',
-                '.review-card-body .review-content',
-                '.my-reviews-modal .review-content',
-                '.store-detail-modal-content .review-content',
-                '.store-detail-fullscreen .review-content'
-            ];
-            
-            let totalFound = 0;
-            selectors.forEach((selector, sIndex) => {
-                const elements = document.querySelectorAll(selector);
-                console.log(`🔍 Selector ${sIndex} "${selector}": found ${elements.length} elements`);
-                totalFound += elements.length;
-                
-                elements.forEach((el, eIndex) => {
-                    const beforeAlign = getComputedStyle(el).textAlign;
-                    console.log(`📝 Element ${sIndex}-${eIndex} (${el.id || el.className}): textAlign before = "${beforeAlign}"`);
-                    
-                    // Apply styles with maximum specificity
-                    el.style.setProperty('text-align', 'left', 'important');
-                    el.style.setProperty('direction', 'ltr', 'important');
-                    el.style.setProperty('unicode-bidi', 'embed', 'important');
-                    el.style.setProperty('display', 'block', 'important');
-                    el.style.setProperty('width', '100%', 'important');
-                    el.style.setProperty('text-indent', '0', 'important');
-                    el.style.setProperty('text-align-last', 'left', 'important');
-                    el.style.setProperty('background-color', 'lightblue', 'important'); // JSデバッグ用
-                    
-                    const afterAlign = getComputedStyle(el).textAlign;
-                    console.log(`✅ Element ${sIndex}-${eIndex}: textAlign after = "${afterAlign}"`);
-                    
-                    if (beforeAlign !== afterAlign) {
-                        console.log(`🎉 SUCCESS: Changed from "${beforeAlign}" to "${afterAlign}"`);
-                    } else {
-                        console.warn(`⚠️ FAILED: Still "${afterAlign}" - CSS may be overridden`);
-                    }
-                    
-                    // Remove any center alignment from parent containers
-                    let parent = el.parentElement;
-                    while (parent && parent !== document.body) {
-                        if (parent.classList.contains('reviews-empty')) {
-                            el.style.setProperty('text-align', 'left', 'important');
-                            break;
-                        }
-                        parent = parent.parentElement;
-                    }
-                });
+            const reviewElements = document.querySelectorAll('[class*="review-content"], [id*="review-content"]');
+            reviewElements.forEach(el => {
+                el.style.textAlign = 'left';
+                el.style.direction = 'ltr';
+                el.style.unicodeBidi = 'embed';
             });
-            
-            console.log(`🔍 Total review elements found: ${totalFound}`);
-            if (totalFound === 0) {
-                console.warn('⚠️ NO REVIEW ELEMENTS FOUND - Check selectors or HTML structure');
-            }
         }
 
         // DOM読み込み後とMutationObserver両方で実行
         document.addEventListener('DOMContentLoaded', forceReviewTextAlign);
         
-        // MutationObserver for dynamic content changes
-        const reviewObserver = new MutationObserver((mutations) => {
-            let shouldAlign = false;
+        // DOM変更監視でレビューが動的に追加された場合も対応
+        const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
-                if (mutation.type === 'childList') {
-                    mutation.addedNodes.forEach((node) => {
-                        if (node.nodeType === Node.ELEMENT_NODE) {
-                            if (node.matches && (
-                                node.matches('[class*="review-content"]') ||
-                                node.matches('[id*="review-content"]') ||
-                                node.querySelector('[class*="review-content"]') ||
-                                node.querySelector('[id*="review-content"]')
-                            )) {
-                                shouldAlign = true;
-                            }
-                        }
-                    });
+                if (mutation.addedNodes.length > 0) {
+                    setTimeout(forceReviewTextAlign, 10);
                 }
             });
-            
-            if (shouldAlign) {
-                setTimeout(() => forceReviewTextAlign(), 0);
-            }
         });
         
-        // Start observing
-        reviewObserver.observe(document.body, {
+        observer.observe(document.body, {
             childList: true,
             subtree: true
         });
-        
         
         // 定期実行でも保険をかける
         setInterval(forceReviewTextAlign, 1000);
