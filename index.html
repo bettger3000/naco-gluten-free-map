@@ -3549,6 +3549,8 @@
             align-items: flex-start !important;
             justify-content: flex-start !important;
         }
+        
+        /* ✨ FLEXBOX FIX - レビューアイテムの配置修正（統合済み） */
 
         /* レビューコンテンツのID指定による強制左揃え */
         [id^="review-content-"] {
@@ -3593,7 +3595,11 @@
             transition: all 0.2s ease;
             text-align: left !important;
             align-self: flex-start !important;
-            width: 100%;
+            justify-self: flex-start !important;
+            width: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
         }
 
         .review-item:hover {
@@ -4573,6 +4579,10 @@
             border: 1px solid var(--border-light);
             transition: all 0.2s ease;
             overflow: hidden;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            text-align: left !important;
         }
 
         .my-review-card:hover {
