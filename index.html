@@ -12030,13 +12030,18 @@
                 const currentUserEmail = getCurrentUser();
                 const isOwner = currentUserEmail && review.user_email === currentUserEmail;
                 
-                return `
-                    <div class="review-item">
-                        <div class="review-header">
-                            <div class="review-user">
-                                <span class="review-avatar">${getAvatarEmoji(review.user_avatar)}</span>
-                                <span class="review-nickname">${escapeHtml(review.user_nickname)}</span>
-                            </div>
+                try {
+                    const avatarEmoji = getAvatarEmoji(review.user_avatar || 'default');
+                    const nickname = escapeHtml(review.user_nickname || '匿名ユーザー');
+                    console.log('🔍 Debug - Avatar emoji:', avatarEmoji, 'Nickname:', nickname);
+                    
+                    return `
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="review-user">
+                                    <span class="review-avatar">${avatarEmoji}</span>
+                                    <span class="review-nickname">${nickname}</span>
+                                </div>
                             <div class="review-header-right">
                                 <div class="review-date">
                                     ${createdDate}${isUpdated ? ' (編集済み)' : ''}
@@ -12053,11 +12058,15 @@
                                 ` : ''}
                             </div>
                         </div>
-                        <div class="review-content" id="review-content-${review.id}">
-                            ${escapeHtml(review.content)}
+                            <div class="review-content" id="review-content-${review.id}">
+                                ${escapeHtml(review.content)}
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                } catch (error) {
+                    console.error('🔍 Debug - Review HTML generation error:', error);
+                    return `<div class="review-item">Error processing review</div>`;
+                }
             }).join('');
 
             return `
