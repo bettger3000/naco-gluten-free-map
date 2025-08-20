@@ -7438,7 +7438,7 @@
             
             // マップが準備完了していればマーカーを表示
             if (map) {
-                displayStores(stores);
+                await displayStores(stores);
             }
             
             // デバイス別UI更新
@@ -7485,9 +7485,9 @@
 
 
                 // マップ準備完了時に店舗マーカーを表示
-                map.whenReady(() => {
+                map.whenReady(async () => {
                     console.log('🗺️ 地図準備完了 - マーカー表示');
-                    displayStores(stores);
+                    await displayStores(stores);
                     
                     // カスタムピン機能を初期化
                     initCustomPinFeature();
@@ -7500,7 +7500,7 @@
         }
 
         // マップに店舗表示
-        function displayStores(storesData) {
+        async function displayStores(storesData) {
             if (!map) {
                 console.log('⏳ 地図準備中のため、マーカー表示を待機');
                 return;
@@ -7562,7 +7562,7 @@
                         })
                     }).addTo(map);
 
-                    const popupContent = createPopupContent(store);
+                    const popupContent = await createPopupContent(store);
                     
                     // PC版とスマホ版で異なるポップアップ設定
                     const popupOptions = {
@@ -7845,7 +7845,7 @@
         }
 
         // ポップアップコンテンツ作成
-        function createPopupContent(store) {
+        async function createPopupContent(store) {
             const storeName = escapeHtml(store.name || '');
             const storeAddress = escapeHtml(store.address || '');
             const storeCategory = escapeHtml(store.category || '');
@@ -7854,6 +7854,11 @@
             const storePhone = store.phone ? escapeHtml(store.phone) : '';
             const storeWebsite = store.website ? escapeHtml(store.website) : '';
             const storeDescription = store.description ? escapeHtml(store.description) : '';
+            
+            // レビューを取得
+            const reviews = await getStoreReviews(store.id);
+            const reviewCount = reviews.length;
+            const reviewText = reviewCount > 0 ? `レビュー${reviewCount}件` : 'レビューなし';
             
             // 訪問ステータスをチェック
             const visitStatus = userVisitHistory.get(`${store.id}`);
@@ -7887,7 +7892,7 @@
                                 ` : ''}
                                 <div class="popup-row">
                                     <span class="popup-icon">⭐</span>
-                                    <span class="popup-text">レビューなし</span>
+                                    <span class="popup-text">${reviewText}</span>
                                 </div>
                             </div>
                             <div class="popup-actions">
@@ -7934,7 +7939,7 @@
                                 ` : ''}
                                 <div class="popup-row">
                                     <span class="popup-icon">⭐</span>
-                                    <span class="popup-text">レビューなし</span>
+                                    <span class="popup-text">${reviewText}</span>
                                 </div>
                             </div>
                             <div class="popup-actions">
@@ -7985,7 +7990,7 @@
         }
 
         // フィルタリング
-        function filterStores() {
+        async function filterStores() {
             if (!stores.length) return;
 
             // 検索テキストを取得（PC用またはモバイル用）
@@ -8035,7 +8040,7 @@
                 return matchesCategory && matchesSearch && matchesTab;
             });
 
-            displayStores(filteredStores);
+            await displayStores(filteredStores);
             
             // PC用サイドバーを更新（PC版専用処理）
             if (isDesktop()) {
@@ -8276,13 +8281,13 @@
             // PC用検索
             const sidebarSearchInput = document.getElementById('sidebarSearchInput');
             if (sidebarSearchInput) {
-                sidebarSearchInput.addEventListener('input', filterStores);
+                sidebarSearchInput.addEventListener('input', async () => await filterStores());
             }
             
             // モバイル用検索
             const mobileSearchInput = document.getElementById('mobileSearchInput');
             if (mobileSearchInput) {
-                mobileSearchInput.addEventListener('input', () => {
+                mobileSearchInput.addEventListener('input', async () => {
                     if (!isDesktop()) {
                         // モバイル版では直接パネル更新（重複防止）
                         const activeTab = document.querySelector('.panel-tab.active');
@@ -8290,32 +8295,32 @@
                             updatePanelContent(activeTab.dataset.tab);
                         }
                     } else {
-                        filterStores();
+                        await filterStores();
                     }
                 });
             }
 
             // PC用サイドバータブ
             document.querySelectorAll('.sidebar-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
+                tab.addEventListener('click', async () => {
                     document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
                     tab.classList.add('active');
-                    filterStores(); // 既存のフィルター関数を再利用
+                    await filterStores(); // 既存のフィルター関数を再利用
                 });
             });
 
             // PC用フィルターチップ
             document.querySelectorAll('.sidebar-chip').forEach(chip => {
-                chip.addEventListener('click', () => {
+                chip.addEventListener('click', async () => {
                     document.querySelectorAll('.sidebar-chip').forEach(c => c.classList.remove('active'));
                     chip.classList.add('active');
-                    filterStores();
+                    await filterStores();
                 });
             });
             
             // モバイル用フィルターチップ
             document.querySelectorAll('.mobile-chip').forEach(chip => {
-                chip.addEventListener('click', () => {
+                chip.addEventListener('click', async () => {
                     document.querySelectorAll('.mobile-chip').forEach(c => c.classList.remove('active'));
                     chip.classList.add('active');
                     
@@ -8326,7 +8331,7 @@
                             updatePanelContent(activeTab.dataset.tab);
                         }
                     } else {
-                        filterStores();
+                        await filterStores();
                     }
                 });
             });
@@ -9276,7 +9281,7 @@
             
             // タブ切り替え
             document.querySelectorAll('.panel-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
+                tab.addEventListener('click', async () => {
                     document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
                     tab.classList.add('active');
                     updatePanelContent(tab.dataset.tab);
