@@ -1012,7 +1012,7 @@
         });
         
         // 管理者ログイン
-        async function adminLogin() {
+        window.adminLogin = async function() {
             const pin = document.getElementById('adminPin').value;
             
             if (pin === ADMIN_PIN) {
@@ -1028,7 +1028,7 @@
         }
         
         // 管理画面表示
-        async function showAdminPanel() {
+        window.showAdminPanel = async function() {
             document.getElementById('loginContainer').style.display = 'none';
             document.getElementById('adminContainer').style.display = 'block';
             
@@ -1044,13 +1044,13 @@
         }
         
         // ログアウト
-        function logout() {
+        window.logout = function() {
             localStorage.removeItem('adminAuth');
             location.reload();
         }
 
         // タブ切り替え機能
-        function switchTab(tabName) {
+        window.switchTab = function(tabName) {
             // すべてのタブボタンからactiveクラスを削除
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
