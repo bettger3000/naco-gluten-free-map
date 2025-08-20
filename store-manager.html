@@ -1151,6 +1151,17 @@
             document.getElementById(`${tabName}Tab`).classList.add('active');
         }
         
+        // 店舗データ保存
+        function saveStoresData() {
+            try {
+                localStorage.setItem('editingStores', JSON.stringify(stores));
+                localStorage.setItem('lastSaved', new Date().toISOString());
+                console.log('Stores data saved to localStorage');
+            } catch (error) {
+                console.error('Failed to save stores data:', error);
+            }
+        }
+
         // 店舗データ読み込み
         async function loadStoresData() {
             console.log('loadStoresData called');
