@@ -8369,7 +8369,7 @@
                 tab.addEventListener('click', () => {
                     document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
                     tab.classList.add('active');
-                    await filterStores(); // 既存のフィルター関数を再利用
+                    filterStores(); // 既存のフィルター関数を再利用
                 });
             });
 
@@ -8378,7 +8378,7 @@
                 chip.addEventListener('click', () => {
                     document.querySelectorAll('.sidebar-chip').forEach(c => c.classList.remove('active'));
                     chip.classList.add('active');
-                    await filterStores();
+                    filterStores();
                 });
             });
             
