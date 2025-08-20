@@ -732,9 +732,13 @@
                 </div>
                 
                 <div style="padding: var(--space-md); border-top: 1px solid var(--border-light);">
-                    <button class="btn btn-primary" style="width: 100%;" onclick="addNewStore()">
+                    <button class="btn btn-primary" style="width: 100%; margin-bottom: var(--space-sm);" onclick="addNewStore()">
                         <i class="fas fa-plus"></i>
                         新規店舗を追加
+                    </button>
+                    <button class="btn btn-secondary" style="width: 100%;" onclick="showGoogleMapModal()">
+                        <i class="fab fa-google"></i>
+                        Googleマップから追加
                     </button>
                 </div>
                     </div>
@@ -2222,6 +2226,178 @@
                     item.style.display = 'none';
                 }
             });
+        }
+
+        // Googleマップモーダル表示
+        function showGoogleMapModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 500px;">
+                    <div class="modal-header">
+                        <h3><i class="fab fa-google"></i> Googleマップから店舗情報取得</h3>
+                        <button class="modal-close" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="form-label">GoogleマップURL</label>
+                            <input type="url" class="form-input" id="googleMapUrl" 
+                                   placeholder="https://maps.google.com/..." 
+                                   style="margin-bottom: var(--space-sm);">
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                                💡 Googleマップで店舗を検索し、URLをコピーして貼り付けてください
+                            </div>
+                        </div>
+                        
+                        <div style="margin: var(--space-lg) 0;">
+                            <button class="btn btn-primary" onclick="fetchGoogleMapData()" style="width: 100%;">
+                                <i class="fas fa-download"></i>
+                                店舗情報を取得
+                            </button>
+                        </div>
+                        
+                        <div id="googleMapResult" style="display: none;">
+                            <h4 style="margin-bottom: var(--space-md);">取得した店舗情報</h4>
+                            <div id="googleMapPreview" class="form-preview"></div>
+                            <div style="margin-top: var(--space-lg);">
+                                <button class="btn btn-success" onclick="useGoogleMapData()" style="width: 100%;">
+                                    <i class="fas fa-check"></i>
+                                    この情報で店舗を追加
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Googleマップデータ取得
+        let googleMapStoreData = null;
+        
+        async function fetchGoogleMapData() {
+            const url = document.getElementById('googleMapUrl').value.trim();
+            if (!url) {
+                showToast('❌ GoogleマップURLを入力してください', 'error');
+                return;
+            }
+
+            if (!url.includes('maps.google') && !url.includes('goo.gl/maps')) {
+                showToast('❌ 有効なGoogleマップURLを入力してください', 'error');
+                return;
+            }
+
+            try {
+                showToast('🔍 店舗情報を取得中...', 'info');
+                
+                // GoogleマップURLから店舗情報を解析
+                const storeInfo = await parseGoogleMapUrl(url);
+                
+                if (storeInfo) {
+                    googleMapStoreData = storeInfo;
+                    displayGoogleMapPreview(storeInfo);
+                    document.getElementById('googleMapResult').style.display = 'block';
+                    showToast('✅ 店舗情報を取得しました', 'success');
+                } else {
+                    showToast('❌ 店舗情報の取得に失敗しました', 'error');
+                }
+            } catch (error) {
+                console.error('Google Map data fetch error:', error);
+                showToast('❌ エラー: ' + error.message, 'error');
+            }
+        }
+
+        // GoogleマップURL解析
+        async function parseGoogleMapUrl(url) {
+            try {
+                // URLから座標とplace_idを抽出
+                let lat, lng, placeName, placeId;
+                
+                // 座標の抽出（@緯度,経度の形式）
+                const coordMatch = url.match(/@([+-]?\d+\.\d+),([+-]?\d+\.\d+)/);
+                if (coordMatch) {
+                    lat = parseFloat(coordMatch[1]);
+                    lng = parseFloat(coordMatch[2]);
+                }
+                
+                // place_idの抽出
+                const placeIdMatch = url.match(/place_id:([A-Za-z0-9_-]+)/);
+                if (placeIdMatch) {
+                    placeId = placeIdMatch[1];
+                }
+                
+                // URLから店舗名を推測（簡易版）
+                const nameMatch = url.match(/place\/([^\/]+)/);
+                if (nameMatch) {
+                    placeName = decodeURIComponent(nameMatch[1]).replace(/\+/g, ' ');
+                }
+
+                // 基本的な店舗情報を作成
+                const storeData = {
+                    name: placeName || '取得した店舗',
+                    latitude: lat || 35.6762,
+                    longitude: lng || 139.6503,
+                    address: '住所を確認してください',
+                    phone: '',
+                    hours: '',
+                    website: '',
+                    image_url: '',
+                    category: 'その他',
+                    gluten_free_level: '要確認',
+                    gluten_free_menu: '',
+                    notes: '',
+                    place_id: placeId || ''
+                };
+
+                return storeData;
+            } catch (error) {
+                console.error('URL parsing error:', error);
+                throw new Error('URLの解析に失敗しました');
+            }
+        }
+
+        // Googleマップ取得結果プレビュー
+        function displayGoogleMapPreview(storeInfo) {
+            const preview = document.getElementById('googleMapPreview');
+            preview.innerHTML = `
+                <div style="background: var(--bg-secondary); padding: var(--space-md); border-radius: var(--radius-md);">
+                    <div style="margin-bottom: var(--space-sm);"><strong>店舗名:</strong> ${storeInfo.name}</div>
+                    <div style="margin-bottom: var(--space-sm);"><strong>緯度:</strong> ${storeInfo.latitude}</div>
+                    <div style="margin-bottom: var(--space-sm);"><strong>経度:</strong> ${storeInfo.longitude}</div>
+                    <div style="margin-bottom: var(--space-sm);"><strong>住所:</strong> ${storeInfo.address}</div>
+                    <div style="color: var(--text-secondary); font-size: 0.9rem; margin-top: var(--space-md);">
+                        ⚠️ 取得後に詳細情報（営業時間、電話番号、グルテンフリー対応等）を手動で追加してください
+                    </div>
+                </div>
+            `;
+        }
+
+        // Googleマップデータを使用して店舗追加
+        function useGoogleMapData() {
+            if (!googleMapStoreData) {
+                showToast('❌ 店舗データがありません', 'error');
+                return;
+            }
+
+            // 新規店舗として追加
+            const newId = Math.max(...stores.map(s => s.id), 0) + 1;
+            const newStore = {
+                id: newId,
+                ...googleMapStoreData
+            };
+
+            stores.push(newStore);
+            saveStoresData();
+            displayStoresList();
+            updateStoreCount();
+
+            // 編集モードで開く
+            editStore(newId);
+
+            // モーダルを閉じる
+            document.querySelector('.modal').remove();
+
+            showToast('✅ Googleマップから店舗を追加しました。詳細情報を入力してください。', 'success');
         }
 
         // ページ読み込み時の初期化
