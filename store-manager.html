@@ -740,7 +740,7 @@
                         <i class="fab fa-google"></i>
                         Googleマップから追加
                     </button>
-                    <button class="btn btn-success" style="width: 100%;" onclick="console.log('CSV button clicked'); showCsvUploadModal()">
+                    <button class="btn btn-success" id="csvUploadBtn" style="width: 100%;">
                         <i class="fas fa-file-csv"></i>
                         CSV一括アップロード
                     </button>
@@ -3027,6 +3027,28 @@ https://maps.google.com/maps/place/...,,,,,,,,,完全対応,米粉パン・米�
         document.addEventListener('DOMContentLoaded', function() {
             // 自動保存機能の可用性をチェック
             setTimeout(checkAutoSaveAvailability, 1000); // 1秒後にチェック
+            
+            // CSV一括アップロードボタンのイベントリスナー
+            const csvBtn = document.getElementById('csvUploadBtn');
+            if (csvBtn) {
+                csvBtn.addEventListener('click', function() {
+                    console.log('CSV button clicked via event listener');
+                    if (typeof showCsvUploadModal === 'function') {
+                        showCsvUploadModal();
+                    } else {
+                        console.error('showCsvUploadModal is not defined');
+                        // 直接実行を試みる
+                        try {
+                            window.showCsvUploadModal();
+                        } catch (e) {
+                            console.error('Failed to call showCsvUploadModal:', e);
+                        }
+                    }
+                });
+                console.log('CSV button event listener attached');
+            } else {
+                console.log('CSV button not found in DOM');
+            }
         });
     </script>
 </body>
