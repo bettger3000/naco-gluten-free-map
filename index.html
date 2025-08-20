@@ -12022,6 +12022,7 @@
             }
 
             const reviewsHTML = reviews.map(review => {
+                console.log('🔍 Debug - Processing review:', review);
                 const createdDate = new Date(review.created_at).toLocaleDateString('ja-JP');
                 const isUpdated = review.updated_at !== review.created_at;
                 
