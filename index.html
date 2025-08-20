@@ -8281,7 +8281,9 @@
             // PC用検索
             const sidebarSearchInput = document.getElementById('sidebarSearchInput');
             if (sidebarSearchInput) {
-                sidebarSearchInput.addEventListener('input', async () => await filterStores());
+                sidebarSearchInput.addEventListener('input', async () => {
+                    await filterStores();
+                });
             }
             
             // モバイル用検索
