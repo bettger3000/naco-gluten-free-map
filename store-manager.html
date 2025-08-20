@@ -736,9 +736,13 @@
                         <i class="fas fa-plus"></i>
                         新規店舗を追加
                     </button>
-                    <button class="btn btn-secondary" style="width: 100%;" onclick="showGoogleMapModal()">
+                    <button class="btn btn-secondary" style="width: 100%; margin-bottom: var(--space-sm);" onclick="showGoogleMapModal()">
                         <i class="fab fa-google"></i>
                         Googleマップから追加
+                    </button>
+                    <button class="btn btn-success" style="width: 100%;" onclick="showCsvUploadModal()">
+                        <i class="fas fa-file-csv"></i>
+                        CSV一括アップロード
                     </button>
                 </div>
                     </div>
@@ -2398,6 +2402,497 @@
             document.querySelector('.modal').remove();
 
             showToast('✅ Googleマップから店舗を追加しました。詳細情報を入力してください。', 'success');
+        }
+
+        // CSV一括アップロード機能
+        function showCsvUploadModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 800px;">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-file-csv"></i> CSV一括アップロード</h3>
+                        <button class="modal-close" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- ステップ1: ファイル選択 -->
+                        <div id="csvStep1">
+                            <h4>ステップ1: CSVファイルを選択</h4>
+                            <div class="form-group">
+                                <input type="file" id="csvFileInput" accept=".csv" style="display: none;" onchange="handleCsvFile(this)">
+                                <button class="btn btn-primary" onclick="document.getElementById('csvFileInput').click()" style="width: 100%;">
+                                    <i class="fas fa-upload"></i> CSVファイルを選択
+                                </button>
+                            </div>
+                            
+                            <div style="background: var(--bg-secondary); padding: var(--space-md); border-radius: var(--radius-md); margin-top: var(--space-lg);">
+                                <h5>📋 CSVフォーマット（必須列）</h5>
+                                <code style="display: block; font-size: 0.8rem; margin: var(--space-sm) 0;">
+                                    店舗名,カテゴリー,住所,電話番号,営業時間,定休日,ウェブサイト,画像URL,グルテンフリー対応度,対応メニュー,備考,緯度,経度
+                                </code>
+                                <div style="margin-top: var(--space-md);">
+                                    <a href="#" onclick="downloadCsvTemplate(event)" style="color: var(--primary);">
+                                        <i class="fas fa-download"></i> テンプレートをダウンロード
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- ステップ2: プレビューと重複チェック -->
+                        <div id="csvStep2" style="display: none;">
+                            <h4>ステップ2: データ確認と重複チェック</h4>
+                            
+                            <div id="csvStats" style="background: var(--bg-secondary); padding: var(--space-md); border-radius: var(--radius-md); margin-bottom: var(--space-lg);">
+                                <!-- 統計情報 -->
+                            </div>
+                            
+                            <div id="csvDuplicates" style="display: none; background: #fef2f2; padding: var(--space-md); border-radius: var(--radius-md); margin-bottom: var(--space-lg);">
+                                <h5 style="color: var(--warning);">⚠️ 重複の可能性がある店舗</h5>
+                                <div id="duplicatesList"></div>
+                                <div style="margin-top: var(--space-md);">
+                                    <label>
+                                        <input type="checkbox" id="skipDuplicates" checked>
+                                        重複する店舗をスキップする
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div id="csvPreview" style="overflow-x: auto; max-height: 300px; overflow-y: auto;">
+                                <!-- プレビューテーブル -->
+                            </div>
+                            
+                            <div style="margin-top: var(--space-lg); display: flex; gap: var(--space-md);">
+                                <button class="btn btn-secondary" onclick="resetCsvUpload()" style="flex: 1;">
+                                    <i class="fas fa-redo"></i> やり直す
+                                </button>
+                                <button class="btn btn-success" onclick="processCsvUpload()" style="flex: 1;">
+                                    <i class="fas fa-check"></i> インポート開始
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- ステップ3: 処理中 -->
+                        <div id="csvStep3" style="display: none;">
+                            <h4>ステップ3: インポート処理中</h4>
+                            <div class="progress-container" style="margin: var(--space-lg) 0;">
+                                <div class="progress-bar" style="background: var(--border-light); height: 30px; border-radius: var(--radius-md); overflow: hidden;">
+                                    <div id="csvProgressBar" style="background: var(--success); height: 100%; width: 0%; transition: width 0.3s; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                                        0%
+                                    </div>
+                                </div>
+                                <div id="csvProgressText" style="text-align: center; margin-top: var(--space-sm); color: var(--text-secondary);">
+                                    準備中...
+                                </div>
+                            </div>
+                            
+                            <div id="csvImportLog" style="background: #f9fafb; padding: var(--space-md); border-radius: var(--radius-md); max-height: 200px; overflow-y: auto; font-size: 0.9rem;">
+                                <!-- インポートログ -->
+                            </div>
+                        </div>
+                        
+                        <!-- ステップ4: 完了 -->
+                        <div id="csvStep4" style="display: none;">
+                            <h4>✅ インポート完了</h4>
+                            <div id="csvResult" style="background: var(--bg-secondary); padding: var(--space-lg); border-radius: var(--radius-md);">
+                                <!-- 結果サマリー -->
+                            </div>
+                            <div style="margin-top: var(--space-lg);">
+                                <button class="btn btn-primary" onclick="this.closest('.modal').remove()" style="width: 100%;">
+                                    <i class="fas fa-times"></i> 閉じる
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // CSVテンプレートダウンロード
+        function downloadCsvTemplate(event) {
+            event.preventDefault();
+            const csvContent = `店舗名,カテゴリー,住所,電話番号,営業時間,定休日,ウェブサイト,画像URL,グルテンフリー対応度,対応メニュー,備考,緯度,経度
+グルテンフリーカフェ,カフェ,東京都渋谷区1-1-1,03-1234-5678,10:00-20:00,月曜日,https://example.com,https://example.com/image.jpg,完全対応,米粉パン・米粉ケーキ,完全グルテンフリー専門店,35.6762,139.6503
+サンプルレストラン,洋食,東京都新宿区2-2-2,03-9876-5432,11:00-22:00,なし,,,一部対応,グルテンフリーパスタ,要事前予約,,`;
+            
+            const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'gluten_free_stores_template.csv';
+            link.click();
+            
+            showToast('📥 テンプレートをダウンロードしました', 'success');
+        }
+
+        // CSV処理用変数
+        let csvData = [];
+        let csvHeaders = [];
+        
+        // CSVファイル処理
+        function handleCsvFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    // エンコーディング自動検出とパース
+                    const text = e.target.result;
+                    const lines = text.split(/\r?\n/).filter(line => line.trim());
+                    
+                    if (lines.length < 2) {
+                        showToast('❌ CSVファイルにデータがありません', 'error');
+                        return;
+                    }
+                    
+                    // ヘッダー解析
+                    csvHeaders = parseCsvLine(lines[0]);
+                    
+                    // 必須列チェック
+                    const requiredColumns = ['店舗名', '住所'];
+                    const missingColumns = requiredColumns.filter(col => !csvHeaders.includes(col));
+                    if (missingColumns.length > 0) {
+                        showToast(`❌ 必須列が不足: ${missingColumns.join(', ')}`, 'error');
+                        return;
+                    }
+                    
+                    // データ解析
+                    csvData = [];
+                    for (let i = 1; i < lines.length; i++) {
+                        const values = parseCsvLine(lines[i]);
+                        if (values.length === csvHeaders.length) {
+                            const row = {};
+                            csvHeaders.forEach((header, index) => {
+                                row[header] = values[index] || '';
+                            });
+                            csvData.push(row);
+                        }
+                    }
+                    
+                    if (csvData.length === 0) {
+                        showToast('❌ 有効なデータが見つかりません', 'error');
+                        return;
+                    }
+                    
+                    // プレビュー表示
+                    showCsvPreview();
+                    
+                } catch (error) {
+                    console.error('CSV parse error:', error);
+                    showToast('❌ CSVファイルの解析に失敗しました', 'error');
+                }
+            };
+            
+            reader.readAsText(file, 'UTF-8');
+        }
+        
+        // CSV行パース（カンマ区切り、引用符対応）
+        function parseCsvLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            
+            result.push(current.trim());
+            return result;
+        }
+        
+        // CSVプレビュー表示
+        function showCsvPreview() {
+            // 重複チェック
+            const duplicates = checkDuplicates();
+            
+            // 統計情報
+            const stats = document.getElementById('csvStats');
+            stats.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--space-md);">
+                    <div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary);">${csvData.length}</div>
+                        <div style="color: var(--text-secondary);">総店舗数</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--success);">${csvData.length - duplicates.length}</div>
+                        <div style="color: var(--text-secondary);">新規店舗</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--warning);">${duplicates.length}</div>
+                        <div style="color: var(--text-secondary);">重複の可能性</div>
+                    </div>
+                </div>
+            `;
+            
+            // 重複表示
+            if (duplicates.length > 0) {
+                document.getElementById('csvDuplicates').style.display = 'block';
+                const duplicatesList = document.getElementById('duplicatesList');
+                duplicatesList.innerHTML = duplicates.map(dup => `
+                    <div style="padding: var(--space-xs) 0; border-bottom: 1px solid #fecaca;">
+                        <strong>${dup.csvStore.店舗名}</strong> 
+                        <span style="color: var(--text-secondary);">（${dup.csvStore.住所}）</span>
+                        <br>
+                        <span style="font-size: 0.9rem; color: var(--error);">
+                            既存: ${dup.existingStore.name} - ${dup.similarity}%一致
+                        </span>
+                    </div>
+                `).join('');
+            } else {
+                document.getElementById('csvDuplicates').style.display = 'none';
+            }
+            
+            // プレビューテーブル
+            const preview = document.getElementById('csvPreview');
+            const previewData = csvData.slice(0, 10); // 最初の10件表示
+            
+            preview.innerHTML = `
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="background: var(--bg-secondary); position: sticky; top: 0;">
+                            ${csvHeaders.map(h => `<th style="padding: var(--space-sm); text-align: left; border: 1px solid var(--border-light);">${h}</th>`).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${previewData.map(row => `
+                            <tr>
+                                ${csvHeaders.map(h => `<td style="padding: var(--space-sm); border: 1px solid var(--border-light);">${row[h] || '-'}</td>`).join('')}
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                ${csvData.length > 10 ? `<div style="text-align: center; padding: var(--space-md); color: var(--text-secondary);">... 他 ${csvData.length - 10} 件</div>` : ''}
+            `;
+            
+            // ステップ2表示
+            document.getElementById('csvStep1').style.display = 'none';
+            document.getElementById('csvStep2').style.display = 'block';
+        }
+        
+        // 重複チェック（類似度計算付き）
+        function checkDuplicates() {
+            const duplicates = [];
+            
+            csvData.forEach(csvStore => {
+                stores.forEach(existingStore => {
+                    // 店舗名と住所の類似度をチェック
+                    const nameSimilarity = calculateSimilarity(
+                        csvStore.店舗名 || '', 
+                        existingStore.name || ''
+                    );
+                    const addressSimilarity = calculateSimilarity(
+                        csvStore.住所 || '', 
+                        existingStore.address || ''
+                    );
+                    
+                    // 70%以上の類似度で重複とみなす
+                    if (nameSimilarity > 70 || (nameSimilarity > 50 && addressSimilarity > 70)) {
+                        duplicates.push({
+                            csvStore: csvStore,
+                            existingStore: existingStore,
+                            similarity: Math.max(nameSimilarity, addressSimilarity)
+                        });
+                    }
+                });
+            });
+            
+            return duplicates;
+        }
+        
+        // 文字列類似度計算（レーベンシュタイン距離）
+        function calculateSimilarity(str1, str2) {
+            if (!str1 || !str2) return 0;
+            
+            const longer = str1.length > str2.length ? str1 : str2;
+            const shorter = str1.length > str2.length ? str2 : str1;
+            
+            if (longer.length === 0) return 100;
+            
+            const distance = levenshteinDistance(longer, shorter);
+            return Math.round(((longer.length - distance) / longer.length) * 100);
+        }
+        
+        // レーベンシュタイン距離
+        function levenshteinDistance(str1, str2) {
+            const matrix = [];
+            
+            for (let i = 0; i <= str2.length; i++) {
+                matrix[i] = [i];
+            }
+            
+            for (let j = 0; j <= str1.length; j++) {
+                matrix[0][j] = j;
+            }
+            
+            for (let i = 1; i <= str2.length; i++) {
+                for (let j = 1; j <= str1.length; j++) {
+                    if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(
+                            matrix[i - 1][j - 1] + 1,
+                            matrix[i][j - 1] + 1,
+                            matrix[i - 1][j] + 1
+                        );
+                    }
+                }
+            }
+            
+            return matrix[str2.length][str1.length];
+        }
+        
+        // CSVアップロード処理
+        async function processCsvUpload() {
+            const skipDuplicates = document.getElementById('skipDuplicates').checked;
+            const duplicates = skipDuplicates ? checkDuplicates() : [];
+            const duplicateNames = duplicates.map(d => d.csvStore.店舗名);
+            
+            // 処理対象データ
+            const dataToProcess = csvData.filter(row => !duplicateNames.includes(row.店舗名));
+            
+            if (dataToProcess.length === 0) {
+                showToast('⚠️ インポートする新規店舗がありません', 'warning');
+                return;
+            }
+            
+            // ステップ3表示
+            document.getElementById('csvStep2').style.display = 'none';
+            document.getElementById('csvStep3').style.display = 'block';
+            
+            const progressBar = document.getElementById('csvProgressBar');
+            const progressText = document.getElementById('csvProgressText');
+            const importLog = document.getElementById('csvImportLog');
+            
+            let successCount = 0;
+            let errorCount = 0;
+            const errors = [];
+            
+            // バッチ処理（50件ずつ）
+            const batchSize = 50;
+            for (let i = 0; i < dataToProcess.length; i += batchSize) {
+                const batch = dataToProcess.slice(i, Math.min(i + batchSize, dataToProcess.length));
+                
+                for (const row of batch) {
+                    try {
+                        // 店舗データ作成
+                        const newStore = {
+                            id: Math.max(...stores.map(s => s.id), 0) + 1,
+                            name: row.店舗名 || '未設定',
+                            category: row.カテゴリー || 'その他',
+                            address: row.住所 || '',
+                            phone: row.電話番号 || '',
+                            hours: row.営業時間 || '',
+                            closed: row.定休日 || '',
+                            website: row.ウェブサイト || '',
+                            image_url: row.画像URL || '',
+                            gluten_free_level: row.グルテンフリー対応度 || '要確認',
+                            gluten_free_menu: row.対応メニュー || '',
+                            notes: row.備考 || '',
+                            latitude: parseFloat(row.緯度) || null,
+                            longitude: parseFloat(row.経度) || null
+                        };
+                        
+                        // 座標がない場合は住所から取得を試みる（簡易版）
+                        if (!newStore.latitude || !newStore.longitude) {
+                            // デフォルト座標（東京）
+                            newStore.latitude = 35.6762 + (Math.random() - 0.5) * 0.1;
+                            newStore.longitude = 139.6503 + (Math.random() - 0.5) * 0.1;
+                        }
+                        
+                        stores.push(newStore);
+                        successCount++;
+                        
+                        // ログ追加
+                        importLog.innerHTML += `<div style="color: var(--success);">✅ ${newStore.name} を追加しました</div>`;
+                        
+                    } catch (error) {
+                        errorCount++;
+                        errors.push(`${row.店舗名}: ${error.message}`);
+                        importLog.innerHTML += `<div style="color: var(--error);">❌ ${row.店舗名} の追加に失敗: ${error.message}</div>`;
+                    }
+                    
+                    // プログレス更新
+                    const progress = Math.round(((i + batch.indexOf(row) + 1) / dataToProcess.length) * 100);
+                    progressBar.style.width = progress + '%';
+                    progressBar.textContent = progress + '%';
+                    progressText.textContent = `${i + batch.indexOf(row) + 1} / ${dataToProcess.length} 件処理中...`;
+                    
+                    // スクロール
+                    importLog.scrollTop = importLog.scrollHeight;
+                    
+                    // UIを更新
+                    await new Promise(resolve => setTimeout(resolve, 10));
+                }
+            }
+            
+            // データ保存
+            saveStoresData();
+            displayStoresList();
+            updateStoreCount();
+            
+            // 結果表示
+            document.getElementById('csvStep3').style.display = 'none';
+            document.getElementById('csvStep4').style.display = 'block';
+            
+            const result = document.getElementById('csvResult');
+            result.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: var(--space-md);">
+                        ${successCount > 0 ? '🎉' : '😔'}
+                    </div>
+                    <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: var(--space-lg);">
+                        ${successCount} 件の店舗を追加しました
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-md); text-align: center;">
+                        <div>
+                            <div style="font-size: 1.2rem; font-weight: bold; color: var(--success);">${successCount}</div>
+                            <div style="color: var(--text-secondary);">成功</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 1.2rem; font-weight: bold; color: var(--warning);">${duplicates.length}</div>
+                            <div style="color: var(--text-secondary);">スキップ</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 1.2rem; font-weight: bold; color: var(--error);">${errorCount}</div>
+                            <div style="color: var(--text-secondary);">エラー</div>
+                        </div>
+                    </div>
+                    ${errors.length > 0 ? `
+                        <div style="margin-top: var(--space-lg); text-align: left;">
+                            <h5>エラー詳細:</h5>
+                            <div style="background: #fef2f2; padding: var(--space-sm); border-radius: var(--radius-sm); font-size: 0.9rem; max-height: 100px; overflow-y: auto;">
+                                ${errors.map(e => `<div>• ${e}</div>`).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            // GitHub自動デプロイ
+            if (successCount > 0 && githubSettings.token) {
+                showToast('🚀 GitHub自動デプロイを開始します...', 'info');
+                setTimeout(() => deployToGitHub(), 2000);
+            }
+        }
+        
+        // CSVアップロードリセット
+        function resetCsvUpload() {
+            csvData = [];
+            csvHeaders = [];
+            document.getElementById('csvFileInput').value = '';
+            document.getElementById('csvStep1').style.display = 'block';
+            document.getElementById('csvStep2').style.display = 'none';
+            document.getElementById('csvStep3').style.display = 'none';
+            document.getElementById('csvStep4').style.display = 'none';
         }
 
         // ページ読み込み時の初期化
