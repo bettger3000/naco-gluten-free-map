@@ -2471,6 +2471,7 @@
 
         // CSV機能は csv-upload.js モジュールに移動
         // window.showCsvUploadModal は CSVUploader.showModal() として実装
+        window.showCsvUploadModal = function() {
             console.log('showCsvUploadModal called');
             try {
                 const modal = document.createElement('div');
