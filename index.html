@@ -10442,6 +10442,8 @@
             
             // レビューデータを取得
             const reviews = await getStoreReviews(storeId);
+            console.log('🔍 Debug - 取得したレビュー:', reviews);
+            console.log('🔍 Debug - レビュー数:', reviews.length);
             
             // 詳細画面のHTML作成
             const detailHTML = createStoreDetailHTML(store, reviews);
@@ -11983,6 +11985,7 @@
 
         // レビューHTMLを生成（投稿フォーム付き）
         function createReviewsHTML(reviews, storeId) {
+            console.log('🔍 Debug - createReviewsHTML called with:', reviews, 'for store:', storeId);
             // 登録済みユーザーのみアクセス可能なので、常に投稿フォームを表示
             const reviewFormHTML = `
                 <div class="review-form-container" id="reviewFormContainer">
