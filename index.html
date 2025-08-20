@@ -12985,6 +12985,16 @@
     <script>
         // 🔥 DEFINITIVE SOLUTION - Force review text left alignment with maximum power
         function forceReviewTextAlign() {
+            // 🔍 EMERGENCY DEBUG - Check what's actually in the DOM
+            console.log('🔍 DOM INSPECTION:');
+            console.log('- Total divs:', document.querySelectorAll('div').length);
+            console.log('- Elements with "review" in class:', document.querySelectorAll('[class*="review"]').length);
+            console.log('- Elements with "review" in id:', document.querySelectorAll('[id*="review"]').length);
+            console.log('- .store-detail-info elements:', document.querySelectorAll('.store-detail-info').length);
+            console.log('- .reviews-list elements:', document.querySelectorAll('.reviews-list').length);
+            console.log('- .review-item elements:', document.querySelectorAll('.review-item').length);
+            console.log('- .no-reviews elements:', document.querySelectorAll('.no-reviews').length);
+            
             // Get all possible review content elements with multiple selectors
             const selectors = [
                 '[class*="review-content"]', 
