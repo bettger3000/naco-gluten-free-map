@@ -740,7 +740,7 @@
                         <i class="fab fa-google"></i>
                         Googleマップから追加
                     </button>
-                    <button class="btn btn-success" style="width: 100%;" onclick="showCsvUploadModal()">
+                    <button class="btn btn-success" style="width: 100%;" onclick="console.log('CSV button clicked'); showCsvUploadModal()">
                         <i class="fas fa-file-csv"></i>
                         CSV一括アップロード
                     </button>
@@ -2406,9 +2406,11 @@
 
         // CSV一括アップロード機能
         function showCsvUploadModal() {
-            const modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.innerHTML = `
+            console.log('showCsvUploadModal called');
+            try {
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.innerHTML = `
                 <div class="modal-content" style="max-width: 800px;">
                     <div class="modal-header">
                         <h3><i class="fas fa-file-csv"></i> CSV一括アップロード</h3>
@@ -2511,7 +2513,11 @@
                     </div>
                 </div>
             `;
-            document.body.appendChild(modal);
+                document.body.appendChild(modal);
+            } catch (error) {
+                console.error('Error in showCsvUploadModal:', error);
+                showToast('❌ CSVアップロード画面の表示に失敗しました', 'error');
+            }
         }
 
         // CSVテンプレートダウンロード
@@ -2555,11 +2561,12 @@ https://maps.google.com/maps/place/...,,,,,,,,,完全対応,米粉パン・米�
                     // ヘッダー解析
                     csvHeaders = parseCsvLine(lines[0]);
                     
-                    // 必須列チェック
-                    const requiredColumns = ['店舗名', '住所'];
-                    const missingColumns = requiredColumns.filter(col => !csvHeaders.includes(col));
-                    if (missingColumns.length > 0) {
-                        showToast(`❌ 必須列が不足: ${missingColumns.join(', ')}`, 'error');
+                    // 必須列チェック（GoogleマップURLか、店舗名+住所のいずれか）
+                    const hasGoogleMapUrl = csvHeaders.includes('GoogleマップURL');
+                    const hasStoreInfo = csvHeaders.includes('店舗名') && csvHeaders.includes('住所');
+                    
+                    if (!hasGoogleMapUrl && !hasStoreInfo) {
+                        showToast('❌ 必須列が不足: 「GoogleマップURL」または「店舗名＋住所」が必要です', 'error');
                         return;
                     }
                     
