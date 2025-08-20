@@ -3541,6 +3541,19 @@
             text-align: left !important;
         }
 
+        /* レビューコンテンツのID指定による強制左揃え */
+        [id^="review-content-"] {
+            text-align: left !important;
+            padding: var(--space-md);
+        }
+
+        /* 全てのレビュー関連要素を左揃えに強制 */
+        .review-item *,
+        .reviews-list *,
+        [class*="review-"] {
+            text-align: left !important;
+        }
+
         .review-item {
             background: var(--bg-primary);
             border-radius: var(--radius-md);
