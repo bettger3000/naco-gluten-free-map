@@ -11994,7 +11994,7 @@
             const avatarUrl = await getUserAvatarUrl(review.user_email);
             
             return `
-                <div class="my-review-card" style="
+                <div id="review-${review.id}" class="my-review-card" style="
                     background: linear-gradient(135deg, #ffffff 0%, #fdfbfb 100%);
                     border-radius: 16px;
                     padding: 20px;
