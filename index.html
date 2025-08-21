@@ -12983,21 +12983,45 @@
     <script>
         // 保存後の強制左寄せ関数
         function forceReviewLeftAlign() {
+            console.log('🔧 forceReviewLeftAlign 実行開始');
+            
             // レビューコンテンツ要素に直接スタイルを適用
             const reviewElements = document.querySelectorAll('.review-content, [id^="review-content-"]');
-            reviewElements.forEach(el => {
-                el.style.textAlign = 'left';
-                el.style.width = '100%';
-                el.style.display = 'block';
+            console.log('🔍 見つかったreview要素数:', reviewElements.length);
+            
+            reviewElements.forEach((el, i) => {
+                const beforeAlign = getComputedStyle(el).textAlign;
+                console.log(`📝 要素${i} (${el.id || el.className}): 修正前 textAlign = "${beforeAlign}"`);
+                
+                // より強力なsetPropertyを使用
+                el.style.setProperty('text-align', 'left', 'important');
+                el.style.setProperty('width', '100%', 'important');
+                el.style.setProperty('display', 'block', 'important');
+                el.style.setProperty('margin', '0', 'important');
+                
+                const afterAlign = getComputedStyle(el).textAlign;
+                console.log(`✅ 要素${i}: 修正後 textAlign = "${afterAlign}"`);
+                
+                if (beforeAlign !== afterAlign) {
+                    console.log(`🎉 SUCCESS: "${beforeAlign}" → "${afterAlign}"`);
+                } else {
+                    console.warn(`⚠️ FAILED: まだ "${afterAlign}" のまま`);
+                }
             });
             
             // レビューアイテム自体も左寄せ
             const reviewItems = document.querySelectorAll('.review-item');
-            reviewItems.forEach(el => {
-                el.style.textAlign = 'left';
-                el.style.width = '100%';
-                el.style.display = 'block';
+            console.log('🔍 見つかったreview-item数:', reviewItems.length);
+            
+            reviewItems.forEach((el, i) => {
+                console.log(`📋 review-item${i}: ${el.className}`);
+                el.style.setProperty('text-align', 'left', 'important');
+                el.style.setProperty('width', '100%', 'important');
+                el.style.setProperty('display', 'block', 'important');
+                el.style.setProperty('margin', '0 auto 0 0', 'important'); // 左寄せ強制
             });
+            
+            console.log('✨ forceReviewLeftAlign 実行完了');
         }
     </script>
 
