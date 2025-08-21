@@ -11466,7 +11466,7 @@
             const avatarUrl = getUserAvatarUrl(review.user_email);
             
             return `
-                <div id="review-${review.id}" style="background: #f9f9f9; border-radius: 8px; padding: 15px; margin: 10px 0; text-align: left !important;">
+                <div id="review-${review.id}" style="background: #f9f9f9; border-radius: 8px; padding: 15px; margin: 10px 0; text-align: left !important; display: block !important; width: 100% !important; box-sizing: border-box !important; align-items: flex-start !important; justify-content: flex-start !important; align-self: flex-start !important; justify-self: flex-start !important;">
                     <!-- ユーザー情報ヘッダー -->
                     <div style="display: flex; align-items: center; margin-bottom: 12px; text-align: left !important;">
                         <img src="${avatarUrl}" alt="${nickname}" 
@@ -11489,8 +11489,8 @@
                     </div>
                     
                     <!-- レビュー内容 -->
-                    <div class="review-content-display" style="text-align: left !important; line-height: 1.5; color: #333; white-space: pre-wrap;">
-                        ${review.content}
+                    <div class="review-content-display" style="text-align: left !important; line-height: 1.5; color: #333; white-space: pre-wrap; display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-sizing: border-box !important; align-items: flex-start !important; justify-content: flex-start !important;">
+                        <div style="text-align: left !important; display: block !important; width: 100% !important;">${review.content}</div>
                     </div>
                     
                     <!-- 編集フォーム（初期は非表示） -->
@@ -11622,6 +11622,8 @@
                     if (form) form.style.display = 'none';
                     // 店舗レビューを更新
                     refreshStoreReviews(storeId);
+                    // 強制左寄せ適用（少し遅延して実行）
+                    setTimeout(() => forceAllReviewsLeftAlign(), 100);
                 } else {
                     alert('投稿に失敗しました');
                 }
@@ -11663,6 +11665,31 @@
                 const textarea = form.querySelector('textarea');
                 if (textarea) textarea.value = '';
             }
+        }
+        
+        // 🔥 強制的に全レビューを左寄せにする関数
+        function forceAllReviewsLeftAlign() {
+            console.log('🔧 強制レビュー左寄せ実行開始');
+            
+            // 全レビューコンテナを取得
+            const reviewElements = document.querySelectorAll(
+                '[id^="review-"], .review-content-display, .review-content-display *, [class*="review-content"]'
+            );
+            
+            reviewElements.forEach((element, index) => {
+                console.log(`🔧 要素${index}:`, element.tagName, element.className || element.id);
+                
+                // 最強スタイル適用
+                element.style.setProperty('text-align', 'left', 'important');
+                element.style.setProperty('display', 'block', 'important');
+                element.style.setProperty('width', '100%', 'important');
+                element.style.setProperty('align-items', 'flex-start', 'important');
+                element.style.setProperty('justify-content', 'flex-start', 'important');
+                element.style.setProperty('align-self', 'flex-start', 'important');
+                element.style.setProperty('justify-self', 'flex-start', 'important');
+            });
+            
+            console.log('✅ 強制レビュー左寄せ完了:', reviewElements.length, '個の要素を処理');
         }
         
         // ========== ユーザー情報関連関数 ==========
