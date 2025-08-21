@@ -11490,8 +11490,8 @@
                     return;
                 }
                 
-                // シンプルなモーダル表示
-                const reviewPromises = reviews.map(review => createSimpleReviewHTML(review));
+                // マイレビュー専用表示
+                const reviewPromises = reviews.map(review => createMyReviewHTML(review));
                 const reviewsHTMLArray = await Promise.all(reviewPromises);
                 const reviewsHTML = reviewsHTMLArray.join('');
                 const modalHTML = `
@@ -11553,13 +11553,23 @@
             }
             
             try {
+                // 店舗情報を取得
+                const store = stores.find(s => s.id == storeId);
+                const storeInfo = store ? {
+                    store_name: store.name,
+                    store_category: store.category,
+                    store_latitude: store.latitude,
+                    store_longitude: store.longitude
+                } : {};
+                
                 const response = await fetch(`${AVATAR_WORKER_URL}/reviews`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         store_id: storeId,
                         user_email: currentUserEmail,
-                        content: content
+                        content: content,
+                        ...storeInfo
                     })
                 });
                 
@@ -11637,6 +11647,58 @@
                 element.style.setProperty('align-self', 'flex-start', 'important');
                 element.style.setProperty('justify-self', 'flex-start', 'important');
             });
+        }
+        
+        // カテゴリから絵文字アイコンを取得
+        function getCategoryIcon(category) {
+            const icons = {
+                '和食': '🍜',
+                '洋食': '🍽️',
+                'イタリアン': '🍝',
+                'フレンチ': '🥂',
+                'カフェ': '☕',
+                'パン屋': '🥐',
+                'スイーツ': '🧁',
+                '居酒屋': '🍻',
+                '中華': '🥟',
+                'ファストフード': '🍔',
+                'ベーカリー': '🍞',
+                '定食': '🍱'
+            };
+            return icons[category] || '🍽️';
+        }
+        
+        // マイレビュー専用HTML生成（店舗情報中心）
+        async function createMyReviewHTML(review) {
+            const createdDate = new Date(review.created_at).toLocaleDateString('ja-JP');
+            const updatedDate = review.updated_at !== review.created_at 
+                ? new Date(review.updated_at).toLocaleDateString('ja-JP') 
+                : null;
+            
+            const storeIcon = getCategoryIcon(review.store_category);
+            const storeName = review.store_name || '店舗名不明';
+            
+            return `
+                <div class="my-review-card" style="background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid #f0f0f0;">
+                    <!-- 店舗ヘッダー -->
+                    <div class="store-header" style="display: flex; align-items: center; margin-bottom: 12px; cursor: pointer; padding: 4px 0;" onclick="jumpToStoreFromReview('${review.store_id}', '${review.id}')">
+                        <span class="store-icon" style="font-size: 20px; margin-right: 8px;">${storeIcon}</span>
+                        <h4 class="store-name" style="flex: 1; margin: 0; font-size: 16px; font-weight: 600; color: #ff6b9d; transition: color 0.2s ease;">${storeName}</h4>
+                        <button class="map-btn" onclick="event.stopPropagation(); openMapToStore('${review.store_id}')" style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; padding: 4px 8px; font-size: 14px; cursor: pointer; color: #666;">📍 MAP</button>
+                    </div>
+                    
+                    <!-- レビュー内容 -->
+                    <div class="review-content" style="text-align: left !important; line-height: 1.6; color: #333; margin-bottom: 12px; padding: 8px 0;">
+                        ${review.content}
+                    </div>
+                    
+                    <!-- メタ情報 -->
+                    <div class="review-meta" style="display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: #666;">
+                        <span>投稿: ${createdDate}${updatedDate ? ` • 編集: ${updatedDate}` : ''}</span>
+                        <button onclick="editMyReview('${review.id}')" style="background: #007bff; color: white; border: none; border-radius: 4px; padding: 4px 12px; font-size: 12px; cursor: pointer;">編集</button>
+                    </div>
+                </div>
+            `;
         }
         
         // ========== ユーザー情報関連関数 ==========
@@ -11808,6 +11870,74 @@
                 alert('削除中にエラーが発生しました');
             }
         }
+        
+        // ========== マイレビューからの店舗ナビゲーション ==========
+        
+        // マイレビューから店舗詳細ジャンプ（モーダルを閉じて）
+        async function jumpToStoreFromReview(storeId, reviewId) {
+            // マイレビューモーダルを閉じる
+            closeMyReviews();
+            
+            // 少し待ってから店舗詳細を表示（アニメーション考慮）
+            setTimeout(async () => {
+                await showStoreDetail(storeId);
+            }, 200);
+        }
+        
+        // 地図のみに移動（モーダルは開いたまま）
+        function openMapToStore(storeId) {
+            const store = stores.find(s => s.id == storeId);
+            if (!store) return;
+            
+            // マップの中心を店舗位置に移動
+            if (typeof map !== 'undefined' && map) {
+                map.setView([store.latitude, store.longitude], 16);
+                
+                // 該当店舗のマーカーをハイライト（点滅効果）
+                setTimeout(() => {
+                    const marker = storeMarkers.find(m => m.storeId == storeId);
+                    if (marker) {
+                        // マーカーを3回点滅
+                        let blinks = 0;
+                        const blinkInterval = setInterval(() => {
+                            if (marker._icon) {
+                                marker._icon.style.filter = blinks % 2 === 0 ? 'brightness(1.5) saturate(1.5)' : '';
+                            }
+                            blinks++;
+                            if (blinks >= 6) {
+                                clearInterval(blinkInterval);
+                                if (marker._icon) {
+                                    marker._icon.style.filter = '';
+                                }
+                            }
+                        }, 300);
+                    }
+                }, 100);
+            }
+        }
+        
+        // マイレビュー編集（既存の編集機能を再利用）
+        function editMyReview(reviewId) {
+            // 既存の編集機能を使用
+            editReview(reviewId);
+        }
+        
+        // ホバーエフェクト用のCSS追加
+        const myReviewStyles = document.createElement('style');
+        myReviewStyles.textContent = `
+            .my-review-card .store-header:hover .store-name {
+                color: #e91e63 !important;
+            }
+            .my-review-card .store-header:hover {
+                background: rgba(255, 107, 157, 0.05);
+                border-radius: 6px;
+            }
+            .my-review-card .map-btn:hover {
+                background: #e9ecef !important;
+                transform: translateY(-1px);
+            }
+        `;
+        document.head.appendChild(myReviewStyles);
     </script>
 
 </body>

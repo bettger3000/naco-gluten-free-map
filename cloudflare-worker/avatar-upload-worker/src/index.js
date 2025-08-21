@@ -231,6 +231,12 @@ async function saveReview(request, env, corsHeaders) {
     review.updated_at = review.created_at;
     review.is_deleted = false;
     
+    // 店舗情報も保存（マイレビュー表示用）
+    if (review.store_name) review.store_name = review.store_name;
+    if (review.store_category) review.store_category = review.store_category;
+    if (review.store_latitude) review.store_latitude = review.store_latitude;
+    if (review.store_longitude) review.store_longitude = review.store_longitude;
+    
     // 店舗別レビューファイルを更新
     const storeKey = `reviews/store_${review.store_id}.json`;
     const storeObject = await env.R2_BUCKET.get(storeKey);
