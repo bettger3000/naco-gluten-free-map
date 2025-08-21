@@ -23,6 +23,14 @@ export default {
         return await generatePresignedUrl(request, env, corsHeaders);
       } else if (url.pathname.startsWith('/avatar/') && request.method === 'GET') {
         return await getAvatar(request, env, corsHeaders);
+      } else if (url.pathname === '/reviews' && request.method === 'GET') {
+        return await getReviews(request, env, corsHeaders);
+      } else if (url.pathname === '/reviews' && request.method === 'POST') {
+        return await saveReview(request, env, corsHeaders);
+      } else if (url.pathname === '/reviews' && request.method === 'PUT') {
+        return await updateReview(request, env, corsHeaders);
+      } else if (url.pathname === '/reviews' && request.method === 'DELETE') {
+        return await deleteReview(request, env, corsHeaders);
       } else if (url.pathname === '/health') {
         return new Response(JSON.stringify({ status: 'healthy' }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -162,5 +170,271 @@ async function getAvatar(request, env, corsHeaders) {
       status: 500,
       headers: corsHeaders
     });
+  }
+}
+
+// ============ レビューシステム関数 ============
+
+// レビュー取得
+async function getReviews(request, env, corsHeaders) {
+  try {
+    const url = new URL(request.url);
+    const storeId = url.searchParams.get('store_id');
+    const userEmail = url.searchParams.get('user_email');
+    
+    let key = 'reviews/';
+    if (storeId) {
+      key += `store_${storeId}.json`;
+    } else if (userEmail) {
+      key += `user_${userEmail.replace('@', '_at_')}.json`;
+    } else {
+      key += 'all.json';
+    }
+    
+    const object = await env.R2_BUCKET.get(key);
+    
+    if (!object) {
+      return new Response(JSON.stringify({ reviews: [] }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
+    const reviews = await object.json();
+    return new Response(JSON.stringify({ reviews }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  } catch (error) {
+    console.error('Get reviews error:', error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+}
+
+// レビュー保存
+async function saveReview(request, env, corsHeaders) {
+  try {
+    const review = await request.json();
+    
+    // 必須フィールドのバリデーション
+    if (!review.store_id || !review.user_email || !review.content) {
+      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // レビューIDを生成
+    review.id = `review_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    review.created_at = new Date().toISOString();
+    review.updated_at = review.created_at;
+    review.is_deleted = false;
+    
+    // 店舗別レビューファイルを更新
+    const storeKey = `reviews/store_${review.store_id}.json`;
+    const storeObject = await env.R2_BUCKET.get(storeKey);
+    let storeReviews = [];
+    
+    if (storeObject) {
+      storeReviews = await storeObject.json();
+    }
+    
+    storeReviews.push(review);
+    
+    await env.R2_BUCKET.put(storeKey, JSON.stringify(storeReviews), {
+      httpMetadata: { 'Content-Type': 'application/json' }
+    });
+    
+    // ユーザー別レビューファイルも更新
+    const userKey = `reviews/user_${review.user_email.replace('@', '_at_')}.json`;
+    const userObject = await env.R2_BUCKET.get(userKey);
+    let userReviews = [];
+    
+    if (userObject) {
+      userReviews = await userObject.json();
+    }
+    
+    userReviews.push(review);
+    
+    await env.R2_BUCKET.put(userKey, JSON.stringify(userReviews), {
+      httpMetadata: { 'Content-Type': 'application/json' }
+    });
+    
+    // 全レビューファイルも更新
+    const allKey = 'reviews/all.json';
+    const allObject = await env.R2_BUCKET.get(allKey);
+    let allReviews = [];
+    
+    if (allObject) {
+      allReviews = await allObject.json();
+    }
+    
+    allReviews.push(review);
+    
+    await env.R2_BUCKET.put(allKey, JSON.stringify(allReviews), {
+      httpMetadata: { 'Content-Type': 'application/json' }
+    });
+    
+    return new Response(JSON.stringify({ success: true, review }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  } catch (error) {
+    console.error('Save review error:', error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+}
+
+// レビュー更新
+async function updateReview(request, env, corsHeaders) {
+  try {
+    const { id, content } = await request.json();
+    
+    if (!id || !content) {
+      return new Response(JSON.stringify({ error: 'Missing id or content' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // 全レビューから該当のレビューを探す
+    const allKey = 'reviews/all.json';
+    const allObject = await env.R2_BUCKET.get(allKey);
+    
+    if (!allObject) {
+      return new Response(JSON.stringify({ error: 'Review not found' }), {
+        status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
+    let allReviews = await allObject.json();
+    const reviewIndex = allReviews.findIndex(r => r.id === id);
+    
+    if (reviewIndex === -1) {
+      return new Response(JSON.stringify({ error: 'Review not found' }), {
+        status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // レビューを更新
+    allReviews[reviewIndex].content = content;
+    allReviews[reviewIndex].updated_at = new Date().toISOString();
+    
+    const updatedReview = allReviews[reviewIndex];
+    
+    // 全レビューファイルを更新
+    await env.R2_BUCKET.put(allKey, JSON.stringify(allReviews), {
+      httpMetadata: { 'Content-Type': 'application/json' }
+    });
+    
+    // 店舗別・ユーザー別ファイルも更新
+    await updateRelatedFiles(env, updatedReview);
+    
+    return new Response(JSON.stringify({ success: true, review: updatedReview }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  } catch (error) {
+    console.error('Update review error:', error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+}
+
+// レビュー削除（論理削除）
+async function deleteReview(request, env, corsHeaders) {
+  try {
+    const { id } = await request.json();
+    
+    if (!id) {
+      return new Response(JSON.stringify({ error: 'Missing id' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // 全レビューから該当のレビューを探す
+    const allKey = 'reviews/all.json';
+    const allObject = await env.R2_BUCKET.get(allKey);
+    
+    if (!allObject) {
+      return new Response(JSON.stringify({ error: 'Review not found' }), {
+        status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
+    let allReviews = await allObject.json();
+    const reviewIndex = allReviews.findIndex(r => r.id === id);
+    
+    if (reviewIndex === -1) {
+      return new Response(JSON.stringify({ error: 'Review not found' }), {
+        status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // 論理削除
+    allReviews[reviewIndex].is_deleted = true;
+    allReviews[reviewIndex].updated_at = new Date().toISOString();
+    
+    const deletedReview = allReviews[reviewIndex];
+    
+    // 全レビューファイルを更新
+    await env.R2_BUCKET.put(allKey, JSON.stringify(allReviews), {
+      httpMetadata: { 'Content-Type': 'application/json' }
+    });
+    
+    // 店舗別・ユーザー別ファイルも更新
+    await updateRelatedFiles(env, deletedReview);
+    
+    return new Response(JSON.stringify({ success: true }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  } catch (error) {
+    console.error('Delete review error:', error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+}
+
+// 関連ファイル更新ヘルパー関数
+async function updateRelatedFiles(env, review) {
+  // 店舗別ファイル更新
+  const storeKey = `reviews/store_${review.store_id}.json`;
+  const storeObject = await env.R2_BUCKET.get(storeKey);
+  
+  if (storeObject) {
+    let storeReviews = await storeObject.json();
+    const index = storeReviews.findIndex(r => r.id === review.id);
+    if (index !== -1) {
+      storeReviews[index] = review;
+      await env.R2_BUCKET.put(storeKey, JSON.stringify(storeReviews), {
+        httpMetadata: { 'Content-Type': 'application/json' }
+      });
+    }
+  }
+  
+  // ユーザー別ファイル更新
+  const userKey = `reviews/user_${review.user_email.replace('@', '_at_')}.json`;
+  const userObject = await env.R2_BUCKET.get(userKey);
+  
+  if (userObject) {
+    let userReviews = await userObject.json();
+    const index = userReviews.findIndex(r => r.id === review.id);
+    if (index !== -1) {
+      userReviews[index] = review;
+      await env.R2_BUCKET.put(userKey, JSON.stringify(userReviews), {
+        httpMetadata: { 'Content-Type': 'application/json' }
+      });
+    }
   }
 }

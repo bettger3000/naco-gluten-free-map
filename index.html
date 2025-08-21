@@ -11414,18 +11414,38 @@
             console.log('✅ ユーザー確認OK、レビュー取得開始');
             
             try {
-                // まずユーザーのレビューを取得（店舗情報なし）
-                const { data: reviewsData, error: reviewsError } = await supabaseClient
-                    .from('reviews')
-                    .select('id, store_id, content, created_at, updated_at')
-                    .eq('user_email', currentUserEmail)
-                    .eq('is_deleted', false)
-                    .order('created_at', { ascending: false });
+                let reviewsData = [];
                 
-                if (reviewsError) {
-                    console.error('マイレビュー取得エラー:', reviewsError);
-                    alert('レビューの取得に失敗しました');
-                    return;
+                if (USE_CLOUDFLARE_REVIEWS) {
+                    // Cloudflare Worker経由でレビュー取得
+                    const response = await fetch(`${AVATAR_WORKER_URL}/reviews?user_email=${encodeURIComponent(currentUserEmail)}`);
+                    const result = await response.json();
+                    
+                    if (!response.ok) {
+                        console.error('Cloudflareレビュー取得エラー:', result.error);
+                        alert('レビューの取得に失敗しました');
+                        return;
+                    }
+                    
+                    // is_deleted = false のレビューのみフィルタリング
+                    reviewsData = (result.reviews || []).filter(r => !r.is_deleted);
+                    console.log('📚 Cloudflareレビュー取得成功:', reviewsData.length);
+                } else {
+                    // 既存のSupabase取得
+                    const { data, error: reviewsError } = await supabaseClient
+                        .from('reviews')
+                        .select('id, store_id, content, created_at, updated_at')
+                        .eq('user_email', currentUserEmail)
+                        .eq('is_deleted', false)
+                        .order('created_at', { ascending: false });
+                    
+                    if (reviewsError) {
+                        console.error('Supabaseレビュー取得エラー:', reviewsError);
+                        alert('レビューの取得に失敗しました');
+                        return;
+                    }
+                    
+                    reviewsData = data || [];
                 }
                 
                 if (!reviewsData || reviewsData.length === 0) {
@@ -11748,23 +11768,49 @@
                 
                 console.log('💾 マイレビュー更新開始:', reviewId);
                 
-                // Supabaseでレビューを更新
-                const { error } = await supabaseClient
-                    .from('reviews')
-                    .update({
-                        content: newContent,
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq('id', reviewId)
-                    .eq('user_email', currentUserEmail);
-                
-                if (error) {
-                    console.error('マイレビュー更新エラー:', error);
-                    alert('レビューの更新に失敗しました。もう一度お試しください。');
-                    return;
+                // レビューを更新（Cloudflare or Supabase）
+                if (USE_CLOUDFLARE_REVIEWS) {
+                    // Cloudflare Worker経由で更新
+                    const response = await fetch(`${AVATAR_WORKER_URL}/reviews`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            id: reviewId,
+                            content: newContent
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (!response.ok || !result.success) {
+                        console.error('Cloudflareレビュー更新エラー:', result.error);
+                        alert('レビューの更新に失敗しました。もう一度お試しください。');
+                        return;
+                    }
+                    
+                    console.log('✅ Cloudflareレビュー更新成功:', reviewId);
+                } else {
+                    // 既存のSupabase更新
+                    const { error } = await supabaseClient
+                        .from('reviews')
+                        .update({
+                            content: newContent,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', reviewId)
+                        .eq('user_email', currentUserEmail);
+                    
+                    if (error) {
+                        console.error('Supabaseレビュー更新エラー:', error);
+                        alert('レビューの更新に失敗しました。もう一度お試しください。');
+                        return;
+                    }
+                    
+                    console.log('✅ Supabaseレビュー更新成功:', reviewId);
                 }
                 
-                console.log('✅ マイレビュー更新成功:', reviewId);
                 alert('感想を更新しました！');
                 
                 // マイレビュー画面を再読み込み
@@ -11935,6 +11981,10 @@
         const AVATAR_WORKER_URL = 'https://avatar-upload-worker.bettger1000.workers.dev';
         let selectedFile = null;
         let uploadedAvatarUrl = null;
+        
+        // Cloudflareレビューシステムの設定
+        const USE_CLOUDFLARE_REVIEWS = true; // true: Cloudflare, false: Supabase
+        const REVIEW_SYSTEM_TYPE = USE_CLOUDFLARE_REVIEWS ? 'cloudflare' : 'supabase';
 
         // アバタータブの切り替え
         function showAvatarTab(tabType) {
@@ -12590,20 +12640,42 @@
             try {
                 console.log('🗑️ レビュー削除開始:', reviewId);
                 
-                // Supabaseでレビューを論理削除
-                const { error } = await supabaseClient
-                    .from('reviews')
-                    .update({
-                        is_deleted: true,
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq('id', reviewId)
-                    .eq('user_email', currentUserEmail); // セキュリティ: 所有者のみ削除可能
-                
-                if (error) {
-                    console.error('レビュー削除エラー:', error);
-                    alert('レビューの削除に失敗しました。もう一度お試しください。');
-                    return;
+                // レビューを削除（Cloudflare or Supabase）
+                if (USE_CLOUDFLARE_REVIEWS) {
+                    // Cloudflare Worker経由で削除
+                    const response = await fetch(`${AVATAR_WORKER_URL}/reviews`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            id: reviewId
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (!response.ok || !result.success) {
+                        console.error('Cloudflareレビュー削除エラー:', result.error);
+                        alert('レビューの削除に失敗しました。もう一度お試しください。');
+                        return;
+                    }
+                } else {
+                    // 既存のSupabase削除
+                    const { error } = await supabaseClient
+                        .from('reviews')
+                        .update({
+                            is_deleted: true,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', reviewId)
+                        .eq('user_email', currentUserEmail); // セキュリティ: 所有者のみ削除可能
+                    
+                    if (error) {
+                        console.error('Supabaseレビュー削除エラー:', error);
+                        alert('レビューの削除に失敗しました。もう一度お試しください。');
+                        return;
+                    }
                 }
                 
                 console.log('✅ レビュー削除成功:', reviewId);
@@ -12637,20 +12709,42 @@
             try {
                 console.log('🗑️ 編集画面からレビュー削除開始:', reviewId);
                 
-                // Supabaseでレビューを論理削除
-                const { error } = await supabaseClient
-                    .from('reviews')
-                    .update({
-                        is_deleted: true,
-                        updated_at: new Date().toISOString()
-                    })
-                    .eq('id', reviewId)
-                    .eq('user_email', currentUserEmail); // セキュリティ: 所有者のみ削除可能
-                
-                if (error) {
-                    console.error('レビュー削除エラー:', error);
-                    alert('レビューの削除に失敗しました。もう一度お試しください。');
-                    return;
+                // レビューを削除（Cloudflare or Supabase）
+                if (USE_CLOUDFLARE_REVIEWS) {
+                    // Cloudflare Worker経由で削除
+                    const response = await fetch(`${AVATAR_WORKER_URL}/reviews`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            id: reviewId
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (!response.ok || !result.success) {
+                        console.error('Cloudflareレビュー削除エラー:', result.error);
+                        alert('レビューの削除に失敗しました。もう一度お試しください。');
+                        return;
+                    }
+                } else {
+                    // 既存のSupabase削除
+                    const { error } = await supabaseClient
+                        .from('reviews')
+                        .update({
+                            is_deleted: true,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq('id', reviewId)
+                        .eq('user_email', currentUserEmail); // セキュリティ: 所有者のみ削除可能
+                    
+                    if (error) {
+                        console.error('Supabaseレビュー削除エラー:', error);
+                        alert('レビューの削除に失敗しました。もう一度お試しください。');
+                        return;
+                    }
                 }
                 
                 console.log('✅ 編集画面からレビュー削除成功:', reviewId);
