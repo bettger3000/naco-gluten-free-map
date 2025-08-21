@@ -11525,8 +11525,8 @@
                 const bodyElement = document.getElementById('my-reviews-body');
                 if (bodyElement) {
                     bodyElement.innerHTML = reviewsHTML;
-                    // Force left alignment after content is loaded
-                    setTimeout(() => forceReviewLeftAlign(), 0);
+                    // Force left alignment after content is loaded (100ms delay for DOM stability)
+                    setTimeout(() => forceReviewLeftAlign(), 100);
                 }
             }).catch(error => {
                 console.error('マイレビューHTML生成エラー:', error);
@@ -12435,8 +12435,8 @@
                 
                 if (reviewsContainer) {
                     reviewsContainer.outerHTML = createReviewsHTML(reviews, storeId);
-                    // Force left alignment after store reviews are loaded
-                    setTimeout(() => forceReviewLeftAlign(), 0);
+                    // Force left alignment after store reviews are loaded (100ms delay for DOM stability)
+                    setTimeout(() => forceReviewLeftAlign(), 100);
                 }
             } catch (error) {
                 console.error('レビュー更新エラー:', error);
@@ -12983,7 +12983,8 @@
     <script>
         // 保存後の強制左寄せ関数
         function forceReviewLeftAlign() {
-            console.log('🔧 forceReviewLeftAlign 実行開始');
+            try {
+                console.log('🔧 forceReviewLeftAlign 実行開始');
             
             // レビューコンテンツ要素に直接スタイルを適用
             const reviewElements = document.querySelectorAll('.review-content, [id^="review-content-"]');
@@ -13022,6 +13023,9 @@
             });
             
             console.log('✨ forceReviewLeftAlign 実行完了');
+            } catch (error) {
+                console.error('❌ forceReviewLeftAlign エラー:', error);
+            }
         }
     </script>
 
