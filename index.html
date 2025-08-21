@@ -4914,38 +4914,6 @@
             justify-self: flex-start !important;
             align-self: flex-start !important;
         }
-
-        /* === レビュー中央寄せ問題の根本解決 (Phase 1: 安全なCSS追加) === */
-        
-        /* まず、レビュー周辺は決してセンターにしない */
-        .store-detail-modal,
-        .store-detail-fullscreen,
-        .my-reviews-modal,
-        .my-reviews-content,
-        .my-reviews-body,
-        .reviews-list,
-        .review-item,
-        .review-card-body,
-        .review-content,
-        [id^="review-content-"] {
-            text-align: left !important;
-        }
-
-        /* レビュー領域内の段落も確実に左寄せ */
-        .review-content p,
-        .review-item p,
-        .my-reviews-body p {
-            text-align: left !important;
-            margin: 0;
-        }
-
-        /* 逆に、見出しやボタンだけセンターにする（影響範囲を限定） */
-        .login-modal-content .login-header,
-        .login-modal-content .login-content h2,
-        .login-modal-content .pin-login-btn,
-        .my-reviews-header {
-            text-align: center !important;
-        }
     </style>
 </head>
 <body>
