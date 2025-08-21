@@ -11527,9 +11527,23 @@
                     
                     <!-- ユーザー情報ヘッダー -->
                     <div style="display: flex; align-items: center; margin-bottom: 16px; text-align: left !important; margin-top: 8px;">
-                        <img src="${avatarUrl}" alt="${nickname}" 
-                             style="width: 40px; height: 40px; border-radius: 50%; margin-right: 12px; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"
-                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNOCAzMmMwLTYuNjI3IDUuMzczLTEyIDEyLTEyczEyIDUuMzczIDEyIDEydjAiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';">
+                        <div style="
+                            width: 40px;
+                            height: 40px;
+                            border-radius: 50%;
+                            margin-right: 12px;
+                            overflow: hidden;
+                            flex-shrink: 0;
+                            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                            background: #E5E7EB;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        ">
+                            <img src="${avatarUrl}" alt="${nickname}" 
+                                 style="width: 100%; height: 100%; object-fit: cover; display: block;"
+                                 onerror="this.style.display='none'; this.parentElement.innerHTML='<svg width=\\\"24\\\" height=\\\"24\\\" viewBox=\\\"0 0 24 24\\\" fill=\\\"none\\\"><circle cx=\\\"12\\\" cy=\\\"12\\\" r=\\\"12\\\" fill=\\\"#9CA3AF\\\"/><circle cx=\\\"12\\\" cy=\\\"10\\\" r=\\\"3\\\" fill=\\\"white\\\"/><path d=\\\"M6 18c0-3.3 2.7-6 6-6s6 2.7 6 6v1H6v-1z\\\" fill=\\\"white\\\"/></svg>';"
+                        </div>
                         <div style="flex-grow: 1;">
                             <div style="font-weight: 600; color: #333; font-size: 16px; margin-bottom: 2px;">${nickname}</div>
                             <div style="color: #666; font-size: 0.9em; opacity: 0.8;">
@@ -11537,23 +11551,23 @@
                             </div>
                         </div>
                         ${isOwner ? `
-                            <div style="display: flex; gap: 8px;">
-                                <button onclick="editReview('${review.id}')" 
-                                        style="
-                                            padding: 8px 12px;
-                                            background: linear-gradient(135deg, #667eea, #764ba2);
-                                            color: white;
-                                            border: none;
-                                            border-radius: 8px;
-                                            cursor: pointer;
-                                            font-size: 13px;
-                                            font-weight: 500;
-                                            transition: all 0.2s ease;
-                                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                                        " onmouseenter="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)';" onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';">
-                                    ✏️ 編集
-                                </button>
-                            </div>
+                            <button onclick="editReview('${review.id}')" 
+                                    style="
+                                        padding: 6px 12px;
+                                        background: linear-gradient(135deg, #667eea, #764ba2);
+                                        color: white;
+                                        border: none;
+                                        border-radius: 6px;
+                                        cursor: pointer;
+                                        font-size: 12px;
+                                        font-weight: 500;
+                                        transition: all 0.2s ease;
+                                        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                                        flex-shrink: 0;
+                                        height: fit-content;
+                                    " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.15)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
+                                ✏️ 編集
+                            </button>
                         ` : ''}
                     </div>
                     
@@ -11605,50 +11619,56 @@
                                     transition: all 0.2s ease;
                                 " onfocus="this.style.borderColor='rgba(255, 107, 157, 0.4)'; this.style.boxShadow='0 0 0 3px rgba(255, 107, 157, 0.1)';" onblur="this.style.borderColor='rgba(255, 107, 157, 0.15)'; this.style.boxShadow='none';"
                                 >${review.content}</textarea>
-                        <div style="margin-top: 12px; display: flex; gap: 8px; justify-content: flex-end;">
+                        <div style="margin-top: 12px; display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap;">
                             <button onclick="deleteReview('${review.id}')" 
                                     style="
-                                        padding: 8px 16px;
+                                        padding: 6px 12px;
                                         background: linear-gradient(135deg, #ff6b6b, #ee5a24);
                                         color: white;
                                         border: none;
-                                        border-radius: 8px;
+                                        border-radius: 6px;
                                         cursor: pointer;
-                                        font-size: 13px;
+                                        font-size: 12px;
                                         font-weight: 500;
                                         transition: all 0.2s ease;
-                                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                                    " onmouseenter="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)';" onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';">
+                                        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                                        flex: 1;
+                                        min-width: 70px;
+                                    " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.15)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
                                 🗑️ 削除
                             </button>
                             <button onclick="cancelEditReview('${review.id}')" 
                                     style="
-                                        padding: 8px 16px;
+                                        padding: 6px 12px;
                                         background: linear-gradient(135deg, #a4a4a4, #6c757d);
                                         color: white;
                                         border: none;
-                                        border-radius: 8px;
+                                        border-radius: 6px;
                                         cursor: pointer;
-                                        font-size: 13px;
+                                        font-size: 12px;
                                         font-weight: 500;
                                         transition: all 0.2s ease;
-                                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                                    " onmouseenter="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)';" onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';">
-                                ✖️ キャンセル
+                                        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                                        flex: 1;
+                                        min-width: 80px;
+                                    " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.15)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
+                                ❌ キャンセル
                             </button>
                             <button onclick="saveEditReview('${review.id}')" 
                                     style="
-                                        padding: 8px 16px;
+                                        padding: 6px 12px;
                                         background: linear-gradient(135deg, #00d2d3, #00b894);
                                         color: white;
                                         border: none;
-                                        border-radius: 8px;
+                                        border-radius: 6px;
                                         cursor: pointer;
-                                        font-size: 13px;
+                                        font-size: 12px;
                                         font-weight: 500;
                                         transition: all 0.2s ease;
-                                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                                    " onmouseenter="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)';" onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';">
+                                        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                                        flex: 1;
+                                        min-width: 60px;
+                                    " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.15)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
                                 💾 保存
                             </button>
                         </div>
