@@ -11349,6 +11349,20 @@
             // TODO: Phase 2で実装
         }
 
+        // ========== 削除された変数・関数の復旧 ==========
+        
+        const AVATAR_WORKER_URL = 'https://avatar-upload-worker.bettger1000.workers.dev';
+        const USE_CLOUDFLARE_REVIEWS = true;
+        
+        // 既存システムで使用されている関数の復旧
+        function createReviewsHTML(reviews, storeId) {
+            if (!reviews || reviews.length === 0) {
+                return '<div style="text-align: center; padding: 20px; color: #666;">まだ感想がありません</div>';
+            }
+            
+            return reviews.map(review => createSimpleReviewHTML(review)).join('');
+        }
+        
         // ========== 新・Cloudflare レビューシステム ==========
         
         // シンプルなレビューHTML生成（左寄せ保証）
