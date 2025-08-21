@@ -11994,6 +11994,10 @@
             
             const storeIcon = getCategoryIcon(storeCategory);
             
+            // ニックネーム・アバター取得
+            const nickname = await getUserNickname(review.user_email);
+            const avatarUrl = await getUserAvatarUrl(review.user_email);
+            
             return `
                 <div class="my-review-card" style="
                     background: linear-gradient(135deg, #ffffff 0%, #fdfbfb 100%);
@@ -12060,6 +12064,26 @@
                             align-self: flex-start;
                             white-space: nowrap;
                         " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 16px rgba(102, 126, 234, 0.4)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(102, 126, 234, 0.3)';">📍 MAP</button>
+                    </div>
+                    
+                    <!-- ユーザー情報ヘッダー -->
+                    <div style="display: flex; align-items: center; margin-bottom: 16px; text-align: left !important;">
+                        <img src="${avatarUrl}" alt="${nickname}" 
+                             style="
+                                width: 32px;
+                                height: 32px;
+                                border-radius: 50%;
+                                margin-right: 10px;
+                                object-fit: cover;
+                                flex-shrink: 0;
+                                box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+                             "
+                             onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTYiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxMyIgcj0iNSIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNNiAyNmMwLTUuNTIzIDQuNDc3LTEwIDEwLTEwczEwIDQuNDc3IDEwIDEwdjAiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+'" />
+                        <div style="
+                            font-weight: 600; 
+                            color: #4a5568; 
+                            font-size: 14px;
+                        ">${nickname}</div>
                     </div>
                     
                     <!-- レビュー内容 -->
