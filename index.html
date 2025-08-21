@@ -13010,7 +13010,7 @@
                 }
             });
             
-            // レビューアイテム自体も左寄せ
+            // レビューアイテム自体も左寄せ + Flexboxプロパティ修正
             const reviewItems = document.querySelectorAll('.review-item');
             console.log('🔍 見つかったreview-item数:', reviewItems.length);
             
@@ -13020,6 +13020,22 @@
                 el.style.setProperty('width', '100%', 'important');
                 el.style.setProperty('display', 'block', 'important');
                 el.style.setProperty('margin', '0 auto 0 0', 'important'); // 左寄せ強制
+                
+                // Flexboxプロパティも修正
+                el.style.setProperty('justify-content', 'flex-start', 'important');
+                el.style.setProperty('align-items', 'flex-start', 'important');
+                el.style.setProperty('align-self', 'flex-start', 'important');
+            });
+            
+            // レビューリスト全体のFlexboxも修正
+            const reviewsLists = document.querySelectorAll('.reviews-list');
+            console.log('🔍 見つかったreviews-list数:', reviewsLists.length);
+            
+            reviewsLists.forEach((el, i) => {
+                console.log(`📋 reviews-list${i}: ${el.className}`);
+                el.style.setProperty('justify-content', 'flex-start', 'important');
+                el.style.setProperty('align-items', 'flex-start', 'important');
+                el.style.setProperty('text-align', 'left', 'important');
             });
             
             console.log('✨ forceReviewLeftAlign 実行完了');
