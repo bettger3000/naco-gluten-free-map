@@ -11573,23 +11573,75 @@
                             </div>
                         </div>
                         ${isOwner ? `
-                            <button onclick="editReview('${review.id}')" 
-                                    style="
-                                        padding: 6px 12px;
-                                        background: linear-gradient(135deg, #667eea, #764ba2);
-                                        color: white;
-                                        border: none;
-                                        border-radius: 6px;
-                                        cursor: pointer;
-                                        font-size: 12px;
-                                        font-weight: 500;
-                                        transition: all 0.2s ease;
-                                        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-                                        flex-shrink: 0;
-                                        height: fit-content;
-                                    " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.15)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
-                                ✏️ 編集
-                            </button>
+                            <div id="edit-buttons-normal-${review.id}" style="display: flex; gap: 8px;">
+                                <button onclick="editReview('${review.id}')" 
+                                        style="
+                                            padding: 6px 12px;
+                                            background: linear-gradient(135deg, #667eea, #764ba2);
+                                            color: white;
+                                            border: none;
+                                            border-radius: 6px;
+                                            cursor: pointer;
+                                            font-size: 12px;
+                                            font-weight: 500;
+                                            transition: all 0.2s ease;
+                                            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                                            flex-shrink: 0;
+                                            height: fit-content;
+                                        " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.15)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
+                                    ✏️ 編集
+                                </button>
+                            </div>
+                            <div id="edit-buttons-editing-${review.id}" style="display: none; gap: 8px;">
+                                <button onclick="deleteReviewWithConfirm('${review.id}')" 
+                                        style="
+                                            padding: 6px 12px;
+                                            background: linear-gradient(135deg, #e53e3e, #c53030);
+                                            color: white;
+                                            border: none;
+                                            border-radius: 6px;
+                                            cursor: pointer;
+                                            font-size: 12px;
+                                            font-weight: 500;
+                                            transition: all 0.2s ease;
+                                            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                                            flex-shrink: 0;
+                                        " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(229, 62, 62, 0.3)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
+                                    🗑️ 削除
+                                </button>
+                                <button onclick="cancelEditReview('${review.id}')" 
+                                        style="
+                                            padding: 6px 12px;
+                                            background: #718096;
+                                            color: white;
+                                            border: none;
+                                            border-radius: 6px;
+                                            cursor: pointer;
+                                            font-size: 12px;
+                                            font-weight: 500;
+                                            transition: all 0.2s ease;
+                                            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                                            flex-shrink: 0;
+                                        " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.15)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
+                                    ✕ キャンセル
+                                </button>
+                                <button onclick="saveEditReview('${review.id}')" 
+                                        style="
+                                            padding: 6px 12px;
+                                            background: linear-gradient(135deg, #38a169, #2f855a);
+                                            color: white;
+                                            border: none;
+                                            border-radius: 6px;
+                                            cursor: pointer;
+                                            font-size: 12px;
+                                            font-weight: 500;
+                                            transition: all 0.2s ease;
+                                            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                                            flex-shrink: 0;
+                                        " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(56, 161, 105, 0.3)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
+                                    💾 保存
+                                </button>
+                            </div>
                         ` : ''}
                     </div>
                     
@@ -12214,10 +12266,17 @@
         function editReview(reviewId) {
             const contentDiv = document.querySelector(`#review-${reviewId} .review-content-display`);
             const editForm = document.getElementById(`edit-form-${reviewId}`);
+            const normalButtons = document.getElementById(`edit-buttons-normal-${reviewId}`);
+            const editingButtons = document.getElementById(`edit-buttons-editing-${reviewId}`);
             
-            if (contentDiv && editForm) {
+            if (contentDiv && editForm && normalButtons && editingButtons) {
+                // コンテンツ表示を隠して編集フォームを表示
                 contentDiv.style.display = 'none';
                 editForm.style.display = 'block';
+                
+                // ボタンを切り替え（編集ボタン → 削除・キャンセル・保存ボタン）
+                normalButtons.style.display = 'none';
+                editingButtons.style.display = 'flex';
                 
                 // テキストエリアにフォーカス
                 const textarea = document.getElementById(`edit-textarea-${reviewId}`);
@@ -12232,10 +12291,17 @@
         function cancelEditReview(reviewId) {
             const contentDiv = document.querySelector(`#review-${reviewId} .review-content-display`);
             const editForm = document.getElementById(`edit-form-${reviewId}`);
+            const normalButtons = document.getElementById(`edit-buttons-normal-${reviewId}`);
+            const editingButtons = document.getElementById(`edit-buttons-editing-${reviewId}`);
             
-            if (contentDiv && editForm) {
+            if (contentDiv && editForm && normalButtons && editingButtons) {
+                // コンテンツ表示を戻して編集フォームを隠す
                 contentDiv.style.display = 'block';
                 editForm.style.display = 'none';
+                
+                // ボタンを元に戻す（削除・キャンセル・保存ボタン → 編集ボタン）
+                normalButtons.style.display = 'flex';
+                editingButtons.style.display = 'none';
             }
         }
         
@@ -12265,8 +12331,16 @@
                 const result = await response.json();
                 
                 if (response.ok && result.success) {
-                    // レビューを再表示
-                    location.reload(); // 簡単な方法として全体をリロード
+                    // レビュー内容を更新
+                    const contentDiv = document.querySelector(`#review-${reviewId} .review-content-display div`);
+                    if (contentDiv) {
+                        contentDiv.textContent = newContent;
+                    }
+                    
+                    // 編集モードを終了
+                    cancelEditReview(reviewId);
+                    
+                    alert('感想を更新しました');
                 } else {
                     alert('編集に失敗しました');
                 }
@@ -12276,11 +12350,19 @@
             }
         }
         
-        // レビュー削除
-        async function deleteReview(reviewId) {
-            if (!confirm('この感想を削除しますか？')) {
+        // 削除確認ダイアログ付きレビュー削除
+        async function deleteReviewWithConfirm(reviewId) {
+            const isConfirmed = confirm('この感想を削除しますか？\n\n削除した感想は元に戻せません。');
+            if (!isConfirmed) {
                 return;
             }
+            
+            // 既存の削除処理を呼び出す
+            await deleteReview(reviewId);
+        }
+        
+        // レビュー削除
+        async function deleteReview(reviewId) {
             
             try {
                 const response = await fetch(`${AVATAR_WORKER_URL}/reviews`, {
