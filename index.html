@@ -11598,7 +11598,7 @@
                                     ✏️ 編集
                                 </button>
                             </div>
-                            <div id="edit-buttons-editing-${review.id}" style="display: none; gap: 8px; flex-direction: row; align-items: center;">
+                            <div id="edit-buttons-editing-${review.id}" style="display: none !important; gap: 8px !important; flex-direction: row !important; align-items: center !important; justify-content: flex-end !important; width: auto !important; height: auto !important;">
                                 <button onclick="deleteReviewWithConfirm('${review.id}')" 
                                         style="
                                             padding: 6px 12px;
@@ -12168,7 +12168,7 @@
                                 flex-shrink: 0;
                             " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 16px rgba(66, 153, 225, 0.4)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(66, 153, 225, 0.3)';">✏️ 編集</button>
                         </div>
-                        <div id="my-edit-buttons-editing-${review.id}" style="display: none; gap: 8px; flex-direction: row; align-items: center; align-self: flex-end;">
+                        <div id="my-edit-buttons-editing-${review.id}" style="display: none !important; gap: 8px !important; flex-direction: row !important; align-items: center !important; align-self: flex-end !important; justify-content: flex-end !important; width: auto !important; height: auto !important;">
                             <button onclick="deleteMyReviewWithConfirm('${review.id}')" 
                                     style="
                                         padding: 6px 12px;
@@ -12182,6 +12182,10 @@
                                         transition: all 0.2s ease;
                                         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                                         flex-shrink: 0;
+                                        display: inline-block;
+                                        white-space: nowrap;
+                                        min-width: auto;
+                                        width: auto;
                                     " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(229, 62, 62, 0.3)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
                                 🗑️ 削除
                             </button>
@@ -12198,6 +12202,10 @@
                                         transition: all 0.2s ease;
                                         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                                         flex-shrink: 0;
+                                        display: inline-block;
+                                        white-space: nowrap;
+                                        min-width: auto;
+                                        width: auto;
                                     " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.15)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
                                 ✕ キャンセル
                             </button>
@@ -12214,6 +12222,10 @@
                                         transition: all 0.2s ease;
                                         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                                         flex-shrink: 0;
+                                        display: inline-block;
+                                        white-space: nowrap;
+                                        min-width: auto;
+                                        width: auto;
                                     " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(56, 161, 105, 0.3)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
                                 💾 保存
                             </button>
@@ -12307,6 +12319,10 @@
                 // ボタンを切り替え（編集ボタン → 削除・キャンセル・保存ボタン）
                 normalButtons.style.display = 'none';
                 editingButtons.style.display = 'flex';
+                editingButtons.style.flexDirection = 'row';
+                editingButtons.style.alignItems = 'center';
+                editingButtons.style.justifyContent = 'flex-end';
+                editingButtons.style.gap = '8px';
                 
                 // テキストエリアにフォーカス
                 const textarea = document.getElementById(`edit-textarea-${reviewId}`);
@@ -12500,6 +12516,10 @@
                 // ボタンを切り替え（編集ボタン → 削除・キャンセル・保存ボタン）
                 normalButtons.style.display = 'none';
                 editingButtons.style.display = 'flex';
+                editingButtons.style.flexDirection = 'row';
+                editingButtons.style.alignItems = 'center';
+                editingButtons.style.justifyContent = 'flex-end';
+                editingButtons.style.gap = '8px';
                 
                 // テキストエリアにフォーカス
                 const textarea = document.getElementById(`my-edit-textarea-${reviewId}`);
