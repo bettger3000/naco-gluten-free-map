@@ -11217,33 +11217,17 @@
                     // 画像アバターの場合は小さな画像を表示
                     if (currentUserProfile.avatarType === 'image' && currentUserProfile.avatarUrl) {
                         menuTitle.innerHTML = `
-                            <div style="
-                                width: 40px;
-                                height: 40px;
-                                border-radius: 50%;
-                                margin-right: 12px;
-                                overflow: hidden;
-                                flex-shrink: 0;
-                                box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-                                background: #E5E7EB;
-                                display: inline-block;
-                                vertical-align: middle;
-                                position: relative;
-                            ">
-                                <img src="${currentUserProfile.avatarUrl}" alt="${displayName}" 
-                                     style="
-                                        position: absolute;
-                                        top: 0;
-                                        left: 0;
-                                        width: 40px;
-                                        height: 40px;
-                                        object-fit: cover;
-                                        object-position: center;
-                                        border-radius: 50%;
-                                        aspect-ratio: 1/1;
-                                     "
-                                     onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNOCAzMmMwLTYuNjI3IDUuMzczLTEyIDEyLTEyczEyIDUuMzczIDEyIDEydjAiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';">
-                            </div>
+                            <img src="${currentUserProfile.avatarUrl}" alt="${displayName}" 
+                                 style="
+                                    width: 40px;
+                                    height: 40px;
+                                    border-radius: 50%;
+                                    margin-right: 12px;
+                                    object-fit: cover;
+                                    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+                                    vertical-align: middle;
+                                 "
+                                 onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNOCAzMmMwLTYuNjI3IDUuMzczLTEyIDEyLTEyczEyIDUuMzczIDEyIDEydjAiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';">
                             ${displayName}
                         `;
                     } else {
@@ -11571,32 +11555,17 @@
                     
                     <!-- ユーザー情報ヘッダー -->
                     <div style="display: flex; align-items: center; margin-bottom: 16px; text-align: left !important; margin-top: 8px;">
-                        <div style="
-                            width: 40px;
-                            height: 40px;
-                            border-radius: 50%;
-                            margin-right: 12px;
-                            overflow: hidden;
-                            flex-shrink: 0;
-                            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                            background: #E5E7EB;
-                            position: relative;
-                            display: block;
-                        ">
-                            <img src="${avatarUrl}" alt="${nickname}" 
-                                 style="
-                                    position: absolute;
-                                    top: 0;
-                                    left: 0;
-                                    width: 40px;
-                                    height: 40px;
-                                    object-fit: cover;
-                                    object-position: center;
-                                    border-radius: 50%;
-                                    aspect-ratio: 1/1;
-                                 "
-                                 onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNOCAzMmMwLTYuNjI3IDUuMzczLTEyIDEyLTEyczEyIDUuMzczIDEyIDEydjAiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';">
-                        </div>
+                        <img src="${avatarUrl}" alt="${nickname}" 
+                             style="
+                                width: 40px;
+                                height: 40px;
+                                border-radius: 50%;
+                                margin-right: 12px;
+                                object-fit: cover;
+                                flex-shrink: 0;
+                                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                             "
+                             onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNOCAzMmMwLTYuNjI3IDUuMzczLTEyIDEyLTEyczEyIDUuMzczIDEyIDEydjAiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';"
                         <div style="flex-grow: 1;">
                             <div style="font-weight: 600; color: #333; font-size: 16px; margin-bottom: 2px;">${nickname}</div>
                             <div style="color: #666; font-size: 0.9em; opacity: 0.8;">
