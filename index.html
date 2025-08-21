@@ -11526,7 +11526,7 @@
                 if (bodyElement) {
                     bodyElement.innerHTML = reviewsHTML;
                     // Force left alignment after content is loaded
-                    setTimeout(() => forceReviewTextAlign(), 0);
+                    // setTimeout(() => forceReviewTextAlign(), 0); // DISABLED - 関数削除済み
                 }
             }).catch(error => {
                 console.error('マイレビューHTML生成エラー:', error);
@@ -11696,7 +11696,7 @@
             if (contentElement) {
                 contentElement.innerHTML = escapeHtml(originalContent);
                 // Force left alignment after content restore
-                setTimeout(() => forceReviewTextAlign(), 0);
+                // setTimeout(() => forceReviewTextAlign(), 0); // DISABLED - 関数削除済み
             }
         }
 
@@ -12436,7 +12436,7 @@
                 if (reviewsContainer) {
                     reviewsContainer.outerHTML = createReviewsHTML(reviews, storeId);
                     // Force left alignment after store reviews are loaded
-                    setTimeout(() => forceReviewTextAlign(), 0);
+                    // setTimeout(() => forceReviewTextAlign(), 0); // DISABLED - 関数削除済み
                 }
             } catch (error) {
                 console.error('レビュー更新エラー:', error);
@@ -12491,7 +12491,7 @@
             if (contentElement) {
                 contentElement.innerHTML = escapeHtml(originalContent);
                 // Force left alignment after content restore  
-                setTimeout(() => forceReviewTextAlign(), 0);
+                // setTimeout(() => forceReviewTextAlign(), 0); // DISABLED - 関数削除済み
             }
         }
 
