@@ -11781,32 +11781,36 @@
                     <!-- 店舗ヘッダー -->
                     <div class="store-header" style="
                         display: flex;
-                        align-items: center;
+                        align-items: flex-start;
                         margin-bottom: 16px;
                         cursor: pointer;
                         padding: 8px 12px;
                         border-radius: 12px;
                         transition: all 0.2s ease;
                         position: relative;
+                        gap: 12px;
                     " onclick="jumpToStoreFromReview('${review.store_id}', '${review.id}')" onmouseenter="this.style.background='rgba(255, 107, 157, 0.04)'; this.style.transform='scale(1.01)';" onmouseleave="this.style.background='transparent'; this.style.transform='scale(1)';">
                         <span class="store-icon" style="
                             font-size: 24px;
-                            margin-right: 12px;
                             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+                            flex-shrink: 0;
                         ">${storeIcon}</span>
-                        <div style="flex: 1;">
+                        <div style="flex: 1; min-width: 0; padding-right: 12px;">
                             <h4 class="store-name" style="
-                                margin: 0 0 2px 0;
+                                margin: 0 0 4px 0;
                                 font-size: 18px;
                                 font-weight: 700;
                                 color: #2d3748;
                                 letter-spacing: -0.02em;
-                                line-height: 1.2;
+                                line-height: 1.3;
+                                word-wrap: break-word;
+                                overflow-wrap: break-word;
                             ">${storeName}</h4>
                             <span style="
                                 font-size: 13px;
                                 color: #718096;
                                 font-weight: 500;
+                                display: block;
                             ">${storeCategory}</span>
                         </div>
                         <button class="map-btn" onclick="event.stopPropagation(); openMapToStore('${review.store_id}')" style="
@@ -11820,6 +11824,9 @@
                             cursor: pointer;
                             transition: all 0.2s ease;
                             box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+                            flex-shrink: 0;
+                            align-self: flex-start;
+                            white-space: nowrap;
                         " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 16px rgba(102, 126, 234, 0.4)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(102, 126, 234, 0.3)';">📍 MAP</button>
                     </div>
                     
