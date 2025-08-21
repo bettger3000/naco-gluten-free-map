@@ -11978,16 +11978,28 @@
             // 店舗情報をリアルタイム取得（既存レビュー対応）
             let storeName = review.store_name || '店舗名不明';
             let storeCategory = review.store_category || '不明';
+            let storeAddress = review.store_address || '';
             
             if (!review.store_name && review.store_id) {
                 const store = stores.find(s => s.id == review.store_id);
                 if (store) {
                     storeName = store.name;
                     storeCategory = store.category;
+                    storeAddress = store.address || '';
                 }
             }
             
-            const storeIcon = getCategoryIcon(storeCategory);
+            // カテゴリー設定をMAPと同じスタイルに
+            const categoryConfig = {
+                'カフェ': { icon: '☕', color: '#8B4513' },
+                '和食': { icon: '🍱', color: '#006400' },
+                '洋食': { icon: '🍽️', color: '#FF6347' },
+                'パン屋': { icon: '🥐', color: '#FFA500' },
+                'スイーツ': { icon: '🧁', color: '#FF69B4' },
+                '販売店': { icon: '🛒', color: '#4169E1' },
+                'その他': { icon: '🏪', color: '#808080' }
+            };
+            const categoryStyle = categoryConfig[storeCategory] || categoryConfig['その他'];
             
             // ニックネーム・アバター取得
             const nickname = await getUserNickname(review.user_email);
@@ -12021,14 +12033,9 @@
                         position: relative;
                         gap: 12px;
                     " onclick="jumpToStoreFromReview('${review.store_id}', '${review.id}')" onmouseenter="this.style.background='rgba(255, 107, 157, 0.04)'; this.style.transform='scale(1.01)';" onmouseleave="this.style.background='transparent'; this.style.transform='scale(1)';">
-                        <span class="store-icon" style="
-                            font-size: 24px;
-                            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-                            flex-shrink: 0;
-                        ">${storeIcon}</span>
                         <div style="flex: 1; min-width: 0; padding-right: 12px;">
                             <h4 class="store-name" style="
-                                margin: 0 0 4px 0;
+                                margin: 0 0 6px 0;
                                 font-size: 18px;
                                 font-weight: 700;
                                 color: #2d3748;
@@ -12037,12 +12044,23 @@
                                 word-wrap: break-word;
                                 overflow-wrap: break-word;
                             ">${storeName}</h4>
-                            <span style="
-                                font-size: 13px;
-                                color: #718096;
+                            <span class="category-badge" style="
+                                background: ${categoryStyle.color}15; 
+                                color: ${categoryStyle.color}; 
+                                border: 1px solid ${categoryStyle.color}30;
+                                padding: 4px 8px;
+                                border-radius: 12px;
+                                font-size: 12px;
                                 font-weight: 500;
-                                display: block;
-                            ">${storeCategory}</span>
+                                display: inline-block;
+                                margin-bottom: 4px;
+                            ">${categoryStyle.icon} ${storeCategory}</span>
+                            ${storeAddress ? `<div style="
+                                font-size: 12px;
+                                color: #718096;
+                                margin-top: 4px;
+                                line-height: 1.4;
+                            ">${storeAddress}</div>` : ''}
                         </div>
                         <button class="map-btn" onclick="event.stopPropagation(); openMapToStore('${review.store_id}')" style="
                             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
