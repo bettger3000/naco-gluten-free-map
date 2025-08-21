@@ -13038,6 +13038,17 @@
                 el.style.setProperty('text-align', 'left', 'important');
             });
             
+            // 🎯 最上位モーダルのFlexboxを修正（根本解決）
+            const modals = document.querySelectorAll('.store-detail-modal, .store-detail-modal-content, .store-detail-fullscreen');
+            console.log('🔍 見つかったモーダル数:', modals.length);
+            
+            modals.forEach((el, i) => {
+                console.log(`📋 modal${i}: ${el.className}`);
+                el.style.setProperty('justify-content', 'flex-start', 'important');
+                el.style.setProperty('align-items', 'flex-start', 'important');
+                el.style.setProperty('text-align', 'left', 'important');
+            });
+            
             console.log('✨ forceReviewLeftAlign 実行完了');
             } catch (error) {
                 console.error('❌ forceReviewLeftAlign エラー:', error);
