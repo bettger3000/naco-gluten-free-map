@@ -12161,6 +12161,38 @@
                         <div style="text-align: left !important; display: block !important; width: 100% !important;">${review.content}</div>
                     </div>
                     
+                    <!-- 編集フォーム（初期は非表示） -->
+                    <div id="my-edit-form-${review.id}" class="my-review-edit-form" style="
+                        display: none;
+                        margin-top: 16px;
+                        margin-bottom: 20px;
+                        padding: 20px;
+                        background: rgba(255, 255, 255, 0.7);
+                        border-radius: 12px;
+                        border: 2px solid rgba(66, 153, 225, 0.2);
+                        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+                    ">
+                        <textarea id="my-edit-textarea-${review.id}" 
+                                  style="
+                                      width: 100%;
+                                      min-height: 120px;
+                                      padding: 16px;
+                                      border: 2px solid rgba(66, 153, 225, 0.3);
+                                      border-radius: 12px;
+                                      font-size: 15px;
+                                      line-height: 1.6;
+                                      resize: vertical;
+                                      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                                      background: white;
+                                      box-sizing: border-box;
+                                      transition: border-color 0.2s ease;
+                                  "
+                                  placeholder="あなたの感想を編集してください..."
+                                  onfocus="this.style.borderColor='rgba(66, 153, 225, 0.6)'; this.style.boxShadow='0 0 0 3px rgba(66, 153, 225, 0.1)'"
+                                  onblur="this.style.borderColor='rgba(66, 153, 225, 0.3)'; this.style.boxShadow='none'"
+                        >${review.content}</textarea>
+                    </div>
+                    
                     <!-- メタ情報 -->
                     <div class="review-meta" style="
                         display: flex;
@@ -12176,18 +12208,71 @@
                         ">
                             <span style="color: #4a5568;">📅</span> ${createdDate}${updatedDate ? ` <span style="color: #ed8936;">• 編集 ${updatedDate}</span>` : ''}
                         </div>
-                        <button onclick="editMyReview('${review.id}')" style="
-                            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
-                            color: white;
-                            border: none;
-                            border-radius: 8px;
-                            padding: 6px 16px;
-                            font-size: 13px;
-                            font-weight: 600;
-                            cursor: pointer;
-                            transition: all 0.2s ease;
-                            box-shadow: 0 2px 8px rgba(66, 153, 225, 0.3);
-                        " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 16px rgba(66, 153, 225, 0.4)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(66, 153, 225, 0.3)';">✏️ 編集</button>
+                        <div id="my-edit-buttons-normal-${review.id}" style="display: flex; gap: 8px; align-self: flex-end;">
+                            <button onclick="editMyReview('${review.id}')" style="
+                                background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+                                color: white;
+                                border: none;
+                                border-radius: 8px;
+                                padding: 6px 16px;
+                                font-size: 13px;
+                                font-weight: 600;
+                                cursor: pointer;
+                                transition: all 0.2s ease;
+                                box-shadow: 0 2px 8px rgba(66, 153, 225, 0.3);
+                                flex-shrink: 0;
+                            " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 16px rgba(66, 153, 225, 0.4)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(66, 153, 225, 0.3)';">✏️ 編集</button>
+                        </div>
+                        <div id="my-edit-buttons-editing-${review.id}" style="display: none; gap: 8px; align-self: flex-end;">
+                            <button onclick="deleteMyReviewWithConfirm('${review.id}')" 
+                                    style="
+                                        padding: 6px 12px;
+                                        background: linear-gradient(135deg, #e53e3e, #c53030);
+                                        color: white;
+                                        border: none;
+                                        border-radius: 8px;
+                                        cursor: pointer;
+                                        font-size: 12px;
+                                        font-weight: 500;
+                                        transition: all 0.2s ease;
+                                        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                                        flex-shrink: 0;
+                                    " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(229, 62, 62, 0.3)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
+                                🗑️ 削除
+                            </button>
+                            <button onclick="cancelEditMyReview('${review.id}')" 
+                                    style="
+                                        padding: 6px 12px;
+                                        background: #718096;
+                                        color: white;
+                                        border: none;
+                                        border-radius: 8px;
+                                        cursor: pointer;
+                                        font-size: 12px;
+                                        font-weight: 500;
+                                        transition: all 0.2s ease;
+                                        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                                        flex-shrink: 0;
+                                    " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.15)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
+                                ✕ キャンセル
+                            </button>
+                            <button onclick="saveEditMyReview('${review.id}')" 
+                                    style="
+                                        padding: 6px 12px;
+                                        background: linear-gradient(135deg, #38a169, #2f855a);
+                                        color: white;
+                                        border: none;
+                                        border-radius: 8px;
+                                        cursor: pointer;
+                                        font-size: 12px;
+                                        font-weight: 500;
+                                        transition: all 0.2s ease;
+                                        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                                        flex-shrink: 0;
+                                    " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(56, 161, 105, 0.3)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
+                                💾 保存
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -12455,10 +12540,109 @@
             }
         }
         
-        // マイレビュー編集（既存の編集機能を再利用）
+        // マイレビュー編集開始
         function editMyReview(reviewId) {
-            // 既存の編集機能を使用
-            editReview(reviewId);
+            const contentDiv = document.querySelector(`#review-${reviewId} .my-review-text`);
+            const editForm = document.getElementById(`my-edit-form-${reviewId}`);
+            const normalButtons = document.getElementById(`my-edit-buttons-normal-${reviewId}`);
+            const editingButtons = document.getElementById(`my-edit-buttons-editing-${reviewId}`);
+            
+            if (contentDiv && editForm && normalButtons && editingButtons) {
+                // コンテンツ表示を隠して編集フォームを表示
+                contentDiv.style.display = 'none';
+                editForm.style.display = 'block';
+                
+                // ボタンを切り替え（編集ボタン → 削除・キャンセル・保存ボタン）
+                normalButtons.style.display = 'none';
+                editingButtons.style.display = 'flex';
+                
+                // テキストエリアにフォーカス
+                const textarea = document.getElementById(`my-edit-textarea-${reviewId}`);
+                if (textarea) {
+                    textarea.focus();
+                    textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+                }
+            }
+        }
+        
+        // マイレビュー編集キャンセル
+        function cancelEditMyReview(reviewId) {
+            const contentDiv = document.querySelector(`#review-${reviewId} .my-review-text`);
+            const editForm = document.getElementById(`my-edit-form-${reviewId}`);
+            const normalButtons = document.getElementById(`my-edit-buttons-normal-${reviewId}`);
+            const editingButtons = document.getElementById(`my-edit-buttons-editing-${reviewId}`);
+            
+            if (contentDiv && editForm && normalButtons && editingButtons) {
+                // コンテンツ表示を戻して編集フォームを隠す
+                contentDiv.style.display = 'block';
+                editForm.style.display = 'none';
+                
+                // ボタンを元に戻す（削除・キャンセル・保存ボタン → 編集ボタン）
+                normalButtons.style.display = 'flex';
+                editingButtons.style.display = 'none';
+            }
+        }
+        
+        // マイレビュー編集保存
+        async function saveEditMyReview(reviewId) {
+            const textarea = document.getElementById(`my-edit-textarea-${reviewId}`);
+            if (!textarea) return;
+            
+            const newContent = textarea.value.trim();
+            if (!newContent) {
+                alert('内容を入力してください');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${AVATAR_WORKER_URL}/reviews`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: reviewId,
+                        content: newContent
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    // レビュー内容を更新
+                    const contentDiv = document.querySelector(`#review-${reviewId} .my-review-text div`);
+                    if (contentDiv) {
+                        contentDiv.textContent = newContent;
+                    }
+                    
+                    // 編集モードを終了
+                    cancelEditMyReview(reviewId);
+                    
+                    alert('感想を更新しました');
+                } else {
+                    alert('編集に失敗しました');
+                }
+            } catch (error) {
+                console.error('マイレビュー編集エラー:', error);
+                alert('編集中にエラーが発生しました');
+            }
+        }
+        
+        // マイレビュー削除確認ダイアログ付き削除
+        async function deleteMyReviewWithConfirm(reviewId) {
+            const isConfirmed = confirm('この感想を削除しますか？\n\n削除した感想は元に戻せません。');
+            if (!isConfirmed) {
+                return;
+            }
+            
+            // 既存の削除処理を呼び出す
+            await deleteReview(reviewId);
+            
+            // マイレビューリストから削除
+            const reviewCard = document.getElementById(`review-${reviewId}`);
+            if (reviewCard) {
+                reviewCard.style.display = 'none';
+            }
         }
         
         // 洗練されたマイレビュー用CSS追加
