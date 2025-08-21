@@ -4867,6 +4867,38 @@
             justify-self: flex-start !important;
             align-self: flex-start !important;
         }
+
+        /* 🔥 最強レビュー左寄せ固定CSS - 全継承を上書き */
+        div[id^="review-"] .review-content-display,
+        div[id^="review-"] .review-content-display *,
+        .review-content-display,
+        .review-content-display *,
+        #reviewTextarea,
+        textarea[id^="edit-textarea-"] {
+            text-align: left !important;
+            align-items: flex-start !important;
+            justify-content: flex-start !important;
+            justify-items: flex-start !important;
+            align-content: flex-start !important;
+            align-self: flex-start !important;
+            justify-self: flex-start !important;
+            display: block !important;
+            width: 100% !important;
+        }
+        
+        /* レビューコンテナも左寄せ固定 */
+        div[id^="review-"],
+        .store-detail-info {
+            text-align: left !important;
+            display: block !important;
+        }
+        
+        /* すべてのレビュー関連要素を強制左寄せ */
+        [id*="review"] *,
+        .review-edit-form *,
+        #reviewForm * {
+            text-align: left !important;
+        }
     </style>
 </head>
 <body>
