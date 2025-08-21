@@ -10611,7 +10611,7 @@
             const reviews = await getStoreReviews(storeId);
             
             // 詳細画面のHTML作成
-            const detailHTML = createStoreDetailHTML(store, reviews);
+            const detailHTML = await createStoreDetailHTML(store, reviews);
             
             // モーダル/フルスクリーン表示
             if (isDesktop()) {
@@ -10622,7 +10622,7 @@
         }
 
         // 店舗詳細HTMLを生成
-        function createStoreDetailHTML(store, reviews = []) {
+        async function createStoreDetailHTML(store, reviews = []) {
             const storeName = escapeHtml(store.name || '');
             const storeAddress = escapeHtml(store.address || '');
             const storeCategory = escapeHtml(store.category || '');
@@ -10694,7 +10694,7 @@
                         ` : ''}
 
                         <!-- レビュー -->
-                        ${createReviewsHTML(reviews, store.id)}
+                        ${await createReviewsHTML(reviews, store.id)}
 
                         <!-- ナビゲーションボタン -->
                         <div class="store-navigation">
@@ -11361,10 +11361,15 @@
         const USE_CLOUDFLARE_REVIEWS = true;
         
         // 既存システムで使用されている関数の復旧
-        function createReviewsHTML(reviews, storeId) {
-            const reviewsHTML = reviews && reviews.length > 0 
-                ? reviews.map(review => createSimpleReviewHTML(review)).join('')
-                : '<div style="text-align: center; padding: 20px; color: #666;">まだ感想がありません</div>';
+        async function createReviewsHTML(reviews, storeId) {
+            let reviewsHTML;
+            if (reviews && reviews.length > 0) {
+                const reviewPromises = reviews.map(review => createSimpleReviewHTML(review));
+                const reviewsHTMLArray = await Promise.all(reviewPromises);
+                reviewsHTML = reviewsHTMLArray.join('');
+            } else {
+                reviewsHTML = '<div style="text-align: center; padding: 20px; color: #666;">まだ感想がありません</div>';
+            }
             
             return `
                 <div class="store-detail-info">
@@ -11397,7 +11402,7 @@
         // ========== 新・Cloudflare レビューシステム ==========
         
         // 高機能レビューHTML生成（ニックネーム・アイコン・編集機能付き）
-        function createSimpleReviewHTML(review) {
+        async function createSimpleReviewHTML(review) {
             const currentUser = getCurrentUser();
             const isOwner = currentUser === review.user_email;
             const createdDate = new Date(review.created_at).toLocaleDateString('ja-JP');
@@ -11405,9 +11410,9 @@
                 ? new Date(review.updated_at).toLocaleDateString('ja-JP') 
                 : null;
             
-            // ニックネーム取得（メールから生成またはローカルストレージから）
-            const nickname = getUserNickname(review.user_email);
-            const avatarUrl = getUserAvatarUrl(review.user_email);
+            // ニックネーム・アバター取得（既存システム連携）
+            const nickname = await getUserNickname(review.user_email);
+            const avatarUrl = await getUserAvatarUrl(review.user_email);
             
             return `
                 <div id="review-${review.id}" style="background: #f9f9f9; border-radius: 8px; padding: 15px; margin: 10px 0; text-align: left !important; display: block !important; width: 100% !important; box-sizing: border-box !important; align-items: flex-start !important; justify-content: flex-start !important; align-self: flex-start !important; justify-self: flex-start !important;">
@@ -11486,7 +11491,9 @@
                 }
                 
                 // シンプルなモーダル表示
-                const reviewsHTML = reviews.map(createSimpleReviewHTML).join('');
+                const reviewPromises = reviews.map(review => createSimpleReviewHTML(review));
+                const reviewsHTMLArray = await Promise.all(reviewPromises);
+                const reviewsHTML = reviewsHTMLArray.join('');
                 const modalHTML = `
                     <div id="myReviewsModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center;">
                         <div style="background: white; border-radius: 12px; padding: 20px; max-width: 500px; max-height: 70%; overflow-y: auto; text-align: left !important;">
@@ -11583,7 +11590,9 @@
             const reviewsContainer = document.getElementById('storeReviews');
             
             if (reviewsContainer && reviews.length > 0) {
-                const reviewsHTML = reviews.map(createSimpleReviewHTML).join('');
+                const reviewPromises = reviews.map(review => createSimpleReviewHTML(review));
+                const reviewsHTMLArray = await Promise.all(reviewPromises);
+                const reviewsHTML = reviewsHTMLArray.join('');
                 reviewsContainer.innerHTML = `
                     <div style="text-align: left !important;">
                         <h4 style="margin: 20px 0 10px 0;">みんなの感想 (${reviews.length}件)</h4>
@@ -11632,23 +11641,69 @@
         
         // ========== ユーザー情報関連関数 ==========
         
-        // ユーザーのニックネーム取得
-        function getUserNickname(email) {
-            // ローカルストレージから取得
-            const saved = localStorage.getItem(`nickname_${email}`);
-            if (saved) return saved;
+        // ユーザーのニックネーム取得（既存システム連携）
+        async function getUserNickname(email) {
+            // 現在のユーザーの場合は既存プロフィールから取得
+            if (getCurrentUser() === email && currentUserProfile) {
+                return getDisplayNickname(currentUserProfile);
+            }
             
-            // メールアドレスから生成（@より前の部分）
+            // 他のユーザーの場合はSupabaseから取得
+            try {
+                const profile = await getUserProfile(email);
+                if (profile && profile.nickname) {
+                    return profile.nickname;
+                }
+            } catch (error) {
+                console.warn('プロフィール取得エラー:', error);
+            }
+            
+            // フォールバック：メールアドレスから生成
             return email.split('@')[0];
         }
         
-        // ユーザーのアバターURL取得
-        function getUserAvatarUrl(email) {
-            const saved = localStorage.getItem(`avatar_${email}`);
-            if (saved) return saved;
+        // ユーザーのアバターURL取得（既存システム連携）
+        async function getUserAvatarUrl(email) {
+            // 現在のユーザーの場合は既存プロフィールから取得
+            if (getCurrentUser() === email && currentUserProfile) {
+                if (currentUserProfile.avatarType === 'image' && currentUserProfile.avatarUrl) {
+                    return currentUserProfile.avatarUrl;
+                } else {
+                    // プリセット絵文字アバターをBase64 SVGに変換
+                    const emoji = getAvatarDisplay(currentUserProfile);
+                    return createEmojiAvatar(emoji);
+                }
+            }
             
-            // デフォルトアバター（SVG）
-            return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTYiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxMiIgcj0iNSIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNNiAyNmMwLTUuNTIzIDQuNDc3LTEwIDEwLTEwczEwIDQuNDc3IDEwIDEwdjAiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
+            // 他のユーザーの場合はSupabaseから取得
+            try {
+                const profile = await getUserProfile(email);
+                if (profile) {
+                    if (profile.avatarType === 'image' && profile.avatarUrl) {
+                        return profile.avatarUrl;
+                    } else if (profile.avatar) {
+                        const preset = PRESET_AVATARS.find(a => a.id === profile.avatar);
+                        const emoji = preset ? preset.emoji : '🌸';
+                        return createEmojiAvatar(emoji);
+                    }
+                }
+            } catch (error) {
+                console.warn('プロフィール取得エラー:', error);
+            }
+            
+            // デフォルトアバター
+            return createEmojiAvatar('🌸');
+        }
+        
+        // 絵文字をSVGアバターに変換
+        function createEmojiAvatar(emoji) {
+            const svgData = `
+                <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="16" cy="16" r="16" fill="#f8f9fa"/>
+                    <text x="16" y="22" text-anchor="middle" font-size="16" font-family="system-ui">${emoji}</text>
+                </svg>
+            `;
+            return `data:image/svg+xml;base64,${btoa(svgData)}`;
         }
         
         // ========== レビュー編集・削除関数 ==========
