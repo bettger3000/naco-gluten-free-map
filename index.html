@@ -4891,8 +4891,8 @@
         </header>
 
         <!-- サイドメニューオーバーレイ -->
-        <div class="side-menu-overlay" id="sideMenuOverlay">
-            <div class="side-menu">
+        <div class="side-menu-overlay" id="sideMenuOverlay" onclick="closeSideMenu()">
+            <div class="side-menu" onclick="event.stopPropagation()">
                 <div class="side-menu-header">
                     <h3 class="side-menu-title">メニュー</h3>
                     <p class="side-menu-subtitle">機能を選択してください</p>
@@ -11335,23 +11335,29 @@
         // サイドメニューを開く
         function toggleSideMenu() {
             const overlay = document.getElementById('sideMenuOverlay');
-            if (overlay.classList.contains('active')) {
-                closeSideMenu();
-            } else {
-                openSideMenu();
+            if (overlay) {
+                if (overlay.classList.contains('active')) {
+                    closeSideMenu();
+                } else {
+                    openSideMenu();
+                }
             }
         }
 
         function openSideMenu() {
             const overlay = document.getElementById('sideMenuOverlay');
-            overlay.classList.add('active');
-            document.body.style.overflow = 'hidden'; // スクロール無効化
+            if (overlay) {
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden'; // スクロール無効化
+            }
         }
 
         function closeSideMenu() {
             const overlay = document.getElementById('sideMenuOverlay');
-            overlay.classList.remove('active');
-            document.body.style.overflow = ''; // スクロール復活
+            if (overlay) {
+                overlay.classList.remove('active');
+                document.body.style.overflow = ''; // スクロール復活
+            }
         }
 
         // ESCキーでメニューを閉じる
