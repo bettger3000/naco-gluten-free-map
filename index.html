@@ -3602,6 +3602,36 @@
             align-items: flex-start !important;
         }
 
+        /* レビューテキスト内容の確実な左寄せ */
+        .review-item p,
+        .review-item div,
+        .review-item span,
+        .review-item * {
+            text-align: left !important;
+        }
+
+        /* まず、レビュー周辺は決してセンターにしない */
+        .store-detail-modal,
+        .store-detail-fullscreen,
+        .my-reviews-modal,
+        .my-reviews-content,
+        .my-reviews-body,
+        .reviews-list,
+        .review-item,
+        .review-card-body,
+        .review-content,
+        [id^="review-content-"] {
+            text-align: left !important;
+        }
+
+        /* レビュー領域内の段落も確実に左寄せ */
+        .review-content p,
+        .review-item p,
+        .my-reviews-body p {
+            text-align: left !important;
+            margin: 0;
+        }
+
         .review-item:hover {
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             transform: translateY(-1px);
