@@ -4844,8 +4844,17 @@
         /* すべてのレビュー関連要素を強制左寄せ */
         [id*="review"] *,
         .review-edit-form *,
-        #reviewForm * {
+        #reviewForm *,
+        .my-review-card .review-content,
+        .my-review-card .my-review-text,
+        .my-review-card .my-review-text * {
             text-align: left !important;
+            display: block !important;
+            width: 100% !important;
+            align-items: flex-start !important;
+            justify-content: flex-start !important;
+            align-self: flex-start !important;
+            justify-self: flex-start !important;
         }
     </style>
 </head>
@@ -11508,6 +11517,11 @@
                 
                 document.body.insertAdjacentHTML('beforeend', modalHTML);
                 
+                // マイレビュー専用の強制左寄せ（遅延実行）
+                setTimeout(() => {
+                    forceMyReviewsLeftAlign();
+                }, 100);
+                
             } catch (error) {
                 console.error('レビュー取得エラー:', error);
                 alert('エラーが発生しました');
@@ -11675,8 +11689,19 @@
                 ? new Date(review.updated_at).toLocaleDateString('ja-JP') 
                 : null;
             
-            const storeIcon = getCategoryIcon(review.store_category);
-            const storeName = review.store_name || '店舗名不明';
+            // 店舗情報をリアルタイム取得（既存レビュー対応）
+            let storeName = review.store_name || '店舗名不明';
+            let storeCategory = review.store_category || '不明';
+            
+            if (!review.store_name && review.store_id) {
+                const store = stores.find(s => s.id == review.store_id);
+                if (store) {
+                    storeName = store.name;
+                    storeCategory = store.category;
+                }
+            }
+            
+            const storeIcon = getCategoryIcon(storeCategory);
             
             return `
                 <div class="my-review-card" style="background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid #f0f0f0;">
@@ -11688,8 +11713,8 @@
                     </div>
                     
                     <!-- レビュー内容 -->
-                    <div class="review-content" style="text-align: left !important; line-height: 1.6; color: #333; margin-bottom: 12px; padding: 8px 0;">
-                        ${review.content}
+                    <div class="review-content my-review-text" style="text-align: left !important; line-height: 1.6; color: #333; margin-bottom: 12px; padding: 8px 0; display: block !important; width: 100% !important; box-sizing: border-box !important; align-items: flex-start !important; justify-content: flex-start !important; align-self: flex-start !important; justify-self: flex-start !important;">
+                        <div style="text-align: left !important; display: block !important; width: 100% !important;">${review.content}</div>
                     </div>
                     
                     <!-- メタ情報 -->
@@ -11869,6 +11894,23 @@
                 console.error('レビュー削除エラー:', error);
                 alert('削除中にエラーが発生しました');
             }
+        }
+        
+        // マイレビュー専用の強制左寄せ関数
+        function forceMyReviewsLeftAlign() {
+            const myReviewElements = document.querySelectorAll(
+                '.my-review-card .review-content, .my-review-card .my-review-text, .my-review-card .my-review-text *'
+            );
+            
+            myReviewElements.forEach((element) => {
+                element.style.setProperty('text-align', 'left', 'important');
+                element.style.setProperty('display', 'block', 'important');
+                element.style.setProperty('width', '100%', 'important');
+                element.style.setProperty('align-items', 'flex-start', 'important');
+                element.style.setProperty('justify-content', 'flex-start', 'important');
+                element.style.setProperty('align-self', 'flex-start', 'important');
+                element.style.setProperty('justify-self', 'flex-start', 'important');
+            });
         }
         
         // ========== マイレビューからの店舗ナビゲーション ==========
