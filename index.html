@@ -10620,6 +10620,7 @@
             
             // レビューデータを取得
             const reviews = await getStoreReviews(storeId);
+            console.log('🔍 取得したレビュー:', reviews);
             
             // 詳細画面のHTML作成
             const detailHTML = await createStoreDetailHTML(store, reviews);
@@ -10630,6 +10631,18 @@
             } else {
                 showStoreDetailFullscreen(detailHTML);
             }
+            
+            // レビュー投稿後の再読み込み処理を設定
+            setTimeout(() => {
+                const reviewTextarea = document.getElementById('reviewTextarea');
+                if (reviewTextarea) {
+                    reviewTextarea.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter' && e.ctrlKey) {
+                            submitReview(storeId);
+                        }
+                    });
+                }
+            }, 100);
         }
 
         // 店舗詳細HTMLを生成
@@ -10705,7 +10718,9 @@
                         ` : ''}
 
                         <!-- レビュー -->
-                        ${await createReviewsHTML(reviews, store.id)}
+                        <div id="storeReviews-${store.id}">
+                            ${await createReviewsHTML(reviews, store.id)}
+                        </div>
 
                         <!-- ナビゲーションボタン -->
                         <div class="store-navigation">
@@ -11921,18 +11936,15 @@
         // 店舗レビューの更新表示
         async function refreshStoreReviews(storeId) {
             const reviews = await getStoreReviews(storeId);
-            const reviewsContainer = document.getElementById('storeReviews');
+            const reviewsContainer = document.getElementById(`storeReviews-${storeId}`);
             
-            if (reviewsContainer && reviews.length > 0) {
-                const reviewPromises = reviews.map(review => createSimpleReviewHTML(review));
-                const reviewsHTMLArray = await Promise.all(reviewPromises);
-                const reviewsHTML = reviewsHTMLArray.join('');
-                reviewsContainer.innerHTML = `
-                    <div style="text-align: left !important;">
-                        <h4 style="margin: 20px 0 10px 0;">みんなの感想 (${reviews.length}件)</h4>
-                        ${reviewsHTML}
-                    </div>
-                `;
+            if (reviewsContainer) {
+                // レビューセクション全体を再生成
+                const newReviewsHTML = await createReviewsHTML(reviews, storeId);
+                reviewsContainer.innerHTML = newReviewsHTML;
+                
+                // 強制左寄せ適用
+                setTimeout(() => forceAllReviewsLeftAlign(), 100);
             }
         }
         
