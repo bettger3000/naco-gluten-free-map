@@ -2566,7 +2566,6 @@
             min-height: 0;
             max-height: 100%;
             -webkit-overflow-scrolling: touch;
-            /* デバッグ用: スクロール確認 */
             position: relative;
         }
         
@@ -3553,35 +3552,6 @@
             text-align: left;
         }
 
-        /* レビューテキスト内容の確実な左寄せ */
-        .review-item p,
-        .review-item div,
-        .review-item span,
-        .review-item * {
-            text-align: left !important;
-        }
-
-        /* まず、レビュー周辺は決してセンターにしない */
-        .store-detail-modal,
-        .store-detail-fullscreen,
-        .my-reviews-modal,
-        .my-reviews-content,
-        .my-reviews-body,
-        .reviews-list,
-        .review-item,
-        .review-card-body,
-        .review-content,
-        [id^="review-content-"] {
-            text-align: left !important;
-        }
-
-        /* レビュー領域内の段落も確実に左寄せ */
-        .review-content p,
-        .review-item p,
-        .my-reviews-body p {
-            text-align: left !important;
-            margin: 0;
-        }
 
         .review-item:hover {
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -3684,7 +3654,6 @@
             font-size: 0.95rem;
             white-space: pre-wrap;
             word-wrap: break-word;
-            text-align: left !important;
             text-align: left !important;
         }
 
@@ -4516,26 +4485,6 @@
             color: var(--text-secondary);
         }
         
-        /* 最終的なレビューテキスト左寄せ強制ルール - 絶対最強詳細度 */
-        html body div.store-detail-modal-content div.review-content,
-        html body div.store-detail-fullscreen div.review-content,
-        html body div.my-reviews-modal div.review-content,
-        html body div.review-card-body div.review-content,
-        html body div.reviews-list div.review-content,
-        html body div[id^="review-content-"],
-        html body .store-detail-modal-content [id^="review-content-"],
-        html body .store-detail-fullscreen [id^="review-content-"],
-        html body .my-reviews-modal [id^="review-content-"],
-        html body .review-card-body [id^="review-content-"] {
-            text-align: left !important;
-            direction: ltr !important;
-            unicode-bidi: embed !important;
-            padding-left: 0 !important;
-            margin-left: 0 !important;
-            display: block !important;
-            width: 100% !important;
-            text-indent: 0 !important;
-        }
 
         .reviews-empty i {
             font-size: 3rem;
@@ -4645,7 +4594,6 @@
             font-size: 0.95rem;
             white-space: pre-wrap;
             word-wrap: break-word;
-            text-align: left !important;
             text-align: left !important;
         }
 
@@ -6160,8 +6108,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('⚡ 埋め込みデータ版 - 高速起動');
             
-            // デバッグ: 関数の存在確認
-            console.log('🔧 showMyReviews関数の存在:', typeof showMyReviews !== 'undefined');
             
             initializeApp();
         });
@@ -10663,8 +10609,6 @@
             
             // レビューデータを取得
             const reviews = await getStoreReviews(storeId);
-            console.log('🔍 Debug - 取得したレビュー:', reviews);
-            console.log('🔍 Debug - レビュー数:', reviews.length);
             
             // 詳細画面のHTML作成
             const detailHTML = createStoreDetailHTML(store, reviews);
@@ -11667,18 +11611,14 @@
             }
         }
         
-        // 🔥 強制的に全レビューを左寄せにする関数
+        // 強制的に全レビューを左寄せにする関数
         function forceAllReviewsLeftAlign() {
-            console.log('🔧 強制レビュー左寄せ実行開始');
-            
             // 全レビューコンテナを取得
             const reviewElements = document.querySelectorAll(
                 '[id^="review-"], .review-content-display, .review-content-display *, [class*="review-content"]'
             );
             
-            reviewElements.forEach((element, index) => {
-                console.log(`🔧 要素${index}:`, element.tagName, element.className || element.id);
-                
+            reviewElements.forEach((element) => {
                 // 最強スタイル適用
                 element.style.setProperty('text-align', 'left', 'important');
                 element.style.setProperty('display', 'block', 'important');
@@ -11688,8 +11628,6 @@
                 element.style.setProperty('align-self', 'flex-start', 'important');
                 element.style.setProperty('justify-self', 'flex-start', 'important');
             });
-            
-            console.log('✅ 強制レビュー左寄せ完了:', reviewElements.length, '個の要素を処理');
         }
         
         // ========== ユーザー情報関連関数 ==========
