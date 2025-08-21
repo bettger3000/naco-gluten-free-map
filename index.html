@@ -11221,13 +11221,16 @@
                                  style="
                                     width: 40px;
                                     height: 40px;
+                                    aspect-ratio: 1/1;
                                     border-radius: 50%;
                                     margin-right: 12px;
                                     object-fit: cover;
+                                    object-position: center center;
                                     box-shadow: 0 2px 6px rgba(0,0,0,0.15);
                                     vertical-align: middle;
+                                    display: inline-block;
                                  "
-                                 onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNOCAzMmMwLTYuNjI3IDUuMzczLTEyIDEyLTEyczEyIDUuMzczIDEyIDEydjAiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+'" />
+                                 onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNOCAzMmMwLTYuNjI3IDUuMzczLTEyIDEyLTEzczEyIDUuMzczIDEyIDEydjAiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc>'" />
                             ${displayName}
                         `;
                     } else {
@@ -11559,13 +11562,16 @@
                              style="
                                 width: 40px;
                                 height: 40px;
+                                aspect-ratio: 1/1;
                                 border-radius: 50%;
                                 margin-right: 12px;
                                 object-fit: cover;
+                                object-position: center center;
                                 flex-shrink: 0;
                                 box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                                display: block;
                              "
-                             onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNOCAzMmMwLTYuNjI3IDUuMzczLTEyIDEyLTEyczEyIDUuMzczIDEyIDEydjAiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+'" />
+                             onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNOCAzMmMwLTYuNjI3IDUuMzczLTEyIDEyLTEzczEyIDUuMzczIDEyIDEydjAiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+'" />
                         <div style="flex-grow: 1;">
                             <div style="font-weight: 600; color: #333; font-size: 16px; margin-bottom: 2px;">${nickname}</div>
                             <div style="color: #666; font-size: 0.9em; opacity: 0.8;">
@@ -11592,7 +11598,7 @@
                                     ✏️ 編集
                                 </button>
                             </div>
-                            <div id="edit-buttons-editing-${review.id}" style="display: none; gap: 8px;">
+                            <div id="edit-buttons-editing-${review.id}" style="display: none; gap: 8px; flex-direction: row; align-items: center;">
                                 <button onclick="deleteReviewWithConfirm('${review.id}')" 
                                         style="
                                             padding: 6px 12px;
@@ -12060,11 +12066,14 @@
                              style="
                                 width: 32px;
                                 height: 32px;
+                                aspect-ratio: 1/1;
                                 border-radius: 50%;
                                 margin-right: 10px;
                                 object-fit: cover;
+                                object-position: center center;
                                 flex-shrink: 0;
                                 box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+                                display: block;
                              "
                              onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTYiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxMyIgcj0iNSIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNNiAyNmMwLTUuNTIzIDQuNDc3LTEwIDEwLTEwczEwIDQuNDc3IDEwIDEwdjAiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+'" />
                         <div style="
@@ -12159,7 +12168,7 @@
                                 flex-shrink: 0;
                             " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 16px rgba(66, 153, 225, 0.4)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(66, 153, 225, 0.3)';">✏️ 編集</button>
                         </div>
-                        <div id="my-edit-buttons-editing-${review.id}" style="display: none; gap: 8px; align-self: flex-end;">
+                        <div id="my-edit-buttons-editing-${review.id}" style="display: none; gap: 8px; flex-direction: row; align-items: center; align-self: flex-end;">
                             <button onclick="deleteMyReviewWithConfirm('${review.id}')" 
                                     style="
                                         padding: 6px 12px;
