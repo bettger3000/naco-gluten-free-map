@@ -13085,7 +13085,7 @@
         }
 
         // DOM読み込み後とMutationObserver両方で実行
-        document.addEventListener('DOMContentLoaded', forceReviewTextAlign);
+        // document.addEventListener('DOMContentLoaded', forceReviewTextAlign); // REMOVED - デバッグ用コード削除
         
         // MutationObserver for dynamic content changes
         const reviewObserver = new MutationObserver((mutations) => {
@@ -13120,7 +13120,7 @@
         
         
         // 定期実行でも保険をかける
-        setInterval(forceReviewTextAlign, 1000);
+        // setInterval(forceReviewTextAlign, 1000); // REMOVED - デバッグ用コード削除
     </script>
 
 </body>
