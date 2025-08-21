@@ -11379,30 +11379,106 @@
                 const reviewsHTMLArray = await Promise.all(reviewPromises);
                 reviewsHTML = reviewsHTMLArray.join('');
             } else {
-                reviewsHTML = '<div style="text-align: center; padding: 20px; color: #666;">まだ感想がありません</div>';
+                reviewsHTML = '<div style="text-align: center; padding: 32px 20px; color: #999; font-size: 16px; background: rgba(255, 255, 255, 0.5); border-radius: 12px; border: 1px dashed rgba(255, 107, 157, 0.2); margin: 16px 0;">💭 まだ感想がありません<br><span style="font-size: 14px; opacity: 0.7; margin-top: 8px; display: inline-block;">最初の感想を投稿してみませんか？</span></div>';
             }
             
             return `
                 <div class="store-detail-info">
-                    <h3>💬 みんなの感想</h3>
+                    <h3 style="
+                        font-size: 20px;
+                        font-weight: 600;
+                        color: #333;
+                        margin: 24px 0 20px 0;
+                        padding: 16px 20px;
+                        background: linear-gradient(135deg, rgba(255, 107, 157, 0.08) 0%, rgba(64, 224, 208, 0.08) 100%);
+                        border-radius: 12px;
+                        border-left: 4px solid;
+                        border-image: linear-gradient(135deg, #ff6b9d, #40e0d0) 1;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                    ">💬 みんなの感想</h3>
                     ${reviewsHTML}
                     
                     <!-- レビュー投稿フォーム -->
-                    <div id="reviewForm" style="margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6;">
-                        <h4 style="margin-bottom: 15px; color: #333;">感想を投稿する</h4>
+                    <div id="reviewForm" style="
+                        margin-top: 24px;
+                        padding: 24px;
+                        background: linear-gradient(135deg, #ffffff 0%, #fdfbfb 100%);
+                        border-radius: 16px;
+                        border: 1px solid rgba(255, 107, 157, 0.08);
+                        box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
+                        position: relative;
+                        overflow: hidden;
+                    ">
+                        <!-- 装飾的グラデーション -->
+                        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #ff6b9d, #40e0d0); border-radius: 16px 16px 0 0;"></div>
+                        
+                        <h4 style="
+                            margin: 8px 0 20px 0;
+                            color: #333;
+                            font-size: 18px;
+                            font-weight: 600;
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                        ">✍️ 感想を投稿する</h4>
+                        
                         <textarea id="reviewTextarea" 
-                                placeholder="この店舗の感想を書いてください..."
-                                style="width: 100%; height: 100px; padding: 12px; border: 1px solid #ccc; border-radius: 4px; resize: vertical; font-family: inherit; font-size: 14px; line-height: 1.5; box-sizing: border-box; text-align: left !important;"
-                                onfocus="this.style.borderColor='#007bff';"
-                                onblur="this.style.borderColor='#ccc';"></textarea>
-                        <div style="margin-top: 12px; display: flex; gap: 10px; justify-content: flex-end;">
+                                placeholder="この店舗の感想を書いてください...✨"
+                                style="
+                                    width: 100%;
+                                    height: 120px;
+                                    padding: 16px;
+                                    border: 1px solid rgba(255, 107, 157, 0.15);
+                                    border-radius: 12px;
+                                    resize: vertical;
+                                    font-family: inherit;
+                                    font-size: 15px;
+                                    line-height: 1.6;
+                                    box-sizing: border-box;
+                                    text-align: left !important;
+                                    background: rgba(255, 255, 255, 0.8);
+                                    transition: all 0.2s ease;
+                                    backdrop-filter: blur(10px);
+                                " onfocus="this.style.borderColor='rgba(255, 107, 157, 0.4)'; this.style.boxShadow='0 0 0 3px rgba(255, 107, 157, 0.1)';" onblur="this.style.borderColor='rgba(255, 107, 157, 0.15)'; this.style.boxShadow='none';"></textarea>
+                        
+                        <div style="margin-top: 16px; display: flex; gap: 12px; justify-content: flex-end;">
                             <button onclick="cancelReview()" 
-                                    style="padding: 8px 16px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
-                                キャンセル
+                                    style="
+                                        padding: 10px 20px;
+                                        background: linear-gradient(135deg, #a4a4a4, #6c757d);
+                                        color: white;
+                                        border: none;
+                                        border-radius: 10px;
+                                        cursor: pointer;
+                                        font-size: 14px;
+                                        font-weight: 500;
+                                        transition: all 0.2s ease;
+                                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 6px;
+                                    " onmouseenter="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)';" onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';">
+                                ❌ キャンセル
                             </button>
                             <button onclick="submitReview(${storeId})" 
-                                    style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">
-                                投稿する
+                                    style="
+                                        padding: 10px 20px;
+                                        background: linear-gradient(135deg, #ff6b9d, #40e0d0);
+                                        color: white;
+                                        border: none;
+                                        border-radius: 10px;
+                                        cursor: pointer;
+                                        font-size: 14px;
+                                        font-weight: 500;
+                                        transition: all 0.2s ease;
+                                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                                        display: flex;
+                                        align-items: center;
+                                        gap: 6px;
+                                    " onmouseenter="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)';" onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';">
+                                🚀 投稿する
                             </button>
                         </div>
                     </div>
@@ -11426,50 +11502,154 @@
             const avatarUrl = await getUserAvatarUrl(review.user_email);
             
             return `
-                <div id="review-${review.id}" style="background: #f9f9f9; border-radius: 8px; padding: 15px; margin: 10px 0; text-align: left !important; display: block !important; width: 100% !important; box-sizing: border-box !important; align-items: flex-start !important; justify-content: flex-start !important; align-self: flex-start !important; justify-self: flex-start !important;">
+                <div id="review-${review.id}" style="
+                    background: linear-gradient(135deg, #ffffff 0%, #fdfbfb 100%);
+                    border-radius: 16px;
+                    padding: 20px;
+                    margin: 16px 0;
+                    text-align: left !important;
+                    display: block !important;
+                    width: 100% !important;
+                    box-sizing: border-box !important;
+                    align-items: flex-start !important;
+                    justify-content: flex-start !important;
+                    align-self: flex-start !important;
+                    justify-self: flex-start !important;
+                    box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
+                    border: 1px solid rgba(255, 107, 157, 0.08);
+                    position: relative;
+                    overflow: hidden;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                " onmouseenter="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 32px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 24px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04)';">
+                    
+                    <!-- 装飾的グラデーション -->
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #ff6b9d, #40e0d0); border-radius: 16px 16px 0 0;"></div>
+                    
                     <!-- ユーザー情報ヘッダー -->
-                    <div style="display: flex; align-items: center; margin-bottom: 12px; text-align: left !important;">
+                    <div style="display: flex; align-items: center; margin-bottom: 16px; text-align: left !important; margin-top: 8px;">
                         <img src="${avatarUrl}" alt="${nickname}" 
-                             style="width: 32px; height: 32px; border-radius: 50%; margin-right: 10px; object-fit: cover;"
-                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTYiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxMiIgcj0iNSIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNNiAyNmMwLTUuNTIzIDQuNDc3LTEwIDEwLTEwczEwIDQuNDc3IDEwIDEwdjAiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';">
+                             style="width: 40px; height: 40px; border-radius: 50%; margin-right: 12px; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"
+                             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNOCAzMmMwLTYuNjI3IDUuMzczLTEyIDEyLTEyczEyIDUuMzczIDEyIDEydjAiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';">
                         <div style="flex-grow: 1;">
-                            <div style="font-weight: 600; color: #333; font-size: 14px;">${nickname}</div>
-                            <div style="color: #666; font-size: 0.85em;">
+                            <div style="font-weight: 600; color: #333; font-size: 16px; margin-bottom: 2px;">${nickname}</div>
+                            <div style="color: #666; font-size: 0.9em; opacity: 0.8;">
                                 投稿: ${createdDate}${updatedDate ? ` • 編集: ${updatedDate}` : ''}
                             </div>
                         </div>
                         ${isOwner ? `
                             <div style="display: flex; gap: 8px;">
                                 <button onclick="editReview('${review.id}')" 
-                                        style="padding: 4px 8px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">
-                                    編集
+                                        style="
+                                            padding: 8px 12px;
+                                            background: linear-gradient(135deg, #667eea, #764ba2);
+                                            color: white;
+                                            border: none;
+                                            border-radius: 8px;
+                                            cursor: pointer;
+                                            font-size: 13px;
+                                            font-weight: 500;
+                                            transition: all 0.2s ease;
+                                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                                        " onmouseenter="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)';" onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';">
+                                    ✏️ 編集
                                 </button>
                             </div>
                         ` : ''}
                     </div>
                     
                     <!-- レビュー内容 -->
-                    <div class="review-content-display" style="text-align: left !important; line-height: 1.5; color: #333; white-space: pre-wrap; display: block !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-sizing: border-box !important; align-items: flex-start !important; justify-content: flex-start !important;">
+                    <div class="review-content-display" style="
+                        text-align: left !important;
+                        line-height: 1.6;
+                        color: #333;
+                        white-space: pre-wrap;
+                        display: block !important;
+                        width: 100% !important;
+                        margin: 0 !important;
+                        padding: 16px 20px;
+                        box-sizing: border-box !important;
+                        align-items: flex-start !important;
+                        justify-content: flex-start !important;
+                        background: rgba(255, 255, 255, 0.3);
+                        border-radius: 12px;
+                        border: 1px solid rgba(255, 107, 157, 0.05);
+                        font-size: 15px;
+                    ">
                         <div style="text-align: left !important; display: block !important; width: 100% !important;">${review.content}</div>
                     </div>
                     
                     <!-- 編集フォーム（初期は非表示） -->
-                    <div id="edit-form-${review.id}" class="review-edit-form" style="display: none; margin-top: 12px;">
+                    <div id="edit-form-${review.id}" class="review-edit-form" style="
+                        display: none;
+                        margin-top: 16px;
+                        padding: 20px;
+                        background: rgba(255, 255, 255, 0.5);
+                        border-radius: 12px;
+                        border: 1px solid rgba(255, 107, 157, 0.1);
+                        backdrop-filter: blur(10px);
+                    ">
                         <textarea id="edit-textarea-${review.id}" 
-                                style="width: 100%; height: 80px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; resize: vertical; font-family: inherit; font-size: 14px; line-height: 1.5; box-sizing: border-box; text-align: left !important;"
+                                style="
+                                    width: 100%;
+                                    height: 100px;
+                                    padding: 16px;
+                                    border: 1px solid rgba(255, 107, 157, 0.15);
+                                    border-radius: 8px;
+                                    resize: vertical;
+                                    font-family: inherit;
+                                    font-size: 15px;
+                                    line-height: 1.6;
+                                    box-sizing: border-box;
+                                    text-align: left !important;
+                                    background: rgba(255, 255, 255, 0.8);
+                                    transition: all 0.2s ease;
+                                " onfocus="this.style.borderColor='rgba(255, 107, 157, 0.4)'; this.style.boxShadow='0 0 0 3px rgba(255, 107, 157, 0.1)';" onblur="this.style.borderColor='rgba(255, 107, 157, 0.15)'; this.style.boxShadow='none';"
                                 >${review.content}</textarea>
-                        <div style="margin-top: 8px; display: flex; gap: 8px; justify-content: flex-end;">
+                        <div style="margin-top: 12px; display: flex; gap: 8px; justify-content: flex-end;">
                             <button onclick="deleteReview('${review.id}')" 
-                                    style="padding: 6px 12px; background: #dc3545; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">
-                                削除
+                                    style="
+                                        padding: 8px 16px;
+                                        background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+                                        color: white;
+                                        border: none;
+                                        border-radius: 8px;
+                                        cursor: pointer;
+                                        font-size: 13px;
+                                        font-weight: 500;
+                                        transition: all 0.2s ease;
+                                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                                    " onmouseenter="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)';" onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';">
+                                🗑️ 削除
                             </button>
                             <button onclick="cancelEditReview('${review.id}')" 
-                                    style="padding: 6px 12px; background: #6c757d; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">
-                                キャンセル
+                                    style="
+                                        padding: 8px 16px;
+                                        background: linear-gradient(135deg, #a4a4a4, #6c757d);
+                                        color: white;
+                                        border: none;
+                                        border-radius: 8px;
+                                        cursor: pointer;
+                                        font-size: 13px;
+                                        font-weight: 500;
+                                        transition: all 0.2s ease;
+                                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                                    " onmouseenter="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)';" onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';">
+                                ✖️ キャンセル
                             </button>
                             <button onclick="saveEditReview('${review.id}')" 
-                                    style="padding: 6px 12px; background: #28a745; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 12px;">
-                                保存
+                                    style="
+                                        padding: 8px 16px;
+                                        background: linear-gradient(135deg, #00d2d3, #00b894);
+                                        color: white;
+                                        border: none;
+                                        border-radius: 8px;
+                                        cursor: pointer;
+                                        font-size: 13px;
+                                        font-weight: 500;
+                                        transition: all 0.2s ease;
+                                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                                    " onmouseenter="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)';" onmouseleave="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';">
+                                💾 保存
                             </button>
                         </div>
                     </div>
