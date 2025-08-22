@@ -4905,7 +4905,7 @@
                     <span>グルテンフリーマップ</span>
                 </div>
                 <div class="header-actions">
-                    <button class="hamburger-btn" onclick="toggleSideMenu()">
+                    <button class="hamburger-btn" id="hamburgerBtn">
                         <i class="fas fa-bars hamburger-icon"></i>
                         <span class="hamburger-label">メニュー</span>
                     </button>
@@ -6160,6 +6160,11 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('⚡ 埋め込みデータ版 - 高速起動');
             
+            // ハンバーガーメニューボタンのイベントリスナー
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            if (hamburgerBtn) {
+                hamburgerBtn.addEventListener('click', toggleSideMenu);
+            }
             
             initializeApp();
         });
@@ -11685,11 +11690,6 @@
         function closeProfileModal() {
             const modal = document.getElementById('profileModal');
             if (modal) modal.remove();
-        }
-         else {
-                console.error('openProfileModal function not found');
-                alert('プロフィール機能の読み込み中です。もう一度お試しください。');
-            }
         }
 
         function showMyStats() {
