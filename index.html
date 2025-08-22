@@ -12758,46 +12758,59 @@
         
         // ユーザーのアバターURL取得（既存システム連携）
         async function getUserAvatarUrl(email) {
-            // 現在のユーザーの場合は既存プロフィールから取得
-            if (getCurrentUser() === email && currentUserProfile) {
-                if (currentUserProfile.avatarType === 'image' && currentUserProfile.avatarUrl) {
-                    return currentUserProfile.avatarUrl;
-                } else {
-                    // プリセット絵文字アバターをBase64 SVGに変換
-                    const emoji = getAvatarDisplay(currentUserProfile);
-                    return createEmojiAvatar(emoji);
-                }
-            }
-            
-            // 他のユーザーの場合はSupabaseから取得
             try {
-                const profile = await getUserProfile(email);
+                // 現在のユーザーの場合は既存プロフィールから取得
+                if (getCurrentUser() === email && currentUserProfile) {
+                    if (currentUserProfile.avatarType === 'custom' && currentUserProfile.avatarUrl) {
+                        return currentUserProfile.avatarUrl;
+                    } else if (currentUserProfile.avatarType === 'preset' && currentUserProfile.avatarUrl) {
+                        return currentUserProfile.avatarUrl;
+                    } else if (currentUserProfile.avatar) {
+                        // 絵文字アバターの場合
+                        const emoji = getAvatarDisplay ? getAvatarDisplay(currentUserProfile) : '🌸';
+                        return createEmojiAvatar(emoji);
+                    }
+                }
+                
+                // 他のユーザーの場合はSupabaseから取得
+                const profile = await loadUserProfile ? loadUserProfile(email) : null;
                 if (profile) {
-                    if (profile.avatarType === 'image' && profile.avatarUrl) {
+                    if (profile.avatarType === 'custom' && profile.avatarUrl) {
+                        return profile.avatarUrl;
+                    } else if (profile.avatarType === 'preset' && profile.avatarUrl) {
                         return profile.avatarUrl;
                     } else if (profile.avatar) {
-                        const preset = PRESET_AVATARS.find(a => a.id === profile.avatar);
-                        const emoji = preset ? preset.emoji : '🌸';
+                        // 絵文字アバターの場合
+                        const emoji = profile.avatar === 'default' ? '🌸' : profile.avatar;
                         return createEmojiAvatar(emoji);
                     }
                 }
             } catch (error) {
-                console.warn('プロフィール取得エラー:', error);
+                console.warn('アバター取得エラー:', error);
             }
             
-            // デフォルトアバター
-            return createEmojiAvatar('🌸');
+            // 最終フォールバック: DiceBear API
+            return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`;
         }
         
         // 絵文字をSVGアバターに変換
         function createEmojiAvatar(emoji) {
-            const svgData = `
-                <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="16" cy="16" r="16" fill="#f8f9fa"/>
-                    <text x="16" y="22" text-anchor="middle" font-size="16" font-family="system-ui">${emoji}</text>
-                </svg>
-            `;
-            return `data:image/svg+xml;base64,${btoa(svgData)}`;
+            try {
+                const svgData = `
+                    <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="16" cy="16" r="16" fill="#f8f9fa"/>
+                        <text x="16" y="22" text-anchor="middle" font-size="16" font-family="system-ui">${emoji}</text>
+                    </svg>
+                `;
+                
+                // Unicode対応のBase64エンコード
+                const base64Data = btoa(unescape(encodeURIComponent(svgData)));
+                return `data:image/svg+xml;base64,${base64Data}`;
+            } catch (error) {
+                console.warn('Emoji avatar creation failed:', error);
+                // フォールバック: シンプルなデフォルトアバター
+                return `https://api.dicebear.com/7.x/avataaars/svg?seed=default`;
+            }
         }
         
         // ========== レビュー編集・削除関数 ==========
