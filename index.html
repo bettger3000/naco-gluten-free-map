@@ -6397,7 +6397,7 @@
             const suggestions = document.getElementById('searchSuggestions');
             
             suggestions.innerHTML = matches.map((place, index) => {
-                const icon = getCategoryIcon(place.category);
+                const icon = getLocationCategoryIcon(place.category);
                 return `
                     <div class="suggestion-item" data-index="${index}" data-place='${JSON.stringify(place)}'>
                         <span class="suggestion-icon">${icon}</span>
@@ -6508,7 +6508,7 @@
             const mobileSuggestions = document.getElementById('mobileSuggestions');
             
             mobileSuggestions.innerHTML = matches.map((place, index) => {
-                const icon = getCategoryIcon(place.category);
+                const icon = getLocationCategoryIcon(place.category);
                 return `
                     <div class="mobile-suggestion-item" data-index="${index}" data-place='${JSON.stringify(place)}'>
                         <span class="mobile-suggestion-icon">${icon}</span>
@@ -6697,8 +6697,8 @@
             }, 5000);
         }
 
-        // カテゴリアイコン取得
-        function getCategoryIcon(category) {
+        // 場所カテゴリアイコン取得
+        function getLocationCategoryIcon(category) {
             const icons = {
                 '駅・交通': '🚉',
                 '繁華街': '🏙️', 
@@ -8316,7 +8316,7 @@
         }
         
         // PC用サイドバー店舗リスト表示
-        function displayStoreList(storesData) {
+        function displayStoreListPC(storesData) {
             const container = document.getElementById('storeList');
             if (!container || !isDesktop()) return;
             
@@ -8346,7 +8346,7 @@
             
             sortedStores.forEach(store => {
                 try {
-                    const card = createStoreCard(store);
+                    const card = createStoreCardPC(store);
                     container.appendChild(card);
                 } catch (error) {
                     console.error(`店舗「${store.name}」のカード作成エラー:`, error);
@@ -8355,7 +8355,7 @@
         }
         
         // PC用店舗カード作成
-        function createStoreCard(store) {
+        function createStoreCardPC(store) {
             const card = document.createElement('div');
             card.className = 'store-card pc-store-card';
             card.dataset.storeId = store.id;
@@ -12179,8 +12179,8 @@
             });
         }
         
-        // カテゴリから絵文字アイコンを取得
-        function getCategoryIcon(category) {
+        // 食事カテゴリから絵文字アイコンを取得
+        function getFoodCategoryIcon(category) {
             const icons = {
                 '和食': '🍜',
                 '洋食': '🍽️',
