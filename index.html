@@ -13227,27 +13227,43 @@
                     }
                 }
                 
-                // 他のユーザーの場合はSupabaseから取得（タイムアウト付き）
+                // 他のユーザーの場合はWorker APIから取得
+                try {
+                    console.log('🌐 Worker APIからアバター取得中:', email);
+                    const response = await fetch(`${AVATAR_WORKER_URL}/avatar?user_email=${encodeURIComponent(email)}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('✅ Worker APIアバター取得成功:', data);
+                        
+                        if (data.avatar_url) {
+                            return data.avatar_url;
+                        } else if (data.avatar_emoji) {
+                            return createEmojiAvatar(data.avatar_emoji);
+                        }
+                    } else {
+                        console.warn('⚠️ Worker APIアバター取得失敗:', response.status);
+                    }
+                } catch (workerError) {
+                    console.warn('Worker APIエラー:', workerError);
+                }
+                
+                // フォールバック: Supabaseプロフィール確認（最小限）
                 const profile = await Promise.race([
                     loadUserProfile ? loadUserProfile(email) : Promise.resolve(null),
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))
                 ]);
                 
-                console.log('💾 ユーザープロフィール取得結果:', profile);
+                console.log('💾 フォールバックプロフィール:', profile);
                 
-                if (profile) {
-                    if (profile.avatarType === 'custom' && profile.avatarUrl) {
-                        console.log('✅ カスタムアバター(他ユーザー):', profile.avatarUrl);
-                        return profile.avatarUrl;
-                    } else if (profile.avatarType === 'preset' && profile.avatarUrl) {
-                        console.log('✅ プリセットアバター(他ユーザー):', profile.avatarUrl);
-                        return profile.avatarUrl;
-                    } else if (profile.avatar && profile.avatar !== 'default') {
-                        // 絵文字アバターの場合
-                        const emoji = profile.avatar;
-                        console.log('✅ 絵文字アバター(他ユーザー):', emoji);
-                        return createEmojiAvatar(emoji);
-                    }
+                if (profile && profile.avatar && profile.avatar !== 'default') {
+                    console.log('✅ フォールバック絵文字アバター:', profile.avatar);
+                    return createEmojiAvatar(profile.avatar);
                 }
                 
                 console.warn('⚠️ アバターが取得できませんでした:', { email, profile, currentUserProfile });
