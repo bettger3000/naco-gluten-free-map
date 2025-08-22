@@ -12463,21 +12463,24 @@
                 // 編集ボタンを隠す
                 normalButtons.style.display = 'none';
                 
-                // 横並びボタンを確実に生成
+                // 横並びボタンを強制的に生成（絶対に縦並びにならない）
                 editingButtons.innerHTML = `
-                    <style>
-                        .edit-action-buttons {
-                            display: flex !important;
-                            flex-direction: row !important;
-                            gap: 8px !important;
-                            justify-content: flex-end !important;
-                            align-items: center !important;
-                            margin-top: 12px !important;
-                            width: 100% !important;
-                            box-sizing: border-box !important;
-                        }
-                        .edit-action-btn {
+                    <div style="
+                        display: flex !important;
+                        flex-direction: row !important;
+                        gap: 8px !important;
+                        justify-content: flex-end !important;
+                        align-items: center !important;
+                        margin-top: 12px !important;
+                        width: 100% !important;
+                        box-sizing: border-box !important;
+                        flex-wrap: nowrap !important;
+                    ">
+                        <button onclick="deleteMyReviewWithConfirm('${reviewId}')" style="
+                            display: inline-block !important;
                             padding: 6px 16px !important;
+                            background: #e53e3e !important;
+                            color: white !important;
                             border: none !important;
                             border-radius: 8px !important;
                             cursor: pointer !important;
@@ -12485,22 +12488,45 @@
                             font-weight: 500 !important;
                             min-width: 70px !important;
                             height: 32px !important;
-                            color: white !important;
-                            transition: opacity 0.2s ease !important;
                             flex-shrink: 0 !important;
-                        }
-                        .edit-action-btn:hover { opacity: 0.9 !important; }
-                        .btn-delete { background: #e53e3e !important; }
-                        .btn-cancel { background: #718096 !important; }
-                        .btn-save { background: #38a169 !important; }
-                    </style>
-                    <div class="edit-action-buttons">
-                        <button class="edit-action-btn btn-delete" onclick="deleteMyReviewWithConfirm('${reviewId}')">削除</button>
-                        <button class="edit-action-btn btn-cancel" onclick="cancelEditMyReview('${reviewId}')">キャンセル</button>
-                        <button class="edit-action-btn btn-save" onclick="saveEditMyReview('${reviewId}')">保存</button>
+                            white-space: nowrap !important;
+                        ">削除</button>
+                        <button onclick="cancelEditMyReview('${reviewId}')" style="
+                            display: inline-block !important;
+                            padding: 6px 16px !important;
+                            background: #718096 !important;
+                            color: white !important;
+                            border: none !important;
+                            border-radius: 8px !important;
+                            cursor: pointer !important;
+                            font-size: 12px !important;
+                            font-weight: 500 !important;
+                            min-width: 70px !important;
+                            height: 32px !important;
+                            flex-shrink: 0 !important;
+                            white-space: nowrap !important;
+                        ">キャンセル</button>
+                        <button onclick="saveEditMyReview('${reviewId}')" style="
+                            display: inline-block !important;
+                            padding: 6px 16px !important;
+                            background: #38a169 !important;
+                            color: white !important;
+                            border: none !important;
+                            border-radius: 8px !important;
+                            cursor: pointer !important;
+                            font-size: 12px !important;
+                            font-weight: 500 !important;
+                            min-width: 70px !important;
+                            height: 32px !important;
+                            flex-shrink: 0 !important;
+                            white-space: nowrap !important;
+                        ">保存</button>
                     </div>
                 `;
+                
+                // 追加のスタイル強制適用
                 editingButtons.style.display = 'block';
+                editingButtons.style.width = '100%';
                 
                 // テキストエリアにフォーカス
                 setTimeout(() => {
