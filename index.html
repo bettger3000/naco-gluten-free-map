@@ -12242,70 +12242,86 @@
             const editingButtons = document.getElementById(`edit-buttons-editing-${reviewId}`);
             
             if (contentDiv && editForm && normalButtons && editingButtons) {
-                // コンテンツ表示を隠して編集フォームを表示
+                // 元のテキストを取得
+                const originalText = contentDiv.textContent || contentDiv.innerText || '';
+                
+                // コンテンツ表示を隠す
                 contentDiv.style.display = 'none';
+                
+                // 編集フォームを動的生成
+                editForm.innerHTML = `
+                    <div style="margin: 16px 0; padding: 20px; background: rgba(255, 255, 255, 0.9); border-radius: 12px; border: 2px solid rgba(66, 153, 225, 0.3); box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+                        <textarea id="edit-textarea-${reviewId}" 
+                                  style="width: 100%; min-height: 120px; padding: 16px; border: 2px solid rgba(66, 153, 225, 0.3); border-radius: 8px; font-size: 14px; line-height: 1.6; resize: vertical; font-family: system-ui, sans-serif; background: white; box-sizing: border-box;"
+                                  placeholder="あなたの感想を編集してください...">${originalText.trim()}</textarea>
+                    </div>
+                `;
                 editForm.style.display = 'block';
                 
                 // ボタンを切り替え（編集ボタン → 削除・キャンセル・保存ボタン）
                 normalButtons.style.display = 'none';
                 
-                // 横並びボタンを強制的に生成（絶対に縦並びにならない）
+                // 横並びボタンを強制的に生成（レスポンシブ対応）
                 editingButtons.innerHTML = `
                     <div style="
                         display: flex !important;
                         flex-direction: row !important;
-                        gap: 8px !important;
+                        gap: 6px !important;
                         justify-content: flex-end !important;
                         align-items: center !important;
                         margin-top: 12px !important;
                         width: 100% !important;
                         box-sizing: border-box !important;
                         flex-wrap: nowrap !important;
+                        overflow: hidden !important;
                     ">
                         <button onclick="deleteReviewWithConfirm('${reviewId}')" style="
                             display: inline-block !important;
-                            padding: 6px 16px !important;
+                            padding: 4px 8px !important;
                             background: #e53e3e !important;
                             color: white !important;
                             border: none !important;
-                            border-radius: 8px !important;
+                            border-radius: 6px !important;
                             cursor: pointer !important;
-                            font-size: 12px !important;
+                            font-size: 11px !important;
                             font-weight: 500 !important;
-                            min-width: 70px !important;
-                            height: 32px !important;
-                            flex-shrink: 0 !important;
+                            height: 28px !important;
+                            flex: 1 1 auto !important;
+                            max-width: 60px !important;
                             white-space: nowrap !important;
+                            text-align: center !important;
                         ">削除</button>
                         <button onclick="cancelEditReview('${reviewId}')" style="
                             display: inline-block !important;
-                            padding: 6px 16px !important;
+                            padding: 4px 8px !important;
                             background: #718096 !important;
                             color: white !important;
                             border: none !important;
-                            border-radius: 8px !important;
+                            border-radius: 6px !important;
                             cursor: pointer !important;
-                            font-size: 12px !important;
+                            font-size: 11px !important;
                             font-weight: 500 !important;
-                            min-width: 70px !important;
-                            height: 32px !important;
-                            flex-shrink: 0 !important;
+                            height: 28px !important;
+                            flex: 1 1 auto !important;
+                            max-width: 80px !important;
                             white-space: nowrap !important;
+                            text-align: center !important;
                         ">キャンセル</button>
                         <button onclick="saveEditReview('${reviewId}')" style="
                             display: inline-block !important;
-                            padding: 6px 16px !important;
+                            padding: 4px 8px !important;
                             background: #38a169 !important;
                             color: white !important;
                             border: none !important;
-                            border-radius: 8px !important;
+                            border-radius: 6px !important;
                             cursor: pointer !important;
-                            font-size: 12px !important;
+                            font-size: 11px !important;
                             font-weight: 500 !important;
-                            min-width: 70px !important;
-                            height: 32px !important;
-                            flex-shrink: 0 !important;
+                            height: 28px !important;
+                            flex: 1 1 auto !important;
+                            max-width: 60px !important;
                             white-space: nowrap !important;
+                            text-align: center !important;
                         ">保存</button>
                     </div>
                 `;
@@ -12523,63 +12539,67 @@
                 // 編集ボタンを隠す
                 normalButtons.style.display = 'none';
                 
-                // 横並びボタンを強制的に生成（絶対に縦並びにならない）
+                // 横並びボタンを強制的に生成（レスポンシブ対応）
                 editingButtons.innerHTML = `
                     <div style="
                         display: flex !important;
                         flex-direction: row !important;
-                        gap: 8px !important;
+                        gap: 6px !important;
                         justify-content: flex-end !important;
                         align-items: center !important;
                         margin-top: 12px !important;
                         width: 100% !important;
                         box-sizing: border-box !important;
                         flex-wrap: nowrap !important;
+                        overflow: hidden !important;
                     ">
                         <button onclick="deleteMyReviewWithConfirm('${reviewId}')" style="
                             display: inline-block !important;
-                            padding: 6px 16px !important;
+                            padding: 4px 8px !important;
                             background: #e53e3e !important;
                             color: white !important;
                             border: none !important;
-                            border-radius: 8px !important;
+                            border-radius: 6px !important;
                             cursor: pointer !important;
-                            font-size: 12px !important;
+                            font-size: 11px !important;
                             font-weight: 500 !important;
-                            min-width: 70px !important;
-                            height: 32px !important;
-                            flex-shrink: 0 !important;
+                            height: 28px !important;
+                            flex: 1 1 auto !important;
+                            max-width: 60px !important;
                             white-space: nowrap !important;
+                            text-align: center !important;
                         ">削除</button>
                         <button onclick="cancelEditMyReview('${reviewId}')" style="
                             display: inline-block !important;
-                            padding: 6px 16px !important;
+                            padding: 4px 8px !important;
                             background: #718096 !important;
                             color: white !important;
                             border: none !important;
-                            border-radius: 8px !important;
+                            border-radius: 6px !important;
                             cursor: pointer !important;
-                            font-size: 12px !important;
+                            font-size: 11px !important;
                             font-weight: 500 !important;
-                            min-width: 70px !important;
-                            height: 32px !important;
-                            flex-shrink: 0 !important;
+                            height: 28px !important;
+                            flex: 1 1 auto !important;
+                            max-width: 80px !important;
                             white-space: nowrap !important;
+                            text-align: center !important;
                         ">キャンセル</button>
                         <button onclick="saveEditMyReview('${reviewId}')" style="
                             display: inline-block !important;
-                            padding: 6px 16px !important;
+                            padding: 4px 8px !important;
                             background: #38a169 !important;
                             color: white !important;
                             border: none !important;
-                            border-radius: 8px !important;
+                            border-radius: 6px !important;
                             cursor: pointer !important;
-                            font-size: 12px !important;
+                            font-size: 11px !important;
                             font-weight: 500 !important;
-                            min-width: 70px !important;
-                            height: 32px !important;
-                            flex-shrink: 0 !important;
+                            height: 28px !important;
+                            flex: 1 1 auto !important;
+                            max-width: 60px !important;
                             white-space: nowrap !important;
+                            text-align: center !important;
                         ">保存</button>
                     </div>
                 `;
