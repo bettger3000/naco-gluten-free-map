@@ -8310,12 +8310,15 @@
                         </div>
                     ` : ''}
                 </div>
-                <div class="store-actions">
+                <div class="store-card-actions">
                     <button class="action-btn want-to-go ${isWantToGo ? 'active' : ''}" onclick="event.stopPropagation(); toggleVisitStatus(${store.id}, 'want_to_go')">
                         💕 行きたい
                     </button>
                     <button class="action-btn visited ${isVisited ? 'active' : ''}" onclick="event.stopPropagation(); toggleVisitStatus(${store.id}, 'visited')">
                         ✨ 行った
+                    </button>
+                    <button class="action-btn store-detail" onclick="event.stopPropagation(); showStoreDetail(${store.id})">
+                        📍 店舗詳細
                     </button>
                 </div>
             `;
