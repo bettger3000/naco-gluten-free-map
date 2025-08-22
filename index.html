@@ -11682,7 +11682,8 @@
                     const hasUploadedImage = currentUserProfile.avatarUrl && 
                                            (currentUserProfile.avatarUrl.includes('avatar-upload-worker') || 
                                             currentUserProfile.avatarUrl.startsWith('data:image') ||
-                                            currentUserProfile.avatarUrl.includes('workers.dev'));
+                                            currentUserProfile.avatarUrl.includes('workers.dev') ||
+                                            currentUserProfile.avatarUrl.includes('pub-42410a5d2a514b65a139b945cf8ab47f.r2.dev'));
                     
                     // カスタム画像・アップロード画像・プリセット画像の場合
                     if (hasCustomAvatar || hasPresetAvatar || hasUploadedImage) {
@@ -13213,8 +13214,8 @@
                 if (getCurrentUser() === email && currentUserProfile) {
                     console.log('👤 現在ユーザーのアバター取得:', currentUserProfile);
                     
-                    if (currentUserProfile.avatarType === 'custom' && currentUserProfile.avatarUrl) {
-                        console.log('✅ カスタムアバター:', currentUserProfile.avatarUrl);
+                    if ((currentUserProfile.avatarType === 'custom' || currentUserProfile.avatarType === 'image') && currentUserProfile.avatarUrl) {
+                        console.log('✅ カスタム/アップロードアバター:', currentUserProfile.avatarUrl);
                         return currentUserProfile.avatarUrl;
                     } else if (currentUserProfile.avatarType === 'preset' && currentUserProfile.avatarUrl) {
                         console.log('✅ プリセットアバター:', currentUserProfile.avatarUrl);
