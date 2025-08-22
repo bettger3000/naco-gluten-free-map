@@ -1269,6 +1269,7 @@
         /* 店舗カード内のアクションボタン */
         .store-card-actions {
             display: flex;
+            flex-direction: row !important;
             gap: var(--space-sm);
             margin-top: var(--space-md);
             padding-top: var(--space-md);
@@ -1277,7 +1278,7 @@
         
         .action-btn {
             flex: 1;
-            padding: var(--space-xs) var(--space-sm);
+            padding: 8px 10px;
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
             background: white;
@@ -1288,7 +1289,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: var(--space-xs);
+            gap: 4px;
+            white-space: nowrap;
+            min-width: 0;
         }
         
         .action-btn:hover {
