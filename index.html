@@ -9787,17 +9787,20 @@
             
             // パネル位置設定
             function setPanelPosition(state) {
+                console.log('📱 パネル状態変更:', panelState, '->', state);
                 panelState = state;
                 panel.classList.remove('half-open', 'full-open');
                 
-                // パネル位置をCSS変数として設定
-                let panelTop = window.innerHeight - 120; // collapsed
+                // 以前のinline transformをクリア
+                panel.style.transform = '';
+                
+                // 状態に応じてCSSクラスを設定
                 if (state === 'half') {
-                    panelTop = window.innerHeight * 0.5;
+                    panel.classList.add('half-open');
                 } else if (state === 'full') {
-                    panelTop = 80;
+                    panel.classList.add('full-open');
                 }
-                document.documentElement.style.setProperty('--panel-top', panelTop + 'px');
+                // collapsed状態はデフォルトCSS（クラスなし）
                 
                 // 状態インジケーターを更新
                 document.querySelectorAll('.state-dot').forEach(dot => {
