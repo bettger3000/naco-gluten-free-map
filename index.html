@@ -13994,25 +13994,39 @@
         
         // 画像モーダルを表示
         function showImageModal(imageSrc, altText = '') {
+            console.log('🖼️ showImageModal呼び出し:', imageSrc);
+            
             const modal = document.getElementById('imageModal');
             const modalImg = document.querySelector('.image-modal-content');
             
+            console.log('モーダル要素:', modal);
+            console.log('画像要素:', modalImg);
+            
             if (!modal || !modalImg) {
-                console.error('画像モーダル要素が見つかりません');
+                console.error('❌ 画像モーダル要素が見つかりません');
                 return;
             }
             
             // 重複表示防止
-            if (modal.style.display === 'flex') return;
+            if (modal.style.display === 'flex') {
+                console.log('⚠️ モーダルは既に表示中');
+                return;
+            }
             
             modalImg.src = imageSrc;
             modalImg.alt = altText;
             modal.style.display = 'flex';
             
+            console.log('✅ モーダル表示設定完了');
+            
             // 画像読み込み失敗時の対処
             modalImg.onerror = function() {
+                console.error('❌ 画像読み込み失敗:', imageSrc);
                 closeImageModal();
-                console.warn('画像の読み込みに失敗しました:', imageSrc);
+            };
+            
+            modalImg.onload = function() {
+                console.log('✅ 画像読み込み成功:', imageSrc);
             };
         }
         
@@ -14030,8 +14044,19 @@
         
         // 画像クリックイベント設定（イベント委譲）
         document.addEventListener('click', function(e) {
+            console.log('クリックされた要素:', e.target);
+            console.log('クラス:', e.target.className);
+            console.log('タグ:', e.target.tagName);
+            
             // 店舗画像（カルーセル内の画像）をクリック
             if (e.target.matches('.image-slide img')) {
+                console.log('✅ 画像クリック検出:', e.target.src);
+                e.preventDefault();
+                showImageModal(e.target.src, e.target.alt);
+            }
+            // より広範囲な画像要素も対象に
+            else if (e.target.tagName === 'IMG' && e.target.src) {
+                console.log('🔍 一般画像クリック検出:', e.target.src);
                 e.preventDefault();
                 showImageModal(e.target.src, e.target.alt);
             }
