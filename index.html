@@ -7924,24 +7924,30 @@
                         // 現在地マーカーを追加（位置問題解決版）
                         console.log(`🎯 現在地座標: lat=${lat}, lng=${lng}`);
                         
-                        // 青い丸に白ピンの現在地アイコン（サイトカラーに調和）
-                        const currentLocationIcon = L.icon({
-                            iconUrl: 'data:image/svg+xml;base64,' + btoa(`
-                                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
-                                    <!-- 外側の影 -->
-                                    <circle cx="18" cy="20" r="16" fill="rgba(0,0,0,0.1)" opacity="0.3"/>
-                                    <!-- 外側の青い丸 -->
-                                    <circle cx="18" cy="18" r="16" fill="#4299E1" stroke="white" stroke-width="3" opacity="0.95"/>
-                                    <!-- 内側の白いピンアイコン -->
-                                    <path d="M18 9c-3.3 0-6 2.7-6 6 0 4.5 6 10 6 10s6-5.5 6-10c0-3.3-2.7-6-6-6zm0 8c-1.1 0-2-0.9-2-2s0.9-2 2-2 2 0.9 2 2-0.9 2-2 2z" fill="white"/>
-                                    <!-- 中心の小さな点 -->
-                                    <circle cx="18" cy="15" r="1.8" fill="#4299E1"/>
-                                </svg>
-                            `),
-                            iconSize: [36, 36],
-                            iconAnchor: [18, 18],
-                            popupAnchor: [0, -18]
-                        });
+                        // 現在地アイコンを作成（エラー対策版）
+                        let currentLocationIcon;
+                        
+                        try {
+                            // SVGアイコンを試行
+                            const svgContent = '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="20" r="16" fill="rgba(0,0,0,0.1)" opacity="0.3"/><circle cx="18" cy="18" r="16" fill="#4299E1" stroke="white" stroke-width="3" opacity="0.95"/><path d="M18 9c-3.3 0-6 2.7-6 6 0 4.5 6 10 6 10s6-5.5 6-10c0-3.3-2.7-6-6-6zm0 8c-1.1 0-2-0.9-2-2s0.9-2 2-2 2 0.9 2 2-0.9 2-2 2z" fill="white"/><circle cx="18" cy="15" r="1.8" fill="#4299E1"/></svg>';
+                            
+                            currentLocationIcon = L.icon({
+                                iconUrl: 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgContent))),
+                                iconSize: [36, 36],
+                                iconAnchor: [18, 18],
+                                popupAnchor: [0, -18]
+                            });
+                        } catch (error) {
+                            console.log('🔄 SVGアイコン作成失敗、代替アイコンを使用');
+                            // フォールバック: 簡単なCSSベースのアイコン
+                            currentLocationIcon = L.divIcon({
+                                className: 'current-location-marker',
+                                html: '<div style="width:36px;height:36px;background:#4299E1;border:3px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.2);"><div style="color:white;font-size:18px;">🎯</div></div>',
+                                iconSize: [36, 36],
+                                iconAnchor: [18, 18],
+                                popupAnchor: [0, -18]
+                            });
+                        }
 
                         currentLocationMarker = L.marker([lat, lng], { 
                             icon: currentLocationIcon,
@@ -7952,6 +7958,13 @@
                         // ポップアップなしでアイコンのみ表示（よりスタイリッシュ）
                         
                         console.log('✅ 現在地マーカー追加完了');
+                        console.log('📍 マーカー情報:', {
+                            latitude: lat,
+                            longitude: lng,
+                            markerExists: !!currentLocationMarker,
+                            mapExists: !!map,
+                            iconType: currentLocationIcon.options ? 'L.icon' : 'L.divIcon'
+                        });
 
                         // 店舗リストを現在地から近い順で再表示
                         if (stores && stores.length > 0) {
@@ -8399,16 +8412,21 @@
 
         // 現在地取得
         function getCurrentLocation() {
+            console.log('🎯 現在地ボタンがクリックされました');
+            
             if (!navigator.geolocation) {
+                console.error('❌ Geolocation API がサポートされていません');
                 alert('このブラウザは位置情報に対応していません');
                 return;
             }
 
             if (!map) {
+                console.error('❌ マップが初期化されていません');
                 alert('マップが初期化されていません');
                 return;
             }
 
+            console.log('🔍 現在地取得開始...');
             getCurrentLocationAndCenter();
         }
 
