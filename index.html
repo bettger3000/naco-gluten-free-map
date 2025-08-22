@@ -713,6 +713,21 @@
                 height: 36px !important;
                 margin-right: 10px !important;
             }
+            
+            /* スマホ版でボタンを横並びに強制 */
+            .store-card-actions {
+                display: flex !important;
+                flex-direction: row !important;
+                justify-content: space-between !important;
+                gap: 4px !important;
+            }
+            
+            .store-card-actions .action-btn {
+                flex: 1 1 30% !important;
+                min-width: 70px !important;
+                font-size: 0.7rem !important;
+                padding: 6px 4px !important;
+            }
         }
 
         /* 画像拡大表示モーダル */
@@ -1268,30 +1283,33 @@
         
         /* 店舗カード内のアクションボタン */
         .store-card-actions {
-            display: flex;
+            display: flex !important;
             flex-direction: row !important;
-            gap: var(--space-sm);
+            flex-wrap: nowrap !important;
+            gap: 6px;
             margin-top: var(--space-md);
             padding-top: var(--space-md);
             border-top: 1px solid var(--border-light);
+            width: 100%;
         }
         
         .action-btn {
-            flex: 1;
-            padding: 8px 10px;
+            flex: 1 1 30%;
+            min-width: 80px;
+            padding: 8px 6px;
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
             background: white;
             color: var(--text-secondary);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             cursor: pointer;
             transition: all 0.2s;
-            display: flex;
+            display: inline-flex !important;
             align-items: center;
             justify-content: center;
             gap: 4px;
             white-space: nowrap;
-            min-width: 0;
+            box-sizing: border-box;
         }
         
         .action-btn:hover {
