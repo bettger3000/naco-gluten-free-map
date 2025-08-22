@@ -5039,7 +5039,7 @@
                         <h2 class="sidebar-title">店舗リスト</h2>
                         <span class="sidebar-count"><span id="storeCount">62</span>件</span>
                         <button class="pin-mode-btn pc-pin-btn" id="pcPinModeBtn" title="ピン設置モード">
-                            <span class="pin-icon">📍</span>
+                            <span class="pin-icon">➕</span>
                             <span class="pin-label">目的地ピン</span>
                         </button>
                     </div>
@@ -5082,7 +5082,7 @@
                         <button class="map-control-btn zoom-btn" id="zoomOutBtn" title="縮小">−</button>
                     </div>
                     <!-- その他のコントロール -->
-                    <button class="map-control-btn" id="locateBtn" title="現在地を表示">📍</button>
+                    <button class="map-control-btn" id="locateBtn" title="現在地を表示">🎯</button>
                 </div>
                 
                 <!-- モバイル専用現在地ボタン（右下角） -->
@@ -5115,7 +5115,7 @@
                         <span class="filter-indicator" id="filterIndicator" style="display: none;">●</span>
                     </button>
                     <button class="pin-mode-btn" id="pinModeBtn" title="ピン設置モード">
-                        <span class="pin-icon">📍</span>
+                        <span class="pin-icon">➕</span>
                     </button>
                 </div>
                 <div class="panel-controls">
@@ -7883,7 +7883,7 @@
 
         // 現在地を取得して地図の中心に設定
         function getCurrentLocationAndCenter() {
-            console.log('📍 現在地取得を試行中...');
+            console.log('🎯 現在地取得を試行中...');
 
             if (!navigator.geolocation) {
                 console.log('❌ Geolocation API がサポートされていません');
@@ -7912,7 +7912,7 @@
                         map.setView([lat, lng], 14);
 
                         // 現在地マーカーを追加（位置問題解決版）
-                        console.log(`📍 現在地座標: lat=${lat}, lng=${lng}`);
+                        console.log(`🎯 現在地座標: lat=${lat}, lng=${lng}`);
                         
                         // 通常のLeafletマーカーアイコンを使用（確実に正しい位置に表示）
                         const currentLocationIcon = L.icon({
@@ -8002,7 +8002,7 @@
                     const distanceB = calculateDistance(currentUserLocation.lat, currentUserLocation.lng, b.latitude, b.longitude);
                     return distanceA - distanceB;
                 });
-                console.log('📍 現在地から近い順でソート完了');
+                console.log('🎯 現在地から近い順でソート完了');
             }
 
             sortedStores.forEach(store => {
@@ -10181,7 +10181,7 @@
 
         // カスタムピン機能初期化
         function initCustomPinFeature() {
-            console.log('📍 カスタムピン機能を初期化中...');
+            console.log('➕ カスタムピン機能を初期化中...');
             
             // UI要素を取得
             mapContextMenu = document.getElementById('mapContextMenu');
@@ -10209,7 +10209,7 @@
             // PC版: クリックでピン設置
             map.on('click', function(e) {
                 if (pinModeActive) {
-                    console.log('📍 ピン設置モードでクリック');
+                    console.log('➕ ピン設置モードでクリック');
                     setCustomPin(e.latlng);
                     togglePinMode(); // 設置後は自動でモードOFF
                 } else {
@@ -10265,16 +10265,16 @@
             if (isDesktop()) {
                 // PC版
                 if (customPinMarker && customPinLocation) {
-                    hint.innerHTML = '📍 新しいピン設置・<br>既存ピンダブルクリックで削除';
+                    hint.innerHTML = '➕ 新しいピン設置・<br>既存ピンダブルクリックで削除';
                 } else {
-                    hint.innerHTML = '📍 地図クリックでピン設置・<br>ピンダブルクリックで削除';
+                    hint.innerHTML = '➕ 地図クリックでピン設置・<br>ピンダブルクリックで削除';
                 }
             } else {
                 // モバイル版
                 if (customPinMarker && customPinLocation) {
-                    hint.textContent = '📍 新しいピン設置・既存ピンダブルタップで削除';
+                    hint.textContent = '➕ 新しいピン設置・既存ピンダブルタップで削除';
                 } else {
-                    hint.textContent = '📍 地図タップでピン設置';
+                    hint.textContent = '➕ 地図タップでピン設置';
                 }
             }
             
@@ -10339,9 +10339,9 @@
             
             // PC版とモバイル版で異なるメッセージを表示
             if (isDesktop()) {
-                guidance.innerHTML = '📍 ピンモードをオンにして、<br>ダブルクリックで削除できます';
+                guidance.innerHTML = '➕ ピンモードをオンにして、<br>ダブルクリックで削除できます';
             } else {
-                guidance.innerHTML = '📍 ダブルタップで削除できます';
+                guidance.innerHTML = '➕ ダブルタップで削除できます';
             }
             
             const mapContainer = document.querySelector('.map-container');
@@ -10454,7 +10454,7 @@
 
         // カスタムピン設置
         function setCustomPin(latlng) {
-            console.log('📍 カスタムピン設置:', latlng);
+            console.log('➕ カスタムピン設置:', latlng);
             
             // 既存のピンを削除
             if (customPinMarker) {
