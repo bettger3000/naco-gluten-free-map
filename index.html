@@ -87,6 +87,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            background: var(--bg-primary);
         }
 
         .app-header {
@@ -1063,6 +1064,8 @@
             width: 100%;
             height: calc(100vh - 120px); /* ヘッダーと検索エリアを引く */
             position: relative;
+            background: var(--bg-primary);
+            min-height: 400px; /* 最小高さを確保 */
         }
 
 
@@ -3934,6 +3937,12 @@
             position: relative;
         }
 
+        /* すべてのimg要素のサイズを制御 */
+        .login-modal-content img {
+            max-width: 100%;
+            height: auto;
+        }
+
         .login-modal-content .login-header h1 {
             color: var(--primary);
             font-size: 1.8rem;
@@ -4387,12 +4396,14 @@
 
             /* nacoキャラクターの調整 */
             .login-modal-content .login-logo {
-                width: 120px;
-                height: 120px;
+                width: 120px !important;
+                height: 120px !important;
+                max-width: 120px !important;
+                max-height: 120px !important;
                 margin: 0 auto 1rem auto;
                 border-radius: 50%;
                 box-shadow: 0 4px 12px rgba(214, 51, 132, 0.2);
-                object-fit: cover;
+                object-fit: contain !important;
                 object-position: center;
                 display: block;
                 background: white;
@@ -4412,11 +4423,23 @@
                 padding: 1rem 2rem 2rem 2rem;
             }
             
+            /* PC対応 */
+            @media (min-width: 1024px) {
+                .login-modal-content .login-logo {
+                    width: 140px !important;
+                    height: 140px !important;
+                    max-width: 140px !important;
+                    max-height: 140px !important;
+                }
+            }
+
             /* モバイル対応 */
             @media (max-width: 768px) {
                 .login-modal-content .login-logo {
-                    width: 100px;
-                    height: 100px;
+                    width: 100px !important;
+                    height: 100px !important;
+                    max-width: 100px !important;
+                    max-height: 100px !important;
                 }
                 
                 .login-modal-content {
@@ -6219,6 +6242,18 @@
         // DOM読み込み完了後に即座に初期化
         document.addEventListener('DOMContentLoaded', function() {
             console.log('⚡ 埋め込みデータ版 - 高速起動');
+            
+            // 初期表示を確保
+            const appContainer = document.querySelector('.app-container');
+            const mainContent = document.querySelector('.main-content');
+            if (appContainer) {
+                appContainer.style.display = 'flex';
+                appContainer.style.visibility = 'visible';
+            }
+            if (mainContent) {
+                mainContent.style.display = 'flex';
+                mainContent.style.visibility = 'visible';
+            }
             
             // ハンバーガーメニューボタンのイベントリスナー
             const hamburgerBtn = document.getElementById('hamburgerBtn');
