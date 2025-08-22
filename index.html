@@ -3990,8 +3990,9 @@
             color: #2e7d32;
             font-size: 0.9rem;
             margin: var(--space-xs) 0;
-            line-height: 1.4;
+            line-height: 1.5;
             padding-left: var(--space-lg);
+            text-align: left;
         }
 
         .notice-content p:last-child {
@@ -4000,11 +4001,36 @@
 
         .login-modal-content .login-form {
             margin-top: var(--space-xl);
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .login-modal-content .input-group {
             margin-bottom: var(--space-lg);
             text-align: left !important;
+        }
+
+        .login-modal-content .input-group label {
+            display: block;
+            margin-bottom: var(--space-xs);
+            font-weight: 600;
+            color: #333;
+        }
+
+        .login-modal-content .input-group input {
+            width: 100%;
+            padding: var(--space-md);
+            border: 2px solid #e0e0e0;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .login-modal-content .input-group input:focus {
+            outline: none;
+            border-color: #4caf50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
         }
 
         .login-modal-content .input-group label {
@@ -4273,8 +4299,10 @@
                 color: #2e7d32;
                 font-size: 0.95rem;
                 margin: 0.4rem 0;
-                line-height: 1.5;
+                line-height: 1.6;
                 padding-left: 1.5rem;
+                text-align: left;
+                word-wrap: break-word;
             }
 
             .notice-content p:last-child {
