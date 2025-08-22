@@ -10109,16 +10109,20 @@
                     }
                 }, 200);
                 
-                // スマホ版の場合、パネルを完全に閉じる
+                // スマホ版の場合、パネルを最小化状態にする（ハンドル部分は見える）
                 if (!isDesktop()) {
-                    const panel = document.getElementById('overlayPanel');
-                    if (panel) {
-                        console.log('📱 パネルを閉じます');
-                        panel.classList.remove('half-open', 'full-open');
-                        panel.style.transform = 'translateY(100%)';
-                        setTimeout(() => {
-                            panel.style.display = 'none';
-                        }, 300);
+                    console.log('📱 パネルを最小化状態にします（ハンドル表示）');
+                    // 既存のsetPanelPosition関数を使って一貫性を保つ
+                    if (typeof setPanelPosition === 'function') {
+                        setPanelPosition('collapsed');
+                    } else {
+                        // フォールバック：直接制御
+                        const panel = document.getElementById('overlayPanel');
+                        if (panel) {
+                            panel.classList.remove('half-open', 'full-open');
+                            panel.style.display = 'block';
+                            panel.style.transform = 'translateY(calc(100% - 90px))';
+                        }
                     }
                 }
                 
