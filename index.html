@@ -11445,38 +11445,7 @@
 
         // ========== プロフィール編集機能 ==========
         
-        // ユーザープロフィール取得
-        async function getUserProfile(email) {
-            try {
-                const key = `userProfile_${email}`;
-                const savedProfile = localStorage.getItem(key);
-                if (savedProfile) {
-                    return JSON.parse(savedProfile);
-                }
-                return null;
-            } catch (error) {
-                console.error('プロフィール取得エラー:', error);
-                return null;
-            }
-        }
         
-        // ユーザープロフィール保存
-        async function saveUserProfile(email, nickname, avatarUrl) {
-            try {
-                const key = `userProfile_${email}`;
-                const profile = {
-                    email: email,
-                    nickname: nickname,
-                    avatar_url: avatarUrl,
-                    updated_at: new Date().toISOString()
-                };
-                localStorage.setItem(key, JSON.stringify(profile));
-                return true;
-            } catch (error) {
-                console.error('プロフィール保存エラー:', error);
-                return false;
-            }
-        }
         
         // プロフィールモーダルを開く
         async function openProfileModal() {
@@ -11487,10 +11456,22 @@
             }
             
             try {
-                // 現在のプロフィール情報を取得
-                const userProfile = await getUserProfile(currentUserEmail);
-                const currentNickname = userProfile?.nickname || currentUserEmail.split('@')[0];
-                const currentAvatarUrl = userProfile?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(currentUserEmail)}`;
+                // 現在のプロフィール情報を取得（既存のシステムから）
+                // まずグローバル変数を確認、なければSupabaseから読み込み
+                let userProfile = currentUserProfile;
+                if (!userProfile) {
+                    userProfile = await loadUserProfile(currentUserEmail);
+                }
+                
+                // ニックネームの取得（既存の設定を優先）
+                const currentNickname = userProfile?.nickname || 
+                                       (userProfile && getDisplayNickname ? getDisplayNickname(userProfile) : null) ||
+                                       currentUserEmail.split('@')[0];
+                
+                // アバターURLの取得
+                const currentAvatarUrl = userProfile?.avatarUrl || 
+                                        userProfile?.avatar_url || 
+                                        `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(currentUserEmail)}`;
                 
                 // プロフィールモーダルHTML
                 const modalHTML = `
@@ -11714,9 +11695,27 @@
             const currentUserEmail = getCurrentUser();
             
             try {
-                await saveUserProfile(currentUserEmail, nickname, avatarUrl);
-                alert('プロフィールを保存しました！');
-                closeProfileModal();
+                // 既存のプロフィールを更新
+                const updatedProfile = {
+                    email: currentUserEmail,
+                    nickname: nickname,
+                    avatar: 'custom',  // カスタムアバター
+                    avatarUrl: avatarUrl,
+                    avatarType: 'url',
+                    updatedAt: new Date().toISOString()
+                };
+                
+                // 既存のプロフィール保存システムを使用（Supabase連携）
+                const success = await saveUserProfile(updatedProfile, { source: 'profile_modal', isDirty: true });
+                
+                if (success) {
+                    // グローバル変数も更新
+                    currentUserProfile = updatedProfile;
+                    alert('プロフィールを保存しました！');
+                    closeProfileModal();
+                } else {
+                    throw new Error('保存に失敗しました');
+                }
             } catch (error) {
                 console.error('プロフィール保存エラー:', error);
                 alert('プロフィールの保存に失敗しました');
