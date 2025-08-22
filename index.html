@@ -11173,10 +11173,10 @@
 
                         <!-- ナビゲーションボタン -->
                         <div class="store-navigation">
-                            <button class="nav-btn google-maps" onclick="openGoogleMaps(${store.latitude}, ${store.longitude})">
+                            <button class="nav-btn google-maps" onclick="openGoogleMaps('${store.name}', '${store.address}', ${store.latitude}, ${store.longitude})">
                                 📍 Googleマップ
                             </button>
-                            <button class="nav-btn route-search" onclick="openRouteSearch(${store.latitude}, ${store.longitude})">
+                            <button class="nav-btn route-search" onclick="openRouteSearch('${store.name}', '${store.address}', ${store.latitude}, ${store.longitude})">
                                 🧭 ルート検索
                             </button>
                         </div>
@@ -11223,14 +11223,18 @@
         }
 
         // Googleマップで開く
-        function openGoogleMaps(lat, lng) {
-            const url = `https://maps.google.com/maps?q=${lat},${lng}`;
+        function openGoogleMaps(storeName, storeAddress, lat, lng) {
+            // 店名+住所で検索（座標はフォールバック用）
+            const searchQuery = `${storeName} ${storeAddress}`;
+            const url = `https://maps.google.com/maps?q=${encodeURIComponent(searchQuery)}`;
             window.open(url, '_blank', 'noopener,noreferrer');
         }
 
         // ルート検索
-        function openRouteSearch(lat, lng) {
-            const url = `https://maps.google.com/maps?saddr=現在地&daddr=${lat},${lng}`;
+        function openRouteSearch(storeName, storeAddress, lat, lng) {
+            // 店名+住所で目的地検索（座標はフォールバック用）
+            const searchQuery = `${storeName} ${storeAddress}`;
+            const url = `https://maps.google.com/maps?saddr=現在地&daddr=${encodeURIComponent(searchQuery)}`;
             window.open(url, '_blank', 'noopener,noreferrer');
         }
 
