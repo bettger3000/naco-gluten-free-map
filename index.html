@@ -12248,11 +12248,71 @@
                 
                 // ボタンを切り替え（編集ボタン → 削除・キャンセル・保存ボタン）
                 normalButtons.style.display = 'none';
-                editingButtons.style.display = 'flex';
-                editingButtons.style.flexDirection = 'row';
-                editingButtons.style.alignItems = 'center';
-                editingButtons.style.justifyContent = 'flex-end';
-                editingButtons.style.gap = '8px';
+                
+                // 横並びボタンを強制的に生成（絶対に縦並びにならない）
+                editingButtons.innerHTML = `
+                    <div style="
+                        display: flex !important;
+                        flex-direction: row !important;
+                        gap: 8px !important;
+                        justify-content: flex-end !important;
+                        align-items: center !important;
+                        margin-top: 12px !important;
+                        width: 100% !important;
+                        box-sizing: border-box !important;
+                        flex-wrap: nowrap !important;
+                    ">
+                        <button onclick="deleteReviewWithConfirm('${reviewId}')" style="
+                            display: inline-block !important;
+                            padding: 6px 16px !important;
+                            background: #e53e3e !important;
+                            color: white !important;
+                            border: none !important;
+                            border-radius: 8px !important;
+                            cursor: pointer !important;
+                            font-size: 12px !important;
+                            font-weight: 500 !important;
+                            min-width: 70px !important;
+                            height: 32px !important;
+                            flex-shrink: 0 !important;
+                            white-space: nowrap !important;
+                        ">削除</button>
+                        <button onclick="cancelEditReview('${reviewId}')" style="
+                            display: inline-block !important;
+                            padding: 6px 16px !important;
+                            background: #718096 !important;
+                            color: white !important;
+                            border: none !important;
+                            border-radius: 8px !important;
+                            cursor: pointer !important;
+                            font-size: 12px !important;
+                            font-weight: 500 !important;
+                            min-width: 70px !important;
+                            height: 32px !important;
+                            flex-shrink: 0 !important;
+                            white-space: nowrap !important;
+                        ">キャンセル</button>
+                        <button onclick="saveEditReview('${reviewId}')" style="
+                            display: inline-block !important;
+                            padding: 6px 16px !important;
+                            background: #38a169 !important;
+                            color: white !important;
+                            border: none !important;
+                            border-radius: 8px !important;
+                            cursor: pointer !important;
+                            font-size: 12px !important;
+                            font-weight: 500 !important;
+                            min-width: 70px !important;
+                            height: 32px !important;
+                            flex-shrink: 0 !important;
+                            white-space: nowrap !important;
+                        ">保存</button>
+                    </div>
+                `;
+                
+                // 追加のスタイル強制適用
+                editingButtons.style.display = 'block';
+                editingButtons.style.width = '100%';
                 
                 // テキストエリアにフォーカス
                 const textarea = document.getElementById(`edit-textarea-${reviewId}`);
