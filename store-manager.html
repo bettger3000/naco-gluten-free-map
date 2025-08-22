@@ -795,6 +795,18 @@
                 <form id="editForm">
                     <input type="hidden" id="storeId">
                     
+                    <!-- GoogleマップURL自動取得 -->
+                    <div class="form-group">
+                        <label class="form-label">GoogleマップURL 📍</label>
+                        <div style="display: flex; gap: var(--space-sm);">
+                            <input type="url" class="form-input" id="googleMapUrl" placeholder="GoogleマップのURLを貼り付け" style="flex: 1;">
+                            <button type="button" class="btn btn-secondary" onclick="fetchGoogleMapData()" style="white-space: nowrap;">
+                                🔄 データ取得
+                            </button>
+                        </div>
+                        <p class="map-hint">💡 GoogleマップのURLを貼り付けて「データ取得」をクリックすると、店舗情報が自動入力されます</p>
+                    </div>
+                    
                     <div class="form-group">
                         <label class="form-label">店舗名 *</label>
                         <input type="text" class="form-input" id="storeName" required>
@@ -2412,16 +2424,62 @@
                 const storeInfo = await parseGoogleMapUrl(url);
                 
                 if (storeInfo) {
-                    googleMapStoreData = storeInfo;
-                    displayGoogleMapPreview(storeInfo);
-                    document.getElementById('googleMapResult').style.display = 'block';
-                    showToast('✅ 店舗情報を取得しました', 'success');
+                    // 編集フォームにデータを自動入力
+                    fillEditFormWithGoogleData(storeInfo);
+                    showToast('✅ 店舗情報を取得してフォームに入力しました', 'success');
                 } else {
                     showToast('❌ 店舗情報の取得に失敗しました', 'error');
                 }
             } catch (error) {
                 console.error('Google Map data fetch error:', error);
                 showToast('❌ エラー: ' + error.message, 'error');
+            }
+        }
+
+        // Googleマップデータで編集フォームを自動入力
+        function fillEditFormWithGoogleData(storeInfo) {
+            try {
+                // 店名
+                if (storeInfo.name && storeInfo.name !== '取得した店舗') {
+                    document.getElementById('storeName').value = storeInfo.name;
+                }
+                
+                // 座標
+                if (storeInfo.latitude && storeInfo.longitude) {
+                    document.getElementById('storeLat').value = storeInfo.latitude;
+                    document.getElementById('storeLng').value = storeInfo.longitude;
+                    
+                    // 地図にマーカーを追加（編集マップが存在する場合）
+                    if (window.editMap) {
+                        if (window.editMarker) {
+                            window.editMap.removeLayer(window.editMarker);
+                        }
+                        window.editMarker = L.marker([storeInfo.latitude, storeInfo.longitude])
+                            .addTo(window.editMap);
+                        window.editMap.setView([storeInfo.latitude, storeInfo.longitude], 16);
+                    }
+                }
+                
+                // 住所（未取得の場合はフォーカスして手動入力を促す）
+                if (storeInfo.address && storeInfo.address !== '住所を確認してください') {
+                    document.getElementById('storeAddress').value = storeInfo.address;
+                } else {
+                    // 住所の手動入力を促す
+                    setTimeout(() => {
+                        document.getElementById('storeAddress').focus();
+                        document.getElementById('storeAddress').placeholder = '住所を手動で入力してください';
+                    }, 500);
+                }
+                
+                // 他のフィールド（取得できた場合）
+                if (storeInfo.phone) document.getElementById('storePhone').value = storeInfo.phone;
+                if (storeInfo.website) document.getElementById('storeWebsite').value = storeInfo.website;
+                if (storeInfo.hours) document.getElementById('storeHours').value = storeInfo.hours;
+                
+                showToast('📍 取得したデータをフォームに入力しました。不足している情報を追加してください。', 'info');
+            } catch (error) {
+                console.error('Form fill error:', error);
+                showToast('⚠️ フォームへのデータ入力中にエラーが発生しました', 'warning');
             }
         }
 
@@ -2450,12 +2508,26 @@
                     placeName = decodeURIComponent(nameMatch[1]).replace(/\+/g, ' ');
                 }
 
+                // 座標から住所を逆ジオコーディングで取得
+                let address = '住所を確認してください';
+                if (lat && lng) {
+                    try {
+                        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ja`);
+                        const data = await response.json();
+                        if (data && data.display_name) {
+                            address = data.display_name;
+                        }
+                    } catch (error) {
+                        console.warn('逆ジオコーディング失敗:', error);
+                    }
+                }
+
                 // 基本的な店舗情報を作成
                 const storeData = {
                     name: placeName || '取得した店舗',
                     latitude: lat || 35.6762,
                     longitude: lng || 139.6503,
-                    address: '住所を確認してください',
+                    address: address,
                     phone: '',
                     hours: '',
                     website: '',
