@@ -12622,7 +12622,7 @@
                             background-repeat: no-repeat !important;
                             box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
                             background-color: #E5E7EB;
-                        "></div>
+                        " onerror="console.error('アバター読み込みエラー:', '${avatarUrl}'); this.style.backgroundImage = 'url(https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(review.user_email)})'; this.style.backgroundColor = '#ff6b9d';"></div>
                         <div style="flex-grow: 1;">
                             <div style="font-weight: 600; color: #333; font-size: 16px; margin-bottom: 2px;">${nickname}</div>
                             <div style="color: #666; font-size: 0.9em; opacity: 0.8;">
@@ -13070,7 +13070,7 @@
                             background-repeat: no-repeat !important;
                             box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
                             background-color: #E5E7EB;
-                        "></div>
+                        " onerror="console.error('アバター読み込みエラー:', '${avatarUrl}'); this.style.backgroundImage = 'url(https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(review.user_email)})'; this.style.backgroundColor = '#ff6b9d';"></div>
                         <div style="
                             font-weight: 600; 
                             color: #4a5568; 
@@ -13166,38 +13166,54 @@
         // ユーザーのアバターURL取得（既存システム連携）
         async function getUserAvatarUrl(email) {
             try {
+                console.log('🔍 アバター取得開始:', email);
+                
                 // 現在のユーザーの場合は既存プロフィールから取得
                 if (getCurrentUser() === email && currentUserProfile) {
+                    console.log('👤 現在ユーザーのアバター取得:', currentUserProfile);
+                    
                     if (currentUserProfile.avatarType === 'custom' && currentUserProfile.avatarUrl) {
+                        console.log('✅ カスタムアバター:', currentUserProfile.avatarUrl);
                         return currentUserProfile.avatarUrl;
                     } else if (currentUserProfile.avatarType === 'preset' && currentUserProfile.avatarUrl) {
+                        console.log('✅ プリセットアバター:', currentUserProfile.avatarUrl);
                         return currentUserProfile.avatarUrl;
                     } else if (currentUserProfile.avatar) {
                         // 絵文字アバターの場合
                         const emoji = getAvatarDisplay ? getAvatarDisplay(currentUserProfile) : '🌸';
+                        console.log('✅ 絵文字アバター:', emoji);
                         return createEmojiAvatar(emoji);
                     }
                 }
                 
                 // 他のユーザーの場合はSupabaseから取得
                 const profile = await loadUserProfile ? loadUserProfile(email) : null;
+                console.log('💾 ユーザープロフィール取得結果:', profile);
+                
                 if (profile) {
                     if (profile.avatarType === 'custom' && profile.avatarUrl) {
+                        console.log('✅ カスタムアバター(他ユーザー):', profile.avatarUrl);
                         return profile.avatarUrl;
                     } else if (profile.avatarType === 'preset' && profile.avatarUrl) {
+                        console.log('✅ プリセットアバター(他ユーザー):', profile.avatarUrl);
                         return profile.avatarUrl;
                     } else if (profile.avatar) {
                         // 絵文字アバターの場合
                         const emoji = profile.avatar === 'default' ? '🌸' : profile.avatar;
+                        console.log('✅ 絵文字アバター(他ユーザー):', emoji);
                         return createEmojiAvatar(emoji);
                     }
                 }
+                
+                console.warn('⚠️ アバターが取得できませんでした:', { email, profile, currentUserProfile });
             } catch (error) {
                 console.warn('アバター取得エラー:', error);
             }
             
             // 最終フォールバック: DiceBear API
-            return `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`;
+            const fallbackUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`;
+            console.log('🏭 フォールバックアバター:', fallbackUrl);
+            return fallbackUrl;
         }
         
         // 絵文字をSVGアバターに変換
