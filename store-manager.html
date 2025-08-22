@@ -864,8 +864,14 @@
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">画像URL</label>
-                        <input type="url" class="form-input" id="storeImageUrl" placeholder="店舗画像のURL">
+                        <label class="form-label">画像URL (最大3枚)</label>
+                        <input type="url" class="form-input" id="storeImageUrl1" placeholder="店舗画像1のURL">
+                        <div style="margin-top: 8px;">
+                            <input type="url" class="form-input" id="storeImageUrl2" placeholder="店舗画像2のURL (任意)">
+                        </div>
+                        <div style="margin-top: 8px;">
+                            <input type="url" class="form-input" id="storeImageUrl3" placeholder="店舗画像3のURL (任意)">
+                        </div>
                     </div>
                     
                     <div class="form-group">
@@ -1252,6 +1258,8 @@
                     phone: "",
                     website: "",
                     image_url: "",
+                    image_url2: "",
+                    image_url3: "",
                     description: "これはサンプルデータです。実際のデータを読み込んでください。",
                     gluten_free_options: "",
                     opening_hours: ""
@@ -1355,7 +1363,9 @@
                 if (formElements.storePhone) formElements.storePhone.value = store.phone || '';
                 if (formElements.storeWebsite) formElements.storeWebsite.value = store.website || '';
                 if (formElements.storeInstagram) formElements.storeInstagram.value = store.instagram || '';
-                if (formElements.storeImageUrl) formElements.storeImageUrl.value = store.image_url || '';
+                if (formElements.storeImageUrl1) formElements.storeImageUrl1.value = store.image_url || '';
+                if (formElements.storeImageUrl2) formElements.storeImageUrl2.value = store.image_url2 || '';
+                if (formElements.storeImageUrl3) formElements.storeImageUrl3.value = store.image_url3 || '';
                 if (formElements.storeHours) formElements.storeHours.value = store.opening_hours || '';
                 if (formElements.storeGfOptions) formElements.storeGfOptions.value = store.gluten_free_options || '';
                 if (formElements.storeDescription) formElements.storeDescription.value = store.description || '';
@@ -1429,6 +1439,8 @@
                 phone: '',
                 website: '',
                 image_url: '',
+                image_url2: '',
+                image_url3: '',
                 description: '',
                 gluten_free_options: '',
                 opening_hours: ''
@@ -1500,7 +1512,9 @@
                 phone: getValue('storePhone'),
                 website: getValue('storeWebsite'),
                 instagram: getValue('storeInstagram'),
-                image_url: getValue('storeImageUrl'),
+                image_url: getValue('storeImageUrl1'),
+                image_url2: getValue('storeImageUrl2'),
+                image_url3: getValue('storeImageUrl3'),
                 opening_hours: getValue('storeHours'),
                 gluten_free_options: getValue('storeGfOptions'),
                 description: getValue('storeDescription')
@@ -1534,7 +1548,13 @@
             }
             
             if (data.image_url && !isValidUrl(data.image_url)) {
-                throw new Error('画像URLが無効です');
+                throw new Error('画像URL1が無効です');
+            }
+            if (data.image_url2 && !isValidUrl(data.image_url2)) {
+                throw new Error('画像URL2が無効です');
+            }
+            if (data.image_url3 && !isValidUrl(data.image_url3)) {
+                throw new Error('画像URL3が無効です');
             }
         }
         
@@ -2532,6 +2552,8 @@
                     hours: '',
                     website: '',
                     image_url: '',
+                    image_url2: '',
+                    image_url3: '',
                     category: 'その他',
                     gluten_free_level: '要確認',
                     gluten_free_menu: '',
@@ -2617,7 +2639,7 @@
                             <div style="background: var(--bg-secondary); padding: var(--space-md); border-radius: var(--radius-md); margin-top: var(--space-lg);">
                                 <h5>📋 CSVフォーマット</h5>
                                 <code style="display: block; font-size: 0.8rem; margin: var(--space-sm) 0;">
-                                    GoogleマップURL,店舗名,カテゴリー,住所,電話番号,営業時間,定休日,ウェブサイト,画像URL,グルテンフリー対応度,対応メニュー,備考,緯度,経度
+                                    GoogleマップURL,店舗名,カテゴリー,住所,電話番号,営業時間,定休日,ウェブサイト,画像URL,画像URL2,画像URL3,グルテンフリー対応度,対応メニュー,備考,緯度,経度
                                 </code>
                                 <div style="background: #e0f2fe; padding: var(--space-sm); border-radius: var(--radius-sm); margin: var(--space-md) 0;">
                                     <strong>💡 使い方：</strong><br>
@@ -2725,10 +2747,10 @@
         // CSVテンプレートダウンロード
         window.downloadCsvTemplate = function(event) {
             event.preventDefault();
-            const csvContent = `GoogleマップURL,店舗名,カテゴリー,住所,電話番号,営業時間,定休日,ウェブサイト,画像URL,グルテンフリー対応度,対応メニュー,備考,緯度,経度
-https://maps.google.com/maps/place/...,,,,,,,,,完全対応,米粉パン・米粉ケーキ,専門店,,
-,グルテンフリーカフェ,カフェ,東京都渋谷区1-1-1,03-1234-5678,10:00-20:00,月曜日,https://example.com,https://example.com/image.jpg,完全対応,米粉パン・米粉ケーキ,完全グルテンフリー専門店,35.6762,139.6503
-,サンプルレストラン,洋食,東京都新宿区2-2-2,03-9876-5432,11:00-22:00,なし,,,一部対応,グルテンフリーパスタ,要事前予約,,`;
+            const csvContent = `GoogleマップURL,店舗名,カテゴリー,住所,電話番号,営業時間,定休日,ウェブサイト,画像URL,画像URL2,画像URL3,グルテンフリー対応度,対応メニュー,備考,緯度,経度
+https://maps.google.com/maps/place/...,,,,,,,,,,完全対応,米粉パン・米粉ケーキ,専門店,,
+,グルテンフリーカフェ,カフェ,東京都渋谷区1-1-1,03-1234-5678,10:00-20:00,月曜日,https://example.com,https://example.com/image1.jpg,https://example.com/image2.jpg,,完全対応,米粉パン・米粉ケーキ,完全グルテンフリー専門店,35.6762,139.6503
+,サンプルレストラン,洋食,東京都新宿区2-2-2,03-9876-5432,11:00-22:00,なし,,,,一部対応,グルテンフリーパスタ,要事前予約,,`;
             
             const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
@@ -3049,6 +3071,8 @@ https://maps.google.com/maps/place/...,,,,,,,,,完全対応,米粉パン・米�
                             website: row.ウェブサイト || '',
                             instagram: row['Instagram URL'] || '',
                             image_url: row.画像URL || '',
+                            image_url2: row.画像URL2 || '',
+                            image_url3: row.画像URL3 || '',
                             gluten_free_level: row.グルテンフリー対応度 || '要確認',
                             gluten_free_menu: row.対応メニュー || '',
                             notes: row.備考 || '',
