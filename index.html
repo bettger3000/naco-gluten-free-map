@@ -11427,9 +11427,269 @@
         });
 
         // メニュー項目の関数
+        
         function showProfile() {
             closeSideMenu();
-            openProfileModal();
+            if (typeof openProfileModal === 'function') {
+                openProfileModal();
+            }
+
+        // ========== プロフィール編集機能 ==========
+        
+        // プロフィールモーダルを開く
+        async function openProfileModal() {
+            const currentUserEmail = getCurrentUser();
+            if (!currentUserEmail) {
+                alert('ログインが必要です');
+                return;
+            }
+            
+            try {
+                // 現在のプロフィール情報を取得
+                const userProfile = await getUserProfile(currentUserEmail);
+                const currentNickname = userProfile?.nickname || currentUserEmail.split('@')[0];
+                const currentAvatarUrl = userProfile?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(currentUserEmail)}`;
+                
+                // プロフィールモーダルHTML
+                const modalHTML = `
+                    <div id="profileModal" style="
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0, 0, 0, 0.6);
+                        backdrop-filter: blur(8px);
+                        z-index: 10000;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        animation: fadeIn 0.3s ease;
+                    ">
+                        <div style="
+                            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+                            border-radius: 24px;
+                            padding: 32px;
+                            width: 90%;
+                            max-width: 480px;
+                            max-height: 90vh;
+                            overflow-y: auto;
+                            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+                            border: 1px solid rgba(255, 255, 255, 0.2);
+                            position: relative;
+                            animation: slideUp 0.3s ease;
+                        ">
+                            <!-- ヘッダー -->
+                            <div style="
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                margin-bottom: 24px;
+                                padding-bottom: 16px;
+                                border-bottom: 2px solid rgba(255, 107, 157, 0.1);
+                            ">
+                                <h2 style="
+                                    font-size: 1.8rem;
+                                    font-weight: 700;
+                                    color: #2d3748;
+                                    margin: 0;
+                                    background: linear-gradient(135deg, #ff6b9d, #4299e1);
+                                    -webkit-background-clip: text;
+                                    -webkit-text-fill-color: transparent;
+                                    background-clip: text;
+                                ">👤 プロフィール編集</h2>
+                                <button onclick="closeProfileModal()" style="
+                                    background: rgba(255, 107, 157, 0.1);
+                                    border: 2px solid rgba(255, 107, 157, 0.2);
+                                    border-radius: 50%;
+                                    width: 40px;
+                                    height: 40px;
+                                    color: #ff6b9d;
+                                    font-size: 18px;
+                                    cursor: pointer;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    transition: all 0.2s ease;
+                                " onmouseover="this.style.background='rgba(255, 107, 157, 0.2)'; this.style.transform='scale(1.05)'" onmouseout="this.style.background='rgba(255, 107, 157, 0.1)'; this.style.transform='scale(1)'">×</button>
+                            </div>
+                            
+                            <!-- アバタープレビュー -->
+                            <div style="text-align: center; margin-bottom: 24px;">
+                                <div style="
+                                    width: 100px;
+                                    height: 100px;
+                                    border-radius: 50%;
+                                    margin: 0 auto 16px auto;
+                                    background-image: url('${currentAvatarUrl}');
+                                    background-size: cover;
+                                    background-position: center;
+                                    box-shadow: 0 8px 32px rgba(255, 107, 157, 0.3);
+                                    border: 4px solid rgba(255, 107, 157, 0.2);
+                                " id="avatarPreview"></div>
+                                <p style="color: #64748b; font-size: 0.9rem; margin: 0;">アバター画像</p>
+                            </div>
+                            
+                            <!-- ニックネーム編集 -->
+                            <div style="margin-bottom: 24px;">
+                                <label style="
+                                    display: block;
+                                    font-weight: 600;
+                                    color: #374151;
+                                    margin-bottom: 8px;
+                                    font-size: 1rem;
+                                ">📝 ニックネーム</label>
+                                <input type="text" id="nicknameInput" value="${currentNickname}" style="
+                                    width: 100%;
+                                    padding: 12px 16px;
+                                    border: 2px solid rgba(255, 107, 157, 0.2);
+                                    border-radius: 12px;
+                                    font-size: 16px;
+                                    background: rgba(255, 255, 255, 0.8);
+                                    box-sizing: border-box;
+                                    transition: all 0.2s ease;
+                                " onfocus="this.style.borderColor='rgba(255, 107, 157, 0.5)'; this.style.boxShadow='0 0 0 3px rgba(255, 107, 157, 0.1)'" onblur="this.style.borderColor='rgba(255, 107, 157, 0.2)'; this.style.boxShadow='none'" placeholder="ニックネームを入力してください">
+                            </div>
+                            
+                            <!-- アバター選択 -->
+                            <div style="margin-bottom: 32px;">
+                                <label style="
+                                    display: block;
+                                    font-weight: 600;
+                                    color: #374151;
+                                    margin-bottom: 12px;
+                                    font-size: 1rem;
+                                ">🎭 アバター選択</label>
+                                <div style="
+                                    display: grid;
+                                    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+                                    gap: 12px;
+                                    max-height: 200px;
+                                    overflow-y: auto;
+                                    padding: 16px;
+                                    background: rgba(248, 250, 252, 0.8);
+                                    border-radius: 12px;
+                                    border: 1px solid rgba(255, 107, 157, 0.1);
+                                " id="avatarGrid"></div>
+                            </div>
+                            
+                            <!-- アクションボタン -->
+                            <div style="
+                                display: flex;
+                                gap: 12px;
+                                justify-content: flex-end;
+                            ">
+                                <button onclick="closeProfileModal()" style="
+                                    padding: 12px 24px;
+                                    background: #e2e8f0;
+                                    color: #64748b;
+                                    border: none;
+                                    border-radius: 12px;
+                                    font-size: 14px;
+                                    font-weight: 600;
+                                    cursor: pointer;
+                                    transition: all 0.2s ease;
+                                " onmouseover="this.style.background='#cbd5e1'" onmouseout="this.style.background='#e2e8f0'">キャンセル</button>
+                                <button onclick="saveProfile()" style="
+                                    padding: 12px 24px;
+                                    background: linear-gradient(135deg, #ff6b9d, #4299e1);
+                                    color: white;
+                                    border: none;
+                                    border-radius: 12px;
+                                    font-size: 14px;
+                                    font-weight: 600;
+                                    cursor: pointer;
+                                    transition: all 0.2s ease;
+                                    box-shadow: 0 4px 16px rgba(255, 107, 157, 0.3);
+                                " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(255, 107, 157, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 16px rgba(255, 107, 157, 0.3)'">💾 保存</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+                generateAvatarOptions(currentUserEmail);
+                
+            } catch (error) {
+                console.error('プロフィールモーダル表示エラー:', error);
+                alert('プロフィール画面の表示に失敗しました');
+            }
+        }
+        
+        // アバターオプションを生成
+        function generateAvatarOptions(userEmail) {
+            const avatarGrid = document.getElementById('avatarGrid');
+            const seeds = ['default', 'happy', 'smile', 'cool', 'cute', 'funny', 'lovely', 'sweet'];
+            
+            avatarGrid.innerHTML = seeds.map(seed => {
+                const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}-${encodeURIComponent(userEmail)}`;
+                return `
+                    <div onclick="selectAvatar('${avatarUrl}')" style="
+                        width: 60px;
+                        height: 60px;
+                        border-radius: 50%;
+                        background-image: url('${avatarUrl}');
+                        background-size: cover;
+                        background-position: center;
+                        cursor: pointer;
+                        border: 3px solid transparent;
+                        transition: all 0.2s ease;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                    " onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 4px 16px rgba(255, 107, 157, 0.3)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'" data-avatar-url="${avatarUrl}"></div>
+                `;
+            }).join('');
+        }
+        
+        // アバター選択
+        function selectAvatar(avatarUrl) {
+            // プレビュー更新
+            const preview = document.getElementById('avatarPreview');
+            if (preview) {
+                preview.style.backgroundImage = `url('${avatarUrl}')`;
+            }
+            
+            // 選択状態の更新
+            document.querySelectorAll('[data-avatar-url]').forEach(el => {
+                el.style.borderColor = 'transparent';
+            });
+            document.querySelector(`[data-avatar-url="${avatarUrl}"]`).style.borderColor = '#ff6b9d';
+        }
+        
+        // プロフィール保存
+        async function saveProfile() {
+            const nicknameInput = document.getElementById('nicknameInput');
+            const avatarPreview = document.getElementById('avatarPreview');
+            
+            if (!nicknameInput) return;
+            
+            const nickname = nicknameInput.value.trim();
+            if (!nickname) {
+                alert('ニックネームを入力してください');
+                return;
+            }
+            
+            const avatarUrl = avatarPreview.style.backgroundImage.match(/url\("?([^"]*)"?\)/)?.[1];
+            const currentUserEmail = getCurrentUser();
+            
+            try {
+                await saveUserProfile(currentUserEmail, nickname, avatarUrl);
+                alert('プロフィールを保存しました！');
+                closeProfileModal();
+            } catch (error) {
+                console.error('プロフィール保存エラー:', error);
+                alert('プロフィールの保存に失敗しました');
+            }
+        }
+        
+        // プロフィールモーダルを閉じる
+        function closeProfileModal() {
+            const modal = document.getElementById('profileModal');
+            if (modal) modal.remove();
+        }
+         else {
+                console.error('openProfileModal function not found');
+                alert('プロフィール機能の読み込み中です。もう一度お試しください。');
+            }
         }
 
         function showMyStats() {
@@ -12472,34 +12732,6 @@
                 }, 100);
             }
         }
-        
-        // マイレビュー編集開始
-        function editMyReview(reviewId) {
-            console.log('editMyReview called with ID:', reviewId);
-            
-            const contentDiv = document.querySelector(`#review-${reviewId} .my-review-text`);
-            const editForm = document.getElementById(`my-edit-form-${reviewId}`);
-            const normalButtons = document.getElementById(`my-edit-buttons-normal-${reviewId}`);
-            const editingButtons = document.getElementById(`my-edit-buttons-editing-${reviewId}`);
-            
-            console.log('Elements found:', {contentDiv, editForm, normalButtons, editingButtons});
-            
-            if (contentDiv && editForm && normalButtons && editingButtons) {
-                // 元のテキストを取得
-                const originalText = contentDiv.textContent || contentDiv.innerText || '';
-                console.log('Original text:', originalText);
-                
-                // コンテンツ表示を隠す
-                contentDiv.style.display = 'none';
-                
-                // 編集フォームを生成
-                editForm.innerHTML = `
-                    <div style="margin: 16px 0; padding: 20px; background: rgba(255, 255, 255, 0.9); border-radius: 12px; border: 2px solid rgba(66, 153, 225, 0.3); box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
-                        <textarea id="my-edit-textarea-${reviewId}" 
-                                  style="width: 100%; min-height: 120px; padding: 16px; border: 2px solid rgba(66, 153, 225, 0.3); border-radius: 8px; font-size: 14px; line-height: 1.6; resize: vertical; font-family: system-ui, sans-serif; background: white; box-sizing: border-box;"
-                                  placeholder="あなたの感想を編集してください...">${originalText.trim()}</textarea>
-                    </div>
-                `;
                 editForm.style.display = 'block';
                 
                 // 編集ボタンを隠す
