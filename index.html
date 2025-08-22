@@ -14007,10 +14007,14 @@
                 return;
             }
             
-            // 重複表示防止
-            if (modal.style.display === 'flex') {
-                console.log('⚠️ モーダルは既に表示中');
-                return;
+            // 現在の表示状態を確認
+            const isCurrentlyVisible = window.getComputedStyle(modal).display !== 'none';
+            console.log('モーダル現在表示中:', isCurrentlyVisible);
+            
+            // 既に表示中の場合は閉じてから新しい画像を表示
+            if (isCurrentlyVisible) {
+                console.log('⚠️ 既存モーダルを閉じて新しい画像を表示');
+                modal.style.display = 'none';
             }
             
             modalImg.src = imageSrc;
@@ -14032,13 +14036,18 @@
         
         // 画像モーダルを閉じる
         function closeImageModal() {
+            console.log('🔒 closeImageModal呼び出し');
             const modal = document.getElementById('imageModal');
             if (modal) {
                 modal.style.display = 'none';
                 const modalImg = document.querySelector('.image-modal-content');
                 if (modalImg) {
                     modalImg.src = '';
+                    modalImg.alt = '';
                 }
+                console.log('✅ モーダル閉じる完了');
+            } else {
+                console.error('❌ モーダル要素が見つかりません（閉じる時）');
             }
         }
         
