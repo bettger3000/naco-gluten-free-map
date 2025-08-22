@@ -11583,6 +11583,55 @@
                                     margin-bottom: 12px;
                                     font-size: 1rem;
                                 ">🎭 アバター選択</label>
+                                
+                                <!-- カスタム画像アップロード -->
+                                <div style="
+                                    background: rgba(255, 245, 248, 0.8);
+                                    border: 2px dashed rgba(255, 107, 157, 0.3);
+                                    border-radius: 12px;
+                                    padding: 20px;
+                                    text-align: center;
+                                    margin-bottom: 16px;
+                                    transition: all 0.2s ease;
+                                " id="uploadSection">
+                                    <div style="margin-bottom: 12px;">
+                                        <span style="font-size: 2rem;">📷</span>
+                                        <p style="margin: 8px 0 0 0; color: #6b7280; font-size: 14px;">あなたの写真をアップロード</p>
+                                    </div>
+                                    
+                                    <input type="file" id="avatarFileInput" accept="image/jpeg,image/png,image/jpg" style="display: none;">
+                                    
+                                    <button onclick="selectCustomImage()" style="
+                                        padding: 8px 16px;
+                                        background: linear-gradient(135deg, #ff6b9d, #4299e1);
+                                        color: white;
+                                        border: none;
+                                        border-radius: 8px;
+                                        font-size: 12px;
+                                        font-weight: 600;
+                                        cursor: pointer;
+                                        transition: all 0.2s ease;
+                                        margin-bottom: 8px;
+                                    " onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">
+                                        📁 写真を選ぶ
+                                    </button>
+                                    
+                                    <!-- アップロード進行状況 -->
+                                    <div id="uploadProgress" style="display: none; margin-top: 12px;">
+                                        <div style="background: #e5e7eb; border-radius: 8px; height: 4px; overflow: hidden;">
+                                            <div id="progressBar" style="background: linear-gradient(90deg, #ff6b9d, #4299e1); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+                                        </div>
+                                        <p id="uploadStatus" style="margin: 8px 0 0 0; color: #6b7280; font-size: 12px;">アップロード中...</p>
+                                    </div>
+                                    
+                                    <!-- エラーメッセージ -->
+                                    <div id="uploadError" style="display: none; margin-top: 8px; padding: 8px; background: rgba(239, 68, 68, 0.1); border-radius: 6px; color: #dc2626; font-size: 12px;"></div>
+                                </div>
+                                
+                                <!-- プリセットアバター -->
+                                <div style="margin-bottom: 8px;">
+                                    <p style="margin: 0 0 8px 0; color: #6b7280; font-size: 14px;">または、プリセットから選択：</p>
+                                </div>
                                 <div style="
                                     display: grid;
                                     grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
@@ -11633,6 +11682,12 @@
                 document.body.insertAdjacentHTML('beforeend', modalHTML);
                 generateAvatarOptions(currentUserEmail);
                 
+                // ファイル入力のイベントリスナーを追加
+                const fileInput = document.getElementById('avatarFileInput');
+                if (fileInput) {
+                    fileInput.addEventListener('change', handleFileSelect);
+                }
+                
             } catch (error) {
                 console.error('プロフィールモーダル表示エラー:', error);
                 alert('プロフィール画面の表示に失敗しました');
@@ -11663,19 +11718,251 @@
             }).join('');
         }
         
-        // アバター選択
+        // アバター選択（プリセット）
         function selectAvatar(avatarUrl) {
             // プレビュー更新
             const preview = document.getElementById('avatarPreview');
             if (preview) {
                 preview.style.backgroundImage = `url('${avatarUrl}')`;
+                preview.dataset.avatarType = 'preset';
+                preview.dataset.avatarUrl = avatarUrl;
             }
             
-            // 選択状態の更新
+            // 選択状態の更新（プリセットのみ）
             document.querySelectorAll('[data-avatar-url]').forEach(el => {
                 el.style.borderColor = 'transparent';
             });
-            document.querySelector(`[data-avatar-url="${avatarUrl}"]`).style.borderColor = '#ff6b9d';
+            const selectedElement = document.querySelector(`[data-avatar-url="${avatarUrl}"]`);
+            if (selectedElement) {
+                selectedElement.style.borderColor = '#ff6b9d';
+            }
+            
+            // アップロードセクションの選択状態をリセット
+            resetUploadSelection();
+        }
+        
+        // ========== 画像アップロード機能 ==========
+        
+        // カスタム画像選択を開始
+        function selectCustomImage() {
+            const fileInput = document.getElementById('avatarFileInput');
+            if (fileInput) {
+                fileInput.click();
+            }
+        }
+        
+        // ファイル選択処理
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // ファイル検証
+            const validationResult = validateImageFile(file);
+            if (!validationResult.isValid) {
+                showUploadError(validationResult.message);
+                return;
+            }
+            
+            // 画像プレビュー表示
+            showImagePreview(file);
+            
+            // 画像アップロード実行
+            uploadCustomAvatar(file);
+        }
+        
+        // ファイル検証
+        function validateImageFile(file) {
+            // ファイル形式チェック
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+            if (!allowedTypes.includes(file.type)) {
+                return {
+                    isValid: false,
+                    message: '🚫 JPEG・PNG形式の画像をお選びください'
+                };
+            }
+            
+            // ファイルサイズチェック（500KB）
+            const maxSize = 500 * 1024; // 500KB
+            if (file.size > maxSize) {
+                return {
+                    isValid: false,
+                    message: `🚫 ファイルサイズが大きすぎます（${Math.round(file.size/1024)}KB > 500KB）`
+                };
+            }
+            
+            return { isValid: true };
+        }
+        
+        // 画像プレビュー表示
+        function showImagePreview(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('avatarPreview');
+                if (preview) {
+                    preview.style.backgroundImage = `url('${e.target.result}')`;
+                    preview.dataset.avatarType = 'custom';
+                    preview.dataset.avatarUrl = e.target.result;
+                }
+                
+                // プリセット選択をリセット
+                resetPresetSelection();
+                
+                // アップロードセクションの見た目を更新
+                highlightUploadSelection();
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        // カスタム画像アップロード
+        async function uploadCustomAvatar(file) {
+            const currentUserEmail = getCurrentUser();
+            if (!currentUserEmail) {
+                showUploadError('🚫 ログインが必要です');
+                return;
+            }
+            
+            try {
+                // アップロード進行状況を表示
+                showUploadProgress(true);
+                updateProgress(0, 'アップロード準備中...');
+                
+                // FormDataを作成
+                const formData = new FormData();
+                formData.append('image', file);
+                formData.append('email', currentUserEmail);
+                
+                updateProgress(30, 'アップロード中...');
+                
+                // 既存のWorker APIを使用してアップロード
+                const response = await fetch(`${AVATAR_WORKER_URL}/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                updateProgress(70, '処理中...');
+                
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(result.error || 'アップロードに失敗しました');
+                }
+                
+                updateProgress(100, 'アップロード完了！');
+                
+                // 成功時の処理
+                const uploadedImageUrl = result.imageUrl || result.publicUrl;
+                if (uploadedImageUrl) {
+                    selectCustomAvatar(uploadedImageUrl);
+                    showUploadSuccess('✨ 画像をアップロードしました！');
+                }
+                
+                // 進行状況を隠す
+                setTimeout(() => {
+                    showUploadProgress(false);
+                }, 1500);
+                
+            } catch (error) {
+                console.error('画像アップロードエラー:', error);
+                showUploadError(`🚫 アップロードに失敗: ${error.message}`);
+                showUploadProgress(false);
+                
+                // フォールバック: プリセットアバターに戻す
+                const preview = document.getElementById('avatarPreview');
+                if (preview && preview.dataset.avatarUrl) {
+                    // 元の画像に戻す（プリセットの場合）
+                    if (preview.dataset.avatarType === 'preset') {
+                        selectAvatar(preview.dataset.avatarUrl);
+                    }
+                }
+            }
+        }
+        
+        // カスタムアバター選択
+        function selectCustomAvatar(imageUrl) {
+            const preview = document.getElementById('avatarPreview');
+            if (preview) {
+                preview.style.backgroundImage = `url('${imageUrl}')`;
+                preview.dataset.avatarType = 'custom';
+                preview.dataset.avatarUrl = imageUrl;
+            }
+            
+            resetPresetSelection();
+            highlightUploadSelection();
+        }
+        
+        // アップロード進行状況の表示/非表示
+        function showUploadProgress(show) {
+            const progressDiv = document.getElementById('uploadProgress');
+            const errorDiv = document.getElementById('uploadError');
+            
+            if (progressDiv) {
+                progressDiv.style.display = show ? 'block' : 'none';
+            }
+            if (errorDiv && show) {
+                errorDiv.style.display = 'none';
+            }
+        }
+        
+        // 進行状況の更新
+        function updateProgress(percentage, message) {
+            const progressBar = document.getElementById('progressBar');
+            const statusText = document.getElementById('uploadStatus');
+            
+            if (progressBar) {
+                progressBar.style.width = `${percentage}%`;
+            }
+            if (statusText) {
+                statusText.textContent = message;
+            }
+        }
+        
+        // エラーメッセージ表示
+        function showUploadError(message) {
+            const errorDiv = document.getElementById('uploadError');
+            if (errorDiv) {
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+                
+                // 3秒後に自動で隠す
+                setTimeout(() => {
+                    errorDiv.style.display = 'none';
+                }, 3000);
+            }
+            showUploadProgress(false);
+        }
+        
+        // 成功メッセージ表示
+        function showUploadSuccess(message) {
+            const statusText = document.getElementById('uploadStatus');
+            if (statusText) {
+                statusText.textContent = message;
+                statusText.style.color = '#059669';
+            }
+        }
+        
+        // プリセット選択をリセット
+        function resetPresetSelection() {
+            document.querySelectorAll('[data-avatar-url]').forEach(el => {
+                el.style.borderColor = 'transparent';
+            });
+        }
+        
+        // アップロード選択をリセット
+        function resetUploadSelection() {
+            const uploadSection = document.getElementById('uploadSection');
+            if (uploadSection) {
+                uploadSection.style.borderColor = 'rgba(255, 107, 157, 0.3)';
+                uploadSection.style.background = 'rgba(255, 245, 248, 0.8)';
+            }
+        }
+        
+        // アップロード選択をハイライト
+        function highlightUploadSelection() {
+            const uploadSection = document.getElementById('uploadSection');
+            if (uploadSection) {
+                uploadSection.style.borderColor = '#ff6b9d';
+                uploadSection.style.background = 'rgba(255, 107, 157, 0.1)';
+            }
         }
         
         // プロフィール保存
@@ -11691,19 +11978,32 @@
                 return;
             }
             
-            const avatarUrl = avatarPreview.style.backgroundImage.match(/url\("?([^"]*)"?\)/)?.[1];
             const currentUserEmail = getCurrentUser();
             
             try {
-                // 既存のプロフィールを更新
+                // アバター情報を取得
+                const avatarType = avatarPreview.dataset.avatarType || 'preset';
+                const avatarUrl = avatarPreview.dataset.avatarUrl || avatarPreview.style.backgroundImage.match(/url\("?([^"]*)"?\)/)?.[1];
+                
+                // プロフィールデータを構築
                 const updatedProfile = {
                     email: currentUserEmail,
                     nickname: nickname,
-                    avatar: 'custom',  // カスタムアバター
-                    avatarUrl: avatarUrl,
-                    avatarType: 'url',
+                    avatarType: avatarType,
                     updatedAt: new Date().toISOString()
                 };
+                
+                // アバタータイプに応じてデータを設定
+                if (avatarType === 'custom') {
+                    updatedProfile.avatar = 'custom';
+                    updatedProfile.avatarUrl = avatarUrl;
+                } else {
+                    // プリセットアバターの場合
+                    updatedProfile.avatar = 'preset';
+                    updatedProfile.avatarUrl = avatarUrl;
+                }
+                
+                console.log('保存するプロフィール:', updatedProfile);
                 
                 // 既存のプロフィール保存システムを使用（Supabase連携）
                 const success = await saveUserProfile(updatedProfile, { source: 'profile_modal', isDirty: true });
@@ -11711,7 +12011,13 @@
                 if (success) {
                     // グローバル変数も更新
                     currentUserProfile = updatedProfile;
-                    alert('プロフィールを保存しました！');
+                    
+                    // 成功メッセージ
+                    const message = avatarType === 'custom' 
+                        ? '✨ プロフィールとカスタム画像を保存しました！' 
+                        : '✨ プロフィールを保存しました！';
+                    alert(message);
+                    
                     closeProfileModal();
                 } else {
                     throw new Error('保存に失敗しました');
