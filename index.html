@@ -11280,6 +11280,12 @@
             try {
                 // まずSupabaseから読み込みを試行
                 const supabaseProfile = await loadProfileFromSupabase(email);
+                console.log('🔍 Supabaseプロフィール読み込み結果:', {
+                    email: email,
+                    profile: supabaseProfile,
+                    hasAvatarUrl: !!supabaseProfile?.avatarUrl,
+                    avatarType: supabaseProfile?.avatarType
+                });
                 if (supabaseProfile) {
                     console.log('☁️ Supabaseプロフィールを復元:', email);
                     // LocalStorageへのキャッシュは無効化（データ不整合を防ぐため）
@@ -12596,6 +12602,14 @@
             const nickname = await getUserNickname(review.user_email);
             const avatarUrl = await getUserAvatarUrl(review.user_email);
             
+            console.log('🔍 レビューアバター取得(1):', {
+                userEmail: review.user_email,
+                avatarUrl: avatarUrl,
+                currentUser: getCurrentUser(),
+                isCurrentUser: getCurrentUser() === review.user_email,
+                currentUserProfile: currentUserProfile
+            });
+            
             return `
                 <div id="review-${review.id}" style="
                     background: linear-gradient(135deg, #ffffff 0%, #fdfbfb 100%);
@@ -12993,6 +13007,14 @@
             // ニックネーム・アバター取得
             const nickname = await getUserNickname(review.user_email);
             const avatarUrl = await getUserAvatarUrl(review.user_email);
+            
+            console.log('🔍 レビューアバター取得(2):', {
+                userEmail: review.user_email,
+                avatarUrl: avatarUrl,
+                currentUser: getCurrentUser(),
+                isCurrentUser: getCurrentUser() === review.user_email,
+                currentUserProfile: currentUserProfile
+            });
             
             return `
                 <div id="review-${review.id}" class="my-review-card" style="
