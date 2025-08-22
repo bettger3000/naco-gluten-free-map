@@ -10012,18 +10012,36 @@
                 </div>
                 <div class="store-card-actions">
                     <button class="action-btn want-to-go ${isWantToGo ? 'active' : ''}" 
-                            onclick="toggleVisitStatus(${store.id}, 'want_to_go')">
+                            onclick="event.stopPropagation(); toggleVisitStatus(${store.id}, 'want_to_go')">
                         🤍 行きたい
                     </button>
                     <button class="action-btn visited ${isVisited ? 'active' : ''}" 
-                            onclick="toggleVisitStatus(${store.id}, 'visited')">
+                            onclick="event.stopPropagation(); toggleVisitStatus(${store.id}, 'visited')">
                         ✨ 行った
                     </button>
-                    <button class="action-btn store-detail" onclick="showStoreDetail(${store.id})">
+                    <button class="action-btn store-detail" onclick="event.stopPropagation(); showStoreDetail(${store.id})">
                         📍 店舗詳細
                     </button>
                 </div>
             `;
+            
+            // カード全体をクリック可能にする（重要！）
+            card.style.cursor = 'pointer';
+            
+            // クリックイベントを追加（これが抜けていた！）
+            card.addEventListener('click', function(event) {
+                console.log('📱 パネル内店舗カードがクリックされました:', store.name);
+                
+                // ボタンクリック時は処理しない
+                if (event.target.closest('.action-btn')) {
+                    console.log('ボタンがクリックされたので処理をスキップ');
+                    return;
+                }
+                
+                // 地図上の店舗に移動
+                console.log('🗺️ 店舗に移動開始:', store.name);
+                focusOnStore(store.id);
+            });
             
             return card;
         }
