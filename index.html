@@ -12463,15 +12463,41 @@
                 // 編集ボタンを隠す
                 normalButtons.style.display = 'none';
                 
-                // 横並びボタンを生成
+                // 横並びボタンを確実に生成
                 editingButtons.innerHTML = `
-                    <div style="display: flex !important; flex-direction: row !important; gap: 8px !important; justify-content: flex-end !important; align-items: center !important; margin-top: 12px !important;">
-                        <button onclick="deleteMyReviewWithConfirm('${reviewId}')" 
-                                style="padding: 6px 16px !important; background: #e53e3e !important; color: white !important; border: none !important; border-radius: 8px !important; cursor: pointer !important; font-size: 12px !important; font-weight: 500 !important; min-width: 70px !important; height: 32px !important;">削除</button>
-                        <button onclick="cancelEditMyReview('${reviewId}')" 
-                                style="padding: 6px 16px !important; background: #718096 !important; color: white !important; border: none !important; border-radius: 8px !important; cursor: pointer !important; font-size: 12px !important; font-weight: 500 !important; min-width: 70px !important; height: 32px !important;">キャンセル</button>
-                        <button onclick="saveEditMyReview('${reviewId}')" 
-                                style="padding: 6px 16px !important; background: #38a169 !important; color: white !important; border: none !important; border-radius: 8px !important; cursor: pointer !important; font-size: 12px !important; font-weight: 500 !important; min-width: 70px !important; height: 32px !important;">保存</button>
+                    <style>
+                        .edit-action-buttons {
+                            display: flex !important;
+                            flex-direction: row !important;
+                            gap: 8px !important;
+                            justify-content: flex-end !important;
+                            align-items: center !important;
+                            margin-top: 12px !important;
+                            width: 100% !important;
+                            box-sizing: border-box !important;
+                        }
+                        .edit-action-btn {
+                            padding: 6px 16px !important;
+                            border: none !important;
+                            border-radius: 8px !important;
+                            cursor: pointer !important;
+                            font-size: 12px !important;
+                            font-weight: 500 !important;
+                            min-width: 70px !important;
+                            height: 32px !important;
+                            color: white !important;
+                            transition: opacity 0.2s ease !important;
+                            flex-shrink: 0 !important;
+                        }
+                        .edit-action-btn:hover { opacity: 0.9 !important; }
+                        .btn-delete { background: #e53e3e !important; }
+                        .btn-cancel { background: #718096 !important; }
+                        .btn-save { background: #38a169 !important; }
+                    </style>
+                    <div class="edit-action-buttons">
+                        <button class="edit-action-btn btn-delete" onclick="deleteMyReviewWithConfirm('${reviewId}')">削除</button>
+                        <button class="edit-action-btn btn-cancel" onclick="cancelEditMyReview('${reviewId}')">キャンセル</button>
+                        <button class="edit-action-btn btn-save" onclick="saveEditMyReview('${reviewId}')">保存</button>
                     </div>
                 `;
                 editingButtons.style.display = 'block';
