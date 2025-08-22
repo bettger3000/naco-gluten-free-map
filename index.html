@@ -11445,6 +11445,39 @@
 
         // ========== プロフィール編集機能 ==========
         
+        // ユーザープロフィール取得
+        async function getUserProfile(email) {
+            try {
+                const key = `userProfile_${email}`;
+                const savedProfile = localStorage.getItem(key);
+                if (savedProfile) {
+                    return JSON.parse(savedProfile);
+                }
+                return null;
+            } catch (error) {
+                console.error('プロフィール取得エラー:', error);
+                return null;
+            }
+        }
+        
+        // ユーザープロフィール保存
+        async function saveUserProfile(email, nickname, avatarUrl) {
+            try {
+                const key = `userProfile_${email}`;
+                const profile = {
+                    email: email,
+                    nickname: nickname,
+                    avatar_url: avatarUrl,
+                    updated_at: new Date().toISOString()
+                };
+                localStorage.setItem(key, JSON.stringify(profile));
+                return true;
+            } catch (error) {
+                console.error('プロフィール保存エラー:', error);
+                return false;
+            }
+        }
+        
         // プロフィールモーダルを開く
         async function openProfileModal() {
             const currentUserEmail = getCurrentUser();
@@ -12736,6 +12769,61 @@
                 }, 100);
             }
         }
+        // マイレビュー編集開始
+        function editMyReview(reviewId) {
+            console.log('editMyReview called with ID:', reviewId);
+            
+            const contentDiv = document.querySelector(`#review-${reviewId} .my-review-text`);
+            const editForm = document.getElementById(`my-edit-form-${reviewId}`);
+            const normalButtons = document.getElementById(`my-edit-buttons-normal-${reviewId}`);
+            const editingButtons = document.getElementById(`my-edit-buttons-editing-${reviewId}`);
+            
+            if (contentDiv && editForm && normalButtons && editingButtons) {
+                // 元のテキストを取得
+                const originalText = contentDiv.textContent || contentDiv.innerText || '';
+                
+                // コンテンツ表示を隠す
+                contentDiv.style.display = 'none';
+                
+                // 編集フォームを生成
+                editForm.innerHTML = `
+                    <div style="margin: 16px 0; padding: 20px; background: rgba(255, 255, 255, 0.9); border-radius: 12px; border: 2px solid rgba(66, 153, 225, 0.3); box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
+                        <textarea id="my-edit-textarea-${reviewId}" 
+                                  style="width: 100%; min-height: 120px; padding: 16px; border: 2px solid rgba(66, 153, 225, 0.3); border-radius: 8px; font-size: 14px; line-height: 1.6; resize: vertical; font-family: system-ui, sans-serif; background: white; box-sizing: border-box;"
+                                  placeholder="あなたの感想を編集してください...">${originalText.trim()}</textarea>
+                    </div>
+                `;
+                editForm.style.display = 'block';
+                
+                // 編集ボタンを隠す
+                normalButtons.style.display = 'none';
+                
+                // 編集中ボタンを表示
+                editingButtons.innerHTML = `
+                    <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px;">
+                        <button onclick="deleteMyReviewWithConfirm('${reviewId}')" 
+                                style="padding: 6px 16px; background: #e53e3e; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 500;">削除</button>
+                        <button onclick="cancelEditMyReview('${reviewId}')" 
+                                style="padding: 6px 16px; background: #718096; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 500;">キャンセル</button>
+                        <button onclick="saveEditMyReview('${reviewId}')" 
+                                style="padding: 6px 16px; background: #38a169; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 500;">保存</button>
+                    </div>
+                `;
+                editingButtons.style.display = 'block';
+                
+                // テキストエリアにフォーカス
+                setTimeout(() => {
+                    const textarea = document.getElementById(`my-edit-textarea-${reviewId}`);
+                    if (textarea) {
+                        textarea.focus();
+                        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+                    }
+                }, 100);
+            } else {
+                console.error('Some elements not found for reviewId:', reviewId);
+            }
+        }
+        
         // マイレビュー編集キャンセル
         function cancelEditMyReview(reviewId) {
             const contentDiv = document.querySelector(`#review-${reviewId} .my-review-text`);
