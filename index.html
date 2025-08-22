@@ -11437,7 +11437,11 @@
             closeSideMenu();
             if (typeof openProfileModal === 'function') {
                 openProfileModal();
+            } else {
+                console.error('openProfileModal function not found');
+                alert('プロフィール機能の読み込み中です。もう一度お試しください。');
             }
+        }
 
         // ========== プロフィール編集機能 ==========
         
