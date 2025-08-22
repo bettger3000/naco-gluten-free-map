@@ -3924,13 +3924,14 @@
             background: var(--bg-glass);
             backdrop-filter: blur(20px);
             border-radius: var(--radius-2xl);
-            padding: var(--space-2xl);
+            padding: 0;
             box-shadow: var(--shadow-xl);
             text-align: center;
-            max-width: 400px;
-            width: 100%;
+            max-width: 420px;
+            width: 90%;
             max-height: 90vh;
             overflow-y: auto;
+            position: relative;
         }
 
         .login-modal-content .login-header h1 {
@@ -4358,11 +4359,42 @@
 
             /* nacoキャラクターの調整 */
             .login-modal-content .login-logo {
-                width: 80px;
-                height: 80px;
-                margin-bottom: 1rem;
+                width: 120px;
+                height: 120px;
+                margin: 0 auto 1rem auto;
                 border-radius: 50%;
                 box-shadow: 0 4px 12px rgba(214, 51, 132, 0.2);
+                object-fit: cover;
+                object-position: center;
+                display: block;
+                background: white;
+                padding: 8px;
+            }
+            
+            /* ログインヘッダーの調整 */
+            .login-modal-content .login-header {
+                text-align: center;
+                padding: 2rem 2rem 1rem 2rem;
+                background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.8));
+                border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+            }
+            
+            /* ログインコンテンツの調整 */
+            .login-modal-content .login-content {
+                padding: 1rem 2rem 2rem 2rem;
+            }
+            
+            /* モバイル対応 */
+            @media (max-width: 768px) {
+                .login-modal-content .login-logo {
+                    width: 100px;
+                    height: 100px;
+                }
+                
+                .login-modal-content {
+                    margin: 1rem;
+                    max-width: calc(100vw - 2rem);
+                }
             }
             .store-detail-modal {
                 padding: 0;
