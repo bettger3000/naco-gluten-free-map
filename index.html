@@ -258,13 +258,17 @@
         .menu-item {
             display: flex;
             align-items: center;
-            gap: var(--space-md);
-            padding: var(--space-md);
+            gap: 18px;
+            padding: 20px;
             border-radius: var(--radius-lg);
             cursor: pointer;
             transition: all 0.3s ease;
             margin-bottom: var(--space-sm);
             border: 2px solid transparent;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 16px;
         }
 
         .menu-item:hover {
@@ -274,16 +278,17 @@
         }
 
         .menu-item-icon {
-            width: 24px;
+            width: 28px;
             text-align: center;
             color: var(--primary);
-            font-size: 1.1rem;
+            font-size: 1.4rem;
         }
 
         .menu-item-text {
             flex: 1;
             color: var(--text-primary);
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 18px;
         }
 
         .menu-item-arrow {
@@ -4891,16 +4896,25 @@
                 </div>
                 <div class="side-menu-content">
                     <button class="menu-item" onclick="showMyReviews()">
-                        <i class="fas fa-star"></i>
-                        <span>マイレビュー</span>
+                        <i class="fas fa-star menu-item-icon"></i>
+                        <span class="menu-item-text">マイレビュー</span>
                     </button>
                     <button class="menu-item" onclick="showProfile()">
-                        <i class="fas fa-user"></i>
-                        <span>プロフィール</span>
+                        <i class="fas fa-user menu-item-icon"></i>
+                        <span class="menu-item-text">プロフィール</span>
                     </button>
                     <button class="menu-item" onclick="showStatistics()">
-                        <i class="fas fa-chart-bar"></i>
-                        <span>マイ統計</span>
+                        <i class="fas fa-chart-bar menu-item-icon"></i>
+                        <span class="menu-item-text">マイ統計</span>
+                    </button>
+                    
+                    <!-- セパレーター -->
+                    <div class="menu-separator"></div>
+                    
+                    <!-- ログアウトボタン -->
+                    <button class="menu-item logout" onclick="logout()">
+                        <i class="fas fa-sign-out-alt menu-item-icon"></i>
+                        <span class="menu-item-text">ログアウト</span>
                     </button>
                 </div>
             </div>
@@ -12679,6 +12693,44 @@
             }
         `;
         document.head.appendChild(myReviewStyles);
+        
+        // ログアウト機能
+        async function logout() {
+            const confirmLogout = confirm('ログアウトしますか？');
+            if (!confirmLogout) {
+                return;
+            }
+            
+            try {
+                // Supabase認証からサインアウト
+                const { error } = await supabaseClient.auth.signOut();
+                if (error) {
+                    console.warn('⚠️ Supabaseサインアウトエラー:', error);
+                }
+                
+                // PINコード認証情報をクリア
+                localStorage.removeItem('pinAuth');
+                
+                // 現在のユーザー情報をクリア
+                setCurrentUser(null);
+                
+                // ユーザー別の保存データをクリア
+                userVisitHistory.clear();
+                
+                // サイドメニューを閉じる
+                closeSideMenu();
+                
+                console.log('✅ ログアウト完了');
+                alert('ログアウトしました');
+                
+                // ページをリロードして初期状態に戻す
+                window.location.reload();
+                
+            } catch (error) {
+                console.error('❌ ログアウトエラー:', error);
+                alert('ログアウト中にエラーが発生しました');
+            }
+        }
     </script>
 
 </body>
