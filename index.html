@@ -8323,18 +8323,50 @@
                 </div>
             `;
 
-            card.addEventListener('click', function() {
+            card.addEventListener('click', function(event) {
+                // ボタンクリック時は処理しない
+                if (event.target.closest('.action-btn')) {
+                    return;
+                }
+                
+                // 地図上の店舗に移動
                 if (store.latitude && store.longitude && map) {
-                    map.setView([store.latitude, store.longitude], 15);
-                    const marker = markers.find(m => 
-                        Math.abs(m.getLatLng().lat - store.latitude) < 0.00001 && 
-                        Math.abs(m.getLatLng().lng - store.longitude) < 0.00001
-                    );
-                    if (marker) {
-                        marker.openPopup();
+                    console.log('🗺️ 店舗に移動:', store.name);
+                    
+                    // 地図を店舗位置に移動（アニメーション付き）
+                    map.flyTo([store.latitude, store.longitude], 16, {
+                        duration: 0.8,
+                        easeLinearity: 0.5
+                    });
+                    
+                    // マーカーを探してポップアップを開く
+                    setTimeout(() => {
+                        const marker = markers.find(m => 
+                            Math.abs(m.getLatLng().lat - store.latitude) < 0.00001 && 
+                            Math.abs(m.getLatLng().lng - store.longitude) < 0.00001
+                        );
+                        if (marker) {
+                            marker.openPopup();
+                        }
+                    }, 800); // アニメーション完了後にポップアップを開く
+                    
+                    // スマホ版の場合、パネルを閉じる
+                    if (!isDesktop()) {
+                        const overlayPanel = document.getElementById('overlayPanel');
+                        if (overlayPanel && overlayPanel.style.display !== 'none') {
+                            // パネルを閉じる
+                            overlayPanel.style.transform = 'translateY(100%)';
+                            setTimeout(() => {
+                                overlayPanel.style.display = 'none';
+                            }, 300);
+                        }
                     }
                 }
-                selectStoreCard(store.id);
+                
+                // PC版用の選択処理
+                if (isDesktop()) {
+                    selectStoreCard(store.id);
+                }
             });
 
             return card;
