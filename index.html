@@ -12622,7 +12622,7 @@
                             background-repeat: no-repeat !important;
                             box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
                             background-color: #E5E7EB;
-                        " onerror="console.error('アバター読み込みエラー:', '${avatarUrl}'); this.style.backgroundImage = 'url(https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(review.user_email)})'; this.style.backgroundColor = '#ff6b9d';"></div>
+                        " onerror="this.onerror=null; this.style.backgroundImage='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIxNiIgZmlsbD0iI0U1RTdFQiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNiIgZm9udC1mYW1pbHk9InN5c3RlbS11aSI+8J+MuDwvdGV4dD48L3N2Zz4='; this.style.backgroundColor='#f8f9fa';"></div>
                         <div style="flex-grow: 1;">
                             <div style="font-weight: 600; color: #333; font-size: 16px; margin-bottom: 2px;">${nickname}</div>
                             <div style="color: #666; font-size: 0.9em; opacity: 0.8;">
@@ -13070,7 +13070,7 @@
                             background-repeat: no-repeat !important;
                             box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
                             background-color: #E5E7EB;
-                        " onerror="console.error('アバター読み込みエラー:', '${avatarUrl}'); this.style.backgroundImage = 'url(https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(review.user_email)})'; this.style.backgroundColor = '#ff6b9d';"></div>
+                        " onerror="this.onerror=null; this.style.backgroundImage='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIxNiIgZmlsbD0iI0U1RTdFQiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNiIgZm9udC1mYW1pbHk9InN5c3RlbS11aSI+8J+MuDwvdGV4dD48L3N2Zz4='; this.style.backgroundColor='#f8f9fa';"></div>
                         <div style="
                             font-weight: 600; 
                             color: #4a5568; 
@@ -13165,6 +13165,11 @@
         
         // ユーザーのアバターURL取得（既存システム連携）
         async function getUserAvatarUrl(email) {
+            if (!email || typeof email !== 'string') {
+                console.warn('無効なemail:', email);
+                return createEmojiAvatar('🌸');
+            }
+            
             try {
                 console.log('🔍 アバター取得開始:', email);
                 
@@ -13178,16 +13183,20 @@
                     } else if (currentUserProfile.avatarType === 'preset' && currentUserProfile.avatarUrl) {
                         console.log('✅ プリセットアバター:', currentUserProfile.avatarUrl);
                         return currentUserProfile.avatarUrl;
-                    } else if (currentUserProfile.avatar) {
+                    } else if (currentUserProfile.avatar && currentUserProfile.avatar !== 'default') {
                         // 絵文字アバターの場合
-                        const emoji = getAvatarDisplay ? getAvatarDisplay(currentUserProfile) : '🌸';
+                        const emoji = getAvatarDisplay ? getAvatarDisplay(currentUserProfile) : currentUserProfile.avatar;
                         console.log('✅ 絵文字アバター:', emoji);
                         return createEmojiAvatar(emoji);
                     }
                 }
                 
-                // 他のユーザーの場合はSupabaseから取得
-                const profile = await loadUserProfile ? loadUserProfile(email) : null;
+                // 他のユーザーの場合はSupabaseから取得（タイムアウト付き）
+                const profile = await Promise.race([
+                    loadUserProfile ? loadUserProfile(email) : Promise.resolve(null),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+                ]);
+                
                 console.log('💾 ユーザープロフィール取得結果:', profile);
                 
                 if (profile) {
@@ -13197,9 +13206,9 @@
                     } else if (profile.avatarType === 'preset' && profile.avatarUrl) {
                         console.log('✅ プリセットアバター(他ユーザー):', profile.avatarUrl);
                         return profile.avatarUrl;
-                    } else if (profile.avatar) {
+                    } else if (profile.avatar && profile.avatar !== 'default') {
                         // 絵文字アバターの場合
-                        const emoji = profile.avatar === 'default' ? '🌸' : profile.avatar;
+                        const emoji = profile.avatar;
                         console.log('✅ 絵文字アバター(他ユーザー):', emoji);
                         return createEmojiAvatar(emoji);
                     }
@@ -13210,29 +13219,26 @@
                 console.warn('アバター取得エラー:', error);
             }
             
-            // 最終フォールバック: DiceBear API
-            const fallbackUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`;
-            console.log('🏭 フォールバックアバター:', fallbackUrl);
-            return fallbackUrl;
+            // 安全なフォールバック: 絵文字アバター
+            console.log('🏭 フォールバックアバター: 絵文字');
+            return createEmojiAvatar('🌸');
         }
         
         // 絵文字をSVGアバターに変換
         function createEmojiAvatar(emoji) {
             try {
-                const svgData = `
-                    <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="16" cy="16" r="16" fill="#f8f9fa"/>
-                        <text x="16" y="22" text-anchor="middle" font-size="16" font-family="system-ui">${emoji}</text>
-                    </svg>
-                `;
+                // 安全な絵文字チェック
+                const safeEmoji = emoji && typeof emoji === 'string' ? emoji.slice(0, 2) : '🌸';
                 
-                // Unicode対応のBase64エンコード
-                const base64Data = btoa(unescape(encodeURIComponent(svgData)));
-                return `data:image/svg+xml;base64,${base64Data}`;
+                const svgData = `<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="16" fill="#f8f9fa"/><text x="16" y="22" text-anchor="middle" font-size="16" font-family="system-ui">${safeEmoji}</text></svg>`;
+                
+                // 安全なBase64エンコード
+                const encodedSvg = encodeURIComponent(svgData);
+                return `data:image/svg+xml;charset=UTF-8,${encodedSvg}`;
             } catch (error) {
                 console.warn('Emoji avatar creation failed:', error);
-                // フォールバック: シンプルなデフォルトアバター
-                return `https://api.dicebear.com/7.x/avataaars/svg?seed=default`;
+                // 確実に動作するフォールバック
+                return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIxNiIgZmlsbD0iI2Y4ZjlmYSIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNiIgZm9udC1mYW1pbHk9InN5c3RlbS11aSI+8J+MuDwvdGV4dD48L3N2Zz4=';
             }
         }
         
