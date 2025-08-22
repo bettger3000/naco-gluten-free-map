@@ -13660,6 +13660,9 @@
         async function showStatistics() {
             console.log('📊 マイ統計を表示');
             
+            // サイドメニューを閉じる
+            closeSideMenu();
+            
             // モーダルが既に存在する場合は削除
             const existingModal = document.getElementById('statisticsModalOverlay');
             if (existingModal) {
