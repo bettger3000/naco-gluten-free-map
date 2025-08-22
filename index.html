@@ -3953,6 +3953,187 @@
             height: auto;
         }
 
+        /* マイ統計モーダルスタイル */
+        .statistics-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 20000;
+            padding: var(--space-lg);
+        }
+
+        .statistics-modal-content {
+            background: linear-gradient(135deg, 
+                rgba(255, 248, 252, 0.98) 0%,   /* 優しいピンク */
+                rgba(255, 240, 245, 0.98) 35%,  /* 桜色 */
+                rgba(248, 250, 252, 0.98) 70%,  /* 上品なブルーグレー */
+                rgba(255, 245, 248, 0.98) 100%  /* 薄いローズ */
+            );
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-xl);
+            box-shadow: 
+                0 20px 60px rgba(255, 107, 157, 0.15),
+                0 8px 32px rgba(255, 107, 157, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            max-width: 480px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .statistics-header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-lg);
+            border-bottom: 2px solid rgba(255, 107, 157, 0.1);
+        }
+
+        .statistics-header h2 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .statistics-subtitle {
+            color: #8b5a83;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .statistics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.9) 0%, 
+                rgba(255, 248, 252, 0.8) 100%
+            );
+            border: 2px solid rgba(255, 107, 157, 0.15);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            text-align: center;
+            box-shadow: 
+                0 4px 20px rgba(255, 107, 157, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 107, 157, 0.05) 0%, transparent 70%);
+            transform: scale(0);
+            transition: transform 0.4s ease;
+        }
+
+        .stat-card:hover::before {
+            transform: scale(1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 107, 157, 0.3);
+            box-shadow: 
+                0 8px 30px rgba(255, 107, 157, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        }
+
+        .stat-icon {
+            font-size: 2.2rem;
+            margin-bottom: var(--space-sm);
+            display: block;
+            filter: drop-shadow(0 2px 4px rgba(255, 107, 157, 0.2));
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--space-xs);
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            color: #8b5a83;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .close-statistics-btn {
+            position: absolute;
+            top: var(--space-md);
+            right: var(--space-md);
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid rgba(255, 107, 157, 0.2);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--primary);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .close-statistics-btn:hover {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        /* モバイル対応 */
+        @media (max-width: 768px) {
+            .statistics-modal-content {
+                margin: var(--space-sm);
+                padding: var(--space-lg);
+                max-width: calc(100vw - 2rem);
+            }
+
+            .statistics-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-md);
+            }
+
+            .stat-number {
+                font-size: 1.8rem;
+            }
+
+            .statistics-header h2 {
+                font-size: 1.6rem;
+            }
+        }
+
         .login-modal-content .login-header h1 {
             color: var(--primary);
             font-size: 1.8rem;
@@ -13451,6 +13632,137 @@
                 alert('ログアウト中にエラーが発生しました');
             }
         }
+        // マイ統計機能
+        function showStatistics() {
+            console.log('📊 マイ統計を表示');
+            
+            // モーダルが既に存在する場合は削除
+            const existingModal = document.getElementById('statisticsModalOverlay');
+            if (existingModal) {
+                existingModal.remove();
+            }
+
+            // 統計データを計算
+            const stats = calculateUserStatistics();
+            
+            // モーダルHTML作成
+            const modalHTML = `
+                <div class="statistics-modal-overlay" id="statisticsModalOverlay">
+                    <div class="statistics-modal-content">
+                        <button class="close-statistics-btn" onclick="closeStatisticsModal()">×</button>
+                        
+                        <div class="statistics-header">
+                            <h2>🌸 マイ統計 🌸</h2>
+                            <p class="statistics-subtitle">あなたのグルテンフリーライフの足跡</p>
+                        </div>
+
+                        <div class="statistics-grid">
+                            <div class="stat-card">
+                                <span class="stat-icon">🏪</span>
+                                <div class="stat-number">${stats.visitedCount}</div>
+                                <div class="stat-label">行ったお店</div>
+                            </div>
+
+                            <div class="stat-card">
+                                <span class="stat-icon">💝</span>
+                                <div class="stat-number">${stats.wantToGoCount}</div>
+                                <div class="stat-label">行きたいお店</div>
+                            </div>
+
+                            <div class="stat-card">
+                                <span class="stat-icon">✍️</span>
+                                <div class="stat-number">${stats.reviewCount}</div>
+                                <div class="stat-label">レビュー数</div>
+                            </div>
+
+                            <div class="stat-card">
+                                <span class="stat-icon">🌸</span>
+                                <div class="stat-number">${stats.daysSinceStart}</div>
+                                <div class="stat-label">日目</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // body に追加
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // モーダル表示
+            const modal = document.getElementById('statisticsModalOverlay');
+            setTimeout(() => {
+                modal.style.display = 'flex';
+                modal.style.opacity = '0';
+                modal.style.transform = 'scale(0.9)';
+                
+                requestAnimationFrame(() => {
+                    modal.style.transition = 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                    modal.style.opacity = '1';
+                    modal.style.transform = 'scale(1)';
+                });
+            }, 10);
+
+            // オーバーレイクリックで閉じる
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeStatisticsModal();
+                }
+            });
+
+            // サイドメニューを閉じる
+            closeSideMenu();
+        }
+
+        // 統計データ計算
+        function calculateUserStatistics() {
+            const currentUser = getCurrentUser();
+            
+            // 訪問履歴から統計を計算
+            let visitedCount = 0;
+            let wantToGoCount = 0;
+            
+            if (userVisitHistory && userVisitHistory.size > 0) {
+                for (const [storeId, status] of userVisitHistory) {
+                    if (status === 'visited') visitedCount++;
+                    if (status === 'want_to_go') wantToGoCount++;
+                }
+            }
+
+            // レビュー数の計算（簡易版 - 実際のレビューデータがあれば置き換え）
+            let reviewCount = 0;
+            // TODO: 実際のレビューデータから計算
+
+            // 利用開始からの日数計算
+            let daysSinceStart = 1;
+            if (currentUser && currentUser.created_at) {
+                const startDate = new Date(currentUser.created_at);
+                const today = new Date();
+                const diffTime = Math.abs(today - startDate);
+                daysSinceStart = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            }
+
+            return {
+                visitedCount,
+                wantToGoCount,
+                reviewCount,
+                daysSinceStart
+            };
+        }
+
+        // 統計モーダルを閉じる
+        function closeStatisticsModal() {
+            const modal = document.getElementById('statisticsModalOverlay');
+            if (modal) {
+                modal.style.transition = 'all 0.25s ease';
+                modal.style.opacity = '0';
+                modal.style.transform = 'scale(0.9)';
+                
+                setTimeout(() => {
+                    modal.remove();
+                }, 250);
+            }
+        }
+
     </script>
 
 </body>
