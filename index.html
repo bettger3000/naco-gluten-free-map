@@ -11667,8 +11667,20 @@
                     // アドバイス実装：安全な表示用フォールバック
                     const displayName = getDisplayNickname(currentUserProfile);
                     
-                    // 画像アバターの場合は小さな画像を表示
-                    if (currentUserProfile.avatarType === 'image' && currentUserProfile.avatarUrl) {
+                    console.log('🔍 現在のプロフィール状態:', currentUserProfile);
+                    
+                    // アバタータイプ判定を改善
+                    const hasCustomAvatar = (currentUserProfile.avatarType === 'custom' || currentUserProfile.avatarType === 'image') 
+                                           && currentUserProfile.avatarUrl;
+                    const hasPresetAvatar = currentUserProfile.avatarType === 'preset' && currentUserProfile.avatarUrl;
+                    const hasUploadedImage = currentUserProfile.avatarUrl && 
+                                           (currentUserProfile.avatarUrl.includes('avatar-upload-worker') || 
+                                            currentUserProfile.avatarUrl.startsWith('data:image') ||
+                                            currentUserProfile.avatarUrl.includes('workers.dev'));
+                    
+                    // カスタム画像・アップロード画像・プリセット画像の場合
+                    if (hasCustomAvatar || hasPresetAvatar || hasUploadedImage) {
+                        console.log('📷 画像アバター表示:', currentUserProfile.avatarUrl);
                         menuTitle.innerHTML = `
                             <img src="${currentUserProfile.avatarUrl}" alt="${displayName}" 
                                  style="
@@ -11688,6 +11700,7 @@
                         `;
                     } else {
                         // プリセット絵文字の場合
+                        console.log('😊 絵文字アバター表示');
                         const avatar = getAvatarDisplay(currentUserProfile);
                         menuTitle.textContent = `${avatar} ${displayName}`;
                     }
@@ -11700,6 +11713,7 @@
                 }
             } catch (error) {
                 console.error('❌ メニュー表示更新エラー:', error);
+                console.error('プロフィール状態:', currentUserProfile);
             }
         }
 
