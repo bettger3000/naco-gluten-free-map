@@ -5191,6 +5191,59 @@
             align-self: flex-start !important;
             justify-self: flex-start !important;
         }
+
+        /* === 画像拡大表示モーダル === */
+        .image-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .image-modal-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .image-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10000;
+            user-select: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .image-modal-close:hover {
+            opacity: 0.7;
+        }
+
+        /* 画像をクリック可能にするスタイル */
+        .image-slide img,
+        .store-image {
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+
+        .image-slide img:hover,
+        .store-image:hover {
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
@@ -13937,7 +13990,84 @@
             }
         }
 
+        // ========== 画像拡大表示機能 ==========
+        
+        // 画像モーダルを表示
+        function showImageModal(imageSrc, altText = '') {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.querySelector('.image-modal-content');
+            
+            if (!modal || !modalImg) {
+                console.error('画像モーダル要素が見つかりません');
+                return;
+            }
+            
+            // 重複表示防止
+            if (modal.style.display === 'flex') return;
+            
+            modalImg.src = imageSrc;
+            modalImg.alt = altText;
+            modal.style.display = 'flex';
+            
+            // 画像読み込み失敗時の対処
+            modalImg.onerror = function() {
+                closeImageModal();
+                console.warn('画像の読み込みに失敗しました:', imageSrc);
+            };
+        }
+        
+        // 画像モーダルを閉じる
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            if (modal) {
+                modal.style.display = 'none';
+                const modalImg = document.querySelector('.image-modal-content');
+                if (modalImg) {
+                    modalImg.src = '';
+                }
+            }
+        }
+        
+        // 画像クリックイベント設定（イベント委譲）
+        document.addEventListener('click', function(e) {
+            // 店舗画像（カルーセル内の画像）をクリック
+            if (e.target.matches('.image-slide img')) {
+                e.preventDefault();
+                showImageModal(e.target.src, e.target.alt);
+            }
+        });
+        
+        // モーダル閉じるイベント
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('imageModal');
+            
+            // ×ボタンクリック
+            if (e.target.matches('.image-modal-close')) {
+                closeImageModal();
+            }
+            // 背景クリック（モーダル自体をクリック）
+            else if (e.target === modal) {
+                closeImageModal();
+            }
+        });
+        
+        // ESCキーでモーダルを閉じる（安全な実装）
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('imageModal');
+                if (modal && modal.style.display === 'flex') {
+                    closeImageModal();
+                }
+            }
+        });
+
     </script>
+
+    <!-- 画像拡大表示モーダル -->
+    <div id="imageModal" class="image-modal" style="display: none;">
+        <span class="image-modal-close">&times;</span>
+        <img class="image-modal-content" src="" alt="">
+    </div>
 
 </body>
 </html>
