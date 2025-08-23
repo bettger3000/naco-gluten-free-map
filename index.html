@@ -8099,6 +8099,7 @@
                     const config = categoryConfig[store.category] || categoryConfig['その他'];
 
                     const marker = L.marker([store.latitude, store.longitude], {
+                        storeId: store.id,  // マーカーのoptionsにstoreIdを保存
                         icon: L.divIcon({
                             className: 'elegant-marker',
                             html: `
@@ -13632,36 +13633,58 @@
             }, 200);
         }
         
-        // 地図のみに移動（モーダルは開いたまま）
+        // MAPボタンから地図画面へ移動（マイレビューモーダルを閉じて）
         function openMapToStore(storeId) {
             const store = stores.find(s => s.id == storeId);
             if (!store) return;
             
-            // マップの中心を店舗位置に移動
-            if (typeof map !== 'undefined' && map) {
-                map.setView([store.latitude, store.longitude], 16);
+            // マイレビューモーダルを閉じる
+            closeMyReviews();
+            
+            // サイドメニューも閉じる（開いている場合）
+            closeSideMenu();
+            
+            // 少し待ってから地図に移動（アニメーション考慮）
+            setTimeout(() => {
+                // スマホの場合はパネルを閉じる
+                if (!isDesktop()) {
+                    setPanelPosition('collapsed');
+                }
                 
-                // 該当店舗のマーカーをハイライト（点滅効果）
-                setTimeout(() => {
-                    const marker = storeMarkers.find(m => m.storeId == storeId);
-                    if (marker) {
-                        // マーカーを3回点滅
-                        let blinks = 0;
-                        const blinkInterval = setInterval(() => {
-                            if (marker._icon) {
-                                marker._icon.style.filter = blinks % 2 === 0 ? 'brightness(1.5) saturate(1.5)' : '';
-                            }
-                            blinks++;
-                            if (blinks >= 6) {
-                                clearInterval(blinkInterval);
+                // マップの中心を店舗位置に移動
+                if (typeof map !== 'undefined' && map) {
+                    map.setView([store.latitude, store.longitude], 17);
+                    
+                    // 該当店舗のマーカーをハイライト（点滅効果）
+                    setTimeout(() => {
+                        // markers配列から該当店舗のマーカーを探す
+                        const marker = markers.find(m => {
+                            // マーカーに紐付けられた店舗情報を確認
+                            return m.options && m.options.storeId == storeId;
+                        });
+                        
+                        if (marker) {
+                            // ポップアップを開く
+                            marker.openPopup();
+                            
+                            // マーカーを3回点滅
+                            let blinks = 0;
+                            const blinkInterval = setInterval(() => {
                                 if (marker._icon) {
-                                    marker._icon.style.filter = '';
+                                    marker._icon.style.filter = blinks % 2 === 0 ? 'brightness(1.5) saturate(1.5)' : '';
                                 }
-                            }
-                        }, 300);
-                    }
-                }, 100);
-            }
+                                blinks++;
+                                if (blinks >= 6) {
+                                    clearInterval(blinkInterval);
+                                    if (marker._icon) {
+                                        marker._icon.style.filter = '';
+                                    }
+                                }
+                            }, 300);
+                        }
+                    }, 100);
+                }
+            }, 200);
         }
         // マイレビュー編集開始
         function editMyReview(reviewId) {
