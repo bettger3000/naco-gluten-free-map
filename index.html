@@ -13664,8 +13664,18 @@
                         });
                         
                         if (marker) {
-                            // ポップアップを開く
-                            marker.openPopup();
+                            if (isDesktop()) {
+                                // PC版：通常のポップアップ
+                                marker.openPopup();
+                            } else {
+                                // スマホ版：マーカーのクリックイベントを発火してポップアップを開く
+                                marker.fire('click');
+                                
+                                // さらに確実にポップアップを開くため、少し遅延してopenPopupも実行
+                                setTimeout(() => {
+                                    marker.openPopup();
+                                }, 50);
+                            }
                             
                             // マーカーを3回点滅
                             let blinks = 0;
