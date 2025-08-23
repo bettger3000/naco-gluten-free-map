@@ -31,6 +31,12 @@ export default {
         return await updateReview(request, env, corsHeaders);
       } else if (url.pathname === '/reviews' && request.method === 'DELETE') {
         return await deleteReview(request, env, corsHeaders);
+      } else if (url.pathname === '/profile' && request.method === 'GET') {
+        return await getProfile(request, env, corsHeaders);
+      } else if (url.pathname === '/profile' && request.method === 'POST') {
+        return await saveProfile(request, env, corsHeaders);
+      } else if (url.pathname === '/profile' && request.method === 'PUT') {
+        return await updateProfile(request, env, corsHeaders);
       } else if (url.pathname === '/health') {
         return new Response(JSON.stringify({ status: 'healthy' }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -442,5 +448,157 @@ async function updateRelatedFiles(env, review) {
         httpMetadata: { 'Content-Type': 'application/json' }
       });
     }
+  }
+}
+
+// ============ プロフィール管理システム ============
+
+// プロフィール取得
+async function getProfile(request, env, corsHeaders) {
+  try {
+    const url = new URL(request.url);
+    const email = url.searchParams.get('email');
+    
+    if (!email) {
+      return new Response(JSON.stringify({ error: 'Email parameter required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // Workers KVからプロフィールを取得
+    const kvKey = `profile:${email}`;
+    const profileData = await env.PROFILE_KV.get(kvKey);
+    
+    if (!profileData) {
+      // デフォルトプロフィールを返す
+      const defaultProfile = {
+        email: email,
+        nickname: email.split('@')[0] || 'ユーザー',
+        avatar: 'default',
+        avatarType: 'preset',
+        avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`,
+        bio: '',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      
+      return new Response(JSON.stringify({ profile: defaultProfile }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
+    const profile = JSON.parse(profileData);
+    console.log('📖 プロフィール取得成功:', email);
+    
+    return new Response(JSON.stringify({ profile }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  } catch (error) {
+    console.error('Get profile error:', error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+}
+
+// プロフィール保存（新規作成）
+async function saveProfile(request, env, corsHeaders) {
+  try {
+    const profile = await request.json();
+    
+    // 必須フィールドのバリデーション
+    if (!profile.email || !profile.nickname) {
+      return new Response(JSON.stringify({ error: 'Email and nickname are required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // プロフィールデータを正規化
+    const normalizedProfile = {
+      email: profile.email,
+      nickname: profile.nickname.trim(),
+      avatar: profile.avatar || 'default',
+      avatarType: profile.avatarType || 'preset',
+      avatarUrl: profile.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(profile.email)}`,
+      bio: profile.bio || '',
+      createdAt: profile.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    
+    // Workers KVに保存
+    const kvKey = `profile:${profile.email}`;
+    await env.PROFILE_KV.put(kvKey, JSON.stringify(normalizedProfile));
+    
+    console.log('💾 プロフィール保存成功:', profile.email);
+    
+    return new Response(JSON.stringify({ 
+      success: true, 
+      profile: normalizedProfile 
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  } catch (error) {
+    console.error('Save profile error:', error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+}
+
+// プロフィール更新
+async function updateProfile(request, env, corsHeaders) {
+  try {
+    const profile = await request.json();
+    
+    if (!profile.email) {
+      return new Response(JSON.stringify({ error: 'Email is required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // 既存プロフィールを取得
+    const kvKey = `profile:${profile.email}`;
+    const existingData = await env.PROFILE_KV.get(kvKey);
+    
+    let existingProfile = {};
+    if (existingData) {
+      existingProfile = JSON.parse(existingData);
+    }
+    
+    // 更新データをマージ（既存データを保持しつつ新しいデータで上書き）
+    const updatedProfile = {
+      ...existingProfile,
+      ...profile,
+      email: profile.email, // emailは変更不可
+      updatedAt: new Date().toISOString()
+    };
+    
+    // ニックネームが提供されていない場合は既存値を保持
+    if (!profile.nickname && existingProfile.nickname) {
+      updatedProfile.nickname = existingProfile.nickname;
+    }
+    
+    // Workers KVに保存
+    await env.PROFILE_KV.put(kvKey, JSON.stringify(updatedProfile));
+    
+    console.log('🔄 プロフィール更新成功:', profile.email);
+    
+    return new Response(JSON.stringify({ 
+      success: true, 
+      profile: updatedProfile 
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
   }
 }

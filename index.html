@@ -11353,6 +11353,12 @@
             }
         })();
         
+        // ============ システム切り替えフラグ（最重要：最初に定義） ============
+        const USE_CLOUDFLARE_PROFILES = true;  // プロフィール管理をCloudflareに切り替え
+        const USE_CLOUDFLARE_REVIEWS = true;   // レビューもCloudflare使用
+        console.log('🔧 [システム切り替え] USE_CLOUDFLARE_PROFILES =', USE_CLOUDFLARE_PROFILES);
+        console.log('🔧 [システム切り替え] USE_CLOUDFLARE_REVIEWS =', USE_CLOUDFLARE_REVIEWS);
+        
         // プロフィールデータを読み込み
         async function loadUserProfile(email) {
             if (!email) {
@@ -11361,22 +11367,24 @@
             }
             
             try {
-                // まずSupabaseから読み込みを試行
-                const supabaseProfile = await loadProfileFromSupabase(email);
-                console.log('🔍 Supabaseプロフィール読み込み結果:', {
+                // まずCloudflareから読み込みを試行（Supabase→Cloudflareに切り替え済み）
+                // システム切り替え：Cloudflareからプロフィールを読み込み（強制切り替え）
+                console.log('🔧 [強制切り替え] Cloudflareプロフィール管理に切り替えました');
+                const cloudflareProfile = await loadProfileFromCloudflare(email);
+                console.log('🔍 Cloudflareプロフィール読み込み結果:', {
                     email: email,
-                    profile: supabaseProfile,
-                    hasAvatarUrl: !!supabaseProfile?.avatarUrl,
-                    avatarType: supabaseProfile?.avatarType
+                    profile: cloudflareProfile,
+                    hasAvatarUrl: !!cloudflareProfile?.avatarUrl,
+                    avatarType: cloudflareProfile?.avatarType
                 });
-                if (supabaseProfile) {
-                    console.log('☁️ Supabaseプロフィールを復元:', email);
+                if (cloudflareProfile) {
+                    console.log('☁️ Cloudflareプロフィールを復元:', email);
                     // LocalStorageへのキャッシュは無効化（データ不整合を防ぐため）
-                    // localStorage.setItem(`user_profile_${email}`, JSON.stringify(supabaseProfile));
-                    return supabaseProfile;
+                    // localStorage.setItem(`user_profile_${email}`, JSON.stringify(cloudflareProfile));
+                    return cloudflareProfile;
                 }
                 
-                // Supabaseに無い場合はLocalStorageから読み込み
+                // Cloudflareに無い場合はLocalStorageから読み込み
                 const saved = localStorage.getItem(`user_profile_${email}`);
                 if (saved) {
                     const profile = JSON.parse(saved);
@@ -11384,8 +11392,8 @@
                     console.warn('⚠️ LocalStorageのデータは使用しません（古い可能性があるため）');
                     // LocalStorageの古いデータは削除
                     localStorage.removeItem(`user_profile_${email}`);
-                    // Supabaseにはアップロードしない（古いデータで上書きを防ぐ）
-                    // await saveProfileToSupabase(profile); // この行を無効化
+                    // Cloudflareにはアップロードしない（古いデータで上書きを防ぐ）
+                    // await saveProfileToCloudflare(profile, 'localStorage_migration'); // この行を無効化
                     // return profile; // LocalStorageのデータは返さない
                 }
                 
@@ -11485,11 +11493,18 @@
                 // LocalStorageへの保存は無効化（データ不整合を防ぐため）
                 // localStorage.setItem(`user_profile_${profile.email}`, JSON.stringify(profile));
                 
-                // Supabaseにのみ保存
-                await saveProfileToSupabase(profile, source);
+                // Cloudflareにのみ保存
+                // システム切り替え：Cloudflareにプロフィールを保存（強制切り替え）
+                console.log('🔧 [強制切り替え] Cloudflareプロフィール保存に切り替えました');
+                const saveResult = await saveProfileToCloudflare(profile, source);
                 
-                console.log('💾 プロフィールを保存:', profile.email);
-                return true;
+                if (saveResult) {
+                    console.log('💾 プロフィールを保存:', profile.email);
+                    return true;
+                } else {
+                    console.warn('⚠️ プロフィール保存失敗:', profile.email);
+                    return false;
+                }
                 
             } catch (error) {
                 console.error('❌ プロフィール保存エラー:', error);
@@ -12564,9 +12579,113 @@
         // ========== 削除された変数・関数の復旧 ==========
         
         const AVATAR_WORKER_URL = 'https://avatar-upload-worker.bettger1000.workers.dev';
-        const USE_CLOUDFLARE_REVIEWS = true;
         
-        // 既存システムで使用されている関数の復旧
+        // ============ Cloudflare プロフィール管理API ============
+        
+        // Cloudflareからプロフィールを取得
+        async function loadProfileFromCloudflare(email) {
+            try {
+                console.log('🌐 Cloudflareプロフィール読み込み開始:', email);
+                console.log('📊 [診断] loadProfileFromCloudflare呼び出し - タイムスタンプ:', new Date().toISOString());
+                
+                const response = await fetch(`${AVATAR_WORKER_URL}/profile?email=${encodeURIComponent(email)}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (!response.ok) {
+                    console.warn('⚠️ Cloudflare読み込みエラー:', response.status, response.statusText);
+                    return null;
+                }
+                
+                const result = await response.json();
+                
+                if (result.profile) {
+                    console.log('📊 Cloudflare生データ:', result.profile);
+                    console.log('📝 取得したnickname:', `"${result.profile.nickname}"`);
+                    console.log('✅ Cloudflareプロフィール読み込み成功:', email);
+                    return result.profile;
+                }
+                
+                return null;
+                
+            } catch (error) {
+                console.warn('⚠️ Cloudflare読み込み例外:', error);
+                return null;
+            }
+        }
+        
+        // Cloudflareにプロフィールを保存
+        async function saveProfileToCloudflare(profile, source = 'unknown') {
+            try {
+                console.log('🌐 Cloudflareプロフィール保存開始:', profile.email);
+                console.log('📊 [診断] saveProfileToCloudflare呼び出し元:', source);
+                console.log('📊 [診断] 保存タイムスタンプ:', new Date().toISOString());
+                console.log('📝 受け取ったプロフィール:', profile);
+                console.log('📝 受け取ったnickname:', `"${profile.nickname}"`, '型:', typeof profile.nickname);
+                
+                // 🚨 呼び出し元のスタックトレースを記録（重要な診断情報）
+                console.log('📍 [診断] スタックトレース:', new Error().stack);
+                
+                // セーフティチェック：起動時の自動保存を禁止
+                if (source === 'startup' || source === 'initialization') {
+                    console.warn('⚠️ [セーフティ] 起動時の自動保存は禁止されています:', source);
+                    return false;
+                }
+                
+                // プロフィールデータを正規化
+                const normalizedProfile = {
+                    email: profile.email,
+                    nickname: profile.nickname || profile.email.split('@')[0] || 'ユーザー',
+                    avatar: profile.avatar || 'default',
+                    avatarType: profile.avatarType || 'preset',
+                    avatarUrl: profile.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(profile.email)}`,
+                    bio: profile.bio || '',
+                    createdAt: profile.createdAt,
+                    updatedAt: new Date().toISOString()
+                };
+                
+                console.log('🚨 [重要] Cloudflareに送信するデータ:', normalizedProfile);
+                console.log('🚨 [重要] 送信するnickname:', `"${normalizedProfile.nickname}"`);
+                
+                // 新規作成か更新かを判定（createdAtの有無で判断）
+                const endpoint = profile.createdAt ? '/profile' : '/profile';
+                const method = profile.createdAt ? 'PUT' : 'POST';
+                
+                const response = await fetch(`${AVATAR_WORKER_URL}${endpoint}`, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(normalizedProfile)
+                });
+                
+                if (!response.ok) {
+                    console.warn('⚠️ Cloudflare保存エラー:', response.status, response.statusText);
+                    const errorText = await response.text();
+                    console.warn('⚠️ エラー詳細:', errorText);
+                    return false;
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    console.log('✅ Cloudflareプロフィール保存成功:', profile.email);
+                    return true;
+                } else {
+                    console.warn('⚠️ Cloudflare保存失敗:', result);
+                    return false;
+                }
+                
+            } catch (error) {
+                console.warn('⚠️ Cloudflare保存例外:', error);
+                return false;
+            }
+        }
+        
+        // ============ レビューシステム関数の復旧 ============
         async function createReviewsHTML(reviews, storeId) {
             let reviewsHTML;
             if (reviews && reviews.length > 0) {
