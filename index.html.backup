@@ -87,7 +87,6 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            background: var(--bg-primary);
         }
 
         .app-header {
@@ -239,7 +238,6 @@
             border-bottom: 2px solid var(--border-light);
             background: var(--gradient-primary);
             color: white;
-            position: relative;
         }
 
         .side-menu-title {
@@ -253,32 +251,6 @@
             opacity: 0.9;
         }
 
-        .close-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .close-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
-            transform: scale(1.1);
-        }
-
         .side-menu-content {
             padding: var(--space-lg);
         }
@@ -286,17 +258,13 @@
         .menu-item {
             display: flex;
             align-items: center;
-            gap: 18px;
-            padding: 20px;
+            gap: var(--space-md);
+            padding: var(--space-md);
             border-radius: var(--radius-lg);
             cursor: pointer;
             transition: all 0.3s ease;
             margin-bottom: var(--space-sm);
             border: 2px solid transparent;
-            background: none;
-            width: 100%;
-            text-align: left;
-            font-size: 16px;
         }
 
         .menu-item:hover {
@@ -306,17 +274,16 @@
         }
 
         .menu-item-icon {
-            width: 28px;
+            width: 24px;
             text-align: center;
             color: var(--primary);
-            font-size: 1.4rem;
+            font-size: 1.1rem;
         }
 
         .menu-item-text {
             flex: 1;
             color: var(--text-primary);
-            font-weight: 600;
-            font-size: 18px;
+            font-weight: 500;
         }
 
         .menu-item-arrow {
@@ -713,23 +680,6 @@
                 height: 36px !important;
                 margin-right: 10px !important;
             }
-            
-            /* スマホ版でボタンを横並びに強制 */
-            .store-card-actions {
-                display: flex !important;
-                flex-direction: row !important;
-                justify-content: flex-start !important;
-                gap: 4px !important;
-                flex-wrap: wrap !important;
-            }
-            
-            .store-card-actions .action-btn {
-                flex: 0 0 auto !important;
-                width: auto !important;
-                min-width: fit-content !important;
-                font-size: 0.7rem !important;
-                padding: 6px 8px !important;
-            }
         }
 
         /* 画像拡大表示モーダル */
@@ -1081,8 +1031,6 @@
             width: 100%;
             height: calc(100vh - 120px); /* ヘッダーと検索エリアを引く */
             position: relative;
-            background: var(--bg-primary);
-            min-height: 400px; /* 最小高さを確保 */
         }
 
 
@@ -1146,16 +1094,6 @@
         .map-control-btn:hover {
             background: var(--bg-primary);
             transform: translateY(-1px);
-        }
-
-        /* 現在地ボタンのカスタムスタイル */
-        .current-location-btn .location-icon {
-            width: 24px;
-            height: 24px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%234299E1' stroke='white' stroke-width='2' opacity='0.95'/%3E%3Cpath d='M12 6c-2 0-3.5 1.5-3.5 3.5 0 2.6 3.5 6 3.5 6s3.5-3.4 3.5-6c0-2-1.5-3.5-3.5-3.5zm0 4.5c-0.6 0-1-0.4-1-1s0.4-1 1-1 1 0.4 1 1-0.4 1-1 1z' fill='white'/%3E%3Ccircle cx='12' cy='9.5' r='1' fill='%234299E1'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: contain;
         }
         
         /* ズームコントロール */
@@ -1285,35 +1223,27 @@
         
         /* 店舗カード内のアクションボタン */
         .store-card-actions {
-            display: flex !important;
-            flex-direction: row !important;
-            flex-wrap: wrap !important;
-            justify-content: flex-start !important;
-            gap: 6px;
+            display: flex;
+            gap: var(--space-sm);
             margin-top: var(--space-md);
             padding-top: var(--space-md);
             border-top: 1px solid var(--border-light);
-            width: 100%;
         }
         
         .action-btn {
-            flex: 0 0 auto !important;
-            width: auto !important;
-            min-width: fit-content !important;
-            padding: 8px 12px !important;
+            flex: 1;
+            padding: var(--space-xs) var(--space-sm);
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
             background: white;
             color: var(--text-secondary);
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             cursor: pointer;
             transition: all 0.2s;
-            display: inline-flex !important;
+            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 4px;
-            white-space: nowrap;
-            box-sizing: border-box;
+            gap: var(--space-xs);
         }
         
         .action-btn:hover {
@@ -1357,9 +1287,7 @@
 
         /* ポップアップ内のアクションボタン */
         .popup-action-btn {
-            flex: 0 0 auto !important;
-            width: auto !important;
-            min-width: fit-content !important;
+            flex: 1;
             padding: 10px 12px;
             border: 1px solid var(--border-light);
             border-radius: 8px;
@@ -1369,7 +1297,7 @@
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
-            display: inline-flex !important;
+            display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
@@ -1653,17 +1581,13 @@
 
         .pc-store-card .store-card-actions {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: flex-start;
             gap: 6px;
             padding-top: 12px;
             border-top: 1px solid var(--border-light);
         }
 
         .pc-store-card .action-btn {
-            flex: 0 0 auto !important;
-            width: auto !important;
-            min-width: fit-content !important;
+            flex: 1;
             padding: 8px 12px;
             font-size: 0.85rem;
             min-height: 36px;
@@ -1732,9 +1656,6 @@
         }
 
         .store-category {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
             color: white;
             padding: var(--space-xs) var(--space-sm);
             border-radius: var(--radius-xl);
@@ -1742,8 +1663,6 @@
             font-weight: 500;
             white-space: nowrap;
             margin-left: var(--space-sm);
-            width: auto;
-            min-width: fit-content;
         }
 
         /* カテゴリ別色設定（マップマーカーと統一） */
@@ -1926,8 +1845,6 @@
             padding-top: var(--space-md);
             border-top: 1px solid var(--border-light);
             display: flex;
-            flex-wrap: wrap;
-            justify-content: flex-start;
             gap: var(--space-sm);
         }
 
@@ -2971,12 +2888,6 @@
             z-index: 700 !important;
         }
         
-        /* ポップアップ表示時にフッターナビを非表示 */
-        .leaflet-popup-pane:not(:empty) ~ .bottom-navigation,
-        body:has(.leaflet-popup) .bottom-navigation {
-            display: none !important;
-        }
-        
         
         /* PC版でポップアップ位置調整 */
         @media (min-width: 1025px) {
@@ -3082,8 +2993,6 @@
             
             .desktop-popup .popup-actions {
                 display: flex;
-                flex-wrap: wrap;
-                justify-content: flex-start;
                 gap: 8px;
                 margin-top: 8px;
                 padding-top: 12px;
@@ -3116,9 +3025,6 @@
                 font-size: 13px !important;
                 padding: 8px 10px !important;
                 min-height: 38px !important;
-                flex: 0 0 auto !important;
-                width: auto !important;
-                min-width: fit-content !important;
             }
         }
 
@@ -3239,32 +3145,32 @@
         
         
         
-        /* カスタムピンマーカー - 現在地アイコンと統一デザイン */
+        /* 高品質カスタムピンマーカー - 洗練されたデザイン */
         .custom-pin-marker {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(145deg, #4299E1 0%, #2B6CB0 100%);
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(145deg, #FF6B9D 0%, #C44569 100%);
             border-radius: 50%;
             position: relative;
             box-shadow: 
-                0 4px 12px rgba(66, 153, 225, 0.25),
-                0 2px 6px rgba(66, 153, 225, 0.15),
+                0 4px 12px rgba(196, 69, 105, 0.25),
+                0 2px 6px rgba(196, 69, 105, 0.15),
                 inset 0 -2px 6px rgba(255, 255, 255, 0.2);
             animation: pinBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            border: 3px solid rgba(255, 255, 255, 0.95);
+            border: 2px solid rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(8px);
         }
         
         .custom-pin-marker::before {
             content: '';
             position: absolute;
-            top: 3px;
-            left: 3px;
-            right: 3px;
-            bottom: 3px;
-            background: linear-gradient(145deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 100%);
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
             border-radius: 50%;
-            box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.4);
+            box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.5);
         }
         
         .custom-pin-marker::after {
@@ -3273,7 +3179,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 18px;
+            font-size: 14px;
             filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
         }
         
@@ -3914,9 +3820,7 @@
             }
             
             .btn-cancel, .btn-submit, .btn-delete {
-                flex: 0 0 auto !important;
-                width: auto !important;
-                min-width: fit-content !important;
+                flex: 1;
                 max-width: 120px;
             }
         }
@@ -3988,201 +3892,13 @@
             background: var(--bg-glass);
             backdrop-filter: blur(20px);
             border-radius: var(--radius-2xl);
-            padding: 0;
+            padding: var(--space-2xl);
             box-shadow: var(--shadow-xl);
             text-align: center;
-            max-width: 420px;
-            width: 90%;
+            max-width: 400px;
+            width: 100%;
             max-height: 90vh;
             overflow-y: auto;
-            position: relative;
-        }
-
-        /* すべてのimg要素のサイズを制御 */
-        .login-modal-content img {
-            max-width: 100%;
-            height: auto;
-        }
-
-        /* マイ統計モーダルスタイル */
-        .statistics-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 20000;
-            padding: var(--space-lg);
-        }
-
-        .statistics-modal-content {
-            background: linear-gradient(135deg, 
-                rgba(255, 255, 255, 0.98) 0%,     /* クリーンホワイト */
-                rgba(248, 250, 252, 0.98) 35%,    /* 淡いグレー */
-                rgba(241, 245, 249, 0.98) 70%,    /* 上品なブルーグレー */
-                rgba(255, 255, 255, 0.98) 100%    /* ホワイト */
-            );
-            backdrop-filter: blur(20px);
-            border-radius: var(--radius-2xl);
-            padding: var(--space-xl);
-            box-shadow: 
-                0 20px 60px rgba(30, 58, 138, 0.08),
-                0 8px 32px rgba(30, 58, 138, 0.04),
-                inset 0 1px 0 rgba(255, 255, 255, 0.9);
-            max-width: 480px;
-            width: 90%;
-            max-height: 85vh;
-            overflow-y: auto;
-            position: relative;
-            border: 1px solid rgba(226, 232, 240, 0.4);
-        }
-
-        .statistics-header {
-            text-align: center;
-            margin-bottom: var(--space-xl);
-            padding-bottom: var(--space-lg);
-            border-bottom: 2px solid rgba(30, 58, 138, 0.08);
-        }
-
-        .statistics-header h2 {
-            color: #1e3a8a;
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: var(--space-sm);
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .statistics-subtitle {
-            color: #64748b;
-            font-size: 0.95rem;
-            font-weight: 500;
-        }
-
-        .statistics-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: var(--space-lg);
-            margin-bottom: var(--space-xl);
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, 
-                rgba(255, 255, 255, 0.95) 0%, 
-                rgba(248, 250, 252, 0.9) 100%
-            );
-            border: 2px solid rgba(226, 232, 240, 0.3);
-            border-radius: var(--radius-lg);
-            padding: var(--space-lg);
-            text-align: center;
-            box-shadow: 
-                0 4px 20px rgba(30, 58, 138, 0.04),
-                inset 0 1px 0 rgba(255, 255, 255, 0.8);
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(30, 58, 138, 0.03) 0%, transparent 70%);
-            transform: scale(0);
-            transition: transform 0.4s ease;
-        }
-
-        .stat-card:hover::before {
-            transform: scale(1);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            border-color: rgba(30, 58, 138, 0.2);
-            box-shadow: 
-                0 8px 30px rgba(30, 58, 138, 0.08),
-                inset 0 1px 0 rgba(255, 255, 255, 0.9);
-        }
-
-        .stat-icon {
-            font-size: 2.2rem;
-            margin-bottom: var(--space-sm);
-            display: block;
-            filter: drop-shadow(0 2px 4px rgba(30, 58, 138, 0.15));
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: var(--space-xs);
-            line-height: 1.2;
-        }
-
-        .stat-label {
-            color: #64748b;
-            font-size: 0.9rem;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-        }
-
-        .close-statistics-btn {
-            position: absolute;
-            top: var(--space-md);
-            right: var(--space-md);
-            background: rgba(255, 255, 255, 0.8);
-            border: 2px solid rgba(30, 58, 138, 0.15);
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 1.2rem;
-            color: #1e3a8a;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .close-statistics-btn:hover {
-            background: rgba(255, 255, 255, 0.95);
-            border-color: #1e3a8a;
-            transform: scale(1.1);
-        }
-
-        /* モバイル対応 */
-        @media (max-width: 768px) {
-            .statistics-modal-content {
-                margin: var(--space-sm);
-                padding: var(--space-lg);
-                max-width: calc(100vw - 2rem);
-            }
-
-            .statistics-grid {
-                grid-template-columns: 1fr;
-                gap: var(--space-md);
-            }
-
-            .stat-number {
-                font-size: 1.8rem;
-            }
-
-            .statistics-header h2 {
-                font-size: 1.6rem;
-            }
         }
 
         .login-modal-content .login-header h1 {
@@ -4241,9 +3957,8 @@
             color: #2e7d32;
             font-size: 0.9rem;
             margin: var(--space-xs) 0;
-            line-height: 1.5;
+            line-height: 1.4;
             padding-left: var(--space-lg);
-            text-align: left;
         }
 
         .notice-content p:last-child {
@@ -4252,36 +3967,11 @@
 
         .login-modal-content .login-form {
             margin-top: var(--space-xl);
-            max-width: 400px;
-            margin-left: auto;
-            margin-right: auto;
         }
 
         .login-modal-content .input-group {
             margin-bottom: var(--space-lg);
             text-align: left !important;
-        }
-
-        .login-modal-content .input-group label {
-            display: block;
-            margin-bottom: var(--space-xs);
-            font-weight: 600;
-            color: #333;
-        }
-
-        .login-modal-content .input-group input {
-            width: 100%;
-            padding: var(--space-md);
-            border: 2px solid #e0e0e0;
-            border-radius: var(--radius-md);
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-
-        .login-modal-content .input-group input:focus {
-            outline: none;
-            border-color: #4caf50;
-            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
         }
 
         .login-modal-content .input-group label {
@@ -4550,10 +4240,8 @@
                 color: #2e7d32;
                 font-size: 0.95rem;
                 margin: 0.4rem 0;
-                line-height: 1.6;
+                line-height: 1.5;
                 padding-left: 1.5rem;
-                text-align: left;
-                word-wrap: break-word;
             }
 
             .notice-content p:last-child {
@@ -4638,56 +4326,11 @@
 
             /* nacoキャラクターの調整 */
             .login-modal-content .login-logo {
-                width: 120px !important;
-                height: 120px !important;
-                max-width: 120px !important;
-                max-height: 120px !important;
-                margin: 0 auto 1rem auto;
+                width: 80px;
+                height: 80px;
+                margin-bottom: 1rem;
                 border-radius: 50%;
                 box-shadow: 0 4px 12px rgba(214, 51, 132, 0.2);
-                object-fit: contain !important;
-                object-position: center;
-                display: block;
-                background: white;
-                padding: 8px;
-            }
-            
-            /* ログインヘッダーの調整 */
-            .login-modal-content .login-header {
-                text-align: center;
-                padding: 2rem 2rem 1rem 2rem;
-                background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.8));
-                border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
-            }
-            
-            /* ログインコンテンツの調整 */
-            .login-modal-content .login-content {
-                padding: 1rem 2rem 2rem 2rem;
-            }
-            
-            /* PC対応 */
-            @media (min-width: 1024px) {
-                .login-modal-content .login-logo {
-                    width: 140px !important;
-                    height: 140px !important;
-                    max-width: 140px !important;
-                    max-height: 140px !important;
-                }
-            }
-
-            /* モバイル対応 */
-            @media (max-width: 768px) {
-                .login-modal-content .login-logo {
-                    width: 100px !important;
-                    height: 100px !important;
-                    max-width: 100px !important;
-                    max-height: 100px !important;
-                }
-                
-                .login-modal-content {
-                    margin: 1rem;
-                    max-width: calc(100vw - 2rem);
-                }
             }
             .store-detail-modal {
                 padding: 0;
@@ -4866,7 +4509,7 @@
         .my-review-card {
             background: var(--bg-primary);
             border-radius: var(--radius-md);
-            margin-bottom: var(--space-xs);
+            margin-bottom: var(--space-lg);
             border: 1px solid var(--border-light);
             transition: all 0.2s ease;
             overflow: hidden;
@@ -4874,8 +4517,6 @@
             flex-direction: column !important;
             align-items: flex-start !important;
             text-align: left !important;
-            height: auto !important;
-            min-height: auto !important;
         }
 
         .my-review-card:hover {
@@ -4887,8 +4528,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: var(--space-sm) var(--space-lg) var(--space-xs) var(--space-lg);
-            margin-bottom: var(--space-xs);
+            padding: var(--space-lg) var(--space-lg) var(--space-sm) var(--space-lg);
+            margin-bottom: var(--space-md);
             border-bottom: 1px solid var(--border-light);
         }
 
@@ -4941,15 +4582,12 @@
         }
 
         .store-category, .store-address {
-            display: inline-flex;
-            align-items: center;
+            display: inline-block;
             margin-right: var(--space-sm);
-            width: auto;
-            min-width: fit-content;
         }
 
         .review-card-body {
-            padding: 0 var(--space-lg) var(--space-sm) var(--space-lg);
+            padding: 0 var(--space-lg) var(--space-lg) var(--space-lg);
         }
 
         .review-content {
@@ -5220,59 +4858,6 @@
             align-self: flex-start !important;
             justify-self: flex-start !important;
         }
-
-        /* === 画像拡大表示モーダル === */
-        .image-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .image-modal-content {
-            max-width: 90vw;
-            max-height: 90vh;
-            object-fit: contain;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .image-modal-close {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            color: white;
-            font-size: 40px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 10000;
-            user-select: none;
-            transition: opacity 0.2s ease;
-        }
-
-        .image-modal-close:hover {
-            opacity: 0.7;
-        }
-
-        /* 画像をクリック可能にするスタイル */
-        .image-slide img,
-        .store-image {
-            cursor: pointer;
-            transition: opacity 0.2s ease;
-        }
-
-        .image-slide img:hover,
-        .store-image:hover {
-            opacity: 0.9;
-        }
     </style>
 </head>
 <body>
@@ -5288,7 +4873,7 @@
                     <span>グルテンフリーマップ</span>
                 </div>
                 <div class="header-actions">
-                    <button class="hamburger-btn" id="hamburgerBtn">
+                    <button class="hamburger-btn" onclick="toggleSideMenu()">
                         <i class="fas fa-bars hamburger-icon"></i>
                         <span class="hamburger-label">メニュー</span>
                     </button>
@@ -5306,25 +4891,16 @@
                 </div>
                 <div class="side-menu-content">
                     <button class="menu-item" onclick="showMyReviews()">
-                        <i class="fas fa-star menu-item-icon"></i>
-                        <span class="menu-item-text">マイレビュー</span>
+                        <i class="fas fa-star"></i>
+                        <span>マイレビュー</span>
                     </button>
                     <button class="menu-item" onclick="showProfile()">
-                        <i class="fas fa-user menu-item-icon"></i>
-                        <span class="menu-item-text">プロフィール</span>
+                        <i class="fas fa-user"></i>
+                        <span>プロフィール</span>
                     </button>
                     <button class="menu-item" onclick="showStatistics()">
-                        <i class="fas fa-chart-bar menu-item-icon"></i>
-                        <span class="menu-item-text">マイ統計</span>
-                    </button>
-                    
-                    <!-- セパレーター -->
-                    <div class="menu-separator"></div>
-                    
-                    <!-- ログアウトボタン -->
-                    <button class="menu-item logout" onclick="logout()">
-                        <i class="fas fa-sign-out-alt menu-item-icon"></i>
-                        <span class="menu-item-text">ログアウト</span>
+                        <i class="fas fa-chart-bar"></i>
+                        <span>マイ統計</span>
                     </button>
                 </div>
             </div>
@@ -5339,7 +4915,7 @@
                         <h2 class="sidebar-title">店舗リスト</h2>
                         <span class="sidebar-count"><span id="storeCount">62</span>件</span>
                         <button class="pin-mode-btn pc-pin-btn" id="pcPinModeBtn" title="ピン設置モード">
-                            <span class="pin-icon">➕</span>
+                            <span class="pin-icon">📍</span>
                             <span class="pin-label">目的地ピン</span>
                         </button>
                     </div>
@@ -5382,9 +4958,7 @@
                         <button class="map-control-btn zoom-btn" id="zoomOutBtn" title="縮小">−</button>
                     </div>
                     <!-- その他のコントロール -->
-                    <button class="map-control-btn current-location-btn" id="locateBtn" title="現在地を表示">
-                        <div class="location-icon"></div>
-                    </button>
+                    <button class="map-control-btn" id="locateBtn" title="現在地を表示">📍</button>
                 </div>
                 
                 <!-- モバイル専用現在地ボタン（右下角） -->
@@ -5417,7 +4991,7 @@
                         <span class="filter-indicator" id="filterIndicator" style="display: none;">●</span>
                     </button>
                     <button class="pin-mode-btn" id="pinModeBtn" title="ピン設置モード">
-                        <span class="pin-icon">➕</span>
+                        <span class="pin-icon">📍</span>
                     </button>
                 </div>
                 <div class="panel-controls">
@@ -6540,31 +6114,11 @@
         let customPinMarker = null;
         let customPinLocation = null;
         let mapContextMenu = null;
-        
-        // 現在地マーカー管理用変数
-        let currentLocationMarker = null;
 
         // DOM読み込み完了後に即座に初期化
         document.addEventListener('DOMContentLoaded', function() {
             console.log('⚡ 埋め込みデータ版 - 高速起動');
             
-            // 初期表示を確保
-            const appContainer = document.querySelector('.app-container');
-            const mainContent = document.querySelector('.main-content');
-            if (appContainer) {
-                appContainer.style.display = 'flex';
-                appContainer.style.visibility = 'visible';
-            }
-            if (mainContent) {
-                mainContent.style.display = 'flex';
-                mainContent.style.visibility = 'visible';
-            }
-            
-            // ハンバーガーメニューボタンのイベントリスナー
-            const hamburgerBtn = document.getElementById('hamburgerBtn');
-            if (hamburgerBtn) {
-                hamburgerBtn.addEventListener('click', toggleSideMenu);
-            }
             
             initializeApp();
         });
@@ -6797,7 +6351,7 @@
             const suggestions = document.getElementById('searchSuggestions');
             
             suggestions.innerHTML = matches.map((place, index) => {
-                const icon = getLocationCategoryIcon(place.category);
+                const icon = getCategoryIcon(place.category);
                 return `
                     <div class="suggestion-item" data-index="${index}" data-place='${JSON.stringify(place)}'>
                         <span class="suggestion-icon">${icon}</span>
@@ -6908,7 +6462,7 @@
             const mobileSuggestions = document.getElementById('mobileSuggestions');
             
             mobileSuggestions.innerHTML = matches.map((place, index) => {
-                const icon = getLocationCategoryIcon(place.category);
+                const icon = getCategoryIcon(place.category);
                 return `
                     <div class="mobile-suggestion-item" data-index="${index}" data-place='${JSON.stringify(place)}'>
                         <span class="mobile-suggestion-icon">${icon}</span>
@@ -7097,8 +6651,8 @@
             }, 5000);
         }
 
-        // 場所カテゴリアイコン取得
-        function getLocationCategoryIcon(category) {
+        // カテゴリアイコン取得
+        function getCategoryIcon(category) {
             const icons = {
                 '駅・交通': '🚉',
                 '繁華街': '🏙️', 
@@ -8046,25 +7600,6 @@
                     // カスタムピン機能を初期化
                     initCustomPinFeature();
                 });
-                
-                // ポップアップイベントリスナーを追加（スマホ版フッター制御）
-                if (!isDesktop()) {
-                    map.on('popupopen', function() {
-                        console.log('📱 ポップアップ開く - フッター非表示');
-                        const bottomNav = document.querySelector('.bottom-navigation');
-                        if (bottomNav) {
-                            bottomNav.style.display = 'none';
-                        }
-                    });
-                    
-                    map.on('popupclose', function() {
-                        console.log('📱 ポップアップ閉じる - フッター表示');
-                        const bottomNav = document.querySelector('.bottom-navigation');
-                        if (bottomNav) {
-                            bottomNav.style.display = 'flex';
-                        }
-                    });
-                }
 
                 console.log('✅ 地図初期化完了');
             } catch (error) {
@@ -8099,7 +7634,6 @@
                     const config = categoryConfig[store.category] || categoryConfig['その他'];
 
                     const marker = L.marker([store.latitude, store.longitude], {
-                        storeId: store.id,  // マーカーのoptionsにstoreIdを保存
                         icon: L.divIcon({
                             className: 'elegant-marker',
                             html: `
@@ -8208,7 +7742,7 @@
 
         // 現在地を取得して地図の中心に設定
         function getCurrentLocationAndCenter() {
-            console.log('🎯 現在地取得を試行中...');
+            console.log('📍 現在地取得を試行中...');
 
             if (!navigator.geolocation) {
                 console.log('❌ Geolocation API がサポートされていません');
@@ -8236,55 +7770,31 @@
                     if (map) {
                         map.setView([lat, lng], 14);
 
-                        // 既存の現在地マーカーを削除
-                        if (currentLocationMarker) {
-                            map.removeLayer(currentLocationMarker);
-                        }
-                        
                         // 現在地マーカーを追加（位置問題解決版）
-                        console.log(`🎯 現在地座標: lat=${lat}, lng=${lng}`);
+                        console.log(`📍 現在地座標: lat=${lat}, lng=${lng}`);
                         
-                        // 現在地アイコンを作成（エラー対策版）
-                        let currentLocationIcon;
-                        
-                        try {
-                            // SVGアイコンを試行
-                            const svgContent = '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36"><circle cx="18" cy="20" r="16" fill="rgba(0,0,0,0.1)" opacity="0.3"/><circle cx="18" cy="18" r="16" fill="#4299E1" stroke="white" stroke-width="3" opacity="0.95"/><path d="M18 9c-3.3 0-6 2.7-6 6 0 4.5 6 10 6 10s6-5.5 6-10c0-3.3-2.7-6-6-6zm0 8c-1.1 0-2-0.9-2-2s0.9-2 2-2 2 0.9 2 2-0.9 2-2 2z" fill="white"/><circle cx="18" cy="15" r="1.8" fill="#4299E1"/></svg>';
-                            
-                            currentLocationIcon = L.icon({
-                                iconUrl: 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgContent))),
-                                iconSize: [36, 36],
-                                iconAnchor: [18, 18],
-                                popupAnchor: [0, -18]
-                            });
-                        } catch (error) {
-                            console.log('🔄 SVGアイコン作成失敗、代替アイコンを使用');
-                            // フォールバック: 簡単なCSSベースのアイコン
-                            currentLocationIcon = L.divIcon({
-                                className: 'current-location-marker',
-                                html: '<div style="width:36px;height:36px;background:#4299E1;border:3px solid white;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.2);"><div style="color:white;font-size:18px;">🎯</div></div>',
-                                iconSize: [36, 36],
-                                iconAnchor: [18, 18],
-                                popupAnchor: [0, -18]
-                            });
-                        }
+                        // 通常のLeafletマーカーアイコンを使用（確実に正しい位置に表示）
+                        const currentLocationIcon = L.icon({
+                            iconUrl: 'data:image/svg+xml;base64,' + btoa(`
+                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">
+                                    <circle cx="15" cy="15" r="12" fill="#007AFF" stroke="white" stroke-width="3" opacity="0.9"/>
+                                    <circle cx="15" cy="15" r="6" fill="#007AFF" stroke="white" stroke-width="2"/>
+                                </svg>
+                            `),
+                            iconSize: [30, 30],
+                            iconAnchor: [15, 15],
+                            popupAnchor: [0, -15]
+                        });
 
-                        currentLocationMarker = L.marker([lat, lng], { 
+                        const locationMarker = L.marker([lat, lng], { 
                             icon: currentLocationIcon,
-                            zIndexOffset: 2000 
+                            zIndexOffset: 1000 
                         });
                         
-                        currentLocationMarker.addTo(map);
+                        locationMarker.addTo(map);
                         // ポップアップなしでアイコンのみ表示（よりスタイリッシュ）
                         
                         console.log('✅ 現在地マーカー追加完了');
-                        console.log('📍 マーカー情報:', {
-                            latitude: lat,
-                            longitude: lng,
-                            markerExists: !!currentLocationMarker,
-                            mapExists: !!map,
-                            iconType: currentLocationIcon.options ? 'L.icon' : 'L.divIcon'
-                        });
 
                         // 店舗リストを現在地から近い順で再表示
                         if (stores && stores.length > 0) {
@@ -8351,7 +7861,7 @@
                     const distanceB = calculateDistance(currentUserLocation.lat, currentUserLocation.lng, b.latitude, b.longitude);
                     return distanceA - distanceB;
                 });
-                console.log('🎯 現在地から近い順でソート完了');
+                console.log('📍 現在地から近い順でソート完了');
             }
 
             sortedStores.forEach(store => {
@@ -8418,33 +7928,28 @@
                         </div>
                     ` : ''}
                 </div>
-                <div class="store-card-actions">
+                <div class="store-actions">
                     <button class="action-btn want-to-go ${isWantToGo ? 'active' : ''}" onclick="event.stopPropagation(); toggleVisitStatus(${store.id}, 'want_to_go')">
                         💕 行きたい
                     </button>
                     <button class="action-btn visited ${isVisited ? 'active' : ''}" onclick="event.stopPropagation(); toggleVisitStatus(${store.id}, 'visited')">
                         ✨ 行った
                     </button>
-                    <button class="action-btn store-detail" onclick="event.stopPropagation(); showStoreDetail(${store.id})">
-                        📍 店舗詳細
-                    </button>
                 </div>
             `;
 
-            // カード全体をクリック可能にする
-            card.style.cursor = 'pointer';
-            
-            card.addEventListener('click', function(event) {
-                console.log('📱 店舗カードがクリックされました:', store.name);
-                
-                // ボタンクリック時は処理しない
-                if (event.target.closest('.action-btn')) {
-                    console.log('ボタンがクリックされたので処理をスキップ');
-                    return;
+            card.addEventListener('click', function() {
+                if (store.latitude && store.longitude && map) {
+                    map.setView([store.latitude, store.longitude], 15);
+                    const marker = markers.find(m => 
+                        Math.abs(m.getLatLng().lat - store.latitude) < 0.00001 && 
+                        Math.abs(m.getLatLng().lng - store.longitude) < 0.00001
+                    );
+                    if (marker) {
+                        marker.openPopup();
+                    }
                 }
-                
-                // 地図上の店舗に移動する関数を直接呼び出し
-                focusOnStore(store.id);
+                selectStoreCard(store.id);
             });
 
             return card;
@@ -8737,21 +8242,16 @@
 
         // 現在地取得
         function getCurrentLocation() {
-            console.log('🎯 現在地ボタンがクリックされました');
-            
             if (!navigator.geolocation) {
-                console.error('❌ Geolocation API がサポートされていません');
                 alert('このブラウザは位置情報に対応していません');
                 return;
             }
 
             if (!map) {
-                console.error('❌ マップが初期化されていません');
                 alert('マップが初期化されていません');
                 return;
             }
 
-            console.log('🔍 現在地取得開始...');
             getCurrentLocationAndCenter();
         }
 
@@ -8770,7 +8270,7 @@
         }
         
         // PC用サイドバー店舗リスト表示
-        function displayStoreListPC(storesData) {
+        function displayStoreList(storesData) {
             const container = document.getElementById('storeList');
             if (!container || !isDesktop()) return;
             
@@ -8800,7 +8300,7 @@
             
             sortedStores.forEach(store => {
                 try {
-                    const card = createStoreCardPC(store);
+                    const card = createStoreCard(store);
                     container.appendChild(card);
                 } catch (error) {
                     console.error(`店舗「${store.name}」のカード作成エラー:`, error);
@@ -8809,7 +8309,7 @@
         }
         
         // PC用店舗カード作成
-        function createStoreCardPC(store) {
+        function createStoreCard(store) {
             const card = document.createElement('div');
             card.className = 'store-card pc-store-card';
             card.dataset.storeId = store.id;
@@ -9273,7 +8773,7 @@
             
             const slidesHtml = images.map((image, index) => `
                 <div class="image-slide ${index === 0 ? 'active' : ''}" data-slide="${index}">
-                    <img src="${image.image_url}" alt="${image.alt_text || '店舗画像'}" loading="lazy" onclick="showImageModal('${image.image_url}', '${image.alt_text || '店舗画像'}')">
+                    <img src="${image.image_url}" alt="${image.alt_text || '店舗画像'}" loading="lazy">
                 </div>
             `).join('');
             
@@ -9870,20 +9370,17 @@
             
             // パネル位置設定
             function setPanelPosition(state) {
-                console.log('📱 パネル状態変更:', panelState, '->', state);
                 panelState = state;
                 panel.classList.remove('half-open', 'full-open');
                 
-                // 以前のinline transformをクリア
-                panel.style.transform = '';
-                
-                // 状態に応じてCSSクラスを設定
+                // パネル位置をCSS変数として設定
+                let panelTop = window.innerHeight - 120; // collapsed
                 if (state === 'half') {
-                    panel.classList.add('half-open');
+                    panelTop = window.innerHeight * 0.5;
                 } else if (state === 'full') {
-                    panel.classList.add('full-open');
+                    panelTop = 80;
                 }
-                // collapsed状態はデフォルトCSS（クラスなし）
+                document.documentElement.style.setProperty('--panel-top', panelTop + 'px');
                 
                 // 状態インジケーターを更新
                 document.querySelectorAll('.state-dot').forEach(dot => {
@@ -10123,36 +9620,18 @@
                 </div>
                 <div class="store-card-actions">
                     <button class="action-btn want-to-go ${isWantToGo ? 'active' : ''}" 
-                            onclick="event.stopPropagation(); toggleVisitStatus(${store.id}, 'want_to_go')">
+                            onclick="toggleVisitStatus(${store.id}, 'want_to_go')">
                         🤍 行きたい
                     </button>
                     <button class="action-btn visited ${isVisited ? 'active' : ''}" 
-                            onclick="event.stopPropagation(); toggleVisitStatus(${store.id}, 'visited')">
+                            onclick="toggleVisitStatus(${store.id}, 'visited')">
                         ✨ 行った
                     </button>
-                    <button class="action-btn store-detail" onclick="event.stopPropagation(); showStoreDetail(${store.id})">
+                    <button class="action-btn store-detail" onclick="showStoreDetail(${store.id})">
                         📍 店舗詳細
                     </button>
                 </div>
             `;
-            
-            // カード全体をクリック可能にする（重要！）
-            card.style.cursor = 'pointer';
-            
-            // クリックイベントを追加（これが抜けていた！）
-            card.addEventListener('click', function(event) {
-                console.log('📱 パネル内店舗カードがクリックされました:', store.name);
-                
-                // ボタンクリック時は処理しない
-                if (event.target.closest('.action-btn')) {
-                    console.log('ボタンがクリックされたので処理をスキップ');
-                    return;
-                }
-                
-                // 地図上の店舗に移動
-                console.log('🗺️ 店舗に移動開始:', store.name);
-                focusOnStore(store.id);
-            });
             
             return card;
         }
@@ -10195,21 +9674,10 @@
                     }
                 }, 200);
                 
-                // スマホ版の場合、パネルを最小化状態にする（ハンドル部分は見える）
-                if (!isDesktop()) {
-                    console.log('📱 パネルを最小化状態にします（ハンドル表示）');
-                    // 既存のsetPanelPosition関数を使って一貫性を保つ
-                    if (typeof setPanelPosition === 'function') {
-                        setPanelPosition('collapsed');
-                    } else {
-                        // フォールバック：直接制御
-                        const panel = document.getElementById('overlayPanel');
-                        if (panel) {
-                            panel.classList.remove('half-open', 'full-open');
-                            panel.style.display = 'block';
-                            panel.style.transform = 'translateY(calc(100% - 90px))';
-                        }
-                    }
+                // パネルを閉じる
+                const panel = document.getElementById('overlayPanel');
+                if (panel) {
+                    panel.classList.remove('half-open', 'full-open');
                 }
                 
                 // マーカーのポップアップを開く
@@ -10572,7 +10040,7 @@
 
         // カスタムピン機能初期化
         function initCustomPinFeature() {
-            console.log('➕ カスタムピン機能を初期化中...');
+            console.log('📍 カスタムピン機能を初期化中...');
             
             // UI要素を取得
             mapContextMenu = document.getElementById('mapContextMenu');
@@ -10600,7 +10068,7 @@
             // PC版: クリックでピン設置
             map.on('click', function(e) {
                 if (pinModeActive) {
-                    console.log('➕ ピン設置モードでクリック');
+                    console.log('📍 ピン設置モードでクリック');
                     setCustomPin(e.latlng);
                     togglePinMode(); // 設置後は自動でモードOFF
                 } else {
@@ -10656,16 +10124,16 @@
             if (isDesktop()) {
                 // PC版
                 if (customPinMarker && customPinLocation) {
-                    hint.innerHTML = '➕ 新しいピン設置・<br>既存ピンダブルクリックで削除';
+                    hint.innerHTML = '📍 新しいピン設置・<br>既存ピンダブルクリックで削除';
                 } else {
-                    hint.innerHTML = '➕ 地図クリックでピン設置・<br>ピンダブルクリックで削除';
+                    hint.innerHTML = '📍 地図クリックでピン設置・<br>ピンダブルクリックで削除';
                 }
             } else {
                 // モバイル版
                 if (customPinMarker && customPinLocation) {
-                    hint.textContent = '➕ 新しいピン設置・既存ピンダブルタップで削除';
+                    hint.textContent = '📍 新しいピン設置・既存ピンダブルタップで削除';
                 } else {
-                    hint.textContent = '➕ 地図タップでピン設置';
+                    hint.textContent = '📍 地図タップでピン設置';
                 }
             }
             
@@ -10730,9 +10198,9 @@
             
             // PC版とモバイル版で異なるメッセージを表示
             if (isDesktop()) {
-                guidance.innerHTML = '➕ ピンモードをオンにして、<br>ダブルクリックで削除できます';
+                guidance.innerHTML = '📍 ピンモードをオンにして、<br>ダブルクリックで削除できます';
             } else {
-                guidance.innerHTML = '➕ ダブルタップで削除できます';
+                guidance.innerHTML = '📍 ダブルタップで削除できます';
             }
             
             const mapContainer = document.querySelector('.map-container');
@@ -10845,20 +10313,20 @@
 
         // カスタムピン設置
         function setCustomPin(latlng) {
-            console.log('➕ カスタムピン設置:', latlng);
+            console.log('📍 カスタムピン設置:', latlng);
             
             // 既存のピンを削除
             if (customPinMarker) {
                 map.removeLayer(customPinMarker);
             }
             
-            // カスタムピンアイコンを作成（現在地アイコンと統一デザイン）
+            // カスタムピンアイコンを作成
             const customIcon = L.divIcon({
                 className: 'custom-pin-marker',
                 html: '',
-                iconSize: [36, 36],
-                iconAnchor: [18, 18],
-                popupAnchor: [0, -36]
+                iconSize: [32, 32],
+                iconAnchor: [16, 16],
+                popupAnchor: [0, -32]
             });
             
             // ピンマーカーを作成
@@ -11256,10 +10724,10 @@
 
                         <!-- ナビゲーションボタン -->
                         <div class="store-navigation">
-                            <button class="nav-btn google-maps" onclick="openGoogleMaps('${store.name}', '${store.address}', ${store.latitude}, ${store.longitude})">
+                            <button class="nav-btn google-maps" onclick="openGoogleMaps(${store.latitude}, ${store.longitude})">
                                 📍 Googleマップ
                             </button>
-                            <button class="nav-btn route-search" onclick="openRouteSearch('${store.name}', '${store.address}', ${store.latitude}, ${store.longitude})">
+                            <button class="nav-btn route-search" onclick="openRouteSearch(${store.latitude}, ${store.longitude})">
                                 🧭 ルート検索
                             </button>
                         </div>
@@ -11306,18 +10774,14 @@
         }
 
         // Googleマップで開く
-        function openGoogleMaps(storeName, storeAddress, lat, lng) {
-            // 店名+住所で検索（座標はフォールバック用）
-            const searchQuery = `${storeName} ${storeAddress}`;
-            const url = `https://maps.google.com/maps?q=${encodeURIComponent(searchQuery)}`;
+        function openGoogleMaps(lat, lng) {
+            const url = `https://maps.google.com/maps?q=${lat},${lng}`;
             window.open(url, '_blank', 'noopener,noreferrer');
         }
 
         // ルート検索
-        function openRouteSearch(storeName, storeAddress, lat, lng) {
-            // 店名+住所で目的地検索（座標はフォールバック用）
-            const searchQuery = `${storeName} ${storeAddress}`;
-            const url = `https://maps.google.com/maps?saddr=現在地&daddr=${encodeURIComponent(searchQuery)}`;
+        function openRouteSearch(lat, lng) {
+            const url = `https://maps.google.com/maps?saddr=現在地&daddr=${lat},${lng}`;
             window.open(url, '_blank', 'noopener,noreferrer');
         }
 
@@ -11353,12 +10817,6 @@
             }
         })();
         
-        // ============ システム切り替えフラグ（最重要：最初に定義） ============
-        const USE_CLOUDFLARE_PROFILES = true;  // プロフィール管理をCloudflareに切り替え
-        const USE_CLOUDFLARE_REVIEWS = true;   // レビューもCloudflare使用
-        console.log('🔧 [システム切り替え] USE_CLOUDFLARE_PROFILES =', USE_CLOUDFLARE_PROFILES);
-        console.log('🔧 [システム切り替え] USE_CLOUDFLARE_REVIEWS =', USE_CLOUDFLARE_REVIEWS);
-        
         // プロフィールデータを読み込み
         async function loadUserProfile(email) {
             if (!email) {
@@ -11367,24 +10825,16 @@
             }
             
             try {
-                // まずCloudflareから読み込みを試行（Supabase→Cloudflareに切り替え済み）
-                // システム切り替え：Cloudflareからプロフィールを読み込み（強制切り替え）
-                console.log('🔧 [強制切り替え] Cloudflareプロフィール管理に切り替えました');
-                const cloudflareProfile = await loadProfileFromCloudflare(email);
-                console.log('🔍 Cloudflareプロフィール読み込み結果:', {
-                    email: email,
-                    profile: cloudflareProfile,
-                    hasAvatarUrl: !!cloudflareProfile?.avatarUrl,
-                    avatarType: cloudflareProfile?.avatarType
-                });
-                if (cloudflareProfile) {
-                    console.log('☁️ Cloudflareプロフィールを復元:', email);
+                // まずSupabaseから読み込みを試行
+                const supabaseProfile = await loadProfileFromSupabase(email);
+                if (supabaseProfile) {
+                    console.log('☁️ Supabaseプロフィールを復元:', email);
                     // LocalStorageへのキャッシュは無効化（データ不整合を防ぐため）
-                    // localStorage.setItem(`user_profile_${email}`, JSON.stringify(cloudflareProfile));
-                    return cloudflareProfile;
+                    // localStorage.setItem(`user_profile_${email}`, JSON.stringify(supabaseProfile));
+                    return supabaseProfile;
                 }
                 
-                // Cloudflareに無い場合はLocalStorageから読み込み
+                // Supabaseに無い場合はLocalStorageから読み込み
                 const saved = localStorage.getItem(`user_profile_${email}`);
                 if (saved) {
                     const profile = JSON.parse(saved);
@@ -11392,8 +10842,8 @@
                     console.warn('⚠️ LocalStorageのデータは使用しません（古い可能性があるため）');
                     // LocalStorageの古いデータは削除
                     localStorage.removeItem(`user_profile_${email}`);
-                    // Cloudflareにはアップロードしない（古いデータで上書きを防ぐ）
-                    // await saveProfileToCloudflare(profile, 'localStorage_migration'); // この行を無効化
+                    // Supabaseにはアップロードしない（古いデータで上書きを防ぐ）
+                    // await saveProfileToSupabase(profile); // この行を無効化
                     // return profile; // LocalStorageのデータは返さない
                 }
                 
@@ -11493,18 +10943,11 @@
                 // LocalStorageへの保存は無効化（データ不整合を防ぐため）
                 // localStorage.setItem(`user_profile_${profile.email}`, JSON.stringify(profile));
                 
-                // Cloudflareにのみ保存
-                // システム切り替え：Cloudflareにプロフィールを保存（強制切り替え）
-                console.log('🔧 [強制切り替え] Cloudflareプロフィール保存に切り替えました');
-                const saveResult = await saveProfileToCloudflare(profile, source);
+                // Supabaseにのみ保存
+                await saveProfileToSupabase(profile, source);
                 
-                if (saveResult) {
-                    console.log('💾 プロフィールを保存:', profile.email);
-                    return true;
-                } else {
-                    console.warn('⚠️ プロフィール保存失敗:', profile.email);
-                    return false;
-                }
+                console.log('💾 プロフィールを保存:', profile.email);
+                return true;
                 
             } catch (error) {
                 console.error('❌ プロフィール保存エラー:', error);
@@ -11607,13 +11050,10 @@
                     email: currentUserProfile.email,
                     nickname: `"${currentUserProfile.nickname}"` || '未設定',
                     displayNickname: getDisplayNickname(currentUserProfile),
-                    avatar: currentUserProfile.avatar,
-                    avatarType: currentUserProfile.avatarType,
-                    avatarUrl: currentUserProfile.avatarUrl
+                    avatar: currentUserProfile.avatar
                 });
-                console.log('🔍 [DEBUG] リロード時プロフィールデータ詳細:', JSON.stringify(currentUserProfile, null, 2));
                 
-                // ハンバーガーメニューの表示を更新
+                // ハンバーガーメニューのプロフィール表示を更新
                 updateMenuProfileDisplay();
             }
         }
@@ -11774,21 +11214,8 @@
                     // アドバイス実装：安全な表示用フォールバック
                     const displayName = getDisplayNickname(currentUserProfile);
                     
-                    console.log('🔍 現在のプロフィール状態:', currentUserProfile);
-                    
-                    // アバタータイプ判定を改善
-                    const hasCustomAvatar = (currentUserProfile.avatarType === 'custom' || currentUserProfile.avatarType === 'image') 
-                                           && currentUserProfile.avatarUrl;
-                    const hasPresetAvatar = currentUserProfile.avatarType === 'preset' && currentUserProfile.avatarUrl;
-                    const hasUploadedImage = currentUserProfile.avatarUrl && 
-                                           (currentUserProfile.avatarUrl.includes('avatar-upload-worker') || 
-                                            currentUserProfile.avatarUrl.startsWith('data:image') ||
-                                            currentUserProfile.avatarUrl.includes('workers.dev') ||
-                                            currentUserProfile.avatarUrl.includes('pub-42410a5d2a514b65a139b945cf8ab47f.r2.dev'));
-                    
-                    // カスタム画像・アップロード画像・プリセット画像の場合
-                    if (hasCustomAvatar || hasPresetAvatar || hasUploadedImage) {
-                        console.log('📷 画像アバター表示:', currentUserProfile.avatarUrl);
+                    // 画像アバターの場合は小さな画像を表示
+                    if (currentUserProfile.avatarType === 'image' && currentUserProfile.avatarUrl) {
                         menuTitle.innerHTML = `
                             <img src="${currentUserProfile.avatarUrl}" alt="${displayName}" 
                                  style="
@@ -11808,7 +11235,6 @@
                         `;
                     } else {
                         // プリセット絵文字の場合
-                        console.log('😊 絵文字アバター表示');
                         const avatar = getAvatarDisplay(currentUserProfile);
                         menuTitle.textContent = `${avatar} ${displayName}`;
                     }
@@ -11821,7 +11247,6 @@
                 }
             } catch (error) {
                 console.error('❌ メニュー表示更新エラー:', error);
-                console.error('プロフィール状態:', currentUserProfile);
             }
         }
 
@@ -11961,973 +11386,9 @@
         });
 
         // メニュー項目の関数
-        
         function showProfile() {
             closeSideMenu();
-            if (typeof openProfileModal === 'function') {
-                openProfileModal();
-            } else {
-                console.error('openProfileModal function not found');
-                alert('プロフィール機能の読み込み中です。もう一度お試しください。');
-            }
-        }
-
-        // ========== プロフィール編集機能 ==========
-        
-        
-        
-        // プロフィールモーダルを開く
-        async function openProfileModal() {
-            const currentUserEmail = getCurrentUser();
-            if (!currentUserEmail) {
-                alert('ログインが必要です');
-                return;
-            }
-            
-            try {
-                // 現在のプロフィール情報を取得（既存のシステムから）
-                // まずグローバル変数を確認、なければSupabaseから読み込み
-                let userProfile = currentUserProfile;
-                if (!userProfile) {
-                    userProfile = await loadUserProfile(currentUserEmail);
-                }
-                
-                // ニックネームの取得（既存の設定を優先）
-                const currentNickname = userProfile?.nickname || 
-                                       (userProfile && getDisplayNickname ? getDisplayNickname(userProfile) : null) ||
-                                       currentUserEmail.split('@')[0];
-                
-                // アバターURLの取得
-                const currentAvatarUrl = userProfile?.avatarUrl || 
-                                        userProfile?.avatar_url || 
-                                        `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(currentUserEmail)}`;
-                
-                // プロフィールモーダルHTML
-                const modalHTML = `
-                    <div id="profileModal" style="
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        background: rgba(0, 0, 0, 0.6);
-                        backdrop-filter: blur(8px);
-                        z-index: 10000;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        animation: fadeIn 0.3s ease;
-                    ">
-                        <div style="
-                            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-                            border-radius: 24px;
-                            padding: 32px;
-                            width: 90%;
-                            max-width: 480px;
-                            max-height: 90vh;
-                            overflow-y: auto;
-                            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
-                            border: 1px solid rgba(255, 255, 255, 0.2);
-                            position: relative;
-                            animation: slideUp 0.3s ease;
-                        ">
-                            <!-- ヘッダー -->
-                            <div style="
-                                display: flex;
-                                justify-content: space-between;
-                                align-items: center;
-                                margin-bottom: 24px;
-                                padding-bottom: 16px;
-                                border-bottom: 2px solid rgba(255, 107, 157, 0.1);
-                            ">
-                                <h2 style="
-                                    font-size: 1.8rem;
-                                    font-weight: 700;
-                                    color: #2d3748;
-                                    margin: 0;
-                                    background: linear-gradient(135deg, #ff6b9d, #4299e1);
-                                    -webkit-background-clip: text;
-                                    -webkit-text-fill-color: transparent;
-                                    background-clip: text;
-                                ">👤 プロフィール編集</h2>
-                                <button onclick="closeProfileModal()" style="
-                                    background: rgba(255, 107, 157, 0.1);
-                                    border: 2px solid rgba(255, 107, 157, 0.2);
-                                    border-radius: 50%;
-                                    width: 40px;
-                                    height: 40px;
-                                    color: #ff6b9d;
-                                    font-size: 18px;
-                                    cursor: pointer;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    transition: all 0.2s ease;
-                                " onmouseover="this.style.background='rgba(255, 107, 157, 0.2)'; this.style.transform='scale(1.05)'" onmouseout="this.style.background='rgba(255, 107, 157, 0.1)'; this.style.transform='scale(1)'">×</button>
-                            </div>
-                            
-                            <!-- アバタープレビュー -->
-                            <div style="text-align: center; margin-bottom: 24px;">
-                                <div style="
-                                    width: 100px;
-                                    height: 100px;
-                                    border-radius: 50%;
-                                    margin: 0 auto 16px auto;
-                                    background-image: url('${currentAvatarUrl}');
-                                    background-size: cover;
-                                    background-position: center;
-                                    box-shadow: 0 8px 32px rgba(255, 107, 157, 0.3);
-                                    border: 4px solid rgba(255, 107, 157, 0.2);
-                                " id="avatarPreview"></div>
-                                <p style="color: #64748b; font-size: 0.9rem; margin: 0;">アバター画像</p>
-                            </div>
-                            
-                            <!-- ニックネーム編集 -->
-                            <div style="margin-bottom: 24px;">
-                                <label style="
-                                    display: block;
-                                    font-weight: 600;
-                                    color: #374151;
-                                    margin-bottom: 8px;
-                                    font-size: 1rem;
-                                ">📝 ニックネーム</label>
-                                <input type="text" id="nicknameInput" value="${currentNickname}" style="
-                                    width: 100%;
-                                    padding: 12px 16px;
-                                    border: 2px solid rgba(255, 107, 157, 0.2);
-                                    border-radius: 12px;
-                                    font-size: 16px;
-                                    background: rgba(255, 255, 255, 0.8);
-                                    box-sizing: border-box;
-                                    transition: all 0.2s ease;
-                                " onfocus="this.style.borderColor='rgba(255, 107, 157, 0.5)'; this.style.boxShadow='0 0 0 3px rgba(255, 107, 157, 0.1)'" onblur="this.style.borderColor='rgba(255, 107, 157, 0.2)'; this.style.boxShadow='none'" placeholder="ニックネームを入力してください">
-                            </div>
-                            
-                            <!-- アバター選択 -->
-                            <div style="margin-bottom: 32px;">
-                                <label style="
-                                    display: block;
-                                    font-weight: 600;
-                                    color: #374151;
-                                    margin-bottom: 12px;
-                                    font-size: 1rem;
-                                ">🎭 アバター選択</label>
-                                
-                                <!-- カスタム画像アップロード -->
-                                <div style="
-                                    background: rgba(255, 245, 248, 0.8);
-                                    border: 2px dashed rgba(255, 107, 157, 0.3);
-                                    border-radius: 12px;
-                                    padding: 20px;
-                                    text-align: center;
-                                    margin-bottom: 16px;
-                                    transition: all 0.2s ease;
-                                " id="uploadSection">
-                                    <div style="margin-bottom: 12px;">
-                                        <span style="font-size: 2rem;">📷</span>
-                                        <p style="margin: 8px 0 0 0; color: #6b7280; font-size: 14px;">あなたの写真をアップロード</p>
-                                    </div>
-                                    
-                                    <input type="file" id="avatarFileInput" accept="image/jpeg,image/png,image/jpg" style="display: none;">
-                                    
-                                    <button onclick="selectCustomImage()" style="
-                                        padding: 8px 16px;
-                                        background: linear-gradient(135deg, #ff6b9d, #4299e1);
-                                        color: white;
-                                        border: none;
-                                        border-radius: 8px;
-                                        font-size: 12px;
-                                        font-weight: 600;
-                                        cursor: pointer;
-                                        transition: all 0.2s ease;
-                                        margin-bottom: 8px;
-                                    " onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">
-                                        📁 写真を選ぶ
-                                    </button>
-                                    
-                                    <!-- アップロード進行状況 -->
-                                    <div id="uploadProgress" style="display: none; margin-top: 12px;">
-                                        <div style="background: #e5e7eb; border-radius: 8px; height: 4px; overflow: hidden;">
-                                            <div id="progressBar" style="background: linear-gradient(90deg, #ff6b9d, #4299e1); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
-                                        </div>
-                                        <p id="uploadStatus" style="margin: 8px 0 0 0; color: #6b7280; font-size: 12px;">アップロード中...</p>
-                                    </div>
-                                    
-                                    <!-- エラーメッセージ -->
-                                    <div id="uploadError" style="display: none; margin-top: 8px; padding: 8px; background: rgba(239, 68, 68, 0.1); border-radius: 6px; color: #dc2626; font-size: 12px;"></div>
-                                </div>
-                                
-                                <!-- プリセットアバター -->
-                                <div style="margin-bottom: 8px;">
-                                    <p style="margin: 0 0 8px 0; color: #6b7280; font-size: 14px;">または、プリセットから選択：</p>
-                                </div>
-                                <div style="
-                                    display: grid;
-                                    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-                                    gap: 12px;
-                                    max-height: 200px;
-                                    overflow-y: auto;
-                                    padding: 16px;
-                                    background: rgba(248, 250, 252, 0.8);
-                                    border-radius: 12px;
-                                    border: 1px solid rgba(255, 107, 157, 0.1);
-                                " id="avatarGrid"></div>
-                            </div>
-                            
-                            <!-- アクションボタン -->
-                            <div style="
-                                display: flex;
-                                gap: 12px;
-                                justify-content: flex-end;
-                            ">
-                                <button onclick="closeProfileModal()" style="
-                                    padding: 12px 24px;
-                                    background: #e2e8f0;
-                                    color: #64748b;
-                                    border: none;
-                                    border-radius: 12px;
-                                    font-size: 14px;
-                                    font-weight: 600;
-                                    cursor: pointer;
-                                    transition: all 0.2s ease;
-                                " onmouseover="this.style.background='#cbd5e1'" onmouseout="this.style.background='#e2e8f0'">キャンセル</button>
-                                <button onclick="saveProfile()" style="
-                                    padding: 12px 24px;
-                                    background: linear-gradient(135deg, #ff6b9d, #4299e1);
-                                    color: white;
-                                    border: none;
-                                    border-radius: 12px;
-                                    font-size: 14px;
-                                    font-weight: 600;
-                                    cursor: pointer;
-                                    transition: all 0.2s ease;
-                                    box-shadow: 0 4px 16px rgba(255, 107, 157, 0.3);
-                                " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(255, 107, 157, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 16px rgba(255, 107, 157, 0.3)'">💾 保存</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                document.body.insertAdjacentHTML('beforeend', modalHTML);
-                generateAvatarOptions(currentUserEmail);
-                
-                // ファイル入力のイベントリスナーを追加
-                const fileInput = document.getElementById('avatarFileInput');
-                if (fileInput) {
-                    fileInput.addEventListener('change', handleFileSelect);
-                }
-                
-            } catch (error) {
-                console.error('プロフィールモーダル表示エラー:', error);
-                alert('プロフィール画面の表示に失敗しました');
-            }
-        }
-        
-        // アバターオプションを生成
-        function generateAvatarOptions(userEmail) {
-            const avatarGrid = document.getElementById('avatarGrid');
-            const seeds = ['default', 'happy', 'smile', 'cool', 'cute', 'funny', 'lovely', 'sweet'];
-            
-            avatarGrid.innerHTML = seeds.map(seed => {
-                const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}-${encodeURIComponent(userEmail)}`;
-                return `
-                    <div onclick="selectAvatar('${avatarUrl}')" style="
-                        width: 60px;
-                        height: 60px;
-                        border-radius: 50%;
-                        background-image: url('${avatarUrl}');
-                        background-size: cover;
-                        background-position: center;
-                        cursor: pointer;
-                        border: 3px solid transparent;
-                        transition: all 0.2s ease;
-                        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                    " onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 4px 16px rgba(255, 107, 157, 0.3)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'" data-avatar-url="${avatarUrl}"></div>
-                `;
-            }).join('');
-        }
-        
-        // アバター選択（プリセット）
-        function selectAvatar(avatarUrl) {
-            // プレビュー更新
-            const preview = document.getElementById('avatarPreview');
-            if (preview) {
-                preview.style.backgroundImage = `url('${avatarUrl}')`;
-                preview.dataset.avatarType = 'preset';
-                preview.dataset.avatarUrl = avatarUrl;
-            }
-            
-            // 選択状態の更新（プリセットのみ）
-            document.querySelectorAll('[data-avatar-url]').forEach(el => {
-                el.style.borderColor = 'transparent';
-            });
-            const selectedElement = document.querySelector(`[data-avatar-url="${avatarUrl}"]`);
-            if (selectedElement) {
-                selectedElement.style.borderColor = '#ff6b9d';
-            }
-            
-            // アップロードセクションの選択状態をリセット
-            resetUploadSelection();
-        }
-        
-        // ========== 画像アップロード機能 ==========
-        
-        // カスタム画像選択を開始
-        function selectCustomImage() {
-            const fileInput = document.getElementById('avatarFileInput');
-            if (fileInput) {
-                fileInput.click();
-            }
-        }
-        
-        // ファイル選択処理
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            // ファイル検証
-            const validationResult = validateImageFile(file);
-            if (!validationResult.isValid) {
-                showUploadError(validationResult.message);
-                return;
-            }
-            
-            // 画像プレビュー表示
-            showImagePreview(file);
-            
-            // 画像アップロード実行
-            uploadCustomAvatar(file);
-        }
-        
-        // ファイル検証
-        function validateImageFile(file) {
-            // ファイル形式チェック
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-            if (!allowedTypes.includes(file.type)) {
-                return {
-                    isValid: false,
-                    message: '🚫 JPEG・PNG形式の画像をお選びください'
-                };
-            }
-            
-            // ファイルサイズチェック（500KB）
-            const maxSize = 500 * 1024; // 500KB
-            if (file.size > maxSize) {
-                return {
-                    isValid: false,
-                    message: `🚫 ファイルサイズが大きすぎます（${Math.round(file.size/1024)}KB > 500KB）`
-                };
-            }
-            
-            return { isValid: true };
-        }
-        
-        // 画像プレビュー表示
-        function showImagePreview(file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const preview = document.getElementById('avatarPreview');
-                if (preview) {
-                    preview.style.backgroundImage = `url('${e.target.result}')`;
-                    preview.dataset.avatarType = 'custom';
-                    preview.dataset.avatarUrl = e.target.result;
-                }
-                
-                // プリセット選択をリセット
-                resetPresetSelection();
-                
-                // アップロードセクションの見た目を更新
-                highlightUploadSelection();
-            };
-            reader.readAsDataURL(file);
-        }
-        
-        // カスタム画像アップロード
-        async function uploadCustomAvatar(file) {
-            const currentUserEmail = getCurrentUser();
-            if (!currentUserEmail) {
-                showUploadError('🚫 ログインが必要です');
-                return;
-            }
-            
-            try {
-                // アップロード進行状況を表示
-                showUploadProgress(true);
-                updateProgress(0, 'アップロード準備中...');
-                
-                // FormDataを作成
-                const formData = new FormData();
-                formData.append('image', file);
-                formData.append('email', currentUserEmail);
-                
-                updateProgress(30, 'アップロード中...');
-                
-                // 既存のWorker APIを使用してアップロード
-                const response = await fetch(`${AVATAR_WORKER_URL}/upload`, {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                updateProgress(70, '処理中...');
-                
-                const result = await response.json();
-                
-                if (!response.ok) {
-                    throw new Error(result.error || 'アップロードに失敗しました');
-                }
-                
-                updateProgress(100, 'アップロード完了！');
-                
-                // 成功時の処理
-                const uploadedImageUrl = result.imageUrl || result.publicUrl;
-                if (uploadedImageUrl) {
-                    selectCustomAvatar(uploadedImageUrl);
-                    showUploadSuccess('✨ 画像をアップロードしました！');
-                }
-                
-                // 進行状況を隠す
-                setTimeout(() => {
-                    showUploadProgress(false);
-                }, 1500);
-                
-            } catch (error) {
-                console.error('画像アップロードエラー:', error);
-                showUploadError(`🚫 アップロードに失敗: ${error.message}`);
-                showUploadProgress(false);
-                
-                // フォールバック: プリセットアバターに戻す
-                const preview = document.getElementById('avatarPreview');
-                if (preview && preview.dataset.avatarUrl) {
-                    // 元の画像に戻す（プリセットの場合）
-                    if (preview.dataset.avatarType === 'preset') {
-                        selectAvatar(preview.dataset.avatarUrl);
-                    }
-                }
-            }
-        }
-        
-        // カスタムアバター選択
-        function selectCustomAvatar(imageUrl) {
-            const preview = document.getElementById('avatarPreview');
-            if (preview) {
-                preview.style.backgroundImage = `url('${imageUrl}')`;
-                preview.dataset.avatarType = 'custom';
-                preview.dataset.avatarUrl = imageUrl;
-            }
-            
-            resetPresetSelection();
-            highlightUploadSelection();
-        }
-        
-        // アップロード進行状況の表示/非表示
-        function showUploadProgress(show) {
-            const progressDiv = document.getElementById('uploadProgress');
-            const errorDiv = document.getElementById('uploadError');
-            
-            if (progressDiv) {
-                progressDiv.style.display = show ? 'block' : 'none';
-            }
-            if (errorDiv && show) {
-                errorDiv.style.display = 'none';
-            }
-        }
-        
-        // 進行状況の更新
-        function updateProgress(percentage, message) {
-            const progressBar = document.getElementById('progressBar');
-            const statusText = document.getElementById('uploadStatus');
-            
-            if (progressBar) {
-                progressBar.style.width = `${percentage}%`;
-            }
-            if (statusText) {
-                statusText.textContent = message;
-            }
-        }
-        
-        // エラーメッセージ表示
-        function showUploadError(message) {
-            const errorDiv = document.getElementById('uploadError');
-            if (errorDiv) {
-                errorDiv.textContent = message;
-                errorDiv.style.display = 'block';
-                
-                // 3秒後に自動で隠す
-                setTimeout(() => {
-                    errorDiv.style.display = 'none';
-                }, 3000);
-            }
-            showUploadProgress(false);
-        }
-        
-        // 成功メッセージ表示
-        function showUploadSuccess(message) {
-            const statusText = document.getElementById('uploadStatus');
-            if (statusText) {
-                statusText.textContent = message;
-                statusText.style.color = '#059669';
-            }
-        }
-        
-        // プリセット選択をリセット
-        function resetPresetSelection() {
-            document.querySelectorAll('[data-avatar-url]').forEach(el => {
-                el.style.borderColor = 'transparent';
-            });
-        }
-        
-        // アップロード選択をリセット
-        function resetUploadSelection() {
-            const uploadSection = document.getElementById('uploadSection');
-            if (uploadSection) {
-                uploadSection.style.borderColor = 'rgba(255, 107, 157, 0.3)';
-                uploadSection.style.background = 'rgba(255, 245, 248, 0.8)';
-            }
-        }
-        
-        // アップロード選択をハイライト
-        function highlightUploadSelection() {
-            const uploadSection = document.getElementById('uploadSection');
-            if (uploadSection) {
-                uploadSection.style.borderColor = '#ff6b9d';
-                uploadSection.style.background = 'rgba(255, 107, 157, 0.1)';
-            }
-        }
-        
-        // プロフィール保存
-        async function saveProfile() {
-            const nicknameInput = document.getElementById('nicknameInput');
-            const avatarPreview = document.getElementById('avatarPreview');
-            
-            if (!nicknameInput) return;
-            
-            const nickname = nicknameInput.value.trim();
-            if (!nickname) {
-                alert('ニックネームを入力してください');
-                return;
-            }
-            
-            const currentUserEmail = getCurrentUser();
-            
-            try {
-                // アバター情報を取得
-                const avatarType = avatarPreview.dataset.avatarType || 'preset';
-                const avatarUrl = avatarPreview.dataset.avatarUrl || avatarPreview.style.backgroundImage.match(/url\("?([^"]*)"?\)/)?.[1];
-                
-                // プロフィールデータを構築
-                const updatedProfile = {
-                    email: currentUserEmail,
-                    nickname: nickname,
-                    avatarType: avatarType,
-                    updatedAt: new Date().toISOString()
-                };
-                
-                // アバタータイプに応じてデータを設定
-                if (avatarType === 'custom') {
-                    updatedProfile.avatar = 'custom';
-                    updatedProfile.avatarUrl = avatarUrl;
-                } else {
-                    // プリセットアバターの場合
-                    updatedProfile.avatar = 'preset';
-                    updatedProfile.avatarUrl = avatarUrl;
-                }
-                
-                console.log('保存するプロフィール:', updatedProfile);
-                
-                console.log('🔍 [DEBUG] 保存前のプロフィールデータ:', JSON.stringify(updatedProfile, null, 2));
-                
-                // 既存のプロフィール保存システムを使用（Supabase連携）
-                const success = await saveUserProfile(updatedProfile, { source: 'profile_modal', isDirty: true });
-                
-                console.log('🔍 [DEBUG] 保存結果:', success);
-                
-                if (success) {
-                    // グローバル変数も更新
-                    currentUserProfile = updatedProfile;
-                    
-                    // ハンバーガーメニューの表示を更新
-                    updateMenuProfileDisplay();
-                    
-                    // 成功メッセージ
-                    const message = avatarType === 'custom' 
-                        ? '✨ プロフィールとカスタム画像を保存しました！' 
-                        : '✨ プロフィールを保存しました！';
-                    alert(message);
-                    
-                    closeProfileModal();
-                } else {
-                    throw new Error('保存に失敗しました');
-                }
-            } catch (error) {
-                console.error('プロフィール保存エラー:', error);
-                alert('プロフィールの保存に失敗しました');
-            }
-        }
-        
-        // プロフィールモーダルを閉じる
-        function closeProfileModal() {
-            const modal = document.getElementById('profileModal');
-            if (modal) modal.remove();
-        }
-
-        // 他ユーザープロフィールモーダルを閉じる
-        function closeUserProfileModal() {
-            const modal = document.getElementById('userProfileModal');
-            if (modal) modal.remove();
-        }
-
-        // 他ユーザーのプロフィールを表示（読み取り専用）
-        async function showUserProfile(userEmail) {
-            console.log('👤 他ユーザープロフィール表示開始:', userEmail);
-            
-            try {
-                // プロフィールデータ取得
-                const userProfile = await getUserProfile(userEmail);
-                if (!userProfile) {
-                    console.warn('⚠️ プロフィールが見つかりません:', userEmail);
-                    alert('プロフィール情報を取得できませんでした');
-                    return;
-                }
-
-                console.log('📝 表示用プロフィール:', userProfile);
-
-                // モーダルHTML生成
-                const modalHTML = `
-                    <div id="userProfileModal" style="
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        background: rgba(0, 0, 0, 0.6);
-                        backdrop-filter: blur(8px);
-                        z-index: 10000;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        padding: 20px;
-                        box-sizing: border-box;
-                    ">
-                        <div style="
-                            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-                            border-radius: 24px;
-                            padding: 32px;
-                            max-width: 500px;
-                            width: 100%;
-                            max-height: 80vh;
-                            overflow-y: auto;
-                            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2), 0 8px 24px rgba(0, 0, 0, 0.1);
-                            position: relative;
-                            border: 1px solid rgba(255, 107, 157, 0.1);
-                        ">
-                            <!-- ヘッダー -->
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
-                                <h2 style="
-                                    font-size: 24px;
-                                    font-weight: 700;
-                                    margin: 0;
-                                    background: linear-gradient(135deg, #ff6b9d, #4299e1);
-                                    -webkit-background-clip: text;
-                                    -webkit-text-fill-color: transparent;
-                                    background-clip: text;
-                                ">👤 プロフィール</h2>
-                                <button onclick="closeUserProfileModal()" style="
-                                    background: rgba(255, 107, 157, 0.1);
-                                    border: 2px solid rgba(255, 107, 157, 0.2);
-                                    border-radius: 50%;
-                                    width: 40px;
-                                    height: 40px;
-                                    color: #ff6b9d;
-                                    font-size: 18px;
-                                    cursor: pointer;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    transition: all 0.2s ease;
-                                " onmouseover="this.style.background='rgba(255, 107, 157, 0.2)'" onmouseout="this.style.background='rgba(255, 107, 157, 0.1)'">×</button>
-                            </div>
-
-                            <!-- プロフィール表示エリア -->
-                            <div style="text-align: center; margin-bottom: 32px;">
-                                <!-- アバター表示 -->
-                                <div style="
-                                    width: 120px;
-                                    height: 120px;
-                                    border-radius: 50%;
-                                    margin: 0 auto 20px auto;
-                                    background-image: url('${userProfile.avatarUrl || createEmojiAvatar('🌸')}');
-                                    background-size: cover;
-                                    background-position: center;
-                                    background-repeat: no-repeat;
-                                    background-color: #f8f9fa;
-                                    border: 4px solid rgba(255, 107, 157, 0.2);
-                                    box-shadow: 0 8px 32px rgba(255, 107, 157, 0.2);
-                                "></div>
-
-                                <!-- ニックネーム -->
-                                <h3 style="
-                                    font-size: 20px;
-                                    font-weight: 600;
-                                    margin: 0 0 8px 0;
-                                    color: #333;
-                                ">${userProfile.nickname || userEmail.split('@')[0]}</h3>
-
-                                <!-- バイオ（自己紹介） -->
-                                ${userProfile.bio ? `
-                                    <p style="
-                                        color: #666;
-                                        font-size: 16px;
-                                        line-height: 1.6;
-                                        margin: 16px 0;
-                                        padding: 16px;
-                                        background: rgba(255, 107, 157, 0.05);
-                                        border-radius: 12px;
-                                        border-left: 4px solid rgba(255, 107, 157, 0.3);
-                                    ">${userProfile.bio}</p>
-                                ` : ''}
-                            </div>
-
-                            <!-- アクションボタンエリア -->
-                            <div style="display: flex; gap: 12px; margin-top: 24px;">
-                                <button onclick="showUserReviews('${userEmail}')" style="
-                                    flex: 1;
-                                    padding: 14px 20px;
-                                    background: linear-gradient(135deg, #667eea, #764ba2);
-                                    color: white;
-                                    border: none;
-                                    border-radius: 12px;
-                                    font-size: 16px;
-                                    font-weight: 600;
-                                    cursor: pointer;
-                                    transition: all 0.2s ease;
-                                    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
-                                " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                                    📝 レビューを見る
-                                </button>
-                                <button onclick="showUserStats('${userEmail}')" style="
-                                    flex: 1;
-                                    padding: 14px 20px;
-                                    background: linear-gradient(135deg, #ff6b9d, #4299e1);
-                                    color: white;
-                                    border: none;
-                                    border-radius: 12px;
-                                    font-size: 16px;
-                                    font-weight: 600;
-                                    cursor: pointer;
-                                    transition: all 0.2s ease;
-                                    box-shadow: 0 4px 16px rgba(255, 107, 157, 0.3);
-                                " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                                    📊 統計を見る
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                // モーダル表示
-                document.body.insertAdjacentHTML('beforeend', modalHTML);
-                console.log('✅ 他ユーザープロフィールモーダル表示完了');
-
-            } catch (error) {
-                console.error('❌ プロフィール表示エラー:', error);
-                alert('プロフィールの表示に失敗しました');
-            }
-        }
-
-        // 他ユーザーのレビュー一覧を表示
-        async function showUserReviews(userEmail) {
-            console.log('📝 他ユーザーレビュー表示開始:', userEmail);
-            
-            // 現在開いているモーダルを閉じる
-            closeUserProfileModal();
-            
-            try {
-                const response = await fetch(`${AVATAR_WORKER_URL}/reviews?user_email=${encodeURIComponent(userEmail)}`);
-                const result = await response.json();
-                
-                if (!response.ok) {
-                    alert('レビュー取得に失敗しました');
-                    return;
-                }
-                
-                const reviews = (result.reviews || []).filter(r => !r.is_deleted);
-                
-                if (reviews.length === 0) {
-                    alert('レビューがありません');
-                    return;
-                }
-
-                // ユーザー情報取得（ニックネーム表示用）
-                const userProfile = await getUserProfile(userEmail);
-                const displayName = userProfile?.nickname || userEmail.split('@')[0];
-
-                // レビューHTML生成（店舗情報中心の表示）
-                const reviewPromises = reviews.map(review => createUserReviewHTML(review));
-                const reviewsHTMLArray = await Promise.all(reviewPromises);
-                const reviewsHTML = reviewsHTMLArray.join('');
-
-                const modalHTML = `
-                    <div id="userReviewsModal" style="
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        background: rgba(0,0,0,0.6);
-                        backdrop-filter: blur(8px);
-                        z-index: 10000;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        padding: 20px;
-                    ">
-                        <div style="
-                            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-                            border-radius: 20px;
-                            max-width: 800px;
-                            width: 95%;
-                            max-height: 85vh;
-                            overflow-y: auto;
-                            box-shadow: 0 24px 64px rgba(0,0,0,0.2);
-                            position: relative;
-                            border: 1px solid rgba(255, 107, 157, 0.1);
-                        ">
-                            <!-- ヘッダー -->
-                            <div style="
-                                padding: 24px 32px;
-                                border-bottom: 1px solid rgba(255, 107, 157, 0.1);
-                                display: flex;
-                                justify-content: space-between;
-                                align-items: center;
-                                background: linear-gradient(135deg, rgba(255, 107, 157, 0.05) 0%, rgba(64, 224, 208, 0.05) 100%);
-                                border-radius: 20px 20px 0 0;
-                            ">
-                                <h2 style="
-                                    margin: 0;
-                                    font-size: 20px;
-                                    font-weight: 700;
-                                    background: linear-gradient(135deg, #ff6b9d, #4299e1);
-                                    -webkit-background-clip: text;
-                                    -webkit-text-fill-color: transparent;
-                                    background-clip: text;
-                                ">📝 ${displayName}さんのレビュー (${reviews.length}件)</h2>
-                                <button onclick="closeUserReviewsModal()" style="
-                                    background: rgba(255, 107, 157, 0.1);
-                                    border: 2px solid rgba(255, 107, 157, 0.2);
-                                    border-radius: 50%;
-                                    width: 36px;
-                                    height: 36px;
-                                    color: #ff6b9d;
-                                    font-size: 16px;
-                                    cursor: pointer;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    transition: all 0.2s ease;
-                                " onmouseover="this.style.background='rgba(255, 107, 157, 0.2)'" onmouseout="this.style.background='rgba(255, 107, 157, 0.1)'">×</button>
-                            </div>
-
-                            <!-- レビューリスト -->
-                            <div style="padding: 20px 32px;">
-                                ${reviewsHTML}
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                document.body.insertAdjacentHTML('beforeend', modalHTML);
-                console.log('✅ 他ユーザーレビュー表示完了');
-
-            } catch (error) {
-                console.error('❌ レビュー表示エラー:', error);
-                alert('レビューの表示に失敗しました');
-            }
-        }
-
-        // 他ユーザーレビューモーダルを閉じる
-        function closeUserReviewsModal() {
-            const modal = document.getElementById('userReviewsModal');
-            if (modal) modal.remove();
-        }
-
-        // 他ユーザー用レビューHTML生成（店舗情報中心）
-        async function createUserReviewHTML(review) {
-            const createdDate = new Date(review.created_at).toLocaleDateString('ja-JP');
-            const updatedDate = review.updated_at !== review.created_at 
-                ? new Date(review.updated_at).toLocaleDateString('ja-JP') 
-                : null;
-            
-            // 店舗情報取得
-            let storeName = review.store_name || '店舗名不明';
-            let storeCategory = review.store_category || '不明';
-
-            return `
-                <div style="
-                    background: linear-gradient(135deg, #ffffff 0%, #fdfbfb 100%);
-                    border-radius: 16px;
-                    padding: 24px;
-                    margin-bottom: 20px;
-                    border: 1px solid rgba(255, 107, 157, 0.08);
-                    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-                    transition: all 0.3s ease;
-                " onmouseenter="this.style.boxShadow='0 8px 32px rgba(0,0,0,0.12)'" onmouseleave="this.style.boxShadow='0 4px 24px rgba(0,0,0,0.06)'">
-                    
-                    <!-- 店舗情報ヘッダー -->
-                    <div style="display: flex; align-items: center; margin-bottom: 16px;">
-                        <div style="
-                            width: 32px;
-                            height: 32px;
-                            background: linear-gradient(135deg, #ff6b9d, #4299e1);
-                            border-radius: 50%;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            margin-right: 12px;
-                            font-size: 16px;
-                        ">${getCategoryIcon(storeCategory)}</div>
-                        <div>
-                            <h3 style="margin: 0; font-size: 18px; font-weight: 600; color: #333;">${storeName}</h3>
-                            <p style="margin: 2px 0 0 0; font-size: 14px; color: #666; opacity: 0.8;">${storeCategory}</p>
-                        </div>
-                    </div>
-
-                    <!-- レビュー内容 -->
-                    <div style="
-                        background: rgba(255, 107, 157, 0.03);
-                        border-left: 4px solid rgba(255, 107, 157, 0.3);
-                        padding: 16px 20px;
-                        border-radius: 0 12px 12px 0;
-                        margin: 16px 0;
-                        font-size: 16px;
-                        line-height: 1.6;
-                        color: #333;
-                    ">${review.content}</div>
-
-                    <!-- 投稿日時 -->
-                    <div style="
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                        margin-top: 16px;
-                        padding-top: 12px;
-                        border-top: 1px solid rgba(255, 107, 157, 0.1);
-                        font-size: 14px;
-                        color: #666;
-                    ">
-                        <span>📅 投稿: ${createdDate}${updatedDate ? ` • 編集: ${updatedDate}` : ''}</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        // 他ユーザーの統計情報表示（今後実装）
-        async function showUserStats(userEmail) {
-            console.log('📊 他ユーザー統計表示:', userEmail);
-            
-            // 現在開いているモーダルを閉じる
-            closeUserProfileModal();
-            
-            alert('統計機能は今後実装予定です');
+            openProfileModal();
         }
 
         function showMyStats() {
@@ -12939,164 +11400,9 @@
         // ========== 削除された変数・関数の復旧 ==========
         
         const AVATAR_WORKER_URL = 'https://avatar-upload-worker.bettger1000.workers.dev';
+        const USE_CLOUDFLARE_REVIEWS = true;
         
-        // ============ Cloudflare プロフィール管理API ============
-        
-        // 他ユーザーのプロフィールを取得（レビュー表示用）
-        async function getUserProfile(email) {
-            try {
-                console.log('🔍 [他ユーザー] プロフィール取得開始:', email);
-                
-                // 現在のユーザーの場合は既存プロフィールを返す
-                if (getCurrentUser() === email && currentUserProfile) {
-                    console.log('👤 [他ユーザー] 現在ユーザーのプロフィールを返却');
-                    return currentUserProfile;
-                }
-                
-                // Cloudflareから他ユーザーのプロフィールを取得
-                const response = await fetch(`${AVATAR_WORKER_URL}/profile?email=${encodeURIComponent(email)}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-                
-                if (!response.ok) {
-                    console.warn('⚠️ [他ユーザー] Cloudflareプロフィール取得失敗:', response.status);
-                    return null;
-                }
-                
-                const result = await response.json();
-                
-                if (result.profile) {
-                    console.log('✅ [他ユーザー] プロフィール取得成功:', email);
-                    console.log('🔍 [詳細デバッグ] Cloudflareプロフィール内容:', {
-                        email: email,
-                        rawProfile: result.profile,
-                        nickname: result.profile.nickname,
-                        nicknameType: typeof result.profile.nickname,
-                        avatar: result.profile.avatar,
-                        avatarType: result.profile.avatarType,
-                        avatarUrl: result.profile.avatarUrl,
-                        customAvatarUrl: result.profile.customAvatarUrl,
-                        allProfileKeys: Object.keys(result.profile),
-                        stringified: JSON.stringify(result.profile)
-                    });
-                    return result.profile;
-                }
-                
-                return null;
-                
-            } catch (error) {
-                console.warn('⚠️ [他ユーザー] プロフィール取得例外:', error);
-                return null;
-            }
-        }
-        
-        // Cloudflareからプロフィールを取得
-        async function loadProfileFromCloudflare(email) {
-            try {
-                console.log('🌐 Cloudflareプロフィール読み込み開始:', email);
-                console.log('📊 [診断] loadProfileFromCloudflare呼び出し - タイムスタンプ:', new Date().toISOString());
-                
-                const response = await fetch(`${AVATAR_WORKER_URL}/profile?email=${encodeURIComponent(email)}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-                
-                if (!response.ok) {
-                    console.warn('⚠️ Cloudflare読み込みエラー:', response.status, response.statusText);
-                    return null;
-                }
-                
-                const result = await response.json();
-                
-                if (result.profile) {
-                    console.log('📊 Cloudflare生データ:', result.profile);
-                    console.log('📝 取得したnickname:', `"${result.profile.nickname}"`);
-                    console.log('✅ Cloudflareプロフィール読み込み成功:', email);
-                    return result.profile;
-                }
-                
-                return null;
-                
-            } catch (error) {
-                console.warn('⚠️ Cloudflare読み込み例外:', error);
-                return null;
-            }
-        }
-        
-        // Cloudflareにプロフィールを保存
-        async function saveProfileToCloudflare(profile, source = 'unknown') {
-            try {
-                console.log('🌐 Cloudflareプロフィール保存開始:', profile.email);
-                console.log('📊 [診断] saveProfileToCloudflare呼び出し元:', source);
-                console.log('📊 [診断] 保存タイムスタンプ:', new Date().toISOString());
-                console.log('📝 受け取ったプロフィール:', profile);
-                console.log('📝 受け取ったnickname:', `"${profile.nickname}"`, '型:', typeof profile.nickname);
-                
-                // 🚨 呼び出し元のスタックトレースを記録（重要な診断情報）
-                console.log('📍 [診断] スタックトレース:', new Error().stack);
-                
-                // セーフティチェック：起動時の自動保存を禁止
-                if (source === 'startup' || source === 'initialization') {
-                    console.warn('⚠️ [セーフティ] 起動時の自動保存は禁止されています:', source);
-                    return false;
-                }
-                
-                // プロフィールデータを正規化
-                const normalizedProfile = {
-                    email: profile.email,
-                    nickname: profile.nickname || profile.email.split('@')[0] || 'ユーザー',
-                    avatar: profile.avatar || 'default',
-                    avatarType: profile.avatarType || 'preset',
-                    avatarUrl: profile.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(profile.email)}`,
-                    bio: profile.bio || '',
-                    createdAt: profile.createdAt,
-                    updatedAt: new Date().toISOString()
-                };
-                
-                console.log('🚨 [重要] Cloudflareに送信するデータ:', normalizedProfile);
-                console.log('🚨 [重要] 送信するnickname:', `"${normalizedProfile.nickname}"`);
-                
-                // 新規作成か更新かを判定（createdAtの有無で判断）
-                const endpoint = profile.createdAt ? '/profile' : '/profile';
-                const method = profile.createdAt ? 'PUT' : 'POST';
-                
-                const response = await fetch(`${AVATAR_WORKER_URL}${endpoint}`, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(normalizedProfile)
-                });
-                
-                if (!response.ok) {
-                    console.warn('⚠️ Cloudflare保存エラー:', response.status, response.statusText);
-                    const errorText = await response.text();
-                    console.warn('⚠️ エラー詳細:', errorText);
-                    return false;
-                }
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    console.log('✅ Cloudflareプロフィール保存成功:', profile.email);
-                    return true;
-                } else {
-                    console.warn('⚠️ Cloudflare保存失敗:', result);
-                    return false;
-                }
-                
-            } catch (error) {
-                console.warn('⚠️ Cloudflare保存例外:', error);
-                return false;
-            }
-        }
-        
-        // ============ レビューシステム関数の復旧 ============
+        // 既存システムで使用されている関数の復旧
         async function createReviewsHTML(reviews, storeId) {
             let reviewsHTML;
             if (reviews && reviews.length > 0) {
@@ -13215,7 +11521,6 @@
         
         // 高機能レビューHTML生成（ニックネーム・アイコン・編集機能付き）
         async function createSimpleReviewHTML(review) {
-            console.log('🚀 createSimpleReviewHTML開始:', review.id, review.user_email);
             const currentUser = getCurrentUser();
             const isOwner = currentUser === review.user_email;
             const createdDate = new Date(review.created_at).toLocaleDateString('ja-JP');
@@ -13224,40 +11529,8 @@
                 : null;
             
             // ニックネーム・アバター取得（既存システム連携）
-            console.log('📝 ニックネーム取得開始:', review.user_email);
             const nickname = await getUserNickname(review.user_email);
-            console.log('📝 ニックネーム取得完了:', nickname);
-            
-            console.log('🖼️ アバター取得開始:', review.user_email);
-            let avatarUrl;
-            try {
-                avatarUrl = await getUserAvatarUrl(review.user_email);
-                console.log('🖼️ アバター取得完了:', avatarUrl);
-            } catch (error) {
-                console.error('💥 アバター取得でエラー:', error);
-                avatarUrl = createEmojiAvatar('🌸');
-            }
-            
-            console.log('🔍 レビューアバター取得(1):', {
-                userEmail: review.user_email,
-                nickname: nickname,
-                avatarUrl: avatarUrl,
-                avatarUrlType: typeof avatarUrl,
-                avatarUrlLength: avatarUrl ? avatarUrl.length : 'null',
-                currentUser: getCurrentUser(),
-                isCurrentUser: getCurrentUser() === review.user_email,
-                currentUserProfile: currentUserProfile
-            });
-            
-            // HTMLテンプレート生成前の最終確認
-            console.log('📝 HTMLテンプレート生成直前の値確認:', {
-                nickname: nickname,
-                nicknameType: typeof nickname,
-                avatarUrl: avatarUrl,
-                avatarUrlType: typeof avatarUrl,
-                reviewId: review.id,
-                userEmail: review.user_email
-            });
+            const avatarUrl = await getUserAvatarUrl(review.user_email);
             
             return `
                 <div id="review-${review.id}" style="
@@ -13285,36 +11558,22 @@
                     
                     <!-- ユーザー情報ヘッダー -->
                     <div style="display: flex; align-items: center; margin-bottom: 16px; text-align: left !important; margin-top: 8px;">
-                        <div style="
-                            width: 40px !important;
-                            height: 40px !important;
-                            min-width: 40px !important;
-                            min-height: 40px !important;
-                            border-radius: 50% !important;
-                            margin-right: 12px !important;
-                            flex-shrink: 0 !important;
-                            background-image: url('${avatarUrl || createEmojiAvatar('🌸')}');
-                            background-size: cover !important;
-                            background-position: center center !important;
-                            background-repeat: no-repeat !important;
-                            box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-                            background-color: #E5E7EB;
-                        " onerror="this.onerror=null; this.style.backgroundImage='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIxNiIgZmlsbD0iI0U1RTdFQiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNiIgZm9udC1mYW1pbHk9InN5c3RlbS11aSI+8J+MuDwvdGV4dD48L3N2Zz4='; this.style.backgroundColor='#f8f9fa';"></div>
+                        <img src="${avatarUrl}" alt="${nickname}" 
+                             style="
+                                width: 40px;
+                                height: 40px;
+                                aspect-ratio: 1/1;
+                                border-radius: 50%;
+                                margin-right: 12px;
+                                object-fit: cover;
+                                object-position: center center;
+                                flex-shrink: 0;
+                                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                                display: block;
+                             "
+                             onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIxNiIgcj0iNiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNOCAzMmMwLTYuNjI3IDUuMzczLTEyIDEyLTEzczEyIDUuMzczIDEyIDEydjAiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+'" />
                         <div style="flex-grow: 1;">
-                            <div style="
-                                font-weight: 600; 
-                                color: #333; 
-                                font-size: 16px; 
-                                margin-bottom: 2px;
-                                cursor: pointer;
-                                text-decoration: underline;
-                                text-decoration-color: rgba(255, 107, 157, 0.4);
-                                text-underline-offset: 2px;
-                                transition: all 0.2s ease;
-                            " onclick="showUserProfile('${review.user_email}')" 
-                            onmouseover="this.style.color='#ff6b9d'; this.style.textDecorationColor='#ff6b9d';" 
-                            onmouseout="this.style.color='#333'; this.style.textDecorationColor='rgba(255, 107, 157, 0.4)';"
-                            title="プロフィールを見る">${nickname || review.user_email}</div>
+                            <div style="font-weight: 600; color: #333; font-size: 16px; margin-bottom: 2px;">${nickname}</div>
                             <div style="color: #666; font-size: 0.9em; opacity: 0.8;">
                                 投稿: ${createdDate}${updatedDate ? ` • 編集: ${updatedDate}` : ''}
                             </div>
@@ -13335,27 +11594,73 @@
                                             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                                             flex-shrink: 0;
                                             height: fit-content;
-                                            width: auto !important;
-                                            min-width: fit-content !important;
-                                            max-width: fit-content !important;
                                         " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.15)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
                                     ✏️ 編集
                                 </button>
                             </div>
-                            <div id="edit-buttons-editing-${review.id}" style="display: none;"></div>
+                            <div id="edit-buttons-editing-${review.id}" style="display: none !important; gap: 8px !important; flex-direction: row !important; align-items: center !important; justify-content: flex-end !important; width: auto !important; height: auto !important;">
+                                <button onclick="deleteReviewWithConfirm('${review.id}')" 
+                                        style="
+                                            padding: 6px 12px;
+                                            background: linear-gradient(135deg, #e53e3e, #c53030);
+                                            color: white;
+                                            border: none;
+                                            border-radius: 6px;
+                                            cursor: pointer;
+                                            font-size: 12px;
+                                            font-weight: 500;
+                                            transition: all 0.2s ease;
+                                            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                                            flex-shrink: 0;
+                                        " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(229, 62, 62, 0.3)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
+                                    🗑️ 削除
+                                </button>
+                                <button onclick="cancelEditReview('${review.id}')" 
+                                        style="
+                                            padding: 6px 12px;
+                                            background: #718096;
+                                            color: white;
+                                            border: none;
+                                            border-radius: 6px;
+                                            cursor: pointer;
+                                            font-size: 12px;
+                                            font-weight: 500;
+                                            transition: all 0.2s ease;
+                                            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                                            flex-shrink: 0;
+                                        " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.15)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
+                                    ✕ キャンセル
+                                </button>
+                                <button onclick="saveEditReview('${review.id}')" 
+                                        style="
+                                            padding: 6px 12px;
+                                            background: linear-gradient(135deg, #38a169, #2f855a);
+                                            color: white;
+                                            border: none;
+                                            border-radius: 6px;
+                                            cursor: pointer;
+                                            font-size: 12px;
+                                            font-weight: 500;
+                                            transition: all 0.2s ease;
+                                            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                                            flex-shrink: 0;
+                                        " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(56, 161, 105, 0.3)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
+                                    💾 保存
+                                </button>
+                            </div>
                         ` : ''}
                     </div>
                     
                     <!-- レビュー内容 -->
                     <div class="review-content-display" style="
                         text-align: left !important;
-                        line-height: 1.5;
+                        line-height: 1.6;
                         color: #333;
                         white-space: pre-wrap;
                         display: block !important;
                         width: 100% !important;
                         margin: 0 !important;
-                        padding: 8px 12px;
+                        padding: 16px 20px;
                         box-sizing: border-box !important;
                         align-items: flex-start !important;
                         justify-content: flex-start !important;
@@ -13367,8 +11672,34 @@
                         <div style="text-align: left !important; display: block !important; width: 100% !important;">${review.content}</div>
                     </div>
                     
-                    <!-- 編集フォーム（編集ボタンクリック時に動的生成） -->
-                    <div id="edit-form-${review.id}" style="display: none;"></div>
+                    <!-- 編集フォーム（初期は非表示） -->
+                    <div id="edit-form-${review.id}" class="review-edit-form" style="
+                        display: none;
+                        margin-top: 16px;
+                        padding: 20px;
+                        background: rgba(255, 255, 255, 0.5);
+                        border-radius: 12px;
+                        border: 1px solid rgba(255, 107, 157, 0.1);
+                        backdrop-filter: blur(10px);
+                    ">
+                        <textarea id="edit-textarea-${review.id}" 
+                                style="
+                                    width: 100%;
+                                    height: 100px;
+                                    padding: 16px;
+                                    border: 1px solid rgba(255, 107, 157, 0.15);
+                                    border-radius: 8px;
+                                    resize: vertical;
+                                    font-family: inherit;
+                                    font-size: 15px;
+                                    line-height: 1.6;
+                                    box-sizing: border-box;
+                                    text-align: left !important;
+                                    background: rgba(255, 255, 255, 0.8);
+                                    transition: all 0.2s ease;
+                                " onfocus="this.style.borderColor='rgba(255, 107, 157, 0.4)'; this.style.boxShadow='0 0 0 3px rgba(255, 107, 157, 0.1)';" onblur="this.style.borderColor='rgba(255, 107, 157, 0.15)'; this.style.boxShadow='none';"
+                                >${review.content}</textarea>
+                    </div>
                 </div>
             `;
         }
@@ -13617,8 +11948,8 @@
             });
         }
         
-        // 食事カテゴリから絵文字アイコンを取得
-        function getFoodCategoryIcon(category) {
+        // カテゴリから絵文字アイコンを取得
+        function getCategoryIcon(category) {
             const icons = {
                 '和食': '🍜',
                 '洋食': '🍽️',
@@ -13646,47 +11977,23 @@
             // 店舗情報をリアルタイム取得（既存レビュー対応）
             let storeName = review.store_name || '店舗名不明';
             let storeCategory = review.store_category || '不明';
-            let storeAddress = review.store_address || '';
             
             if (!review.store_name && review.store_id) {
                 const store = stores.find(s => s.id == review.store_id);
                 if (store) {
                     storeName = store.name;
                     storeCategory = store.category;
-                    storeAddress = store.address || '';
                 }
             }
             
-            // カテゴリー設定をMAPと同じスタイルに
-            const categoryConfig = {
-                'カフェ': { icon: '☕', color: '#8B4513' },
-                '和食': { icon: '🍱', color: '#006400' },
-                '洋食': { icon: '🍽️', color: '#FF6347' },
-                'パン屋': { icon: '🥐', color: '#FFA500' },
-                'スイーツ': { icon: '🧁', color: '#FF69B4' },
-                '販売店': { icon: '🛒', color: '#4169E1' },
-                'その他': { icon: '🏪', color: '#808080' }
-            };
-            const categoryStyle = categoryConfig[storeCategory] || categoryConfig['その他'];
+            const storeIcon = getCategoryIcon(storeCategory);
             
             // ニックネーム・アバター取得
             const nickname = await getUserNickname(review.user_email);
             const avatarUrl = await getUserAvatarUrl(review.user_email);
             
-            console.log('🔍 レビューアバター取得(2):', {
-                userEmail: review.user_email,
-                nickname: nickname,
-                avatarUrl: avatarUrl,
-                avatarUrlType: typeof avatarUrl,
-                avatarUrlLength: avatarUrl ? avatarUrl.length : 'null',
-                avatarUrlStart: avatarUrl ? avatarUrl.substring(0, 50) : 'null',
-                currentUser: getCurrentUser(),
-                isCurrentUser: getCurrentUser() === review.user_email,
-                currentUserProfile: currentUserProfile
-            });
-            
             return `
-                <div id="review-${review.id}" class="my-review-card" style="
+                <div class="my-review-card" style="
                     background: linear-gradient(135deg, #ffffff 0%, #fdfbfb 100%);
                     border-radius: 16px;
                     padding: 20px;
@@ -13713,9 +12020,14 @@
                         position: relative;
                         gap: 12px;
                     " onclick="jumpToStoreFromReview('${review.store_id}', '${review.id}')" onmouseenter="this.style.background='rgba(255, 107, 157, 0.04)'; this.style.transform='scale(1.01)';" onmouseleave="this.style.background='transparent'; this.style.transform='scale(1)';">
+                        <span class="store-icon" style="
+                            font-size: 24px;
+                            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+                            flex-shrink: 0;
+                        ">${storeIcon}</span>
                         <div style="flex: 1; min-width: 0; padding-right: 12px;">
                             <h4 class="store-name" style="
-                                margin: 0 0 6px 0;
+                                margin: 0 0 4px 0;
                                 font-size: 18px;
                                 font-weight: 700;
                                 color: #2d3748;
@@ -13724,33 +12036,19 @@
                                 word-wrap: break-word;
                                 overflow-wrap: break-word;
                             ">${storeName}</h4>
-                            <span class="category-badge" style="
-                                background: ${categoryStyle.color}15; 
-                                color: ${categoryStyle.color}; 
-                                border: 1px solid ${categoryStyle.color}30;
-                                padding: 4px 8px;
-                                border-radius: 12px;
-                                font-size: 12px;
-                                font-weight: 500;
-                                display: inline-block;
-                                margin-bottom: 4px;
-                                width: auto !important;
-                                min-width: fit-content !important;
-                                max-width: fit-content !important;
-                            ">${categoryStyle.icon} ${storeCategory}</span>
-                            ${storeAddress ? `<div style="
-                                font-size: 12px;
+                            <span style="
+                                font-size: 13px;
                                 color: #718096;
-                                margin-top: 4px;
-                                line-height: 1.4;
-                            ">${storeAddress}</div>` : ''}
+                                font-weight: 500;
+                                display: block;
+                            ">${storeCategory}</span>
                         </div>
                         <button class="map-btn" onclick="event.stopPropagation(); openMapToStore('${review.store_id}')" style="
                             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                             color: white;
                             border: none;
                             border-radius: 8px;
-                            padding: 8px 16px;
+                            padding: 8px 12px;
                             font-size: 13px;
                             font-weight: 600;
                             cursor: pointer;
@@ -13759,43 +12057,39 @@
                             flex-shrink: 0;
                             align-self: flex-start;
                             white-space: nowrap;
-                            width: auto !important;
-                            min-width: fit-content !important;
-                            max-width: fit-content !important;
                         " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 16px rgba(102, 126, 234, 0.4)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(102, 126, 234, 0.3)';">📍 MAP</button>
                     </div>
                     
                     <!-- ユーザー情報ヘッダー -->
                     <div style="display: flex; align-items: center; margin-bottom: 16px; text-align: left !important;">
-                        <div style="
-                            width: 40px !important;
-                            height: 40px !important;
-                            min-width: 40px !important;
-                            min-height: 40px !important;
-                            border-radius: 50% !important;
-                            margin-right: 12px !important;
-                            flex-shrink: 0 !important;
-                            background-image: url('${avatarUrl || createEmojiAvatar('🌸')}');
-                            background-size: cover !important;
-                            background-position: center center !important;
-                            background-repeat: no-repeat !important;
-                            box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
-                            background-color: #E5E7EB;
-                        " onerror="this.onerror=null; this.style.backgroundImage='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIxNiIgZmlsbD0iI0U1RTdFQiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNiIgZm9udC1mYW1pbHk9InN5c3RlbS11aSI+8J+MuDwvdGV4dD48L3N2Zz4='; this.style.backgroundColor='#f8f9fa';"></div>
+                        <img src="${avatarUrl}" alt="${nickname}" 
+                             style="
+                                width: 32px;
+                                height: 32px;
+                                aspect-ratio: 1/1;
+                                border-radius: 50%;
+                                margin-right: 10px;
+                                object-fit: cover;
+                                object-position: center center;
+                                flex-shrink: 0;
+                                box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+                                display: block;
+                             "
+                             onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTYiIGZpbGw9IiNFNUU3RUIiLz4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxMyIgcj0iNSIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNNiAyNmMwLTUuNTIzIDQuNDc3LTEwIDEwLTEwczEwIDQuNDc3IDEwIDEwdjAiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+'" />
                         <div style="
                             font-weight: 600; 
                             color: #4a5568; 
                             font-size: 14px;
-                        ">${nickname || review.user_email}</div>
+                        ">${nickname}</div>
                     </div>
                     
                     <!-- レビュー内容 -->
                     <div class="review-content my-review-text" style="
                         text-align: left !important;
-                        line-height: 1.5;
+                        line-height: 1.7;
                         color: #2d3748;
-                        margin-bottom: 12px;
-                        padding: 8px 12px;
+                        margin-bottom: 20px;
+                        padding: 16px 20px;
                         background: rgba(247, 250, 252, 0.6);
                         border-radius: 12px;
                         border-left: 4px solid #ff6b9d;
@@ -13813,7 +12107,36 @@
                     </div>
                     
                     <!-- 編集フォーム（初期は非表示） -->
-                    <div id="my-edit-form-${review.id}" style="display: none;"></div>
+                    <div id="my-edit-form-${review.id}" class="my-review-edit-form" style="
+                        display: none;
+                        margin-top: 16px;
+                        margin-bottom: 20px;
+                        padding: 20px;
+                        background: rgba(255, 255, 255, 0.7);
+                        border-radius: 12px;
+                        border: 2px solid rgba(66, 153, 225, 0.2);
+                        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+                    ">
+                        <textarea id="my-edit-textarea-${review.id}" 
+                                  style="
+                                      width: 100%;
+                                      min-height: 120px;
+                                      padding: 16px;
+                                      border: 2px solid rgba(66, 153, 225, 0.3);
+                                      border-radius: 12px;
+                                      font-size: 15px;
+                                      line-height: 1.6;
+                                      resize: vertical;
+                                      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                                      background: white;
+                                      box-sizing: border-box;
+                                      transition: border-color 0.2s ease;
+                                  "
+                                  placeholder="あなたの感想を編集してください..."
+                                  onfocus="this.style.borderColor='rgba(66, 153, 225, 0.6)'; this.style.boxShadow='0 0 0 3px rgba(66, 153, 225, 0.1)'"
+                                  onblur="this.style.borderColor='rgba(66, 153, 225, 0.3)'; this.style.boxShadow='none'"
+                        >${review.content}</textarea>
+                    </div>
                     
                     <!-- メタ情報 -->
                     <div class="review-meta" style="
@@ -13836,19 +12159,77 @@
                                 color: white;
                                 border: none;
                                 border-radius: 8px;
-                                padding: 6px 12px;
+                                padding: 6px 16px;
                                 font-size: 13px;
                                 font-weight: 600;
                                 cursor: pointer;
                                 transition: all 0.2s ease;
                                 box-shadow: 0 2px 8px rgba(66, 153, 225, 0.3);
                                 flex-shrink: 0;
-                                width: auto !important;
-                                min-width: fit-content !important;
-                                max-width: fit-content !important;
                             " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 16px rgba(66, 153, 225, 0.4)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(66, 153, 225, 0.3)';">✏️ 編集</button>
                         </div>
-                        <div id="my-edit-buttons-editing-${review.id}" style="display: none;"></div>
+                        <div id="my-edit-buttons-editing-${review.id}" style="display: none !important; gap: 8px !important; flex-direction: row !important; align-items: center !important; align-self: flex-end !important; justify-content: flex-end !important; width: auto !important; height: auto !important;">
+                            <button onclick="deleteMyReviewWithConfirm('${review.id}')" 
+                                    style="
+                                        padding: 6px 12px;
+                                        background: linear-gradient(135deg, #e53e3e, #c53030);
+                                        color: white;
+                                        border: none;
+                                        border-radius: 8px;
+                                        cursor: pointer;
+                                        font-size: 12px;
+                                        font-weight: 500;
+                                        transition: all 0.2s ease;
+                                        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                                        flex-shrink: 0;
+                                        display: inline-block;
+                                        white-space: nowrap;
+                                        min-width: auto;
+                                        width: auto;
+                                    " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(229, 62, 62, 0.3)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
+                                🗑️ 削除
+                            </button>
+                            <button onclick="cancelEditMyReview('${review.id}')" 
+                                    style="
+                                        padding: 6px 12px;
+                                        background: #718096;
+                                        color: white;
+                                        border: none;
+                                        border-radius: 8px;
+                                        cursor: pointer;
+                                        font-size: 12px;
+                                        font-weight: 500;
+                                        transition: all 0.2s ease;
+                                        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                                        flex-shrink: 0;
+                                        display: inline-block;
+                                        white-space: nowrap;
+                                        min-width: auto;
+                                        width: auto;
+                                    " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.15)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
+                                ✕ キャンセル
+                            </button>
+                            <button onclick="saveEditMyReview('${review.id}')" 
+                                    style="
+                                        padding: 6px 12px;
+                                        background: linear-gradient(135deg, #38a169, #2f855a);
+                                        color: white;
+                                        border: none;
+                                        border-radius: 8px;
+                                        cursor: pointer;
+                                        font-size: 12px;
+                                        font-weight: 500;
+                                        transition: all 0.2s ease;
+                                        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                                        flex-shrink: 0;
+                                        display: inline-block;
+                                        white-space: nowrap;
+                                        min-width: auto;
+                                        width: auto;
+                                    " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(56, 161, 105, 0.3)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
+                                💾 保存
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -13863,18 +12244,10 @@
                 return getDisplayNickname(currentUserProfile);
             }
             
-            // 他のユーザーの場合はCloudflareから取得
+            // 他のユーザーの場合はSupabaseから取得
             try {
                 const profile = await getUserProfile(email);
-                console.log('📝 [ニックネーム] 取得したプロフィール:', {
-                    email: email,
-                    profile: profile,
-                    hasNickname: !!(profile && profile.nickname),
-                    nickname: profile ? profile.nickname : 'なし',
-                    nicknameValue: profile ? `"${profile.nickname}"` : 'なし'
-                });
                 if (profile && profile.nickname) {
-                    console.log('✅ [ニックネーム] 返却値:', profile.nickname);
                     return profile.nickname;
                 }
             } catch (error) {
@@ -13887,104 +12260,46 @@
         
         // ユーザーのアバターURL取得（既存システム連携）
         async function getUserAvatarUrl(email) {
-            if (!email || typeof email !== 'string') {
-                console.warn('無効なemail:', email);
-                return createEmojiAvatar('🌸');
+            // 現在のユーザーの場合は既存プロフィールから取得
+            if (getCurrentUser() === email && currentUserProfile) {
+                if (currentUserProfile.avatarType === 'image' && currentUserProfile.avatarUrl) {
+                    return currentUserProfile.avatarUrl;
+                } else {
+                    // プリセット絵文字アバターをBase64 SVGに変換
+                    const emoji = getAvatarDisplay(currentUserProfile);
+                    return createEmojiAvatar(emoji);
+                }
             }
             
+            // 他のユーザーの場合はSupabaseから取得
             try {
-                console.log('🔍 アバター取得開始:', email);
-                
-                // 現在のユーザーの場合は既存プロフィールから取得
-                if (getCurrentUser() === email && currentUserProfile) {
-                    console.log('👤 現在ユーザーのアバター取得:', currentUserProfile);
-                    
-                    if ((currentUserProfile.avatarType === 'custom' || currentUserProfile.avatarType === 'image') && currentUserProfile.avatarUrl) {
-                        console.log('✅ カスタム/アップロードアバター:', currentUserProfile.avatarUrl);
-                        return currentUserProfile.avatarUrl;
-                    } else if (currentUserProfile.avatarType === 'preset' && currentUserProfile.avatarUrl) {
-                        console.log('✅ プリセットアバター:', currentUserProfile.avatarUrl);
-                        return currentUserProfile.avatarUrl;
-                    } else if (currentUserProfile.avatar && currentUserProfile.avatar !== 'default') {
-                        // 絵文字アバターの場合
-                        const emoji = getAvatarDisplay ? getAvatarDisplay(currentUserProfile) : currentUserProfile.avatar;
-                        console.log('✅ 絵文字アバター:', emoji);
+                const profile = await getUserProfile(email);
+                if (profile) {
+                    if (profile.avatarType === 'image' && profile.avatarUrl) {
+                        return profile.avatarUrl;
+                    } else if (profile.avatar) {
+                        const preset = PRESET_AVATARS.find(a => a.id === profile.avatar);
+                        const emoji = preset ? preset.emoji : '🌸';
                         return createEmojiAvatar(emoji);
                     }
                 }
-                
-                // 他のユーザーの場合はCloudflareプロフィールから取得
-                try {
-                    console.log('🌐 [アバター] Cloudflareからプロフィール取得中:', email);
-                    const profile = await getUserProfile(email);
-                    
-                    if (profile) {
-                        console.log('✅ [アバター] プロフィール取得成功:', profile);
-                        console.log('🔍 [アバター詳細] プロフィール解析:', {
-                            email: email,
-                            avatarType: profile.avatarType,
-                            avatarUrl: profile.avatarUrl,
-                            customAvatarUrl: profile.customAvatarUrl,
-                            avatar: profile.avatar,
-                            hasAvatarUrl: !!profile.avatarUrl,
-                            hasCustomAvatarUrl: !!profile.customAvatarUrl,
-                            isCustomType: profile.avatarType === 'custom',
-                            isImageType: profile.avatarType === 'image',
-                            isPresetType: profile.avatarType === 'preset'
-                        });
-                        
-                        // アバタータイプに応じて処理
-                        if ((profile.avatarType === 'custom' || profile.avatarType === 'image') && profile.avatarUrl) {
-                            console.log('✅ [アバター] カスタム/アップロードアバター返却:', profile.avatarUrl);
-                            return profile.avatarUrl;
-                        } else if (profile.avatarType === 'preset' && profile.avatarUrl) {
-                            console.log('✅ [アバター] プリセットアバター返却:', profile.avatarUrl);
-                            return profile.avatarUrl;
-                        } else if (profile.avatar && profile.avatar !== 'default') {
-                            // 絵文字アバターの場合
-                            console.log('✅ [アバター] 絵文字アバター返却:', profile.avatar);
-                            return createEmojiAvatar(profile.avatar);
-                        } else {
-                            console.log('⚠️ [アバター] 該当するアバタータイプなし、デフォルトを使用');
-                        }
-                    } else {
-                        console.warn('⚠️ [アバター] プロフィール取得失敗:', email);
-                    }
-                } catch (error) {
-                    console.warn('⚠️ [アバター] プロフィール取得エラー:', error);
-                }
-                
-                console.warn('⚠️ アバターが取得できませんでした:', { email, currentUserProfile });
             } catch (error) {
-                console.error('💥 getUserAvatarUrl エラー:', {
-                    email: email,
-                    error: error,
-                    stack: error.stack,
-                    message: error.message
-                });
+                console.warn('プロフィール取得エラー:', error);
             }
             
-            // 安全なフォールバック: 絵文字アバター
-            console.log('🏭 フォールバックアバター: 絵文字');
+            // デフォルトアバター
             return createEmojiAvatar('🌸');
         }
         
         // 絵文字をSVGアバターに変換
         function createEmojiAvatar(emoji) {
-            try {
-                // 安全な絵文字チェック
-                const safeEmoji = emoji && typeof emoji === 'string' ? emoji.slice(0, 2) : '🌸';
-                
-                const svgData = `<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="16" fill="#f8f9fa"/><text x="16" y="22" text-anchor="middle" font-size="16" font-family="system-ui">${safeEmoji}</text></svg>`;
-                
-                // 安全なBase64エンコード
-                const encodedSvg = encodeURIComponent(svgData);
-                return `data:image/svg+xml;charset=UTF-8,${encodedSvg}`;
-            } catch (error) {
-                console.warn('Emoji avatar creation failed:', error);
-                // 確実に動作するフォールバック
-                return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIxNiIgZmlsbD0iI2Y4ZjlmYSIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNiIgZm9udC1mYW1pbHk9InN5c3RlbS11aSI+8J+MuDwvdGV4dD48L3N2Zz4=';
-            }
+            const svgData = `
+                <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="16" cy="16" r="16" fill="#f8f9fa"/>
+                    <text x="16" y="22" text-anchor="middle" font-size="16" font-family="system-ui">${emoji}</text>
+                </svg>
+            `;
+            return `data:image/svg+xml;base64,${btoa(svgData)}`;
         }
         
         // ========== レビュー編集・削除関数 ==========
@@ -13997,93 +12312,17 @@
             const editingButtons = document.getElementById(`edit-buttons-editing-${reviewId}`);
             
             if (contentDiv && editForm && normalButtons && editingButtons) {
-                // 元のテキストを取得
-                const originalText = contentDiv.textContent || contentDiv.innerText || '';
-                
-                // コンテンツ表示を隠す
+                // コンテンツ表示を隠して編集フォームを表示
                 contentDiv.style.display = 'none';
-                
-                // 編集フォームを動的生成
-                editForm.innerHTML = `
-                    <div style="margin: 16px 0; padding: 20px; background: rgba(255, 255, 255, 0.9); border-radius: 12px; border: 2px solid rgba(66, 153, 225, 0.3); box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
-                        <textarea id="edit-textarea-${reviewId}" 
-                                  style="width: 100%; min-height: 120px; padding: 16px; border: 2px solid rgba(66, 153, 225, 0.3); border-radius: 8px; font-size: 14px; line-height: 1.6; resize: vertical; font-family: system-ui, sans-serif; background: white; box-sizing: border-box;"
-                                  placeholder="あなたの感想を編集してください...">${originalText.trim()}</textarea>
-                    </div>
-                `;
                 editForm.style.display = 'block';
                 
                 // ボタンを切り替え（編集ボタン → 削除・キャンセル・保存ボタン）
                 normalButtons.style.display = 'none';
-                
-                // 横並びボタンを強制的に生成（レスポンシブ対応）
-                editingButtons.innerHTML = `
-                    <div style="
-                        display: flex !important;
-                        flex-direction: row !important;
-                        gap: 6px !important;
-                        justify-content: flex-end !important;
-                        align-items: center !important;
-                        margin-top: 12px !important;
-                        width: 100% !important;
-                        box-sizing: border-box !important;
-                        flex-wrap: nowrap !important;
-                        overflow: hidden !important;
-                    ">
-                        <button onclick="deleteReviewWithConfirm('${reviewId}')" style="
-                            display: inline-block !important;
-                            padding: 4px 8px !important;
-                            background: #e53e3e !important;
-                            color: white !important;
-                            border: none !important;
-                            border-radius: 6px !important;
-                            cursor: pointer !important;
-                            font-size: 11px !important;
-                            font-weight: 500 !important;
-                            height: 28px !important;
-                            flex: 1 1 auto !important;
-                            max-width: 60px !important;
-                            white-space: nowrap !important;
-                            text-align: center !important;
-                        ">削除</button>
-                        <button onclick="cancelEditReview('${reviewId}')" style="
-                            display: inline-block !important;
-                            padding: 4px 8px !important;
-                            background: #718096 !important;
-                            color: white !important;
-                            border: none !important;
-                            border-radius: 6px !important;
-                            cursor: pointer !important;
-                            font-size: 11px !important;
-                            font-weight: 500 !important;
-                            height: 28px !important;
-                            flex: 1 1 auto !important;
-                            max-width: 80px !important;
-                            white-space: nowrap !important;
-                            text-align: center !important;
-                        ">キャンセル</button>
-                        <button onclick="saveEditReview('${reviewId}')" style="
-                            display: inline-block !important;
-                            padding: 4px 8px !important;
-                            background: #38a169 !important;
-                            color: white !important;
-                            border: none !important;
-                            border-radius: 6px !important;
-                            cursor: pointer !important;
-                            font-size: 11px !important;
-                            font-weight: 500 !important;
-                            height: 28px !important;
-                            flex: 1 1 auto !important;
-                            max-width: 60px !important;
-                            white-space: nowrap !important;
-                            text-align: center !important;
-                        ">保存</button>
-                    </div>
-                `;
-                
-                // 追加のスタイル強制適用
-                editingButtons.style.display = 'block';
-                editingButtons.style.width = '100%';
+                editingButtons.style.display = 'flex';
+                editingButtons.style.flexDirection = 'row';
+                editingButtons.style.alignItems = 'center';
+                editingButtons.style.justifyContent = 'flex-end';
+                editingButtons.style.gap = '8px';
                 
                 // テキストエリアにフォーカス
                 const textarea = document.getElementById(`edit-textarea-${reviewId}`);
@@ -14230,150 +12469,64 @@
             }, 200);
         }
         
-        // MAPボタンから地図画面へ移動（マイレビューモーダルを閉じて）
+        // 地図のみに移動（モーダルは開いたまま）
         function openMapToStore(storeId) {
-            console.log('🗺️ openMapToStore called with storeId:', storeId, typeof storeId);
-            console.log('🗺️ stores array length:', stores.length);
-            console.log('🗺️ stores sample IDs:', stores.slice(0, 3).map(s => ({ id: s.id, type: typeof s.id, name: s.name })));
-            
             const store = stores.find(s => s.id == storeId);
-            console.log('🗺️ Found store:', store ? store.name : 'NOT FOUND');
-            if (!store) {
-                console.error('🚨 Store not found for ID:', storeId);
-                return;
-            }
+            if (!store) return;
             
-            // マイレビューモーダルを閉じる
-            closeMyReviews();
-            
-            // サイドメニューも閉じる（開いている場合）
-            closeSideMenu();
-            
-            // 少し待ってから地図に移動（アニメーション考慮）
-            setTimeout(() => {
-                // スマホの場合はパネルを閉じる
-                if (!isDesktop()) {
-                    console.log('📱 Trying to collapse panel');
-                    if (typeof setPanelPosition === 'function') {
-                        setPanelPosition('collapsed');
-                    } else {
-                        console.log('📱 setPanelPosition not available, trying alternative method');
-                        // フォールバック：直接パネル操作
-                        const panel = document.querySelector('.bottom-panel, .mobile-panel');
-                        if (panel) {
-                            panel.classList.remove('half-open', 'full-open');
-                            console.log('📱 Panel collapsed using fallback method');
-                        }
-                    }
-                }
+            // マップの中心を店舗位置に移動
+            if (typeof map !== 'undefined' && map) {
+                map.setView([store.latitude, store.longitude], 16);
                 
-                // マップの中心を店舗位置に移動
-                if (typeof map !== 'undefined' && map) {
-                    map.setView([store.latitude, store.longitude], 17);
-                    
-                    // 該当店舗のマーカーをハイライト（点滅効果）
-                    setTimeout(() => {
-                        console.log('🎯 Looking for marker with storeId:', storeId);
-                        console.log('🎯 markers array length:', markers.length);
-                        console.log('🎯 markers sample:', markers.slice(0, 3).map(m => ({ 
-                            storeId: m.options?.storeId, 
-                            storeIdType: typeof m.options?.storeId,
-                            hasOptions: !!m.options 
-                        })));
-                        
-                        // markers配列から該当店舗のマーカーを探す
-                        const marker = markers.find(m => {
-                            // マーカーに紐付けられた店舗情報を確認
-                            return m.options && m.options.storeId == storeId;
-                        });
-                        
-                        console.log('🎯 Found marker:', !!marker);
-                        
-                        if (marker) {
-                            if (isDesktop()) {
-                                // PC版：通常のポップアップ
-                                marker.openPopup();
-                            } else {
-                                // スマホ版：マーカーのクリックイベントを発火してポップアップを開く
-                                marker.fire('click');
-                                
-                                // さらに確実にポップアップを開くため、少し遅延してopenPopupも実行
-                                setTimeout(() => {
-                                    marker.openPopup();
-                                }, 50);
+                // 該当店舗のマーカーをハイライト（点滅効果）
+                setTimeout(() => {
+                    const marker = storeMarkers.find(m => m.storeId == storeId);
+                    if (marker) {
+                        // マーカーを3回点滅
+                        let blinks = 0;
+                        const blinkInterval = setInterval(() => {
+                            if (marker._icon) {
+                                marker._icon.style.filter = blinks % 2 === 0 ? 'brightness(1.5) saturate(1.5)' : '';
                             }
-                            
-                            // マーカーを3回点滅
-                            let blinks = 0;
-                            const blinkInterval = setInterval(() => {
+                            blinks++;
+                            if (blinks >= 6) {
+                                clearInterval(blinkInterval);
                                 if (marker._icon) {
-                                    marker._icon.style.filter = blinks % 2 === 0 ? 'brightness(1.5) saturate(1.5)' : '';
+                                    marker._icon.style.filter = '';
                                 }
-                                blinks++;
-                                if (blinks >= 6) {
-                                    clearInterval(blinkInterval);
-                                    if (marker._icon) {
-                                        marker._icon.style.filter = '';
-                                    }
-                                }
-                            }, 300);
-                        }
-                    }, 100);
-                }
-            }, 200);
+                            }
+                        }, 300);
+                    }
+                }, 100);
+            }
         }
+        
         // マイレビュー編集開始
         function editMyReview(reviewId) {
-            console.log('editMyReview called with ID:', reviewId);
-            
             const contentDiv = document.querySelector(`#review-${reviewId} .my-review-text`);
             const editForm = document.getElementById(`my-edit-form-${reviewId}`);
             const normalButtons = document.getElementById(`my-edit-buttons-normal-${reviewId}`);
             const editingButtons = document.getElementById(`my-edit-buttons-editing-${reviewId}`);
             
             if (contentDiv && editForm && normalButtons && editingButtons) {
-                // 元のテキストを取得
-                const originalText = contentDiv.textContent || contentDiv.innerText || '';
-                
-                // コンテンツ表示を隠す
+                // コンテンツ表示を隠して編集フォームを表示
                 contentDiv.style.display = 'none';
-                
-                // 編集フォームを生成
-                editForm.innerHTML = `
-                    <div style="margin: 16px 0; padding: 20px; background: rgba(255, 255, 255, 0.9); border-radius: 12px; border: 2px solid rgba(66, 153, 225, 0.3); box-shadow: 0 4px 16px rgba(0,0,0,0.1);">
-                        <textarea id="my-edit-textarea-${reviewId}" 
-                                  style="width: 100%; min-height: 120px; padding: 16px; border: 2px solid rgba(66, 153, 225, 0.3); border-radius: 8px; font-size: 14px; line-height: 1.6; resize: vertical; font-family: system-ui, sans-serif; background: white; box-sizing: border-box;"
-                                  placeholder="あなたの感想を編集してください...">${originalText.trim()}</textarea>
-                    </div>
-                `;
                 editForm.style.display = 'block';
                 
-                // 編集ボタンを隠す
+                // ボタンを切り替え（編集ボタン → 削除・キャンセル・保存ボタン）
                 normalButtons.style.display = 'none';
-                
-                // 編集中ボタンを表示
-                editingButtons.innerHTML = `
-                    <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px;">
-                        <button onclick="deleteMyReviewWithConfirm('${reviewId}')" 
-                                style="padding: 6px 16px; background: #e53e3e; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 500;">削除</button>
-                        <button onclick="cancelEditMyReview('${reviewId}')" 
-                                style="padding: 6px 16px; background: #718096; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 500;">キャンセル</button>
-                        <button onclick="saveEditMyReview('${reviewId}')" 
-                                style="padding: 6px 16px; background: #38a169; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 500;">保存</button>
-                    </div>
-                `;
-                editingButtons.style.display = 'block';
+                editingButtons.style.display = 'flex';
+                editingButtons.style.flexDirection = 'row';
+                editingButtons.style.alignItems = 'center';
+                editingButtons.style.justifyContent = 'flex-end';
+                editingButtons.style.gap = '8px';
                 
                 // テキストエリアにフォーカス
-                setTimeout(() => {
-                    const textarea = document.getElementById(`my-edit-textarea-${reviewId}`);
-                    if (textarea) {
-                        textarea.focus();
-                        textarea.setSelectionRange(textarea.value.length, textarea.value.length);
-                    }
-                }, 100);
-            } else {
-                console.error('Some elements not found for reviewId:', reviewId);
+                const textarea = document.getElementById(`my-edit-textarea-${reviewId}`);
+                if (textarea) {
+                    textarea.focus();
+                    textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+                }
             }
         }
         
@@ -14389,10 +12542,9 @@
                 contentDiv.style.display = 'block';
                 editForm.style.display = 'none';
                 
-                // 編集ボタンを戻して編集用ボタンを削除
+                // ボタンを元に戻す（削除・キャンセル・保存ボタン → 編集ボタン）
                 normalButtons.style.display = 'flex';
                 editingButtons.style.display = 'none';
-                editingButtons.innerHTML = '';
             }
         }
         
@@ -14509,320 +12661,7 @@
             }
         `;
         document.head.appendChild(myReviewStyles);
-        
-        // ログアウト機能
-        async function logout() {
-            const confirmLogout = confirm('ログアウトしますか？');
-            if (!confirmLogout) {
-                return;
-            }
-            
-            try {
-                // Supabase認証からサインアウト
-                const { error } = await supabaseClient.auth.signOut();
-                if (error) {
-                    console.warn('⚠️ Supabaseサインアウトエラー:', error);
-                }
-                
-                // PINコード認証情報をクリア
-                localStorage.removeItem('pinAuth');
-                
-                // 現在のユーザー情報をクリア
-                setCurrentUser(null);
-                
-                // ユーザー別の保存データをクリア
-                userVisitHistory.clear();
-                
-                // サイドメニューを閉じる
-                closeSideMenu();
-                
-                console.log('✅ ログアウト完了');
-                alert('ログアウトしました');
-                
-                // ページをリロードして初期状態に戻す
-                window.location.reload();
-                
-            } catch (error) {
-                console.error('❌ ログアウトエラー:', error);
-                alert('ログアウト中にエラーが発生しました');
-            }
-        }
-        // マイ統計機能
-        async function showStatistics() {
-            console.log('📊 マイ統計を表示');
-            
-            // サイドメニューを閉じる
-            closeSideMenu();
-            
-            // モーダルが既に存在する場合は削除
-            const existingModal = document.getElementById('statisticsModalOverlay');
-            if (existingModal) {
-                existingModal.remove();
-            }
-
-            // 統計データを計算（非同期）
-            const stats = await calculateUserStatistics();
-            
-            // モーダルHTML作成
-            const modalHTML = `
-                <div class="statistics-modal-overlay" id="statisticsModalOverlay">
-                    <div class="statistics-modal-content">
-                        <button class="close-statistics-btn" onclick="closeStatisticsModal()">×</button>
-                        
-                        <div class="statistics-header">
-                            <h2>📊 マイ統計</h2>
-                            <p class="statistics-subtitle">あなたのグルテンフリーライフの記録</p>
-                        </div>
-
-                        <div class="statistics-grid">
-                            <div class="stat-card">
-                                <span class="stat-icon">🏢</span>
-                                <div class="stat-number">${stats.visitedCount}</div>
-                                <div class="stat-label">行ったお店</div>
-                            </div>
-
-                            <div class="stat-card">
-                                <span class="stat-icon">⭐</span>
-                                <div class="stat-number">${stats.wantToGoCount}</div>
-                                <div class="stat-label">行きたいお店</div>
-                            </div>
-
-                            <div class="stat-card">
-                                <span class="stat-icon">📝</span>
-                                <div class="stat-number">${stats.reviewCount}</div>
-                                <div class="stat-label">レビュー数</div>
-                            </div>
-
-                            <div class="stat-card">
-                                <span class="stat-icon">📅</span>
-                                <div class="stat-number">${stats.daysSinceStart}</div>
-                                <div class="stat-label">日目</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            // body に追加
-            document.body.insertAdjacentHTML('beforeend', modalHTML);
-            
-            // モーダル表示
-            const modal = document.getElementById('statisticsModalOverlay');
-            setTimeout(() => {
-                modal.style.display = 'flex';
-                modal.style.opacity = '0';
-                modal.style.transform = 'scale(0.9)';
-                
-                requestAnimationFrame(() => {
-                    modal.style.transition = 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-                    modal.style.opacity = '1';
-                    modal.style.transform = 'scale(1)';
-                });
-            }, 10);
-
-            // オーバーレイクリックで閉じる
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    closeStatisticsModal();
-                }
-            });
-
-            // サイドメニューを閉じる
-            closeSideMenu();
-        }
-
-        // 統計データ計算
-        async function calculateUserStatistics() {
-            const currentUser = getCurrentUser();
-            
-            // 訪問履歴から統計を計算
-            let visitedCount = 0;
-            let wantToGoCount = 0;
-            
-            if (userVisitHistory && userVisitHistory.size > 0) {
-                for (const [storeId, status] of userVisitHistory) {
-                    if (status === 'visited') visitedCount++;
-                    if (status === 'want_to_go') wantToGoCount++;
-                }
-            }
-
-            // レビュー数の計算（実際のレビューデータから取得）
-            let reviewCount = 0;
-            try {
-                const response = await fetch(`${AVATAR_WORKER_URL}/reviews?user_email=${encodeURIComponent(currentUser)}`);
-                if (response.ok) {
-                    const result = await response.json();
-                    reviewCount = (result.reviews || []).filter(r => !r.is_deleted).length;
-                }
-            } catch (error) {
-                console.warn('レビュー数の取得に失敗しました:', error);
-                reviewCount = 0;
-            }
-
-            // 利用開始からの日数計算
-            let daysSinceStart = 1;
-            if (currentUser && currentUser.created_at) {
-                const startDate = new Date(currentUser.created_at);
-                const today = new Date();
-                const diffTime = Math.abs(today - startDate);
-                daysSinceStart = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            }
-
-            return {
-                visitedCount,
-                wantToGoCount,
-                reviewCount,
-                daysSinceStart
-            };
-        }
-
-        // 統計モーダルを閉じる
-        function closeStatisticsModal() {
-            const modal = document.getElementById('statisticsModalOverlay');
-            if (modal) {
-                modal.style.transition = 'all 0.25s ease';
-                modal.style.opacity = '0';
-                modal.style.transform = 'scale(0.9)';
-                
-                setTimeout(() => {
-                    modal.remove();
-                }, 250);
-            }
-        }
-
-        // ========== 画像拡大表示機能 ==========
-        
-        // 画像モーダルを表示
-        function showImageModal(imageSrc, altText = '') {
-            // 既存モーダル削除
-            const existingModal = document.getElementById('imageModal');
-            if (existingModal) {
-                existingModal.remove();
-            }
-            
-            // モーダル作成
-            const modal = document.createElement('div');
-            modal.id = 'imageModal';
-            modal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0, 0, 0, 0.9);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                z-index: 10001;
-                cursor: pointer;
-            `;
-            
-            // ×ボタン
-            const closeBtn = document.createElement('span');
-            closeBtn.innerHTML = '&times;';
-            closeBtn.style.cssText = `
-                position: absolute;
-                top: 20px;
-                right: 30px;
-                color: white;
-                font-size: 40px;
-                font-weight: bold;
-                cursor: pointer;
-                z-index: 10002;
-            `;
-            closeBtn.onclick = () => closeImageModal();
-            
-            // 画像
-            const modalImg = document.createElement('img');
-            modalImg.src = imageSrc;
-            modalImg.alt = altText || '店舗画像';
-            modalImg.style.cssText = `
-                max-width: 90vw;
-                max-height: 90vh;
-                object-fit: contain;
-                border-radius: 8px;
-                cursor: default;
-            `;
-            
-            // 組み立て
-            modal.appendChild(closeBtn);
-            modal.appendChild(modalImg);
-            document.body.appendChild(modal);
-            
-            // 背景クリックで閉じる（画像自体はクリックしても閉じない）
-            modal.onclick = (e) => {
-                if (e.target === modal || e.target === closeBtn) {
-                    closeImageModal();
-                }
-            };
-            
-            // ESCキーで閉じる
-            const escHandler = (e) => {
-                if (e.key === 'Escape') {
-                    closeImageModal();
-                    document.removeEventListener('keydown', escHandler);
-                }
-            };
-            document.addEventListener('keydown', escHandler);
-        }
-        
-        // 画像モーダルを閉じる
-        function closeImageModal() {
-            const modal = document.getElementById('imageModal');
-            if (modal) {
-                modal.remove();
-            }
-        }
-        
-        // 画像クリックイベント設定（デバッグ版）
-        document.addEventListener('click', function(e) {
-            console.log('🖱️ クリックイベント検出:', e.target.tagName, e.target);
-            
-            // 画像がクリックされた場合のみ処理
-            if (e.target.tagName === 'IMG' && e.target.src) {
-                console.log('📸 画像クリック検出:', e.target.src);
-                console.log('画像のクラス:', e.target.className);
-                console.log('親要素:', e.target.parentElement);
-                
-                // 店舗画像かどうか確認（カルーセル内、ポップアップ内、店舗詳細内）
-                const isStoreImage = e.target.closest('.image-slide') || 
-                                   e.target.closest('.store-popup') ||
-                                   e.target.closest('.store-detail-modal') ||
-                                   e.target.closest('.store-detail-fullscreen') ||
-                                   e.target.closest('.store-detail-images') ||
-                                   e.target.classList.contains('store-image');
-                
-                console.log('🎯 店舗画像判定:', isStoreImage);
-                console.log('- .image-slide:', !!e.target.closest('.image-slide'));
-                console.log('- .store-popup:', !!e.target.closest('.store-popup'));
-                console.log('- .store-detail-modal:', !!e.target.closest('.store-detail-modal'));
-                console.log('- .store-detail-fullscreen:', !!e.target.closest('.store-detail-fullscreen'));
-                console.log('- .store-detail-images:', !!e.target.closest('.store-detail-images'));
-                console.log('- .store-image class:', e.target.classList.contains('store-image'));
-                
-                // 除外する画像（アバター、ロゴなど）
-                const isExcludedImage = e.target.classList.contains('avatar') ||
-                                       e.target.classList.contains('logo') ||
-                                       e.target.classList.contains('naco-character') ||
-                                       e.target.closest('.hamburger-menu') ||
-                                       e.target.closest('.login-modal');
-                
-                console.log('❌ 除外画像判定:', isExcludedImage);
-                
-                // 店舗画像で除外対象でなければ拡大表示
-                if (isStoreImage && !isExcludedImage) {
-                    console.log('✅ 画像拡大表示実行!');
-                    e.preventDefault();
-                    e.stopPropagation();
-                    showImageModal(e.target.src, e.target.alt);
-                } else {
-                    console.log('⚠️ 画像拡大表示スキップ - 店舗画像ではない or 除外対象');
-                }
-            }
-        });
-
     </script>
-
 
 </body>
 </html>
