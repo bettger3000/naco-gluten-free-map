@@ -1722,6 +1722,9 @@
         }
 
         .store-category {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             color: white;
             padding: var(--space-xs) var(--space-sm);
             border-radius: var(--radius-xl);
@@ -1729,6 +1732,8 @@
             font-weight: 500;
             white-space: nowrap;
             margin-left: var(--space-sm);
+            width: auto;
+            min-width: fit-content;
         }
 
         /* カテゴリ別色設定（マップマーカーと統一） */
@@ -4917,8 +4922,11 @@
         }
 
         .store-category, .store-address {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
             margin-right: var(--space-sm);
+            width: auto;
+            min-width: fit-content;
         }
 
         .review-card-body {
@@ -12729,7 +12737,7 @@
                                             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                                             flex-shrink: 0;
                                             height: fit-content;
-                                        " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.15)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
+                                        " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.15)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';" style="width: auto; min-width: fit-content; padding: 6px 12px;">
                                     ✏️ 編集
                                 </button>
                             </div>
@@ -13143,7 +13151,7 @@
                             flex-shrink: 0;
                             align-self: flex-start;
                             white-space: nowrap;
-                        " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 16px rgba(102, 126, 234, 0.4)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(102, 126, 234, 0.3)';">📍 MAP</button>
+                        " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 16px rgba(102, 126, 234, 0.4)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(102, 126, 234, 0.3)';" style="width: auto; min-width: fit-content; padding: 8px 16px;">📍 MAP</button>
                     </div>
                     
                     <!-- ユーザー情報ヘッダー -->
@@ -13224,7 +13232,7 @@
                                 transition: all 0.2s ease;
                                 box-shadow: 0 2px 8px rgba(66, 153, 225, 0.3);
                                 flex-shrink: 0;
-                            " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 16px rgba(66, 153, 225, 0.4)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(66, 153, 225, 0.3)';">✏️ 編集</button>
+                            " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 16px rgba(66, 153, 225, 0.4)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(66, 153, 225, 0.3)';" style="width: auto; min-width: fit-content; padding: 6px 12px;">✏️ 編集</button>
                         </div>
                         <div id="my-edit-buttons-editing-${review.id}" style="display: none;"></div>
                     </div>
