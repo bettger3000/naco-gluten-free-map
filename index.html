@@ -13994,81 +13994,164 @@
         
         // 画像モーダルを表示
         function showImageModal(imageSrc, altText = '') {
-            console.log('🖼️ showImageModal呼び出し:', imageSrc);
+            console.log('\n==== showImageModal 詳細ログ ====');
+            console.log('🖼️ 引数確認:');
+            console.log('  imageSrc:', imageSrc);
+            console.log('  imageSrcタイプ:', typeof imageSrc);
+            console.log('  imageSrc長さ:', imageSrc ? imageSrc.length : 'null');
+            console.log('  altText:', altText);
             
+            // DOM要素の存在確認
+            console.log('\n🔍 DOM要素検索:');
             const modal = document.getElementById('imageModal');
             const modalImg = document.querySelector('.image-modal-content');
             
-            console.log('モーダル要素:', modal);
-            console.log('画像要素:', modalImg);
+            console.log('  modal要素:', modal);
+            console.log('  modal存在:', !!modal);
+            console.log('  modalImg要素:', modalImg);
+            console.log('  modalImg存在:', !!modalImg);
+            
+            if (modal) {
+                console.log('  modal.id:', modal.id);
+                console.log('  modal.className:', modal.className);
+                console.log('  modal.style.display:', modal.style.display);
+                console.log('  modal computed display:', window.getComputedStyle(modal).display);
+            }
             
             if (!modal || !modalImg) {
-                console.error('❌ 画像モーダル要素が見つかりません');
+                console.error('\n❌ エラー: DOM要素が見つかりません');
+                console.error('  modalは存在:', !!modal);
+                console.error('  modalImgは存在:', !!modalImg);
+                
+                // HTML構造をチェック
+                const allModals = document.querySelectorAll('[id*="modal"], [class*="modal"]');
+                console.error('  モーダル関連要素数:', allModals.length);
+                allModals.forEach((el, i) => {
+                    console.error(`    ${i}: id="${el.id}" class="${el.className}"`);
+                });
                 return;
             }
             
             // 現在の表示状態を確認
             const isCurrentlyVisible = window.getComputedStyle(modal).display !== 'none';
-            console.log('モーダル現在表示中:', isCurrentlyVisible);
+            console.log('\n📊 表示状態チェック:');
+            console.log('  現在表示中:', isCurrentlyVisible);
+            console.log('  style.display:', modal.style.display);
+            console.log('  computed display:', window.getComputedStyle(modal).display);
             
             // 既に表示中の場合は閉じてから新しい画像を表示
             if (isCurrentlyVisible) {
-                console.log('⚠️ 既存モーダルを閉じて新しい画像を表示');
+                console.log('\n⚠️ 既存モーダルをリセット');
                 modal.style.display = 'none';
             }
             
+            console.log('\n📋 モーダル設定中...');
             modalImg.src = imageSrc;
             modalImg.alt = altText;
             modal.style.display = 'flex';
             
-            console.log('✅ モーダル表示設定完了');
+            // 設定後の状態確認
+            setTimeout(() => {
+                console.log('\n✅ 設定後状態確認:');
+                console.log('  modal.style.display:', modal.style.display);
+                console.log('  computed display:', window.getComputedStyle(modal).display);
+                console.log('  modalImg.src長さ:', modalImg.src.length);
+                console.log('  modalImg表示状態:', modalImg.style.display);
+            }, 100);
             
-            // 画像読み込み失敗時の対処
+            // 画像読み込みイベント
             modalImg.onerror = function() {
-                console.error('❌ 画像読み込み失敗:', imageSrc);
+                console.error('\n❌ 画像読み込み失敗:', imageSrc.substring(0, 100) + '...');
                 closeImageModal();
             };
             
             modalImg.onload = function() {
-                console.log('✅ 画像読み込み成功:', imageSrc);
+                console.log('\n✅ 画像読み込み成功:', imageSrc.substring(0, 100) + '...');
             };
+            
+            console.log('==== showImageModal 終了 ====\n');
         }
         
         // 画像モーダルを閉じる
         function closeImageModal() {
-            console.log('🔒 closeImageModal呼び出し');
+            console.log('\n==== closeImageModal 詳細ログ ====');
             const modal = document.getElementById('imageModal');
+            console.log('モーダル要素:', modal);
+            
             if (modal) {
+                console.log('閉じる前 display:', modal.style.display);
                 modal.style.display = 'none';
+                console.log('閉じた後 display:', modal.style.display);
+                
                 const modalImg = document.querySelector('.image-modal-content');
                 if (modalImg) {
                     modalImg.src = '';
                     modalImg.alt = '';
+                    console.log('画像リセット完了');
                 }
                 console.log('✅ モーダル閉じる完了');
             } else {
                 console.error('❌ モーダル要素が見つかりません（閉じる時）');
             }
+            console.log('==== closeImageModal 終了 ====\n');
         }
         
         // 画像クリックイベント設定（イベント委譲）
         document.addEventListener('click', function(e) {
+            console.log('=== クリック詳細分析 ===');
             console.log('クリックされた要素:', e.target);
+            console.log('要素のHTML:', e.target.outerHTML);
             console.log('クラス:', e.target.className);
             console.log('タグ:', e.target.tagName);
+            console.log('親要素:', e.target.parentElement);
+            console.log('src属性:', e.target.src);
+            console.log('data属性:', e.target.dataset);
+            
+            // DOM構造をログ出力
+            let element = e.target;
+            let depth = 0;
+            while (element && depth < 3) {
+                console.log(`親${depth}:`, element.tagName, element.className, element.id);
+                element = element.parentElement;
+                depth++;
+            }
+            
+            // モーダル要素の存在確認
+            const modal = document.getElementById('imageModal');
+            console.log('モーダル要素存在:', !!modal);
+            if (modal) {
+                console.log('モーダル表示状態:', modal.style.display);
+                console.log('モーダル計算スタイル:', window.getComputedStyle(modal).display);
+            }
             
             // 店舗画像（カルーセル内の画像）をクリック
             if (e.target.matches('.image-slide img')) {
-                console.log('✅ 画像クリック検出:', e.target.src);
+                console.log('✅ .image-slide img マッチ:', e.target.src);
                 e.preventDefault();
                 showImageModal(e.target.src, e.target.alt);
+                return;
             }
+            
             // より広範囲な画像要素も対象に
-            else if (e.target.tagName === 'IMG' && e.target.src) {
-                console.log('🔍 一般画像クリック検出:', e.target.src);
-                e.preventDefault();
-                showImageModal(e.target.src, e.target.alt);
+            if (e.target.tagName === 'IMG' && e.target.src) {
+                console.log('🔍 一般IMG要素マッチ:', e.target.src);
+                
+                // 特定の除外条件をチェック
+                const excludeClasses = ['avatar', 'profile', 'icon'];
+                const hasExcludeClass = excludeClasses.some(cls => 
+                    e.target.className.includes(cls)
+                );
+                
+                if (!hasExcludeClass) {
+                    console.log('📸 画像モーダル表示実行');
+                    e.preventDefault();
+                    showImageModal(e.target.src, e.target.alt);
+                } else {
+                    console.log('❌ 除外クラスのため無視:', e.target.className);
+                }
             }
+            
+            console.log('=== クリック分析終了 ===');
         });
         
         // モーダル閉じるイベント
