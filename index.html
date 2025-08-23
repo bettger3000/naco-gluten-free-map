@@ -12843,6 +12843,7 @@
         
         // 高機能レビューHTML生成（ニックネーム・アイコン・編集機能付き）
         async function createSimpleReviewHTML(review) {
+            console.log('🚀 createSimpleReviewHTML開始:', review.id, review.user_email);
             const currentUser = getCurrentUser();
             const isOwner = currentUser === review.user_email;
             const createdDate = new Date(review.created_at).toLocaleDateString('ja-JP');
@@ -12851,8 +12852,13 @@
                 : null;
             
             // ニックネーム・アバター取得（既存システム連携）
+            console.log('📝 ニックネーム取得開始:', review.user_email);
             const nickname = await getUserNickname(review.user_email);
+            console.log('📝 ニックネーム取得完了:', nickname);
+            
+            console.log('🖼️ アバター取得開始:', review.user_email);
             const avatarUrl = await getUserAvatarUrl(review.user_email);
+            console.log('🖼️ アバター取得完了:', avatarUrl);
             
             console.log('🔍 レビューアバター取得(1):', {
                 userEmail: review.user_email,
