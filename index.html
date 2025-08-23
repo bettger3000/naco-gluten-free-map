@@ -24,44 +24,44 @@
     
     <style>
         :root {
-            /* メインカラー：上品なローズベージュ */
-            --primary: #c4a484;
-            --primary-dark: #a89073;
-            --primary-light: #d8bc9e;
-            --primary-alpha: rgba(196, 164, 132, 0.1);
-            --primary-hover: #b59577;
+            /* メインカラー：上品で親しみやすいピンク */
+            --primary: #f7a4b8;
+            --primary-dark: #e88da5;
+            --primary-light: #ffc0d0;
+            --primary-alpha: rgba(247, 164, 184, 0.1);
+            --primary-hover: #f196ac;
             
-            /* アクセントカラー：温かみのあるコーラルピンク */
-            --accent: #e8b4b8;
-            --accent-light: #f2d3d6;
+            /* アクセントカラー：ソフトなコーラル */
+            --accent: #ffb3ba;
+            --accent-light: #ffd6d9;
             
-            /* セカンダリカラー：落ち着いたティール */
-            --secondary: #7ba59b;
-            --secondary-light: #a5c4c0;
+            /* セカンダリカラー：爽やかなミントグリーン */
+            --secondary: #98d8c8;
+            --secondary-light: #b8e6db;
             
             /* 機能カラー */
             --success: #8da96e;
-            --warning: #d4a574;
-            --error: #d17a6b;
+            --warning: #f5b88c;
+            --error: #e88b8b;
             
-            /* 背景カラー：温かみのあるニュートラル */
-            --bg-primary: #faf9f7;
-            --bg-secondary: #f5f3f0;
-            --bg-glass: rgba(250, 249, 247, 0.95);
-            --bg-light: #ede9e5;
+            /* 背景カラー：優しいピンクがかったホワイト */
+            --bg-primary: #fefeff;
+            --bg-secondary: #fdf8fa;
+            --bg-glass: rgba(254, 254, 255, 0.95);
+            --bg-light: #fff5f7;
             
-            /* テキストカラー：より温かみのある色調 */
-            --text-primary: #2d2a26;
-            --text-secondary: #6b6157;
-            --text-light: #9b9084;
+            /* テキストカラー */
+            --text-primary: #2d2a2a;
+            --text-secondary: #64748b;
+            --text-light: #94a3b8;
             
-            /* ボーダーカラー：柔らかいベージュトーン */
-            --border: #e6ddd4;
-            --border-light: #f0e8df;
+            /* ボーダーカラー：ソフトなピンクグレー */
+            --border: #f0e8ec;
+            --border-light: #f8f2f5;
             
-            /* グラデーション：品のある色合い */
-            --gradient-primary: linear-gradient(135deg, #c4a484 0%, #e8b4b8 50%, #7ba59b 100%);
-            --gradient-bg: linear-gradient(135deg, #faf9f7 0%, #f5f3f0 50%, #ede9e5 100%);
+            /* グラデーション：華やかで品のある色合い */
+            --gradient-primary: linear-gradient(135deg, #f7a4b8 0%, #ffb3ba 50%, #98d8c8 100%);
+            --gradient-bg: linear-gradient(135deg, #fefeff 0%, #fdf8fa 50%, #fff5f7 100%);
             
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -169,20 +169,20 @@
             z-index: 1000;
             min-width: 56px;
             height: 56px;
-            box-shadow: 0 4px 20px rgba(196, 164, 132, 0.15);
+            box-shadow: 0 4px 20px rgba(247, 164, 184, 0.15);
             transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .hamburger-btn:hover {
             background: linear-gradient(135deg, #ffffff 0%, #fff8fc 100%);
             border-color: var(--primary);
-            box-shadow: 0 8px 30px rgba(196, 164, 132, 0.25);
+            box-shadow: 0 8px 30px rgba(247, 164, 184, 0.25);
             transform: translateY(-2px) scale(1.05);
         }
 
         .hamburger-btn:active {
             transform: translateY(-1px) scale(1.02);
-            box-shadow: 0 4px 15px rgba(196, 164, 132, 0.3);
+            box-shadow: 0 4px 15px rgba(247, 164, 184, 0.3);
         }
 
         .hamburger-icon {
@@ -195,7 +195,7 @@
         .hamburger-btn:hover .hamburger-icon {
             color: var(--primary);
             transform: rotate(90deg) scale(1.1);
-            filter: drop-shadow(0 2px 4px rgba(196, 164, 132, 0.3));
+            filter: drop-shadow(0 2px 4px rgba(247, 164, 184, 0.3));
         }
 
         .hamburger-label {
@@ -621,7 +621,7 @@
 
         .upload-area:hover {
             border-color: var(--primary);
-            background: rgba(196, 164, 132, 0.02);
+            background: rgba(247, 164, 184, 0.02);
         }
 
         .upload-area i {
@@ -2619,7 +2619,7 @@
             transition: all 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
             border-bottom: 0;
             margin: 0;
-            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.1);
+            box-shadow: 0 4px 12px rgba(247, 164, 184, 0.1);
             border-radius: 0 0 12px 12px;
             transform: translateY(-10px);
             opacity: 0;
@@ -2660,7 +2660,7 @@
         .panel-tab.active {
             color: white;
             background: var(--gradient-primary);
-            box-shadow: 0 2px 8px rgba(196, 164, 132, 0.2);
+            box-shadow: 0 2px 8px rgba(247, 164, 184, 0.2);
             transform: translateY(-1px);
         }
         
@@ -2689,7 +2689,7 @@
         .mobile-search-filter.show {
             max-height: 200px;
             padding: var(--space-lg) var(--space-lg) var(--space-md);
-            border-bottom: 1px solid rgba(196, 164, 132, 0.2);
+            border-bottom: 1px solid rgba(247, 164, 184, 0.2);
             transform: translateY(0);
             opacity: 1;
         }
@@ -2714,7 +2714,7 @@
         .mobile-search-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 4px 16px rgba(196, 164, 132, 0.15);
+            box-shadow: 0 4px 16px rgba(247, 164, 184, 0.15);
             transform: scale(1.02);
         }
         
@@ -2727,14 +2727,14 @@
         .mobile-chip {
             padding: var(--space-xs) var(--space-sm);
             background: white;
-            border: 1px solid rgba(196, 164, 132, 0.3);
+            border: 1px solid rgba(247, 164, 184, 0.3);
             border-radius: 15px;
             font-size: 0.75rem;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
             color: var(--text-secondary);
             white-space: nowrap;
-            box-shadow: 0 1px 4px rgba(196, 164, 132, 0.1);
+            box-shadow: 0 1px 4px rgba(247, 164, 184, 0.1);
         }
         
         .mobile-chip:hover {
@@ -2750,7 +2750,7 @@
             color: white;
             border-color: var(--primary);
             transform: translateY(-1px);
-            box-shadow: 0 3px 12px rgba(196, 164, 132, 0.25);
+            box-shadow: 0 3px 12px rgba(247, 164, 184, 0.25);
         }
 
         /* モバイル版検索候補 */
@@ -3374,7 +3374,7 @@
             opacity: 1;
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.25);
+            box-shadow: 0 4px 12px rgba(247, 164, 184, 0.25);
             animation: pulse 2s infinite;
         }
         
@@ -3393,13 +3393,13 @@
             top: calc(var(--space-lg) * 3);
             left: 50%;
             transform: translateX(-50%);
-            background: linear-gradient(135deg, rgba(196, 164, 132, 0.95) 0%, rgba(168, 144, 115, 0.9) 100%);
+            background: linear-gradient(135deg, rgba(247, 164, 184, 0.95) 0%, rgba(232, 141, 165, 0.9) 100%);
             color: white;
             padding: 8px 16px;
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 500;
-            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.25);
+            box-shadow: 0 4px 12px rgba(247, 164, 184, 0.25);
             z-index: 1000;
             animation: slideInFromTop 0.3s ease-out;
             pointer-events: none;
@@ -3827,7 +3827,7 @@
 
         .btn-add-review:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.25);
+            box-shadow: 0 4px 12px rgba(247, 164, 184, 0.25);
         }
 
         .review-form {
@@ -3911,7 +3911,7 @@
 
         .btn-submit:hover:not(:disabled) {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.25);
+            box-shadow: 0 4px 12px rgba(247, 164, 184, 0.25);
         }
 
         .btn-submit:disabled {
@@ -12151,8 +12151,8 @@
                                     background-image: url('${currentAvatarUrl}');
                                     background-size: cover;
                                     background-position: center;
-                                    box-shadow: 0 8px 32px rgba(196, 164, 132, 0.25);
-                                    border: 4px solid rgba(196, 164, 132, 0.2);
+                                    box-shadow: 0 8px 32px rgba(247, 164, 184, 0.25);
+                                    border: 4px solid rgba(247, 164, 184, 0.2);
                                 " id="avatarPreview"></div>
                                 <p style="color: #64748b; font-size: 0.9rem; margin: 0;">アバター画像</p>
                             </div>
@@ -12194,7 +12194,7 @@
                                     padding: 16px;
                                     background: var(--primary-alpha);
                                     border-radius: 12px;
-                                    border: 1px solid rgba(196, 164, 132, 0.1);
+                                    border: 1px solid rgba(247, 164, 184, 0.1);
                                 ">
                                     <input type="checkbox" id="statsPublicCheckbox" ${userProfile?.statsPublic !== false ? 'checked' : ''} style="
                                         width: 18px;
@@ -12226,7 +12226,7 @@
                                 <!-- カスタム画像アップロード -->
                                 <div style="
                                     background: var(--bg-light);
-                                    border: 2px dashed rgba(196, 164, 132, 0.3);
+                                    border: 2px dashed rgba(247, 164, 184, 0.3);
                                     border-radius: 12px;
                                     padding: 20px;
                                     text-align: center;
@@ -12280,7 +12280,7 @@
                                     padding: 16px;
                                     background: rgba(248, 250, 252, 0.8);
                                     border-radius: 12px;
-                                    border: 1px solid rgba(196, 164, 132, 0.1);
+                                    border: 1px solid rgba(247, 164, 184, 0.1);
                                 " id="avatarGrid"></div>
                             </div>
                             
@@ -12311,7 +12311,7 @@
                                     font-weight: 600;
                                     cursor: pointer;
                                     transition: all 0.2s ease;
-                                    box-shadow: 0 4px 16px rgba(196, 164, 132, 0.25);
+                                    box-shadow: 0 4px 16px rgba(247, 164, 184, 0.25);
                                 " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(255, 107, 157, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 16px rgba(255, 107, 157, 0.3)'">💾 保存</button>
                             </div>
                         </div>
@@ -12590,7 +12590,7 @@
         function resetUploadSelection() {
             const uploadSection = document.getElementById('uploadSection');
             if (uploadSection) {
-                uploadSection.style.borderColor = 'rgba(196, 164, 132, 0.3)';
+                uploadSection.style.borderColor = 'rgba(247, 164, 184, 0.3)';
                 uploadSection.style.background = 'var(--bg-light)';
             }
         }
@@ -12733,7 +12733,7 @@
                             overflow-y: auto;
                             box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2), 0 8px 24px rgba(0, 0, 0, 0.1);
                             position: relative;
-                            border: 1px solid rgba(196, 164, 132, 0.1);
+                            border: 1px solid rgba(247, 164, 184, 0.1);
                         ">
                             <!-- ヘッダー -->
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
@@ -12775,8 +12775,8 @@
                                     background-position: center;
                                     background-repeat: no-repeat;
                                     background-color: #f8f9fa;
-                                    border: 4px solid rgba(196, 164, 132, 0.2);
-                                    box-shadow: 0 8px 32px rgba(196, 164, 132, 0.2);
+                                    border: 4px solid rgba(247, 164, 184, 0.2);
+                                    box-shadow: 0 8px 32px rgba(247, 164, 184, 0.2);
                                 "></div>
 
                                 <!-- ニックネーム -->
@@ -12797,7 +12797,7 @@
                                         padding: 16px;
                                         background: var(--primary-alpha);
                                         border-radius: 12px;
-                                        border-left: 4px solid rgba(196, 164, 132, 0.4);
+                                        border-left: 4px solid rgba(247, 164, 184, 0.4);
                                     ">${userProfile.bio}</p>
                                 ` : ''}
                             </div>
@@ -12830,7 +12830,7 @@
                                     font-weight: 600;
                                     cursor: pointer;
                                     transition: all 0.2s ease;
-                                    box-shadow: 0 4px 16px rgba(196, 164, 132, 0.25);
+                                    box-shadow: 0 4px 16px rgba(247, 164, 184, 0.25);
                                 " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
                                     📊 統計を見る
                                 </button>
@@ -12905,7 +12905,7 @@
                             overflow-y: auto;
                             box-shadow: 0 24px 64px rgba(0,0,0,0.2);
                             position: relative;
-                            border: 1px solid rgba(196, 164, 132, 0.1);
+                            border: 1px solid rgba(247, 164, 184, 0.1);
                         ">
                             <!-- ヘッダー -->
                             <div style="
@@ -12914,7 +12914,7 @@
                                 display: flex;
                                 justify-content: space-between;
                                 align-items: center;
-                                background: linear-gradient(135deg, var(--primary-alpha) 0%, rgba(123, 165, 155, 0.05) 100%);
+                                background: linear-gradient(135deg, var(--primary-alpha) 0%, rgba(152, 216, 200, 0.05) 100%);
                                 border-radius: 20px 20px 0 0;
                             ">
                                 <h2 style="
@@ -13032,8 +13032,8 @@
 
                     <!-- レビュー内容 -->
                     <div style="
-                        background: rgba(196, 164, 132, 0.03);
-                        border-left: 4px solid rgba(196, 164, 132, 0.4);
+                        background: rgba(247, 164, 184, 0.03);
+                        border-left: 4px solid rgba(247, 164, 184, 0.4);
                         padding: 16px 20px;
                         border-radius: 0 12px 12px 0;
                         margin: 16px 0;
@@ -13163,7 +13163,7 @@
                             overflow-y: auto;
                             box-shadow: 0 24px 64px rgba(0,0,0,0.2);
                             position: relative;
-                            border: 1px solid rgba(196, 164, 132, 0.1);
+                            border: 1px solid rgba(247, 164, 184, 0.1);
                         ">
                             <!-- ヘッダー -->
                             <div style="
@@ -13172,7 +13172,7 @@
                                 display: flex;
                                 justify-content: space-between;
                                 align-items: center;
-                                background: linear-gradient(135deg, var(--primary-alpha) 0%, rgba(123, 165, 155, 0.05) 100%);
+                                background: linear-gradient(135deg, var(--primary-alpha) 0%, rgba(152, 216, 200, 0.05) 100%);
                                 border-radius: 20px 20px 0 0;
                             ">
                                 <h2 style="
@@ -13226,7 +13226,7 @@
                                         padding: 20px;
                                         border-radius: 16px;
                                         text-align: center;
-                                        box-shadow: 0 4px 16px rgba(196, 164, 132, 0.25);
+                                        box-shadow: 0 4px 16px rgba(247, 164, 184, 0.25);
                                     ">
                                         <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px;">${visitedStoresCount}</div>
                                         <div style="font-size: 14px; opacity: 0.9;">行ったお店</div>
@@ -13387,7 +13387,7 @@
                             overflow-y: auto;
                             box-shadow: 0 24px 64px rgba(0,0,0,0.2);
                             position: relative;
-                            border: 1px solid rgba(196, 164, 132, 0.1);
+                            border: 1px solid rgba(247, 164, 184, 0.1);
                         ">
                             <!-- ヘッダー -->
                             <div style="
@@ -13396,7 +13396,7 @@
                                 display: flex;
                                 justify-content: space-between;
                                 align-items: center;
-                                background: linear-gradient(135deg, var(--primary-alpha) 0%, rgba(123, 165, 155, 0.05) 100%);
+                                background: linear-gradient(135deg, var(--primary-alpha) 0%, rgba(152, 216, 200, 0.05) 100%);
                                 border-radius: 20px 20px 0 0;
                             ">
                                 <h2 style="
@@ -13450,7 +13450,7 @@
                                         padding: 20px;
                                         border-radius: 16px;
                                         text-align: center;
-                                        box-shadow: 0 4px 16px rgba(196, 164, 132, 0.25);
+                                        box-shadow: 0 4px 16px rgba(247, 164, 184, 0.25);
                                     ">
                                         <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px;">${visitedStoresCount}</div>
                                         <div style="font-size: 14px; opacity: 0.9;">行ったお店</div>
