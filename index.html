@@ -13992,22 +13992,17 @@
 
         // ========== 画像拡大表示機能 ==========
         
-        // 画像モーダルを表示（DOM再構築耐性版）
+        // 画像モーダルを表示
         function showImageModal(imageSrc, altText = '') {
-            console.log('\n==== showImageModal 安全版実行 ====');
-            
-            // 既存モーダルを削除
-            let existingModal = document.getElementById('imageModal');
+            // 既存モーダル削除
+            const existingModal = document.getElementById('imageModal');
             if (existingModal) {
-                console.log('🗑️ 既存モーダルを削除');
                 existingModal.remove();
             }
             
-            // 新しいモーダルを動的生成
-            console.log('🔄 新しいモーダルを動的生成');
+            // モーダル作成
             const modal = document.createElement('div');
             modal.id = 'imageModal';
-            modal.className = 'image-modal';
             modal.style.cssText = `
                 position: fixed;
                 top: 0;
@@ -14015,17 +14010,15 @@
                 width: 100%;
                 height: 100%;
                 background-color: rgba(0, 0, 0, 0.9);
-                z-index: 9999;
                 display: flex;
-                align-items: center;
                 justify-content: center;
-                padding: 20px;
-                box-sizing: border-box;
+                align-items: center;
+                z-index: 9999;
+                cursor: pointer;
             `;
             
-            // 閉じるボタン
+            // ×ボタン
             const closeBtn = document.createElement('span');
-            closeBtn.className = 'image-modal-close';
             closeBtn.innerHTML = '&times;';
             closeBtn.style.cssText = `
                 position: absolute;
@@ -14036,16 +14029,11 @@
                 font-weight: bold;
                 cursor: pointer;
                 z-index: 10000;
-                user-select: none;
-                transition: opacity 0.2s ease;
             `;
-            closeBtn.onmouseover = () => closeBtn.style.opacity = '0.7';
-            closeBtn.onmouseout = () => closeBtn.style.opacity = '1';
             closeBtn.onclick = () => closeImageModal();
             
-            // 画像要素
+            // 画像
             const modalImg = document.createElement('img');
-            modalImg.className = 'image-modal-content';
             modalImg.src = imageSrc;
             modalImg.alt = altText || '店舗画像';
             modalImg.style.cssText = `
@@ -14053,21 +14041,17 @@
                 max-height: 90vh;
                 object-fit: contain;
                 border-radius: 8px;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                cursor: default;
             `;
             
-            // 要素を結合
+            // 組み立て
             modal.appendChild(closeBtn);
             modal.appendChild(modalImg);
-            
-            // bodyに直接追加（DOM再構築耐性）
             document.body.appendChild(modal);
             
-            console.log('✅ 動的モーダル作成完了');
-            
-            // 背景クリックで閉じる
+            // 背景クリックで閉じる（画像自体はクリックしても閉じない）
             modal.onclick = (e) => {
-                if (e.target === modal) {
+                if (e.target === modal || e.target === closeBtn) {
                     closeImageModal();
                 }
             };
@@ -14080,129 +14064,43 @@
                 }
             };
             document.addEventListener('keydown', escHandler);
-            
-            // 画像読み込みイベント
-            modalImg.onerror = () => {
-                console.error('❌ 画像読み込み失敗');
-                closeImageModal();
-            };
-            
-            modalImg.onload = () => {
-                console.log('✅ 画像読み込み成功');
-            };
-            
-            console.log('==== 動的モーダル表示完了 ====\n');
         }
         
-        // 画像モーダルを閉じる（安全版）
+        // 画像モーダルを閉じる
         function closeImageModal() {
-            console.log('\n==== closeImageModal 安全版実行 ====');
             const modal = document.getElementById('imageModal');
-            
             if (modal) {
-                console.log('🗑️ モーダルを完全削除');
                 modal.remove();
-                console.log('✅ モーダル削除完了');
-            } else {
-                console.warn('⚠️ モーダル要素が既に存在しません');
             }
-            
-            console.log('==== closeImageModal 完了 ====\n');
         }
         
-        // 画像クリックイベント設定（イベント委譲）
+        // 画像クリックイベント設定
         document.addEventListener('click', function(e) {
-            console.log('=== クリック詳細分析 ===');
-            console.log('クリックされた要素:', e.target);
-            console.log('要素のHTML:', e.target.outerHTML);
-            console.log('クラス:', e.target.className);
-            console.log('タグ:', e.target.tagName);
-            console.log('親要素:', e.target.parentElement);
-            console.log('src属性:', e.target.src);
-            console.log('data属性:', e.target.dataset);
-            
-            // DOM構造をログ出力
-            let element = e.target;
-            let depth = 0;
-            while (element && depth < 3) {
-                console.log(`親${depth}:`, element.tagName, element.className, element.id);
-                element = element.parentElement;
-                depth++;
-            }
-            
-            // モーダル要素の存在確認
-            const modal = document.getElementById('imageModal');
-            console.log('モーダル要素存在:', !!modal);
-            if (modal) {
-                console.log('モーダル表示状態:', modal.style.display);
-                console.log('モーダル計算スタイル:', window.getComputedStyle(modal).display);
-            }
-            
-            // 店舗画像（カルーセル内の画像）をクリック
-            if (e.target.matches('.image-slide img')) {
-                console.log('✅ .image-slide img マッチ:', e.target.src);
-                e.preventDefault();
-                showImageModal(e.target.src, e.target.alt);
-                return;
-            }
-            
-            // より広範囲な画像要素も対象に
+            // 画像がクリックされた場合のみ処理
             if (e.target.tagName === 'IMG' && e.target.src) {
-                console.log('🔍 一般IMG要素マッチ:', e.target.src);
+                // 店舗画像かどうか確認（カルーセル内やポップアップ内）
+                const isStoreImage = e.target.closest('.image-slide') || 
+                                   e.target.closest('.store-popup') ||
+                                   e.target.classList.contains('store-image');
                 
-                // 特定の除外条件をチェック
-                const excludeClasses = ['avatar', 'profile', 'icon'];
-                const hasExcludeClass = excludeClasses.some(cls => 
-                    e.target.className.includes(cls)
-                );
+                // 除外する画像（アバター、ロゴなど）
+                const isExcludedImage = e.target.classList.contains('avatar') ||
+                                       e.target.classList.contains('logo') ||
+                                       e.target.classList.contains('naco-character') ||
+                                       e.target.closest('.hamburger-menu') ||
+                                       e.target.closest('.login-modal');
                 
-                if (!hasExcludeClass) {
-                    console.log('📸 画像モーダル表示実行');
+                // 店舗画像で除外対象でなければ拡大表示
+                if (isStoreImage && !isExcludedImage) {
                     e.preventDefault();
+                    e.stopPropagation();
                     showImageModal(e.target.src, e.target.alt);
-                } else {
-                    console.log('❌ 除外クラスのため無視:', e.target.className);
-                }
-            }
-            
-            console.log('=== クリック分析終了 ===');
-        });
-        
-        // モーダル閉じるイベント（既に関数内で処理されているためコメントアウト）
-        /*
-        document.addEventListener('click', function(e) {
-            const modal = document.getElementById('imageModal');
-            
-            // ×ボタンクリック
-            if (e.target.matches('.image-modal-close')) {
-                closeImageModal();
-            }
-            // 背景クリック（モーダル自体をクリック）
-            else if (e.target === modal) {
-                closeImageModal();
-            }
-        });
-        */
-        
-        // ESCキーでモーダルを閉じる（既に関数内で処理されているためコメントアウト）
-        /*
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                const modal = document.getElementById('imageModal');
-                if (modal && modal.style.display === 'flex') {
-                    closeImageModal();
                 }
             }
         });
-        */
 
     </script>
 
-    <!-- 画像拡大表示モーダル -->
-    <div id="imageModal" class="image-modal" style="display: none;">
-        <span class="image-modal-close">&times;</span>
-        <img class="image-modal-content" src="" alt="">
-    </div>
 
 </body>
 </html>
