@@ -13635,8 +13635,16 @@
         
         // MAPボタンから地図画面へ移動（マイレビューモーダルを閉じて）
         function openMapToStore(storeId) {
+            console.log('🗺️ openMapToStore called with storeId:', storeId, typeof storeId);
+            console.log('🗺️ stores array length:', stores.length);
+            console.log('🗺️ stores sample IDs:', stores.slice(0, 3).map(s => ({ id: s.id, type: typeof s.id, name: s.name })));
+            
             const store = stores.find(s => s.id == storeId);
-            if (!store) return;
+            console.log('🗺️ Found store:', store ? store.name : 'NOT FOUND');
+            if (!store) {
+                console.error('🚨 Store not found for ID:', storeId);
+                return;
+            }
             
             // マイレビューモーダルを閉じる
             closeMyReviews();
@@ -13657,11 +13665,21 @@
                     
                     // 該当店舗のマーカーをハイライト（点滅効果）
                     setTimeout(() => {
+                        console.log('🎯 Looking for marker with storeId:', storeId);
+                        console.log('🎯 markers array length:', markers.length);
+                        console.log('🎯 markers sample:', markers.slice(0, 3).map(m => ({ 
+                            storeId: m.options?.storeId, 
+                            storeIdType: typeof m.options?.storeId,
+                            hasOptions: !!m.options 
+                        })));
+                        
                         // markers配列から該当店舗のマーカーを探す
                         const marker = markers.find(m => {
                             // マーカーに紐付けられた店舗情報を確認
                             return m.options && m.options.storeId == storeId;
                         });
+                        
+                        console.log('🎯 Found marker:', !!marker);
                         
                         if (marker) {
                             if (isDesktop()) {
