@@ -24,48 +24,48 @@
     
     <style>
         :root {
-            /* メインカラー：洗練されたモーヴピンク */
-            --primary: #d4a5a5;
-            --primary-dark: #c48e8e;
-            --primary-light: #e8c4c4;
-            --primary-alpha: rgba(212, 165, 165, 0.1);
-            --primary-hover: #cc9999;
+            /* メインカラー：明るく親しみやすいピンクコーラル */
+            --primary: #ff8fab;
+            --primary-dark: #ff6b91;
+            --primary-light: #ffb3c6;
+            --primary-alpha: rgba(255, 143, 171, 0.1);
+            --primary-hover: #ff7a9f;
             
-            /* アクセントカラー：温かみのあるテラコッタ */
-            --accent: #cc8e78;
-            --accent-light: #e6b5a6;
+            /* アクセントカラー：フレッシュなミントグリーン */
+            --accent: #84dcc6;
+            --accent-light: #a5e5d5;
             
-            /* セカンダリカラー：落ち着いたセージグリーン */
-            --secondary: #9cad88;
-            --secondary-light: #b8c9a8;
+            /* セカンダリカラー：明るいサニーイエロー */
+            --secondary: #ffd166;
+            --secondary-light: #ffe499;
             
-            /* 追加カラー：洗練されたラベンダーグレー */
-            --tertiary: #a8a5c1;
-            --tertiary-light: #c8c5d8;
+            /* 追加カラー：やわらかいラベンダー */
+            --tertiary: #c8b6ff;
+            --tertiary-light: #ddd3ff;
             
             /* 機能カラー */
-            --success: #8da96e;
-            --warning: #dda15e;
-            --error: #bc6c6c;
+            --success: #95d5b2;
+            --warning: #ffb347;
+            --error: #ff6b6b;
             
-            /* 背景カラー：ニュートラルで温かみのあるトーン */
-            --bg-primary: #fdfcfb;
-            --bg-secondary: #f9f6f4;
-            --bg-glass: rgba(253, 252, 251, 0.95);
-            --bg-light: #fef9f6;
+            /* 背景カラー：明るく清潔感のあるトーン */
+            --bg-primary: #ffffff;
+            --bg-secondary: #fff9fb;
+            --bg-glass: rgba(255, 255, 255, 0.95);
+            --bg-light: #fff5f8;
             
-            /* テキストカラー：深みのあるグレー */
-            --text-primary: #3d3836;
-            --text-secondary: #6b625c;
-            --text-light: #998f88;
+            /* テキストカラー：読みやすい優しいグレー */
+            --text-primary: #2d3436;
+            --text-secondary: #636e72;
+            --text-light: #95a5a6;
             
-            /* ボーダーカラー：ソフトなベージュ */
-            --border: #e8e2dd;
-            --border-light: #f2ede9;
+            /* ボーダーカラー：やわらかいピンクグレー */
+            --border: #fde2e4;
+            --border-light: #fff0f3;
             
-            /* グラデーション：多彩で洗練された色合い */
-            --gradient-primary: linear-gradient(135deg, #d4a5a5 0%, #cc8e78 33%, #9cad88 66%, #a8a5c1 100%);
-            --gradient-bg: linear-gradient(135deg, #fdfcfb 0%, #f9f6f4 50%, #fef9f6 100%);
+            /* グラデーション：明るくワクワクする色合い */
+            --gradient-primary: linear-gradient(135deg, #ff8fab 0%, #84dcc6 50%, #ffd166 100%);
+            --gradient-bg: linear-gradient(135deg, #ffffff 0%, #fff9fb 50%, #fff5f8 100%);
             
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -173,20 +173,20 @@
             z-index: 1000;
             min-width: 56px;
             height: 56px;
-            box-shadow: 0 4px 20px rgba(212, 165, 165, 0.15);
+            box-shadow: 0 4px 20px rgba(255, 143, 171, 0.15);
             transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .hamburger-btn:hover {
             background: linear-gradient(135deg, #ffffff 0%, #fff8fc 100%);
             border-color: var(--primary);
-            box-shadow: 0 8px 30px rgba(212, 165, 165, 0.25);
+            box-shadow: 0 8px 30px rgba(255, 143, 171, 0.25);
             transform: translateY(-2px) scale(1.05);
         }
 
         .hamburger-btn:active {
             transform: translateY(-1px) scale(1.02);
-            box-shadow: 0 4px 15px rgba(212, 165, 165, 0.3);
+            box-shadow: 0 4px 15px rgba(255, 143, 171, 0.3);
         }
 
         .hamburger-icon {
@@ -199,7 +199,7 @@
         .hamburger-btn:hover .hamburger-icon {
             color: var(--primary);
             transform: rotate(90deg) scale(1.1);
-            filter: drop-shadow(0 2px 4px rgba(212, 165, 165, 0.3));
+            filter: drop-shadow(0 2px 4px rgba(255, 143, 171, 0.3));
         }
 
         .hamburger-label {
@@ -625,7 +625,7 @@
 
         .upload-area:hover {
             border-color: var(--primary);
-            background: rgba(212, 165, 165, 0.02);
+            background: rgba(255, 143, 171, 0.02);
         }
 
         .upload-area i {
@@ -1794,27 +1794,27 @@
             min-width: fit-content;
         }
 
-        /* カテゴリ別色設定（洗練された配色） */
+        /* カテゴリ別色設定（元の鮮やかな色に戻す） */
         .store-category[data-category="カフェ"] {
-            background: var(--accent);  /* テラコッタ */
+            background: #8B4513;  /* ブラウン */
         }
         .store-category[data-category="和食"] {
-            background: #b8798c;  /* ダスティローズ */
+            background: #E74C3C;  /* 赤 */
         }
         .store-category[data-category="洋食"] {
-            background: var(--tertiary);  /* ラベンダーグレー */
+            background: #3498DB;  /* 青 */
         }
         .store-category[data-category="パン屋"] {
-            background: #c9a471;  /* ゴールドベージュ */
+            background: #F39C12;  /* オレンジ */
         }
         .store-category[data-category="スイーツ"] {
-            background: var(--primary);  /* モーヴピンク */
+            background: #E91E63;  /* ピンク */
         }
         .store-category[data-category="販売店"] {
-            background: var(--secondary);  /* セージグリーン */
+            background: #27AE60;  /* グリーン */
         }
         .store-category[data-category="その他"] {
-            background: #9b9b9b;  /* ソフトグレー */
+            background: #7F8C8D;  /* グレー */
         }
 
         .store-info {
@@ -2633,7 +2633,7 @@
             transition: all 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
             border-bottom: 0;
             margin: 0;
-            box-shadow: 0 4px 12px rgba(212, 165, 165, 0.1);
+            box-shadow: 0 4px 12px rgba(255, 143, 171, 0.1);
             border-radius: 0 0 12px 12px;
             transform: translateY(-10px);
             opacity: 0;
@@ -2674,7 +2674,7 @@
         .panel-tab.active {
             color: white;
             background: var(--gradient-primary);
-            box-shadow: 0 2px 8px rgba(212, 165, 165, 0.2);
+            box-shadow: 0 2px 8px rgba(255, 143, 171, 0.2);
             transform: translateY(-1px);
         }
         
@@ -2703,7 +2703,7 @@
         .mobile-search-filter.show {
             max-height: 200px;
             padding: var(--space-lg) var(--space-lg) var(--space-md);
-            border-bottom: 1px solid rgba(212, 165, 165, 0.2);
+            border-bottom: 1px solid rgba(255, 143, 171, 0.2);
             transform: translateY(0);
             opacity: 1;
         }
@@ -2728,7 +2728,7 @@
         .mobile-search-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 4px 16px rgba(212, 165, 165, 0.15);
+            box-shadow: 0 4px 16px rgba(255, 143, 171, 0.15);
             transform: scale(1.02);
         }
         
@@ -2741,14 +2741,14 @@
         .mobile-chip {
             padding: var(--space-xs) var(--space-sm);
             background: white;
-            border: 1px solid rgba(212, 165, 165, 0.3);
+            border: 1px solid rgba(255, 143, 171, 0.3);
             border-radius: 15px;
             font-size: 0.75rem;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
             color: var(--text-secondary);
             white-space: nowrap;
-            box-shadow: 0 1px 4px rgba(212, 165, 165, 0.1);
+            box-shadow: 0 1px 4px rgba(255, 143, 171, 0.1);
         }
         
         .mobile-chip:hover {
@@ -2764,7 +2764,7 @@
             color: white;
             border-color: var(--primary);
             transform: translateY(-1px);
-            box-shadow: 0 3px 12px rgba(212, 165, 165, 0.25);
+            box-shadow: 0 3px 12px rgba(255, 143, 171, 0.25);
         }
 
         /* モバイル版検索候補 */
@@ -3388,7 +3388,7 @@
             opacity: 1;
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(212, 165, 165, 0.25);
+            box-shadow: 0 4px 12px rgba(255, 143, 171, 0.25);
             animation: pulse 2s infinite;
         }
         
@@ -3407,13 +3407,13 @@
             top: calc(var(--space-lg) * 3);
             left: 50%;
             transform: translateX(-50%);
-            background: linear-gradient(135deg, rgba(212, 165, 165, 0.95) 0%, rgba(196, 142, 142, 0.9) 100%);
+            background: linear-gradient(135deg, rgba(255, 143, 171, 0.95) 0%, rgba(255, 107, 145, 0.9) 100%);
             color: white;
             padding: 8px 16px;
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 500;
-            box-shadow: 0 4px 12px rgba(212, 165, 165, 0.25);
+            box-shadow: 0 4px 12px rgba(255, 143, 171, 0.25);
             z-index: 1000;
             animation: slideInFromTop 0.3s ease-out;
             pointer-events: none;
@@ -3844,7 +3844,7 @@
 
         .btn-add-review:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(212, 165, 165, 0.25);
+            box-shadow: 0 4px 12px rgba(255, 143, 171, 0.25);
         }
 
         .review-form {
@@ -3928,7 +3928,7 @@
 
         .btn-submit:hover:not(:disabled) {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(212, 165, 165, 0.25);
+            box-shadow: 0 4px 12px rgba(255, 143, 171, 0.25);
         }
 
         .btn-submit:disabled {
@@ -5569,13 +5569,13 @@
         
         // カテゴリー色
         const categoryColors = {
-            'カフェ': '#cc8e78',  /* テラコッタ */
-            '和食': '#b8798c',     /* ダスティローズ */
-            '洋食': '#a8a5c1',     /* ラベンダーグレー */
-            'パン屋': '#c9a471',   /* ゴールドベージュ */
-            'スイーツ': '#d4a5a5', /* モーヴピンク */
-            '販売店': '#9cad88',   /* セージグリーン */
-            'その他': '#9b9b9b'    /* ソフトグレー */
+            'カフェ': '#8B4513',
+            '和食': '#E74C3C',
+            '洋食': '#3498DB',
+            'パン屋': '#F39C12',
+            'スイーツ': '#E91E63',
+            '販売店': '#27AE60',
+            'その他': '#7F8C8D'
         };
 
         // カテゴリークラス名生成
@@ -10160,13 +10160,13 @@
             }
             
             const categoryConfig = {
-                'カフェ': { icon: '☕', color: '#cc8e78' },
-                '和食': { icon: '🍱', color: '#b8798c' },
-                '洋食': { icon: '🍽️', color: '#a8a5c1' },
-                'パン屋': { icon: '🥐', color: '#c9a471' },
-                'スイーツ': { icon: '🧁', color: '#d4a5a5' },
-                '販売店': { icon: '🛒', color: '#9cad88' },
-                'その他': { icon: '🏪', color: '#9b9b9b' }
+                'カフェ': { icon: '☕', color: '#8B4513' },
+                '和食': { icon: '🍱', color: '#E74C3C' },
+                '洋食': { icon: '🍽️', color: '#3498DB' },
+                'パン屋': { icon: '🥐', color: '#F39C12' },
+                'スイーツ': { icon: '🧁', color: '#E91E63' },
+                '販売店': { icon: '🛒', color: '#27AE60' },
+                'その他': { icon: '🏪', color: '#7F8C8D' }
             };
             
             const config = categoryConfig[store.category] || categoryConfig['その他'];
@@ -12168,8 +12168,8 @@
                                     background-image: url('${currentAvatarUrl}');
                                     background-size: cover;
                                     background-position: center;
-                                    box-shadow: 0 8px 32px rgba(212, 165, 165, 0.25);
-                                    border: 4px solid rgba(212, 165, 165, 0.2);
+                                    box-shadow: 0 8px 32px rgba(255, 143, 171, 0.25);
+                                    border: 4px solid rgba(255, 143, 171, 0.2);
                                 " id="avatarPreview"></div>
                                 <p style="color: #64748b; font-size: 0.9rem; margin: 0;">アバター画像</p>
                             </div>
@@ -12211,7 +12211,7 @@
                                     padding: 16px;
                                     background: var(--primary-alpha);
                                     border-radius: 12px;
-                                    border: 1px solid rgba(212, 165, 165, 0.1);
+                                    border: 1px solid rgba(255, 143, 171, 0.1);
                                 ">
                                     <input type="checkbox" id="statsPublicCheckbox" ${userProfile?.statsPublic !== false ? 'checked' : ''} style="
                                         width: 18px;
@@ -12243,7 +12243,7 @@
                                 <!-- カスタム画像アップロード -->
                                 <div style="
                                     background: var(--bg-light);
-                                    border: 2px dashed rgba(212, 165, 165, 0.3);
+                                    border: 2px dashed rgba(255, 143, 171, 0.3);
                                     border-radius: 12px;
                                     padding: 20px;
                                     text-align: center;
@@ -12297,7 +12297,7 @@
                                     padding: 16px;
                                     background: rgba(248, 250, 252, 0.8);
                                     border-radius: 12px;
-                                    border: 1px solid rgba(212, 165, 165, 0.1);
+                                    border: 1px solid rgba(255, 143, 171, 0.1);
                                 " id="avatarGrid"></div>
                             </div>
                             
@@ -12328,7 +12328,7 @@
                                     font-weight: 600;
                                     cursor: pointer;
                                     transition: all 0.2s ease;
-                                    box-shadow: 0 4px 16px rgba(212, 165, 165, 0.25);
+                                    box-shadow: 0 4px 16px rgba(255, 143, 171, 0.25);
                                 " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(255, 107, 157, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 16px rgba(255, 107, 157, 0.3)'">💾 保存</button>
                             </div>
                         </div>
@@ -12607,7 +12607,7 @@
         function resetUploadSelection() {
             const uploadSection = document.getElementById('uploadSection');
             if (uploadSection) {
-                uploadSection.style.borderColor = 'rgba(212, 165, 165, 0.3)';
+                uploadSection.style.borderColor = 'rgba(255, 143, 171, 0.3)';
                 uploadSection.style.background = 'var(--bg-light)';
             }
         }
@@ -12750,7 +12750,7 @@
                             overflow-y: auto;
                             box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2), 0 8px 24px rgba(0, 0, 0, 0.1);
                             position: relative;
-                            border: 1px solid rgba(212, 165, 165, 0.1);
+                            border: 1px solid rgba(255, 143, 171, 0.1);
                         ">
                             <!-- ヘッダー -->
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
@@ -12792,8 +12792,8 @@
                                     background-position: center;
                                     background-repeat: no-repeat;
                                     background-color: #f8f9fa;
-                                    border: 4px solid rgba(212, 165, 165, 0.2);
-                                    box-shadow: 0 8px 32px rgba(212, 165, 165, 0.2);
+                                    border: 4px solid rgba(255, 143, 171, 0.2);
+                                    box-shadow: 0 8px 32px rgba(255, 143, 171, 0.2);
                                 "></div>
 
                                 <!-- ニックネーム -->
@@ -12814,7 +12814,7 @@
                                         padding: 16px;
                                         background: var(--primary-alpha);
                                         border-radius: 12px;
-                                        border-left: 4px solid rgba(212, 165, 165, 0.4);
+                                        border-left: 4px solid rgba(255, 143, 171, 0.4);
                                     ">${userProfile.bio}</p>
                                 ` : ''}
                             </div>
@@ -12847,7 +12847,7 @@
                                     font-weight: 600;
                                     cursor: pointer;
                                     transition: all 0.2s ease;
-                                    box-shadow: 0 4px 16px rgba(212, 165, 165, 0.25);
+                                    box-shadow: 0 4px 16px rgba(255, 143, 171, 0.25);
                                 " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
                                     📊 統計を見る
                                 </button>
@@ -12922,7 +12922,7 @@
                             overflow-y: auto;
                             box-shadow: 0 24px 64px rgba(0,0,0,0.2);
                             position: relative;
-                            border: 1px solid rgba(212, 165, 165, 0.1);
+                            border: 1px solid rgba(255, 143, 171, 0.1);
                         ">
                             <!-- ヘッダー -->
                             <div style="
@@ -12931,7 +12931,7 @@
                                 display: flex;
                                 justify-content: space-between;
                                 align-items: center;
-                                background: linear-gradient(135deg, var(--primary-alpha) 0%, rgba(156, 173, 136, 0.05) 100%);
+                                background: linear-gradient(135deg, var(--primary-alpha) 0%, rgba(132, 220, 198, 0.05) 100%);
                                 border-radius: 20px 20px 0 0;
                             ">
                                 <h2 style="
@@ -13049,8 +13049,8 @@
 
                     <!-- レビュー内容 -->
                     <div style="
-                        background: rgba(212, 165, 165, 0.03);
-                        border-left: 4px solid rgba(212, 165, 165, 0.4);
+                        background: rgba(255, 143, 171, 0.03);
+                        border-left: 4px solid rgba(255, 143, 171, 0.4);
                         padding: 16px 20px;
                         border-radius: 0 12px 12px 0;
                         margin: 16px 0;
@@ -13180,7 +13180,7 @@
                             overflow-y: auto;
                             box-shadow: 0 24px 64px rgba(0,0,0,0.2);
                             position: relative;
-                            border: 1px solid rgba(212, 165, 165, 0.1);
+                            border: 1px solid rgba(255, 143, 171, 0.1);
                         ">
                             <!-- ヘッダー -->
                             <div style="
@@ -13189,7 +13189,7 @@
                                 display: flex;
                                 justify-content: space-between;
                                 align-items: center;
-                                background: linear-gradient(135deg, var(--primary-alpha) 0%, rgba(156, 173, 136, 0.05) 100%);
+                                background: linear-gradient(135deg, var(--primary-alpha) 0%, rgba(132, 220, 198, 0.05) 100%);
                                 border-radius: 20px 20px 0 0;
                             ">
                                 <h2 style="
@@ -13243,7 +13243,7 @@
                                         padding: 20px;
                                         border-radius: 16px;
                                         text-align: center;
-                                        box-shadow: 0 4px 16px rgba(212, 165, 165, 0.25);
+                                        box-shadow: 0 4px 16px rgba(255, 143, 171, 0.25);
                                     ">
                                         <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px;">${visitedStoresCount}</div>
                                         <div style="font-size: 14px; opacity: 0.9;">行ったお店</div>
@@ -13404,7 +13404,7 @@
                             overflow-y: auto;
                             box-shadow: 0 24px 64px rgba(0,0,0,0.2);
                             position: relative;
-                            border: 1px solid rgba(212, 165, 165, 0.1);
+                            border: 1px solid rgba(255, 143, 171, 0.1);
                         ">
                             <!-- ヘッダー -->
                             <div style="
@@ -13413,7 +13413,7 @@
                                 display: flex;
                                 justify-content: space-between;
                                 align-items: center;
-                                background: linear-gradient(135deg, var(--primary-alpha) 0%, rgba(156, 173, 136, 0.05) 100%);
+                                background: linear-gradient(135deg, var(--primary-alpha) 0%, rgba(132, 220, 198, 0.05) 100%);
                                 border-radius: 20px 20px 0 0;
                             ">
                                 <h2 style="
@@ -13467,7 +13467,7 @@
                                         padding: 20px;
                                         border-radius: 16px;
                                         text-align: center;
-                                        box-shadow: 0 4px 16px rgba(212, 165, 165, 0.25);
+                                        box-shadow: 0 4px 16px rgba(255, 143, 171, 0.25);
                                     ">
                                         <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px;">${visitedStoresCount}</div>
                                         <div style="font-size: 14px; opacity: 0.9;">行ったお店</div>
@@ -14259,13 +14259,13 @@
             
             // カテゴリー設定をMAPと同じスタイルに
             const categoryConfig = {
-                'カフェ': { icon: '☕', color: '#cc8e78' },
-                '和食': { icon: '🍱', color: '#b8798c' },
-                '洋食': { icon: '🍽️', color: '#a8a5c1' },
-                'パン屋': { icon: '🥐', color: '#c9a471' },
-                'スイーツ': { icon: '🧁', color: '#d4a5a5' },
-                '販売店': { icon: '🛒', color: '#9cad88' },
-                'その他': { icon: '🏪', color: '#9b9b9b' }
+                'カフェ': { icon: '☕', color: '#8B4513' },
+                '和食': { icon: '🍱', color: '#E74C3C' },
+                '洋食': { icon: '🍽️', color: '#3498DB' },
+                'パン屋': { icon: '🥐', color: '#F39C12' },
+                'スイーツ': { icon: '🧁', color: '#E91E63' },
+                '販売店': { icon: '🛒', color: '#27AE60' },
+                'その他': { icon: '🏪', color: '#7F8C8D' }
             };
             const categoryStyle = categoryConfig[storeCategory] || categoryConfig['その他'];
             
