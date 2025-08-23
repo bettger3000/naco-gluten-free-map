@@ -11592,10 +11592,13 @@
                     email: currentUserProfile.email,
                     nickname: `"${currentUserProfile.nickname}"` || '未設定',
                     displayNickname: getDisplayNickname(currentUserProfile),
-                    avatar: currentUserProfile.avatar
+                    avatar: currentUserProfile.avatar,
+                    avatarType: currentUserProfile.avatarType,
+                    avatarUrl: currentUserProfile.avatarUrl
                 });
+                console.log('🔍 [DEBUG] リロード時プロフィールデータ詳細:', JSON.stringify(currentUserProfile, null, 2));
                 
-                // ハンバーガーメニューのプロフィール表示を更新
+                // ハンバーガーメニューの表示を更新
                 updateMenuProfileDisplay();
             }
         }
@@ -12516,12 +12519,19 @@
                 
                 console.log('保存するプロフィール:', updatedProfile);
                 
+                console.log('🔍 [DEBUG] 保存前のプロフィールデータ:', JSON.stringify(updatedProfile, null, 2));
+                
                 // 既存のプロフィール保存システムを使用（Supabase連携）
                 const success = await saveUserProfile(updatedProfile, { source: 'profile_modal', isDirty: true });
+                
+                console.log('🔍 [DEBUG] 保存結果:', success);
                 
                 if (success) {
                     // グローバル変数も更新
                     currentUserProfile = updatedProfile;
+                    
+                    // ハンバーガーメニューの表示を更新
+                    updateMenuProfileDisplay();
                     
                     // 成功メッセージ
                     const message = avatarType === 'custom' 
