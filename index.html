@@ -1395,24 +1395,25 @@
 
         /* ポップアップ内のアクションボタン */
         .popup-action-btn {
-            flex: 0 0 auto !important;
+            flex: 1;
             width: auto !important;
-            min-width: fit-content !important;
-            padding: 10px 12px;
+            min-width: 0;
+            padding: 8px 4px;
             border: 1px solid var(--border-light);
-            border-radius: 8px;
+            border-radius: 6px;
             background: white;
             color: var(--text-primary);
-            font-size: 14px;
+            font-size: 0.75rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
             display: inline-flex !important;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            min-height: 40px;
+            gap: 4px;
+            min-height: 36px;
             white-space: nowrap;
+            text-align: center;
         }
 
         .popup-action-btn:hover {
@@ -1438,11 +1439,13 @@
 
         .popup-actions {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             margin-top: 12px;
             padding-top: 12px;
             border-top: 1px solid var(--border-light);
             flex-wrap: nowrap;
+            justify-content: center;
+            align-items: center;
         }
 
         /* ポップアップボタンのアクティブ状態 */
