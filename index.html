@@ -13656,7 +13656,18 @@
             setTimeout(() => {
                 // スマホの場合はパネルを閉じる
                 if (!isDesktop()) {
-                    setPanelPosition('collapsed');
+                    console.log('📱 Trying to collapse panel');
+                    if (typeof setPanelPosition === 'function') {
+                        setPanelPosition('collapsed');
+                    } else {
+                        console.log('📱 setPanelPosition not available, trying alternative method');
+                        // フォールバック：直接パネル操作
+                        const panel = document.querySelector('.bottom-panel, .mobile-panel');
+                        if (panel) {
+                            panel.classList.remove('half-open', 'full-open');
+                            console.log('📱 Panel collapsed using fallback method');
+                        }
+                    }
                 }
                 
                 // マップの中心を店舗位置に移動
