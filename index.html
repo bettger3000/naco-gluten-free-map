@@ -12856,7 +12856,10 @@
             
             console.log('🔍 レビューアバター取得(1):', {
                 userEmail: review.user_email,
+                nickname: nickname,
                 avatarUrl: avatarUrl,
+                avatarUrlType: typeof avatarUrl,
+                avatarUrlLength: avatarUrl ? avatarUrl.length : 'null',
                 currentUser: getCurrentUser(),
                 isCurrentUser: getCurrentUser() === review.user_email,
                 currentUserProfile: currentUserProfile
