@@ -4842,7 +4842,7 @@
         .my-review-card {
             background: var(--bg-primary);
             border-radius: var(--radius-md);
-            margin-bottom: var(--space-lg);
+            margin-bottom: var(--space-md);
             border: 1px solid var(--border-light);
             transition: all 0.2s ease;
             overflow: hidden;
@@ -4850,6 +4850,8 @@
             flex-direction: column !important;
             align-items: flex-start !important;
             text-align: left !important;
+            height: auto !important;
+            min-height: auto !important;
         }
 
         .my-review-card:hover {
@@ -4861,8 +4863,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: var(--space-lg) var(--space-lg) var(--space-sm) var(--space-lg);
-            margin-bottom: var(--space-md);
+            padding: var(--space-md) var(--space-lg) var(--space-xs) var(--space-lg);
+            margin-bottom: var(--space-sm);
             border-bottom: 1px solid var(--border-light);
         }
 
@@ -4920,7 +4922,7 @@
         }
 
         .review-card-body {
-            padding: 0 var(--space-lg) var(--space-lg) var(--space-lg);
+            padding: 0 var(--space-lg) var(--space-md) var(--space-lg);
         }
 
         .review-content {
