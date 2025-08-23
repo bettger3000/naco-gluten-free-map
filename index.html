@@ -9243,7 +9243,7 @@
             
             const slidesHtml = images.map((image, index) => `
                 <div class="image-slide ${index === 0 ? 'active' : ''}" data-slide="${index}">
-                    <img src="${image.image_url}" alt="${image.alt_text || '店舗画像'}" loading="lazy">
+                    <img src="${image.image_url}" alt="${image.alt_text || '店舗画像'}" loading="lazy" onclick="showImageModal('${image.image_url}', '${image.alt_text || '店舗画像'}')">
                 </div>
             `).join('');
             
