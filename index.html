@@ -4058,6 +4058,136 @@
             height: auto;
         }
 
+        /* 使い方ガイドモーダルスタイル */
+        .how-to-use-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 20000;
+            padding: var(--space-lg);
+            backdrop-filter: blur(5px);
+        }
+        .how-to-use-modal-content {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-xl);
+            box-shadow: var(--shadow-xl);
+            max-width: 520px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 2px solid var(--border-light);
+        }
+        .how-to-use-header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-lg);
+            border-bottom: 2px solid var(--border-light);
+        }
+        .how-to-use-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-sm);
+        }
+        .how-to-use-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        .how-to-step {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-md);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            border: 2px solid var(--border-light);
+            transition: all 0.3s ease;
+        }
+        .how-to-step:hover {
+            background: var(--bg-primary);
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(255, 143, 171, 0.15);
+            transform: translateY(-2px);
+        }
+        .step-icon {
+            font-size: 2.5rem;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .step-content {
+            flex: 1;
+        }
+        .step-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        .step-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 0.9rem;
+        }
+        .close-how-to-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid var(--border-light);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+        .close-how-to-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+        .community-note {
+            background: linear-gradient(135deg, var(--primary-alpha) 0%, var(--accent-light) 100%);
+            padding: var(--space-lg);
+            border-radius: var(--radius-lg);
+            margin-top: var(--space-lg);
+            text-align: center;
+            border: 2px solid var(--border-light);
+        }
+        .community-note-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-sm);
+            font-size: 1.05rem;
+        }
+        .community-note-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
         /* マイ統計モーダルスタイル */
         .statistics-modal-overlay {
             position: fixed;
@@ -5370,6 +5500,10 @@
                     <button class="menu-item" onclick="showStatistics()">
                         <i class="fas fa-chart-bar menu-item-icon"></i>
                         <span class="menu-item-text">マイ統計</span>
+                    </button>
+                    <button class="menu-item" onclick="showHowToUse()">
+                        <i class="fas fa-book-open menu-item-icon"></i>
+                        <span class="menu-item-text">📖 使い方ガイド</span>
                     </button>
                     
                     <!-- セパレーター -->
@@ -15282,6 +15416,102 @@
         // 統計モーダルを閉じる
         function closeStatisticsModal() {
             const modal = document.getElementById('statisticsModalOverlay');
+            if (modal) {
+                modal.style.transition = 'all 0.25s ease';
+                modal.style.opacity = '0';
+                modal.style.transform = 'scale(0.9)';
+                
+                setTimeout(() => {
+                    modal.remove();
+                }, 250);
+            }
+        }
+
+        // 使い方ガイドを表示
+        function showHowToUse() {
+            const modalHTML = `
+                <div class="how-to-use-modal-overlay" id="howToUseModalOverlay">
+                    <div class="how-to-use-modal-content">
+                        <button class="close-how-to-btn" onclick="closeHowToUseModal()">×</button>
+                        
+                        <div class="how-to-use-header">
+                            <h2 class="how-to-use-title">📖 使い方ガイド</h2>
+                            <p class="how-to-use-subtitle">グルテンフリーマップの楽しみ方</p>
+                        </div>
+
+                        <div class="how-to-steps">
+                            <div class="how-to-step">
+                                <div class="step-icon">🗺️</div>
+                                <div class="step-content">
+                                    <h3 class="step-title">マップを見て探そう</h3>
+                                    <p class="step-description">お出かけ先で「あ、ここにグルテンフリーのお店があるんだ！」を発見。マップ上のカラフルなピンをタップしてみてください。</p>
+                                </div>
+                            </div>
+
+                            <div class="how-to-step">
+                                <div class="step-icon">📍</div>
+                                <div class="step-content">
+                                    <h3 class="step-title">目的地ピンで行き先を決めよう</h3>
+                                    <p class="step-description">今日はここに行く！マップを長押しして目的地ピンを設置。青いピンがあなたの目標地点になります。</p>
+                                </div>
+                            </div>
+
+                            <div class="how-to-step">
+                                <div class="step-icon">🤍</div>
+                                <div class="step-content">
+                                    <h3 class="step-title">気になるお店は「行きたい」に</h3>
+                                    <p class="step-description">今度行ってみたいな♪ そんなお店は🤍ボタンでマーク。後でマイページから確認できます。</p>
+                                </div>
+                            </div>
+
+                            <div class="how-to-step">
+                                <div class="step-icon">✨</div>
+                                <div class="step-content">
+                                    <h3 class="step-title">行ったお店は「行った」に</h3>
+                                    <p class="step-description">美味しかった！また行きたい！ そんなお店は✨ボタンでマーク。あなたの素敵な思い出を記録しましょう。</p>
+                                </div>
+                            </div>
+
+                            <div class="how-to-step">
+                                <div class="step-icon">💕</div>
+                                <div class="step-content">
+                                    <h3 class="step-title">レビューで仲間と共有</h3>
+                                    <p class="step-description">「ここのパンが絶品でした！」温かいレビューでみんなに教えてあげて。コミュニティが育つ大切な一歩です。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="community-note">
+                            <h4 class="community-note-title">💝 nacoさんのコミュニティへようこそ</h4>
+                            <p class="community-note-text">このマップは、みんなで作り上げる温かいコミュニティです。お互いを思いやる気持ちで、素敵なグルテンフリーライフを一緒に楽しみましょう。</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // モーダルを表示
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            const modal = document.getElementById('howToUseModalOverlay');
+            
+            setTimeout(() => {
+                modal.style.display = 'flex';
+                modal.style.opacity = '0';
+                modal.style.transform = 'scale(0.9)';
+                
+                setTimeout(() => {
+                    modal.style.transition = 'all 0.3s ease';
+                    modal.style.opacity = '1';
+                    modal.style.transform = 'scale(1)';
+                }, 10);
+            }, 10);
+            
+            // サイドメニューを閉じる
+            closeSideMenu();
+        }
+
+        // 使い方ガイドモーダルを閉じる
+        function closeHowToUseModal() {
+            const modal = document.getElementById('howToUseModalOverlay');
             if (modal) {
                 modal.style.transition = 'all 0.25s ease';
                 modal.style.opacity = '0';
