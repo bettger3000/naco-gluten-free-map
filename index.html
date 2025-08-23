@@ -12857,8 +12857,14 @@
             console.log('📝 ニックネーム取得完了:', nickname);
             
             console.log('🖼️ アバター取得開始:', review.user_email);
-            const avatarUrl = await getUserAvatarUrl(review.user_email);
-            console.log('🖼️ アバター取得完了:', avatarUrl);
+            let avatarUrl;
+            try {
+                avatarUrl = await getUserAvatarUrl(review.user_email);
+                console.log('🖼️ アバター取得完了:', avatarUrl);
+            } catch (error) {
+                console.error('💥 アバター取得でエラー:', error);
+                avatarUrl = createEmojiAvatar('🌸');
+            }
             
             console.log('🔍 レビューアバター取得(1):', {
                 userEmail: review.user_email,
@@ -13533,7 +13539,12 @@
                 
                 console.warn('⚠️ アバターが取得できませんでした:', { email, currentUserProfile });
             } catch (error) {
-                console.warn('アバター取得エラー:', error);
+                console.error('💥 getUserAvatarUrl エラー:', {
+                    email: email,
+                    error: error,
+                    stack: error.stack,
+                    message: error.message
+                });
             }
             
             // 安全なフォールバック: 絵文字アバター
