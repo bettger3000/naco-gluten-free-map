@@ -24,26 +24,44 @@
     
     <style>
         :root {
-            --primary: #ff6b9d;
-            --primary-dark: #e55a8a;
-            --secondary: #40e0d0;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --error: #ef4444;
+            /* メインカラー：上品なローズベージュ */
+            --primary: #c4a484;
+            --primary-dark: #a89073;
+            --primary-light: #d8bc9e;
+            --primary-alpha: rgba(196, 164, 132, 0.1);
+            --primary-hover: #b59577;
             
-            --bg-primary: #ffffff;
-            --bg-secondary: #f8fafc;
-            --bg-glass: rgba(255, 255, 255, 0.9);
+            /* アクセントカラー：温かみのあるコーラルピンク */
+            --accent: #e8b4b8;
+            --accent-light: #f2d3d6;
             
-            --text-primary: #1a1a1a;
-            --text-secondary: #64748b;
-            --text-light: #94a3b8;
+            /* セカンダリカラー：落ち着いたティール */
+            --secondary: #7ba59b;
+            --secondary-light: #a5c4c0;
             
-            --border: #e2e8f0;
-            --border-light: #f1f5f9;
+            /* 機能カラー */
+            --success: #8da96e;
+            --warning: #d4a574;
+            --error: #d17a6b;
             
-            --gradient-primary: linear-gradient(135deg, #ff6b9d 0%, #40e0d0 100%);
-            --gradient-bg: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            /* 背景カラー：温かみのあるニュートラル */
+            --bg-primary: #faf9f7;
+            --bg-secondary: #f5f3f0;
+            --bg-glass: rgba(250, 249, 247, 0.95);
+            --bg-light: #ede9e5;
+            
+            /* テキストカラー：より温かみのある色調 */
+            --text-primary: #2d2a26;
+            --text-secondary: #6b6157;
+            --text-light: #9b9084;
+            
+            /* ボーダーカラー：柔らかいベージュトーン */
+            --border: #e6ddd4;
+            --border-light: #f0e8df;
+            
+            /* グラデーション：品のある色合い */
+            --gradient-primary: linear-gradient(135deg, #c4a484 0%, #e8b4b8 50%, #7ba59b 100%);
+            --gradient-bg: linear-gradient(135deg, #faf9f7 0%, #f5f3f0 50%, #ede9e5 100%);
             
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -139,7 +157,7 @@
         .hamburger-btn {
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 248, 252, 0.95) 100%);
             backdrop-filter: blur(15px);
-            border: 2px solid rgba(255, 107, 157, 0.2);
+            border: 2px solid var(--primary-alpha);
             border-radius: var(--radius-lg);
             padding: var(--space-md) var(--space-lg);
             cursor: pointer;
@@ -151,20 +169,20 @@
             z-index: 1000;
             min-width: 56px;
             height: 56px;
-            box-shadow: 0 4px 20px rgba(255, 107, 157, 0.15);
+            box-shadow: 0 4px 20px rgba(196, 164, 132, 0.15);
             transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         .hamburger-btn:hover {
             background: linear-gradient(135deg, #ffffff 0%, #fff8fc 100%);
             border-color: var(--primary);
-            box-shadow: 0 8px 30px rgba(255, 107, 157, 0.3);
+            box-shadow: 0 8px 30px rgba(196, 164, 132, 0.25);
             transform: translateY(-2px) scale(1.05);
         }
 
         .hamburger-btn:active {
             transform: translateY(-1px) scale(1.02);
-            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+            box-shadow: 0 4px 15px rgba(196, 164, 132, 0.3);
         }
 
         .hamburger-icon {
@@ -177,7 +195,7 @@
         .hamburger-btn:hover .hamburger-icon {
             color: var(--primary);
             transform: rotate(90deg) scale(1.1);
-            filter: drop-shadow(0 2px 4px rgba(255, 107, 157, 0.3));
+            filter: drop-shadow(0 2px 4px rgba(196, 164, 132, 0.3));
         }
 
         .hamburger-label {
@@ -467,7 +485,7 @@
         .profile-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
+            box-shadow: 0 0 0 3px var(--primary-alpha);
         }
 
         .avatar-grid {
@@ -559,7 +577,7 @@
 
         .avatar-tab:hover {
             color: var(--primary);
-            background: rgba(255, 107, 157, 0.05);
+            background: var(--primary-alpha);
         }
 
         .avatar-content {
@@ -603,7 +621,7 @@
 
         .upload-area:hover {
             border-color: var(--primary);
-            background: rgba(255, 107, 157, 0.02);
+            background: rgba(196, 164, 132, 0.02);
         }
 
         .upload-area i {
@@ -1038,7 +1056,7 @@
         .search-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
+            box-shadow: 0 0 0 3px var(--primary-alpha);
         }
 
         .filter-chips {
@@ -1405,8 +1423,8 @@
         }
 
         .popup-action-btn.want-to-go:active {
-            background: #ec4899;
-            border-color: #ec4899;
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
         }
 
         .popup-action-btn.visited:active {
@@ -2601,7 +2619,7 @@
             transition: all 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
             border-bottom: 0;
             margin: 0;
-            box-shadow: 0 4px 12px rgba(255, 107, 157, 0.1);
+            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.1);
             border-radius: 0 0 12px 12px;
             transform: translateY(-10px);
             opacity: 0;
@@ -2634,15 +2652,15 @@
         }
         
         .panel-tab:hover {
-            color: #ff6b9d;
-            background: rgba(255, 107, 157, 0.05);
+            color: var(--primary);
+            background: var(--primary-alpha);
             transform: translateY(-1px);
         }
         
         .panel-tab.active {
             color: white;
-            background: linear-gradient(135deg, #ff6b9d, #4ecdc4);
-            box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3);
+            background: var(--gradient-primary);
+            box-shadow: 0 2px 8px rgba(196, 164, 132, 0.2);
             transform: translateY(-1px);
         }
         
@@ -2654,7 +2672,7 @@
             transform: translateX(-50%);
             width: 24px;
             height: 3px;
-            background: linear-gradient(135deg, #ff6b9d, #4ecdc4);
+            background: var(--gradient-primary);
             border-radius: 2px;
         }
         
@@ -2671,7 +2689,7 @@
         .mobile-search-filter.show {
             max-height: 200px;
             padding: var(--space-lg) var(--space-lg) var(--space-md);
-            border-bottom: 1px solid rgba(255, 107, 157, 0.2);
+            border-bottom: 1px solid rgba(196, 164, 132, 0.2);
             transform: translateY(0);
             opacity: 1;
         }
@@ -2684,7 +2702,7 @@
         .mobile-search-input {
             width: 100%;
             padding: var(--space-md);
-            border: 2px solid rgba(255, 107, 157, 0.2);
+            border: 2px solid var(--primary-alpha);
             border-radius: 20px;
             font-size: 0.875rem;
             background: white;
@@ -2695,8 +2713,8 @@
         
         .mobile-search-input:focus {
             outline: none;
-            border-color: #ff6b9d;
-            box-shadow: 0 4px 16px rgba(255, 107, 157, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 4px 16px rgba(196, 164, 132, 0.15);
             transform: scale(1.02);
         }
         
@@ -2709,30 +2727,30 @@
         .mobile-chip {
             padding: var(--space-xs) var(--space-sm);
             background: white;
-            border: 1px solid rgba(255, 107, 157, 0.3);
+            border: 1px solid rgba(196, 164, 132, 0.3);
             border-radius: 15px;
             font-size: 0.75rem;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
             color: var(--text-secondary);
             white-space: nowrap;
-            box-shadow: 0 1px 4px rgba(255, 107, 157, 0.1);
+            box-shadow: 0 1px 4px rgba(196, 164, 132, 0.1);
         }
         
         .mobile-chip:hover {
-            background: rgba(255, 107, 157, 0.1);
-            border-color: #ff6b9d;
+            background: var(--primary-alpha);
+            border-color: var(--primary);
             color: var(--text-primary);
             transform: translateY(-2px);
             box-shadow: 0 2px 8px rgba(255, 107, 157, 0.2);
         }
         
         .mobile-chip.active {
-            background: linear-gradient(135deg, #ff6b9d, #4ecdc4);
+            background: var(--gradient-primary);
             color: white;
-            border-color: #ff6b9d;
+            border-color: var(--primary);
             transform: translateY(-1px);
-            box-shadow: 0 3px 12px rgba(255, 107, 157, 0.3);
+            box-shadow: 0 3px 12px rgba(196, 164, 132, 0.25);
         }
 
         /* モバイル版検索候補 */
@@ -2767,8 +2785,8 @@
 
         .mobile-suggestion-item:hover,
         .mobile-suggestion-item.highlighted {
-            background: rgba(255, 107, 157, 0.1);
-            color: #c2185b;
+            background: var(--primary-alpha);
+            color: var(--primary-dark);
         }
 
         .mobile-suggestion-icon {
@@ -2785,7 +2803,7 @@
         .mobile-suggestion-category {
             font-size: 12px;
             color: #666;
-            background: rgba(255, 107, 157, 0.1);
+            background: var(--primary-alpha);
             padding: 2px 8px;
             border-radius: 8px;
         }
@@ -3354,9 +3372,9 @@
         
         .pin-mode-btn.active {
             opacity: 1;
-            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.25);
             animation: pulse 2s infinite;
         }
         
@@ -3375,13 +3393,13 @@
             top: calc(var(--space-lg) * 3);
             left: 50%;
             transform: translateX(-50%);
-            background: linear-gradient(135deg, rgba(255, 107, 157, 0.95) 0%, rgba(196, 69, 105, 0.9) 100%);
+            background: linear-gradient(135deg, rgba(196, 164, 132, 0.95) 0%, rgba(168, 144, 115, 0.9) 100%);
             color: white;
             padding: 8px 16px;
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 500;
-            box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.25);
             z-index: 1000;
             animation: slideInFromTop 0.3s ease-out;
             pointer-events: none;
@@ -3793,7 +3811,7 @@
         }
 
         .btn-add-review {
-            background: linear-gradient(135deg, #ff6b9d 0%, #40e0d0 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, #40e0d0 100%);
             color: white;
             border: none;
             padding: var(--space-md) var(--space-lg);
@@ -3809,7 +3827,7 @@
 
         .btn-add-review:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.25);
         }
 
         .review-form {
@@ -3838,7 +3856,7 @@
         .review-textarea:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
+            box-shadow: 0 0 0 3px var(--primary-alpha);
         }
 
         .review-textarea::placeholder {
@@ -3887,13 +3905,13 @@
         }
 
         .btn-submit {
-            background: linear-gradient(135deg, #ff6b9d 0%, #40e0d0 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, #40e0d0 100%);
             color: white;
         }
 
         .btn-submit:hover:not(:disabled) {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+            box-shadow: 0 4px 12px rgba(196, 164, 132, 0.25);
         }
 
         .btn-submit:disabled {
@@ -4627,7 +4645,7 @@
                 font-size: 1.1rem;
                 font-weight: 600;
                 min-height: 60px;
-                background: linear-gradient(135deg, #d63384 0%, #c2185b 100%);
+                background: linear-gradient(135deg, #d63384 0%, var(--primary-dark) 100%);
                 border: none;
                 border-radius: 12px;
                 box-shadow: 0 4px 12px rgba(214, 51, 132, 0.3);
@@ -4636,7 +4654,7 @@
             }
 
             .login-modal-content .pin-login-btn:hover {
-                background: linear-gradient(135deg, #c2185b 0%, #ad1457 100%);
+                background: linear-gradient(135deg, var(--primary-dark) 0%, #ad1457 100%);
                 transform: translateY(-2px);
                 box-shadow: 0 6px 16px rgba(214, 51, 132, 0.4);
             }
@@ -4805,8 +4823,8 @@
 
         .my-reviews-title i {
             font-size: 1.3rem;
-            color: #ff6b9d;
-            background: linear-gradient(135deg, #ff6b9d 0%, #40e0d0 50%, #ff6b9d 100%);
+            color: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, #40e0d0 50%, var(--primary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -4850,7 +4868,7 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(90deg, #ff6b9d, #40e0d0, #ff6b9d);
+            background: linear-gradient(90deg, var(--primary), #40e0d0, var(--primary));
             opacity: 0.3;
         }
 
@@ -7085,7 +7103,7 @@
                 icon: L.divIcon({
                     html: `
                         <div style="
-                            background: linear-gradient(135deg, #ff6b9d 0%, #c2185b 100%);
+                            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
                             color: white;
                             border-radius: 20px;
                             padding: 8px 12px;
@@ -7802,7 +7820,7 @@
                     .input-group input:focus {
                         outline: none;
                         border-color: var(--primary);
-                        box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
+                        box-shadow: 0 0 0 3px var(--primary-alpha);
                     }
                     .login-error {
                         color: var(--error);
@@ -12102,18 +12120,18 @@
                                     font-weight: 700;
                                     color: #2d3748;
                                     margin: 0;
-                                    background: linear-gradient(135deg, #ff6b9d, #4299e1);
+                                    background: linear-gradient(135deg, var(--primary), #4299e1);
                                     -webkit-background-clip: text;
                                     -webkit-text-fill-color: transparent;
                                     background-clip: text;
                                 ">👤 プロフィール編集</h2>
                                 <button onclick="closeProfileModal()" style="
-                                    background: rgba(255, 107, 157, 0.1);
-                                    border: 2px solid rgba(255, 107, 157, 0.2);
+                                    background: var(--primary-alpha);
+                                    border: 2px solid var(--primary-alpha);
                                     border-radius: 50%;
                                     width: 40px;
                                     height: 40px;
-                                    color: #ff6b9d;
+                                    color: var(--primary);
                                     font-size: 18px;
                                     cursor: pointer;
                                     display: flex;
@@ -12133,8 +12151,8 @@
                                     background-image: url('${currentAvatarUrl}');
                                     background-size: cover;
                                     background-position: center;
-                                    box-shadow: 0 8px 32px rgba(255, 107, 157, 0.3);
-                                    border: 4px solid rgba(255, 107, 157, 0.2);
+                                    box-shadow: 0 8px 32px rgba(196, 164, 132, 0.25);
+                                    border: 4px solid rgba(196, 164, 132, 0.2);
                                 " id="avatarPreview"></div>
                                 <p style="color: #64748b; font-size: 0.9rem; margin: 0;">アバター画像</p>
                             </div>
@@ -12151,7 +12169,7 @@
                                 <input type="text" id="nicknameInput" value="${currentNickname}" style="
                                     width: 100%;
                                     padding: 12px 16px;
-                                    border: 2px solid rgba(255, 107, 157, 0.2);
+                                    border: 2px solid var(--primary-alpha);
                                     border-radius: 12px;
                                     font-size: 16px;
                                     background: rgba(255, 255, 255, 0.8);
@@ -12174,14 +12192,14 @@
                                     align-items: center;
                                     gap: 12px;
                                     padding: 16px;
-                                    background: rgba(255, 107, 157, 0.05);
+                                    background: var(--primary-alpha);
                                     border-radius: 12px;
-                                    border: 1px solid rgba(255, 107, 157, 0.1);
+                                    border: 1px solid rgba(196, 164, 132, 0.1);
                                 ">
                                     <input type="checkbox" id="statsPublicCheckbox" ${userProfile?.statsPublic !== false ? 'checked' : ''} style="
                                         width: 18px;
                                         height: 18px;
-                                        accent-color: #ff6b9d;
+                                        accent-color: var(--primary);
                                         cursor: pointer;
                                     ">
                                     <label for="statsPublicCheckbox" style="
@@ -12207,8 +12225,8 @@
                                 
                                 <!-- カスタム画像アップロード -->
                                 <div style="
-                                    background: rgba(255, 245, 248, 0.8);
-                                    border: 2px dashed rgba(255, 107, 157, 0.3);
+                                    background: var(--bg-light);
+                                    border: 2px dashed rgba(196, 164, 132, 0.3);
                                     border-radius: 12px;
                                     padding: 20px;
                                     text-align: center;
@@ -12224,7 +12242,7 @@
                                     
                                     <button onclick="selectCustomImage()" style="
                                         padding: 8px 16px;
-                                        background: linear-gradient(135deg, #ff6b9d, #4299e1);
+                                        background: linear-gradient(135deg, var(--primary), #4299e1);
                                         color: white;
                                         border: none;
                                         border-radius: 8px;
@@ -12240,7 +12258,7 @@
                                     <!-- アップロード進行状況 -->
                                     <div id="uploadProgress" style="display: none; margin-top: 12px;">
                                         <div style="background: #e5e7eb; border-radius: 8px; height: 4px; overflow: hidden;">
-                                            <div id="progressBar" style="background: linear-gradient(90deg, #ff6b9d, #4299e1); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+                                            <div id="progressBar" style="background: linear-gradient(90deg, var(--primary), #4299e1); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
                                         </div>
                                         <p id="uploadStatus" style="margin: 8px 0 0 0; color: #6b7280; font-size: 12px;">アップロード中...</p>
                                     </div>
@@ -12262,7 +12280,7 @@
                                     padding: 16px;
                                     background: rgba(248, 250, 252, 0.8);
                                     border-radius: 12px;
-                                    border: 1px solid rgba(255, 107, 157, 0.1);
+                                    border: 1px solid rgba(196, 164, 132, 0.1);
                                 " id="avatarGrid"></div>
                             </div>
                             
@@ -12285,7 +12303,7 @@
                                 " onmouseover="this.style.background='#cbd5e1'" onmouseout="this.style.background='#e2e8f0'">キャンセル</button>
                                 <button onclick="saveProfile()" style="
                                     padding: 12px 24px;
-                                    background: linear-gradient(135deg, #ff6b9d, #4299e1);
+                                    background: linear-gradient(135deg, var(--primary), #4299e1);
                                     color: white;
                                     border: none;
                                     border-radius: 12px;
@@ -12293,7 +12311,7 @@
                                     font-weight: 600;
                                     cursor: pointer;
                                     transition: all 0.2s ease;
-                                    box-shadow: 0 4px 16px rgba(255, 107, 157, 0.3);
+                                    box-shadow: 0 4px 16px rgba(196, 164, 132, 0.25);
                                 " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(255, 107, 157, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 16px rgba(255, 107, 157, 0.3)'">💾 保存</button>
                             </div>
                         </div>
@@ -12355,7 +12373,7 @@
             });
             const selectedElement = document.querySelector(`[data-avatar-url="${avatarUrl}"]`);
             if (selectedElement) {
-                selectedElement.style.borderColor = '#ff6b9d';
+                selectedElement.style.borderColor = 'var(--primary)';
             }
             
             // アップロードセクションの選択状態をリセット
@@ -12572,8 +12590,8 @@
         function resetUploadSelection() {
             const uploadSection = document.getElementById('uploadSection');
             if (uploadSection) {
-                uploadSection.style.borderColor = 'rgba(255, 107, 157, 0.3)';
-                uploadSection.style.background = 'rgba(255, 245, 248, 0.8)';
+                uploadSection.style.borderColor = 'rgba(196, 164, 132, 0.3)';
+                uploadSection.style.background = 'var(--bg-light)';
             }
         }
         
@@ -12581,7 +12599,7 @@
         function highlightUploadSelection() {
             const uploadSection = document.getElementById('uploadSection');
             if (uploadSection) {
-                uploadSection.style.borderColor = '#ff6b9d';
+                uploadSection.style.borderColor = 'var(--primary)';
                 uploadSection.style.background = 'rgba(255, 107, 157, 0.1)';
             }
         }
@@ -12715,7 +12733,7 @@
                             overflow-y: auto;
                             box-shadow: 0 24px 64px rgba(0, 0, 0, 0.2), 0 8px 24px rgba(0, 0, 0, 0.1);
                             position: relative;
-                            border: 1px solid rgba(255, 107, 157, 0.1);
+                            border: 1px solid rgba(196, 164, 132, 0.1);
                         ">
                             <!-- ヘッダー -->
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
@@ -12723,18 +12741,18 @@
                                     font-size: 24px;
                                     font-weight: 700;
                                     margin: 0;
-                                    background: linear-gradient(135deg, #ff6b9d, #4299e1);
+                                    background: linear-gradient(135deg, var(--primary), #4299e1);
                                     -webkit-background-clip: text;
                                     -webkit-text-fill-color: transparent;
                                     background-clip: text;
                                 ">👤 プロフィール</h2>
                                 <button onclick="closeUserProfileModal()" style="
-                                    background: rgba(255, 107, 157, 0.1);
-                                    border: 2px solid rgba(255, 107, 157, 0.2);
+                                    background: var(--primary-alpha);
+                                    border: 2px solid var(--primary-alpha);
                                     border-radius: 50%;
                                     width: 40px;
                                     height: 40px;
-                                    color: #ff6b9d;
+                                    color: var(--primary);
                                     font-size: 18px;
                                     cursor: pointer;
                                     display: flex;
@@ -12757,8 +12775,8 @@
                                     background-position: center;
                                     background-repeat: no-repeat;
                                     background-color: #f8f9fa;
-                                    border: 4px solid rgba(255, 107, 157, 0.2);
-                                    box-shadow: 0 8px 32px rgba(255, 107, 157, 0.2);
+                                    border: 4px solid rgba(196, 164, 132, 0.2);
+                                    box-shadow: 0 8px 32px rgba(196, 164, 132, 0.2);
                                 "></div>
 
                                 <!-- ニックネーム -->
@@ -12777,9 +12795,9 @@
                                         line-height: 1.6;
                                         margin: 16px 0;
                                         padding: 16px;
-                                        background: rgba(255, 107, 157, 0.05);
+                                        background: var(--primary-alpha);
                                         border-radius: 12px;
-                                        border-left: 4px solid rgba(255, 107, 157, 0.3);
+                                        border-left: 4px solid rgba(196, 164, 132, 0.4);
                                     ">${userProfile.bio}</p>
                                 ` : ''}
                             </div>
@@ -12804,7 +12822,7 @@
                                 <button onclick="showUserStats('${userEmail}')" style="
                                     flex: 1;
                                     padding: 14px 20px;
-                                    background: linear-gradient(135deg, #ff6b9d, #4299e1);
+                                    background: linear-gradient(135deg, var(--primary), #4299e1);
                                     color: white;
                                     border: none;
                                     border-radius: 12px;
@@ -12812,7 +12830,7 @@
                                     font-weight: 600;
                                     cursor: pointer;
                                     transition: all 0.2s ease;
-                                    box-shadow: 0 4px 16px rgba(255, 107, 157, 0.3);
+                                    box-shadow: 0 4px 16px rgba(196, 164, 132, 0.25);
                                 " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
                                     📊 統計を見る
                                 </button>
@@ -12887,7 +12905,7 @@
                             overflow-y: auto;
                             box-shadow: 0 24px 64px rgba(0,0,0,0.2);
                             position: relative;
-                            border: 1px solid rgba(255, 107, 157, 0.1);
+                            border: 1px solid rgba(196, 164, 132, 0.1);
                         ">
                             <!-- ヘッダー -->
                             <div style="
@@ -12896,25 +12914,25 @@
                                 display: flex;
                                 justify-content: space-between;
                                 align-items: center;
-                                background: linear-gradient(135deg, rgba(255, 107, 157, 0.05) 0%, rgba(64, 224, 208, 0.05) 100%);
+                                background: linear-gradient(135deg, var(--primary-alpha) 0%, rgba(123, 165, 155, 0.05) 100%);
                                 border-radius: 20px 20px 0 0;
                             ">
                                 <h2 style="
                                     margin: 0;
                                     font-size: 20px;
                                     font-weight: 700;
-                                    background: linear-gradient(135deg, #ff6b9d, #4299e1);
+                                    background: linear-gradient(135deg, var(--primary), #4299e1);
                                     -webkit-background-clip: text;
                                     -webkit-text-fill-color: transparent;
                                     background-clip: text;
                                 ">📝 ${displayName}さんのレビュー (${reviews.length}件)</h2>
                                 <button onclick="closeUserReviewsModal()" style="
-                                    background: rgba(255, 107, 157, 0.1);
-                                    border: 2px solid rgba(255, 107, 157, 0.2);
+                                    background: var(--primary-alpha);
+                                    border: 2px solid var(--primary-alpha);
                                     border-radius: 50%;
                                     width: 36px;
                                     height: 36px;
-                                    color: #ff6b9d;
+                                    color: var(--primary);
                                     font-size: 16px;
                                     cursor: pointer;
                                     display: flex;
@@ -12998,7 +13016,7 @@
                         <div style="
                             width: 32px;
                             height: 32px;
-                            background: linear-gradient(135deg, #ff6b9d, #4299e1);
+                            background: linear-gradient(135deg, var(--primary), #4299e1);
                             border-radius: 50%;
                             display: flex;
                             align-items: center;
@@ -13014,8 +13032,8 @@
 
                     <!-- レビュー内容 -->
                     <div style="
-                        background: rgba(255, 107, 157, 0.03);
-                        border-left: 4px solid rgba(255, 107, 157, 0.3);
+                        background: rgba(196, 164, 132, 0.03);
+                        border-left: 4px solid rgba(196, 164, 132, 0.4);
                         padding: 16px 20px;
                         border-radius: 0 12px 12px 0;
                         margin: 16px 0;
@@ -13145,7 +13163,7 @@
                             overflow-y: auto;
                             box-shadow: 0 24px 64px rgba(0,0,0,0.2);
                             position: relative;
-                            border: 1px solid rgba(255, 107, 157, 0.1);
+                            border: 1px solid rgba(196, 164, 132, 0.1);
                         ">
                             <!-- ヘッダー -->
                             <div style="
@@ -13154,25 +13172,25 @@
                                 display: flex;
                                 justify-content: space-between;
                                 align-items: center;
-                                background: linear-gradient(135deg, rgba(255, 107, 157, 0.05) 0%, rgba(64, 224, 208, 0.05) 100%);
+                                background: linear-gradient(135deg, var(--primary-alpha) 0%, rgba(123, 165, 155, 0.05) 100%);
                                 border-radius: 20px 20px 0 0;
                             ">
                                 <h2 style="
                                     margin: 0;
                                     font-size: 20px;
                                     font-weight: 700;
-                                    background: linear-gradient(135deg, #ff6b9d, #4299e1);
+                                    background: linear-gradient(135deg, var(--primary), #4299e1);
                                     -webkit-background-clip: text;
                                     -webkit-text-fill-color: transparent;
                                     background-clip: text;
                                 ">📊 ${displayName}さんの統計</h2>
                                 <button onclick="closeUserStatsModal()" style="
-                                    background: rgba(255, 107, 157, 0.1);
-                                    border: 2px solid rgba(255, 107, 157, 0.2);
+                                    background: var(--primary-alpha);
+                                    border: 2px solid var(--primary-alpha);
                                     border-radius: 50%;
                                     width: 36px;
                                     height: 36px;
-                                    color: #ff6b9d;
+                                    color: var(--primary);
                                     font-size: 16px;
                                     cursor: pointer;
                                     display: flex;
@@ -13203,12 +13221,12 @@
                                         <div style="font-size: 14px; opacity: 0.9;">投稿レビュー数</div>
                                     </div>
                                     <div style="
-                                        background: linear-gradient(135deg, #ff6b9d, #4299e1);
+                                        background: linear-gradient(135deg, var(--primary), #4299e1);
                                         color: white;
                                         padding: 20px;
                                         border-radius: 16px;
                                         text-align: center;
-                                        box-shadow: 0 4px 16px rgba(255, 107, 157, 0.3);
+                                        box-shadow: 0 4px 16px rgba(196, 164, 132, 0.25);
                                     ">
                                         <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px;">${visitedStoresCount}</div>
                                         <div style="font-size: 14px; opacity: 0.9;">行ったお店</div>
@@ -13369,7 +13387,7 @@
                             overflow-y: auto;
                             box-shadow: 0 24px 64px rgba(0,0,0,0.2);
                             position: relative;
-                            border: 1px solid rgba(255, 107, 157, 0.1);
+                            border: 1px solid rgba(196, 164, 132, 0.1);
                         ">
                             <!-- ヘッダー -->
                             <div style="
@@ -13378,25 +13396,25 @@
                                 display: flex;
                                 justify-content: space-between;
                                 align-items: center;
-                                background: linear-gradient(135deg, rgba(255, 107, 157, 0.05) 0%, rgba(64, 224, 208, 0.05) 100%);
+                                background: linear-gradient(135deg, var(--primary-alpha) 0%, rgba(123, 165, 155, 0.05) 100%);
                                 border-radius: 20px 20px 0 0;
                             ">
                                 <h2 style="
                                     margin: 0;
                                     font-size: 20px;
                                     font-weight: 700;
-                                    background: linear-gradient(135deg, #ff6b9d, #4299e1);
+                                    background: linear-gradient(135deg, var(--primary), #4299e1);
                                     -webkit-background-clip: text;
                                     -webkit-text-fill-color: transparent;
                                     background-clip: text;
                                 ">📊 ${displayName}さんの統計</h2>
                                 <button onclick="closeMyStatsModal()" style="
-                                    background: rgba(255, 107, 157, 0.1);
-                                    border: 2px solid rgba(255, 107, 157, 0.2);
+                                    background: var(--primary-alpha);
+                                    border: 2px solid var(--primary-alpha);
                                     border-radius: 50%;
                                     width: 36px;
                                     height: 36px;
-                                    color: #ff6b9d;
+                                    color: var(--primary);
                                     font-size: 16px;
                                     cursor: pointer;
                                     display: flex;
@@ -13427,12 +13445,12 @@
                                         <div style="font-size: 14px; opacity: 0.9;">投稿レビュー数</div>
                                     </div>
                                     <div style="
-                                        background: linear-gradient(135deg, #ff6b9d, #4299e1);
+                                        background: linear-gradient(135deg, var(--primary), #4299e1);
                                         color: white;
                                         padding: 20px;
                                         border-radius: 16px;
                                         text-align: center;
-                                        box-shadow: 0 4px 16px rgba(255, 107, 157, 0.3);
+                                        box-shadow: 0 4px 16px rgba(196, 164, 132, 0.25);
                                     ">
                                         <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px;">${visitedStoresCount}</div>
                                         <div style="font-size: 14px; opacity: 0.9;">行ったお店</div>
@@ -13683,7 +13701,7 @@
                         background: linear-gradient(135deg, rgba(255, 107, 157, 0.08) 0%, rgba(64, 224, 208, 0.08) 100%);
                         border-radius: 12px;
                         border-left: 4px solid;
-                        border-image: linear-gradient(135deg, #ff6b9d, #40e0d0) 1;
+                        border-image: linear-gradient(135deg, var(--primary), #40e0d0) 1;
                         display: flex;
                         align-items: center;
                         gap: 8px;
@@ -13702,7 +13720,7 @@
                         overflow: hidden;
                     ">
                         <!-- 装飾的グラデーション -->
-                        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #ff6b9d, #40e0d0); border-radius: 16px 16px 0 0;"></div>
+                        <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary), #40e0d0); border-radius: 16px 16px 0 0;"></div>
                         
                         <h4 style="
                             margin: 8px 0 20px 0;
@@ -13755,7 +13773,7 @@
                             <button onclick="submitReview(${storeId})" 
                                     style="
                                         padding: 10px 20px;
-                                        background: linear-gradient(135deg, #ff6b9d, #40e0d0);
+                                        background: linear-gradient(135deg, var(--primary), #40e0d0);
                                         color: white;
                                         border: none;
                                         border-radius: 10px;
@@ -13846,7 +13864,7 @@
                 " onmouseenter="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 32px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 24px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04)';">
                     
                     <!-- 装飾的グラデーション -->
-                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #ff6b9d, #40e0d0); border-radius: 16px 16px 0 0;"></div>
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary), #40e0d0); border-radius: 16px 16px 0 0;"></div>
                     
                     <!-- ユーザー情報ヘッダー -->
                     <div style="display: flex; align-items: center; margin-bottom: 16px; text-align: left !important; margin-top: 8px;">
@@ -13877,7 +13895,7 @@
                                 text-underline-offset: 2px;
                                 transition: all 0.2s ease;
                             " onclick="showUserProfile('${review.user_email}')" 
-                            onmouseover="this.style.color='#ff6b9d'; this.style.textDecorationColor='#ff6b9d';" 
+                            onmouseover="this.style.color='var(--primary)'; this.style.textDecorationColor='var(--primary)';" 
                             onmouseout="this.style.color='#333'; this.style.textDecorationColor='rgba(255, 107, 157, 0.4)';"
                             title="プロフィールを見る">${nickname || review.user_email}</div>
                             <div style="color: #666; font-size: 0.9em; opacity: 0.8;">
@@ -14007,7 +14025,7 @@
                                     margin: 0;
                                     font-size: 24px;
                                     font-weight: 700;
-                                    background: linear-gradient(135deg, #ff6b9d 0%, #4299e1 100%);
+                                    background: linear-gradient(135deg, var(--primary) 0%, #4299e1 100%);
                                     -webkit-background-clip: text;
                                     -webkit-text-fill-color: transparent;
                                     background-clip: text;
@@ -14264,7 +14282,7 @@
                 " onmouseenter="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 32px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 24px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04)';">
                     
                     <!-- 装飾的グラデーション -->
-                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #ff6b9d, #40e0d0); border-radius: 16px 16px 0 0;"></div>
+                    <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--primary), #40e0d0); border-radius: 16px 16px 0 0;"></div>
                     
                     <!-- 店舗ヘッダー -->
                     <div class="store-header" style="
@@ -14363,7 +14381,7 @@
                         padding: 8px 12px;
                         background: rgba(247, 250, 252, 0.6);
                         border-radius: 12px;
-                        border-left: 4px solid #ff6b9d;
+                        border-left: 4px solid var(--primary);
                         font-size: 15px;
                         font-weight: 400;
                         display: block !important;
@@ -15066,7 +15084,7 @@
                 border-radius: 3px;
             }
             #myReviewsModal div::-webkit-scrollbar-thumb {
-                background: linear-gradient(135deg, #ff6b9d, #4299e1);
+                background: linear-gradient(135deg, var(--primary), #4299e1);
                 border-radius: 3px;
             }
             #myReviewsModal div::-webkit-scrollbar-thumb:hover {
