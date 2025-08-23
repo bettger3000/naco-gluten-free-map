@@ -718,15 +718,17 @@
             .store-card-actions {
                 display: flex !important;
                 flex-direction: row !important;
-                justify-content: space-between !important;
+                justify-content: flex-start !important;
                 gap: 4px !important;
+                flex-wrap: wrap !important;
             }
             
             .store-card-actions .action-btn {
-                flex: 1 1 30% !important;
-                min-width: 70px !important;
+                flex: 0 0 auto !important;
+                width: auto !important;
+                min-width: fit-content !important;
                 font-size: 0.7rem !important;
-                padding: 6px 4px !important;
+                padding: 6px 8px !important;
             }
         }
 
@@ -1285,7 +1287,8 @@
         .store-card-actions {
             display: flex !important;
             flex-direction: row !important;
-            flex-wrap: nowrap !important;
+            flex-wrap: wrap !important;
+            justify-content: flex-start !important;
             gap: 6px;
             margin-top: var(--space-md);
             padding-top: var(--space-md);
@@ -1294,9 +1297,10 @@
         }
         
         .action-btn {
-            flex: 1 1 30%;
-            min-width: 80px;
-            padding: 8px 6px;
+            flex: 0 0 auto !important;
+            width: auto !important;
+            min-width: fit-content !important;
+            padding: 8px 12px !important;
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
             background: white;
@@ -1353,7 +1357,9 @@
 
         /* ポップアップ内のアクションボタン */
         .popup-action-btn {
-            flex: 1;
+            flex: 0 0 auto !important;
+            width: auto !important;
+            min-width: fit-content !important;
             padding: 10px 12px;
             border: 1px solid var(--border-light);
             border-radius: 8px;
@@ -1363,7 +1369,7 @@
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s ease;
-            display: flex;
+            display: inline-flex !important;
             align-items: center;
             justify-content: center;
             gap: 6px;
@@ -1647,13 +1653,17 @@
 
         .pc-store-card .store-card-actions {
             display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
             gap: 6px;
             padding-top: 12px;
             border-top: 1px solid var(--border-light);
         }
 
         .pc-store-card .action-btn {
-            flex: 1;
+            flex: 0 0 auto !important;
+            width: auto !important;
+            min-width: fit-content !important;
             padding: 8px 12px;
             font-size: 0.85rem;
             min-height: 36px;
@@ -1916,6 +1926,8 @@
             padding-top: var(--space-md);
             border-top: 1px solid var(--border-light);
             display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
             gap: var(--space-sm);
         }
 
@@ -3070,6 +3082,8 @@
             
             .desktop-popup .popup-actions {
                 display: flex;
+                flex-wrap: wrap;
+                justify-content: flex-start;
                 gap: 8px;
                 margin-top: 8px;
                 padding-top: 12px;
@@ -3102,6 +3116,9 @@
                 font-size: 13px !important;
                 padding: 8px 10px !important;
                 min-height: 38px !important;
+                flex: 0 0 auto !important;
+                width: auto !important;
+                min-width: fit-content !important;
             }
         }
 
