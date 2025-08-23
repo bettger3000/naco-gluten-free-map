@@ -9136,6 +9136,8 @@
                 avatar: 'default', // デフォルトアバター
                 avatarType: 'preset', // 'preset' または 'custom'
                 customAvatarData: null, // Base64画像データ
+                statsPublic: true, // 統計情報公開設定（デフォルト: 公開）
+                bio: '', // 自己紹介
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
             };
@@ -12103,6 +12105,41 @@
                                 " onfocus="this.style.borderColor='rgba(255, 107, 157, 0.5)'; this.style.boxShadow='0 0 0 3px rgba(255, 107, 157, 0.1)'" onblur="this.style.borderColor='rgba(255, 107, 157, 0.2)'; this.style.boxShadow='none'" placeholder="ニックネームを入力してください">
                             </div>
                             
+                            <!-- 統計公開設定 -->
+                            <div style="margin-bottom: 24px;">
+                                <label style="
+                                    display: block;
+                                    font-weight: 600;
+                                    color: #374151;
+                                    margin-bottom: 8px;
+                                    font-size: 1rem;
+                                ">📊 統計情報の公開設定</label>
+                                <div style="
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 12px;
+                                    padding: 16px;
+                                    background: rgba(255, 107, 157, 0.05);
+                                    border-radius: 12px;
+                                    border: 1px solid rgba(255, 107, 157, 0.1);
+                                ">
+                                    <input type="checkbox" id="statsPublicCheckbox" ${existingProfile?.statsPublic !== false ? 'checked' : ''} style="
+                                        width: 18px;
+                                        height: 18px;
+                                        accent-color: #ff6b9d;
+                                        cursor: pointer;
+                                    ">
+                                    <label for="statsPublicCheckbox" style="
+                                        font-size: 16px;
+                                        color: #333;
+                                        cursor: pointer;
+                                        flex: 1;
+                                        line-height: 1.5;
+                                    ">他のユーザーに統計情報を公開する<br>
+                                    <span style="font-size: 14px; color: #666; opacity: 0.8;">レビュー数、好きなカテゴリーなどの統計情報を他のユーザーが見ることができます</span></label>
+                                </div>
+                            </div>
+                            
                             <!-- アバター選択 -->
                             <div style="margin-bottom: 32px;">
                                 <label style="
@@ -12498,6 +12535,7 @@
         async function saveProfile() {
             const nicknameInput = document.getElementById('nicknameInput');
             const avatarPreview = document.getElementById('avatarPreview');
+            const statsPublicCheckbox = document.getElementById('statsPublicCheckbox');
             
             if (!nicknameInput) return;
             
@@ -12514,11 +12552,15 @@
                 const avatarType = avatarPreview.dataset.avatarType || 'preset';
                 const avatarUrl = avatarPreview.dataset.avatarUrl || avatarPreview.style.backgroundImage.match(/url\("?([^"]*)"?\)/)?.[1];
                 
+                // 統計公開設定を取得
+                const statsPublic = statsPublicCheckbox ? statsPublicCheckbox.checked : true;
+                
                 // プロフィールデータを構築
                 const updatedProfile = {
                     email: currentUserEmail,
                     nickname: nickname,
                     avatarType: avatarType,
+                    statsPublic: statsPublic, // 統計公開設定を追加
                     updatedAt: new Date().toISOString()
                 };
                 
@@ -12944,14 +12986,275 @@
             `;
         }
 
-        // 他ユーザーの統計情報表示（今後実装）
+        // 他ユーザーの統計情報表示
         async function showUserStats(userEmail) {
             console.log('📊 他ユーザー統計表示:', userEmail);
             
             // 現在開いているモーダルを閉じる
             closeUserProfileModal();
             
-            alert('統計機能は今後実装予定です');
+            try {
+                // ユーザープロフィール取得（統計公開設定確認）
+                const userProfile = await getUserProfile(userEmail);
+                if (!userProfile) {
+                    alert('ユーザー情報を取得できませんでした');
+                    return;
+                }
+
+                // 統計公開設定チェック
+                if (userProfile.statsPublic === false) {
+                    alert('このユーザーは統計情報を非公開に設定しています');
+                    return;
+                }
+
+                // レビューデータ取得
+                const response = await fetch(`${AVATAR_WORKER_URL}/reviews?user_email=${encodeURIComponent(userEmail)}`);
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    alert('統計データの取得に失敗しました');
+                    return;
+                }
+                
+                const reviews = (result.reviews || []).filter(r => !r.is_deleted);
+                
+                if (reviews.length === 0) {
+                    alert('このユーザーはまだレビューを投稿していません');
+                    return;
+                }
+
+                // 統計データ計算
+                const totalReviews = reviews.length;
+                const reviewsByCategory = {};
+                const monthlyReviews = {};
+                let earliestReview = null;
+                let latestReview = null;
+                
+                reviews.forEach(review => {
+                    // カテゴリー別集計
+                    const category = review.store_category || '不明';
+                    reviewsByCategory[category] = (reviewsByCategory[category] || 0) + 1;
+                    
+                    // 月別集計
+                    const date = new Date(review.created_at);
+                    const monthKey = `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+                    monthlyReviews[monthKey] = (monthlyReviews[monthKey] || 0) + 1;
+                    
+                    // 最古・最新レビュー
+                    if (!earliestReview || date < new Date(earliestReview.created_at)) {
+                        earliestReview = review;
+                    }
+                    if (!latestReview || date > new Date(latestReview.created_at)) {
+                        latestReview = review;
+                    }
+                });
+
+                // アクティビティ期間計算
+                let activityDays = 0;
+                if (earliestReview) {
+                    const startDate = new Date(earliestReview.created_at);
+                    const now = new Date();
+                    activityDays = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
+                }
+
+                // 最も好きなカテゴリー
+                const favoriteCategory = Object.entries(reviewsByCategory)
+                    .sort((a, b) => b[1] - a[1])[0];
+
+                const displayName = userProfile?.nickname || userEmail.split('@')[0];
+
+                // 他ユーザー統計モーダル表示
+                const modalHTML = `
+                    <div id="userStatsModal" style="
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0,0,0,0.6);
+                        backdrop-filter: blur(8px);
+                        z-index: 10000;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 20px;
+                    ">
+                        <div style="
+                            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+                            border-radius: 20px;
+                            max-width: 600px;
+                            width: 95%;
+                            max-height: 85vh;
+                            overflow-y: auto;
+                            box-shadow: 0 24px 64px rgba(0,0,0,0.2);
+                            position: relative;
+                            border: 1px solid rgba(255, 107, 157, 0.1);
+                        ">
+                            <!-- ヘッダー -->
+                            <div style="
+                                padding: 24px 32px;
+                                border-bottom: 1px solid rgba(255, 107, 157, 0.1);
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                background: linear-gradient(135deg, rgba(255, 107, 157, 0.05) 0%, rgba(64, 224, 208, 0.05) 100%);
+                                border-radius: 20px 20px 0 0;
+                            ">
+                                <h2 style="
+                                    margin: 0;
+                                    font-size: 20px;
+                                    font-weight: 700;
+                                    background: linear-gradient(135deg, #ff6b9d, #4299e1);
+                                    -webkit-background-clip: text;
+                                    -webkit-text-fill-color: transparent;
+                                    background-clip: text;
+                                ">📊 ${displayName}さんの統計</h2>
+                                <button onclick="closeUserStatsModal()" style="
+                                    background: rgba(255, 107, 157, 0.1);
+                                    border: 2px solid rgba(255, 107, 157, 0.2);
+                                    border-radius: 50%;
+                                    width: 36px;
+                                    height: 36px;
+                                    color: #ff6b9d;
+                                    font-size: 16px;
+                                    cursor: pointer;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    transition: all 0.2s ease;
+                                " onmouseover="this.style.background='rgba(255, 107, 157, 0.2)'" onmouseout="this.style.background='rgba(255, 107, 157, 0.1)'">×</button>
+                            </div>
+
+                            <!-- 統計内容 -->
+                            <div style="padding: 20px 32px;">
+                                <!-- 基本統計 -->
+                                <div style="
+                                    display: grid;
+                                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                                    gap: 16px;
+                                    margin-bottom: 32px;
+                                ">
+                                    <div style="
+                                        background: linear-gradient(135deg, #667eea, #764ba2);
+                                        color: white;
+                                        padding: 20px;
+                                        border-radius: 16px;
+                                        text-align: center;
+                                        box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+                                    ">
+                                        <div style="font-size: 32px; font-weight: 700; margin-bottom: 8px;">${totalReviews}</div>
+                                        <div style="font-size: 14px; opacity: 0.9;">投稿レビュー数</div>
+                                    </div>
+                                    <div style="
+                                        background: linear-gradient(135deg, #ff6b9d, #4299e1);
+                                        color: white;
+                                        padding: 20px;
+                                        border-radius: 16px;
+                                        text-align: center;
+                                        box-shadow: 0 4px 16px rgba(255, 107, 157, 0.3);
+                                    ">
+                                        <div style="font-size: 32px; font-weight: 700; margin-bottom: 8px;">${activityDays}</div>
+                                        <div style="font-size: 14px; opacity: 0.9;">アクティビティ期間（日）</div>
+                                    </div>
+                                </div>
+
+                                ${favoriteCategory ? `
+                                    <!-- 好きなカテゴリー -->
+                                    <div style="
+                                        background: rgba(255, 107, 157, 0.05);
+                                        border-radius: 16px;
+                                        padding: 20px;
+                                        margin-bottom: 24px;
+                                        border-left: 4px solid #ff6b9d;
+                                    ">
+                                        <h3 style="margin: 0 0 16px 0; color: #333; font-size: 16px; font-weight: 600;">
+                                            ${getCategoryIcon(favoriteCategory[0])} 最も好きなカテゴリー
+                                        </h3>
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <span style="font-size: 24px;">${getCategoryIcon(favoriteCategory[0])}</span>
+                                            <div>
+                                                <div style="font-size: 18px; font-weight: 600; color: #333;">${favoriteCategory[0]}</div>
+                                                <div style="font-size: 14px; color: #666;">${favoriteCategory[1]}件のレビュー</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ` : ''}
+
+                                ${Object.keys(reviewsByCategory).length > 0 ? `
+                                    <!-- カテゴリー別統計 -->
+                                    <div style="margin-bottom: 24px;">
+                                        <h3 style="margin: 0 0 16px 0; color: #333; font-size: 16px; font-weight: 600;">📊 カテゴリー別レビュー数</h3>
+                                        <div style="
+                                            background: rgba(255, 107, 157, 0.02);
+                                            border-radius: 12px;
+                                            padding: 16px;
+                                            border: 1px solid rgba(255, 107, 157, 0.1);
+                                        ">
+                                            ${Object.entries(reviewsByCategory)
+                                                .sort((a, b) => b[1] - a[1])
+                                                .map(([category, count]) => `
+                                                    <div style="
+                                                        display: flex;
+                                                        align-items: center;
+                                                        justify-content: space-between;
+                                                        padding: 8px 0;
+                                                        border-bottom: 1px solid rgba(255, 107, 157, 0.1);
+                                                    ">
+                                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                                            <span>${getCategoryIcon(category)}</span>
+                                                            <span style="color: #333; font-weight: 500;">${category}</span>
+                                                        </div>
+                                                        <span style="
+                                                            background: linear-gradient(135deg, #ff6b9d, #4299e1);
+                                                            color: white;
+                                                            padding: 4px 12px;
+                                                            border-radius: 20px;
+                                                            font-size: 14px;
+                                                            font-weight: 600;
+                                                        ">${count}件</span>
+                                                    </div>
+                                                `).join('')}
+                                        </div>
+                                    </div>
+                                ` : ''}
+
+                                ${earliestReview && latestReview ? `
+                                    <!-- アクティビティ情報 -->
+                                    <div style="
+                                        background: linear-gradient(135deg, rgba(64, 224, 208, 0.05) 0%, rgba(255, 107, 157, 0.05) 100%);
+                                        border-radius: 12px;
+                                        padding: 20px;
+                                        border: 1px solid rgba(64, 224, 208, 0.2);
+                                    ">
+                                        <h3 style="margin: 0 0 16px 0; color: #333; font-size: 16px; font-weight: 600;">🗓️ アクティビティ</h3>
+                                        <div style="font-size: 14px; color: #666; line-height: 1.6;">
+                                            <div style="margin-bottom: 8px;">
+                                                <strong>初回レビュー:</strong> ${new Date(earliestReview.created_at).toLocaleDateString('ja-JP')}
+                                            </div>
+                                            <div>
+                                                <strong>最新レビュー:</strong> ${new Date(latestReview.created_at).toLocaleDateString('ja-JP')}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+                console.log('✅ 他ユーザー統計表示完了');
+
+            } catch (error) {
+                console.error('❌ 他ユーザー統計表示エラー:', error);
+                alert('統計の表示に失敗しました');
+            }
+        }
+
+        // 他ユーザー統計モーダルを閉じる
+        function closeUserStatsModal() {
+            const modal = document.getElementById('userStatsModal');
+            if (modal) modal.remove();
         }
 
         // マイ統計を表示
@@ -13332,6 +13635,7 @@
                     avatarType: profile.avatarType || 'preset',
                     avatarUrl: profile.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(profile.email)}`,
                     bio: profile.bio || '',
+                    statsPublic: profile.statsPublic !== undefined ? profile.statsPublic : true, // 統計公開設定
                     createdAt: profile.createdAt,
                     updatedAt: new Date().toISOString()
                 };
