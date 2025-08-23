@@ -1479,9 +1479,12 @@
         .image-carousel {
             position: relative;
             width: 100%;
-            height: 200px;
+            aspect-ratio: 16/9;
+            min-height: 280px;
+            max-height: 400px;
             overflow: hidden;
             border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         
         .image-slide {
@@ -1568,13 +1571,14 @@
         }
         
         .no-images {
-            height: 120px;
+            aspect-ratio: 16/9;
+            min-height: 200px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--text-secondary);
             font-size: 0.9rem;
-            background: var(--bg-light);
+            background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-secondary) 100%);
             border: 2px dashed var(--border-light);
             border-radius: 12px;
             flex-direction: column;
@@ -1743,6 +1747,12 @@
         
         /* スマホ版: 店名がタップ可能であることを示す */
         @media (max-width: 768px) {
+            /* 画像カルーセルのモバイル対応 */
+            .image-carousel {
+                min-height: 240px;
+                max-height: 350px;
+            }
+            
             .store-card .store-name {
                 color: var(--primary-dark);
                 position: relative;
@@ -3588,6 +3598,9 @@
 
         .store-detail-images {
             margin-bottom: var(--space-xl);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
         }
 
         .store-detail-info {
