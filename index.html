@@ -13025,29 +13025,32 @@
 
                 // 統計データ計算
                 const totalReviews = reviews.length;
-                const reviewsByCategory = {};
-                const monthlyReviews = {};
                 let earliestReview = null;
                 let latestReview = null;
                 
+                // ユニークな店舗を集計（行ったお店の数）
+                const uniqueStores = new Set();
+                
                 reviews.forEach(review => {
-                    // カテゴリー別集計
-                    const category = review.store_category || '不明';
-                    reviewsByCategory[category] = (reviewsByCategory[category] || 0) + 1;
-                    
-                    // 月別集計
-                    const date = new Date(review.created_at);
-                    const monthKey = `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}`;
-                    monthlyReviews[monthKey] = (monthlyReviews[monthKey] || 0) + 1;
-                    
                     // 最古・最新レビュー
+                    const date = new Date(review.created_at);
                     if (!earliestReview || date < new Date(earliestReview.created_at)) {
                         earliestReview = review;
                     }
                     if (!latestReview || date > new Date(latestReview.created_at)) {
                         latestReview = review;
                     }
+                    
+                    // ユニークな店舗を記録
+                    if (review.store_id) {
+                        uniqueStores.add(review.store_id);
+                    } else {
+                        // store_idがない場合は店舗名で判定
+                        uniqueStores.add(review.store_name || 'unknown');
+                    }
                 });
+
+                const visitedStoresCount = uniqueStores.size;
 
                 // アクティビティ期間計算
                 let activityDays = 0;
@@ -13057,9 +13060,8 @@
                     activityDays = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
                 }
 
-                // 最も好きなカテゴリー
-                const favoriteCategory = Object.entries(reviewsByCategory)
-                    .sort((a, b) => b[1] - a[1])[0];
+                // TODO: 将来的には「行きたいお店」機能を実装
+                const wishlistCount = 0; // 今後実装予定
 
                 const displayName = userProfile?.nickname || userEmail.split('@')[0];
 
@@ -13130,7 +13132,7 @@
                                 <!-- 基本統計 -->
                                 <div style="
                                     display: grid;
-                                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                                    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
                                     gap: 16px;
                                     margin-bottom: 32px;
                                 ">
@@ -13142,7 +13144,7 @@
                                         text-align: center;
                                         box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
                                     ">
-                                        <div style="font-size: 32px; font-weight: 700; margin-bottom: 8px;">${totalReviews}</div>
+                                        <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px;">${totalReviews}</div>
                                         <div style="font-size: 14px; opacity: 0.9;">投稿レビュー数</div>
                                     </div>
                                     <div style="
@@ -13153,70 +13155,32 @@
                                         text-align: center;
                                         box-shadow: 0 4px 16px rgba(255, 107, 157, 0.3);
                                     ">
-                                        <div style="font-size: 32px; font-weight: 700; margin-bottom: 8px;">${activityDays}</div>
+                                        <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px;">${visitedStoresCount}</div>
+                                        <div style="font-size: 14px; opacity: 0.9;">行ったお店</div>
+                                    </div>
+                                    <div style="
+                                        background: linear-gradient(135deg, #ffecd2, #fcb69f);
+                                        color: #8b4513;
+                                        padding: 20px;
+                                        border-radius: 16px;
+                                        text-align: center;
+                                        box-shadow: 0 4px 16px rgba(252, 182, 159, 0.3);
+                                    ">
+                                        <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px;">${wishlistCount}</div>
+                                        <div style="font-size: 14px; opacity: 0.9;">行きたいお店</div>
+                                    </div>
+                                    <div style="
+                                        background: linear-gradient(135deg, #a8edea, #fed6e3);
+                                        color: #2d3748;
+                                        padding: 20px;
+                                        border-radius: 16px;
+                                        text-align: center;
+                                        box-shadow: 0 4px 16px rgba(168, 237, 234, 0.3);
+                                    ">
+                                        <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px;">${activityDays}</div>
                                         <div style="font-size: 14px; opacity: 0.9;">アクティビティ期間（日）</div>
                                     </div>
                                 </div>
-
-                                ${favoriteCategory ? `
-                                    <!-- 好きなカテゴリー -->
-                                    <div style="
-                                        background: rgba(255, 107, 157, 0.05);
-                                        border-radius: 16px;
-                                        padding: 20px;
-                                        margin-bottom: 24px;
-                                        border-left: 4px solid #ff6b9d;
-                                    ">
-                                        <h3 style="margin: 0 0 16px 0; color: #333; font-size: 16px; font-weight: 600;">
-                                            ${getCategoryIcon(favoriteCategory[0])} 最も好きなカテゴリー
-                                        </h3>
-                                        <div style="display: flex; align-items: center; gap: 12px;">
-                                            <span style="font-size: 24px;">${getCategoryIcon(favoriteCategory[0])}</span>
-                                            <div>
-                                                <div style="font-size: 18px; font-weight: 600; color: #333;">${favoriteCategory[0]}</div>
-                                                <div style="font-size: 14px; color: #666;">${favoriteCategory[1]}件のレビュー</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ` : ''}
-
-                                ${Object.keys(reviewsByCategory).length > 0 ? `
-                                    <!-- カテゴリー別統計 -->
-                                    <div style="margin-bottom: 24px;">
-                                        <h3 style="margin: 0 0 16px 0; color: #333; font-size: 16px; font-weight: 600;">📊 カテゴリー別レビュー数</h3>
-                                        <div style="
-                                            background: rgba(255, 107, 157, 0.02);
-                                            border-radius: 12px;
-                                            padding: 16px;
-                                            border: 1px solid rgba(255, 107, 157, 0.1);
-                                        ">
-                                            ${Object.entries(reviewsByCategory)
-                                                .sort((a, b) => b[1] - a[1])
-                                                .map(([category, count]) => `
-                                                    <div style="
-                                                        display: flex;
-                                                        align-items: center;
-                                                        justify-content: space-between;
-                                                        padding: 8px 0;
-                                                        border-bottom: 1px solid rgba(255, 107, 157, 0.1);
-                                                    ">
-                                                        <div style="display: flex; align-items: center; gap: 8px;">
-                                                            <span>${getCategoryIcon(category)}</span>
-                                                            <span style="color: #333; font-weight: 500;">${category}</span>
-                                                        </div>
-                                                        <span style="
-                                                            background: linear-gradient(135deg, #ff6b9d, #4299e1);
-                                                            color: white;
-                                                            padding: 4px 12px;
-                                                            border-radius: 20px;
-                                                            font-size: 14px;
-                                                            font-weight: 600;
-                                                        ">${count}件</span>
-                                                    </div>
-                                                `).join('')}
-                                        </div>
-                                    </div>
-                                ` : ''}
 
                                 ${earliestReview && latestReview ? `
                                     <!-- アクティビティ情報 -->
@@ -13283,29 +13247,32 @@
                 
                 // 統計データ計算
                 const totalReviews = reviews.length;
-                const reviewsByCategory = {};
-                const monthlyReviews = {};
                 let earliestReview = null;
                 let latestReview = null;
                 
+                // ユニークな店舗を集計（行ったお店の数）
+                const uniqueStores = new Set();
+                
                 reviews.forEach(review => {
-                    // カテゴリー別集計
-                    const category = review.store_category || '不明';
-                    reviewsByCategory[category] = (reviewsByCategory[category] || 0) + 1;
-                    
-                    // 月別集計
-                    const date = new Date(review.created_at);
-                    const monthKey = `${date.getFullYear()}/${(date.getMonth() + 1).toString().padStart(2, '0')}`;
-                    monthlyReviews[monthKey] = (monthlyReviews[monthKey] || 0) + 1;
-                    
                     // 最古・最新レビュー
+                    const date = new Date(review.created_at);
                     if (!earliestReview || date < new Date(earliestReview.created_at)) {
                         earliestReview = review;
                     }
                     if (!latestReview || date > new Date(latestReview.created_at)) {
                         latestReview = review;
                     }
+                    
+                    // ユニークな店舗を記録
+                    if (review.store_id) {
+                        uniqueStores.add(review.store_id);
+                    } else {
+                        // store_idがない場合は店舗名で判定
+                        uniqueStores.add(review.store_name || 'unknown');
+                    }
                 });
+
+                const visitedStoresCount = uniqueStores.size;
 
                 // 利用期間計算
                 let membershipDays = 0;
@@ -13315,9 +13282,8 @@
                     membershipDays = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
                 }
 
-                // 最も好きなカテゴリー
-                const favoriteCategory = Object.entries(reviewsByCategory)
-                    .sort((a, b) => b[1] - a[1])[0];
+                // TODO: 将来的には「行きたいお店」機能を実装
+                const wishlistCount = 0; // 今後実装予定
 
                 // プロフィール情報取得
                 const userProfile = await getUserProfile(currentUserEmail);
@@ -13390,7 +13356,7 @@
                                 <!-- 基本統計 -->
                                 <div style="
                                     display: grid;
-                                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                                    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
                                     gap: 16px;
                                     margin-bottom: 32px;
                                 ">
@@ -13402,7 +13368,7 @@
                                         text-align: center;
                                         box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
                                     ">
-                                        <div style="font-size: 32px; font-weight: 700; margin-bottom: 8px;">${totalReviews}</div>
+                                        <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px;">${totalReviews}</div>
                                         <div style="font-size: 14px; opacity: 0.9;">投稿レビュー数</div>
                                     </div>
                                     <div style="
@@ -13413,70 +13379,32 @@
                                         text-align: center;
                                         box-shadow: 0 4px 16px rgba(255, 107, 157, 0.3);
                                     ">
-                                        <div style="font-size: 32px; font-weight: 700; margin-bottom: 8px;">${membershipDays}</div>
+                                        <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px;">${visitedStoresCount}</div>
+                                        <div style="font-size: 14px; opacity: 0.9;">行ったお店</div>
+                                    </div>
+                                    <div style="
+                                        background: linear-gradient(135deg, #ffecd2, #fcb69f);
+                                        color: #8b4513;
+                                        padding: 20px;
+                                        border-radius: 16px;
+                                        text-align: center;
+                                        box-shadow: 0 4px 16px rgba(252, 182, 159, 0.3);
+                                    ">
+                                        <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px;">${wishlistCount}</div>
+                                        <div style="font-size: 14px; opacity: 0.9;">行きたいお店</div>
+                                    </div>
+                                    <div style="
+                                        background: linear-gradient(135deg, #a8edea, #fed6e3);
+                                        color: #2d3748;
+                                        padding: 20px;
+                                        border-radius: 16px;
+                                        text-align: center;
+                                        box-shadow: 0 4px 16px rgba(168, 237, 234, 0.3);
+                                    ">
+                                        <div style="font-size: 28px; font-weight: 700; margin-bottom: 8px;">${membershipDays}</div>
                                         <div style="font-size: 14px; opacity: 0.9;">利用日数</div>
                                     </div>
                                 </div>
-
-                                ${favoriteCategory ? `
-                                    <!-- 好きなカテゴリー -->
-                                    <div style="
-                                        background: rgba(255, 107, 157, 0.05);
-                                        border-radius: 16px;
-                                        padding: 20px;
-                                        margin-bottom: 24px;
-                                        border-left: 4px solid #ff6b9d;
-                                    ">
-                                        <h3 style="margin: 0 0 16px 0; color: #333; font-size: 16px; font-weight: 600;">
-                                            ${getCategoryIcon(favoriteCategory[0])} 最も好きなカテゴリー
-                                        </h3>
-                                        <div style="display: flex; align-items: center; gap: 12px;">
-                                            <span style="font-size: 24px;">${getCategoryIcon(favoriteCategory[0])}</span>
-                                            <div>
-                                                <div style="font-size: 18px; font-weight: 600; color: #333;">${favoriteCategory[0]}</div>
-                                                <div style="font-size: 14px; color: #666;">${favoriteCategory[1]}件のレビュー</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ` : ''}
-
-                                ${Object.keys(reviewsByCategory).length > 0 ? `
-                                    <!-- カテゴリー別統計 -->
-                                    <div style="margin-bottom: 24px;">
-                                        <h3 style="margin: 0 0 16px 0; color: #333; font-size: 16px; font-weight: 600;">📊 カテゴリー別レビュー数</h3>
-                                        <div style="
-                                            background: rgba(255, 107, 157, 0.02);
-                                            border-radius: 12px;
-                                            padding: 16px;
-                                            border: 1px solid rgba(255, 107, 157, 0.1);
-                                        ">
-                                            ${Object.entries(reviewsByCategory)
-                                                .sort((a, b) => b[1] - a[1])
-                                                .map(([category, count]) => `
-                                                    <div style="
-                                                        display: flex;
-                                                        align-items: center;
-                                                        justify-content: space-between;
-                                                        padding: 8px 0;
-                                                        border-bottom: 1px solid rgba(255, 107, 157, 0.1);
-                                                    ">
-                                                        <div style="display: flex; align-items: center; gap: 8px;">
-                                                            <span>${getCategoryIcon(category)}</span>
-                                                            <span style="color: #333; font-weight: 500;">${category}</span>
-                                                        </div>
-                                                        <span style="
-                                                            background: linear-gradient(135deg, #ff6b9d, #4299e1);
-                                                            color: white;
-                                                            padding: 4px 12px;
-                                                            border-radius: 20px;
-                                                            font-size: 14px;
-                                                            font-weight: 600;
-                                                        ">${count}件</span>
-                                                    </div>
-                                                `).join('')}
-                                        </div>
-                                    </div>
-                                ` : ''}
 
                                 ${earliestReview && latestReview ? `
                                     <!-- アクティビティ情報 -->
