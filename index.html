@@ -14078,9 +14078,12 @@
         document.addEventListener('click', function(e) {
             // 画像がクリックされた場合のみ処理
             if (e.target.tagName === 'IMG' && e.target.src) {
-                // 店舗画像かどうか確認（カルーセル内やポップアップ内）
+                // 店舗画像かどうか確認（カルーセル内、ポップアップ内、店舗詳細内）
                 const isStoreImage = e.target.closest('.image-slide') || 
                                    e.target.closest('.store-popup') ||
+                                   e.target.closest('.store-detail-modal') ||
+                                   e.target.closest('.store-detail-fullscreen') ||
+                                   e.target.closest('.store-detail-images') ||
                                    e.target.classList.contains('store-image');
                 
                 // 除外する画像（アバター、ロゴなど）
