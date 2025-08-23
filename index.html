@@ -12609,7 +12609,19 @@
                 const result = await response.json();
                 
                 if (result.profile) {
-                    console.log('✅ [他ユーザー] プロフィール取得成功:', email, result.profile);
+                    console.log('✅ [他ユーザー] プロフィール取得成功:', email);
+                    console.log('🔍 [詳細デバッグ] Cloudflareプロフィール内容:', {
+                        email: email,
+                        rawProfile: result.profile,
+                        nickname: result.profile.nickname,
+                        nicknameType: typeof result.profile.nickname,
+                        avatar: result.profile.avatar,
+                        avatarType: result.profile.avatarType,
+                        avatarUrl: result.profile.avatarUrl,
+                        customAvatarUrl: result.profile.customAvatarUrl,
+                        allProfileKeys: Object.keys(result.profile),
+                        stringified: JSON.stringify(result.profile)
+                    });
                     return result.profile;
                 }
                 
@@ -13481,7 +13493,15 @@
             // 他のユーザーの場合はCloudflareから取得
             try {
                 const profile = await getUserProfile(email);
+                console.log('📝 [ニックネーム] 取得したプロフィール:', {
+                    email: email,
+                    profile: profile,
+                    hasNickname: !!(profile && profile.nickname),
+                    nickname: profile ? profile.nickname : 'なし',
+                    nicknameValue: profile ? `"${profile.nickname}"` : 'なし'
+                });
                 if (profile && profile.nickname) {
+                    console.log('✅ [ニックネーム] 返却値:', profile.nickname);
                     return profile.nickname;
                 }
             } catch (error) {
@@ -13527,18 +13547,32 @@
                     
                     if (profile) {
                         console.log('✅ [アバター] プロフィール取得成功:', profile);
+                        console.log('🔍 [アバター詳細] プロフィール解析:', {
+                            email: email,
+                            avatarType: profile.avatarType,
+                            avatarUrl: profile.avatarUrl,
+                            customAvatarUrl: profile.customAvatarUrl,
+                            avatar: profile.avatar,
+                            hasAvatarUrl: !!profile.avatarUrl,
+                            hasCustomAvatarUrl: !!profile.customAvatarUrl,
+                            isCustomType: profile.avatarType === 'custom',
+                            isImageType: profile.avatarType === 'image',
+                            isPresetType: profile.avatarType === 'preset'
+                        });
                         
                         // アバタータイプに応じて処理
                         if ((profile.avatarType === 'custom' || profile.avatarType === 'image') && profile.avatarUrl) {
-                            console.log('✅ [アバター] カスタム/アップロードアバター:', profile.avatarUrl);
+                            console.log('✅ [アバター] カスタム/アップロードアバター返却:', profile.avatarUrl);
                             return profile.avatarUrl;
                         } else if (profile.avatarType === 'preset' && profile.avatarUrl) {
-                            console.log('✅ [アバター] プリセットアバター:', profile.avatarUrl);
+                            console.log('✅ [アバター] プリセットアバター返却:', profile.avatarUrl);
                             return profile.avatarUrl;
                         } else if (profile.avatar && profile.avatar !== 'default') {
                             // 絵文字アバターの場合
-                            console.log('✅ [アバター] 絵文字アバター:', profile.avatar);
+                            console.log('✅ [アバター] 絵文字アバター返却:', profile.avatar);
                             return createEmojiAvatar(profile.avatar);
+                        } else {
+                            console.log('⚠️ [アバター] 該当するアバタータイプなし、デフォルトを使用');
                         }
                     } else {
                         console.warn('⚠️ [アバター] プロフィール取得失敗:', email);
