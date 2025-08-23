@@ -3914,7 +3914,9 @@
             }
             
             .btn-cancel, .btn-submit, .btn-delete {
-                flex: 1;
+                flex: 0 0 auto !important;
+                width: auto !important;
+                min-width: fit-content !important;
                 max-width: 120px;
             }
         }
@@ -12754,7 +12756,10 @@
                                             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                                             flex-shrink: 0;
                                             height: fit-content;
-                                        " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.15)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';" style="width: auto; min-width: fit-content; padding: 6px 12px;">
+                                            width: auto !important;
+                                            min-width: fit-content !important;
+                                            max-width: fit-content !important;
+                                        " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.15)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
                                     ✏️ 編集
                                 </button>
                             </div>
@@ -13146,6 +13151,9 @@
                                 font-weight: 500;
                                 display: inline-block;
                                 margin-bottom: 4px;
+                                width: auto !important;
+                                min-width: fit-content !important;
+                                max-width: fit-content !important;
                             ">${categoryStyle.icon} ${storeCategory}</span>
                             ${storeAddress ? `<div style="
                                 font-size: 12px;
@@ -13159,7 +13167,7 @@
                             color: white;
                             border: none;
                             border-radius: 8px;
-                            padding: 8px 12px;
+                            padding: 8px 16px;
                             font-size: 13px;
                             font-weight: 600;
                             cursor: pointer;
@@ -13168,7 +13176,10 @@
                             flex-shrink: 0;
                             align-self: flex-start;
                             white-space: nowrap;
-                        " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 16px rgba(102, 126, 234, 0.4)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(102, 126, 234, 0.3)';" style="width: auto; min-width: fit-content; padding: 8px 16px;">📍 MAP</button>
+                            width: auto !important;
+                            min-width: fit-content !important;
+                            max-width: fit-content !important;
+                        " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 16px rgba(102, 126, 234, 0.4)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(102, 126, 234, 0.3)';">📍 MAP</button>
                     </div>
                     
                     <!-- ユーザー情報ヘッダー -->
@@ -13242,14 +13253,17 @@
                                 color: white;
                                 border: none;
                                 border-radius: 8px;
-                                padding: 6px 16px;
+                                padding: 6px 12px;
                                 font-size: 13px;
                                 font-weight: 600;
                                 cursor: pointer;
                                 transition: all 0.2s ease;
                                 box-shadow: 0 2px 8px rgba(66, 153, 225, 0.3);
                                 flex-shrink: 0;
-                            " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 16px rgba(66, 153, 225, 0.4)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(66, 153, 225, 0.3)';" style="width: auto; min-width: fit-content; padding: 6px 12px;">✏️ 編集</button>
+                                width: auto !important;
+                                min-width: fit-content !important;
+                                max-width: fit-content !important;
+                            " onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 16px rgba(66, 153, 225, 0.4)';" onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(66, 153, 225, 0.3)';">✏️ 編集</button>
                         </div>
                         <div id="my-edit-buttons-editing-${review.id}" style="display: none;"></div>
                     </div>
