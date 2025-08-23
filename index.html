@@ -12877,6 +12877,16 @@
                 currentUserProfile: currentUserProfile
             });
             
+            // HTMLテンプレート生成前の最終確認
+            console.log('📝 HTMLテンプレート生成直前の値確認:', {
+                nickname: nickname,
+                nicknameType: typeof nickname,
+                avatarUrl: avatarUrl,
+                avatarUrlType: typeof avatarUrl,
+                reviewId: review.id,
+                userEmail: review.user_email
+            });
+            
             return `
                 <div id="review-${review.id}" style="
                     background: linear-gradient(135deg, #ffffff 0%, #fdfbfb 100%);
@@ -12911,7 +12921,7 @@
                             border-radius: 50% !important;
                             margin-right: 12px !important;
                             flex-shrink: 0 !important;
-                            background-image: url('${avatarUrl}');
+                            background-image: url('${avatarUrl || createEmojiAvatar('🌸')}');
                             background-size: cover !important;
                             background-position: center center !important;
                             background-repeat: no-repeat !important;
@@ -12919,7 +12929,7 @@
                             background-color: #E5E7EB;
                         " onerror="this.onerror=null; this.style.backgroundImage='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxNiIgY3k9IjE2IiByPSIxNiIgZmlsbD0iI0U1RTdFQiIvPjx0ZXh0IHg9IjE2IiB5PSIyMiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNiIgZm9udC1mYW1pbHk9InN5c3RlbS11aSI+8J+MuDwvdGV4dD48L3N2Zz4='; this.style.backgroundColor='#f8f9fa';"></div>
                         <div style="flex-grow: 1;">
-                            <div style="font-weight: 600; color: #333; font-size: 16px; margin-bottom: 2px;">${nickname}</div>
+                            <div style="font-weight: 600; color: #333; font-size: 16px; margin-bottom: 2px;">${nickname || review.user_email}</div>
                             <div style="color: #666; font-size: 0.9em; opacity: 0.8;">
                                 投稿: ${createdDate}${updatedDate ? ` • 編集: ${updatedDate}` : ''}
                             </div>
@@ -13380,7 +13390,7 @@
                             border-radius: 50% !important;
                             margin-right: 12px !important;
                             flex-shrink: 0 !important;
-                            background-image: url('${avatarUrl}');
+                            background-image: url('${avatarUrl || createEmojiAvatar('🌸')}');
                             background-size: cover !important;
                             background-position: center center !important;
                             background-repeat: no-repeat !important;
@@ -13391,7 +13401,7 @@
                             font-weight: 600; 
                             color: #4a5568; 
                             font-size: 14px;
-                        ">${nickname}</div>
+                        ">${nickname || review.user_email}</div>
                     </div>
                     
                     <!-- レビュー内容 -->
