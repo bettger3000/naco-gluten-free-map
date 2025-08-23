@@ -14074,10 +14074,16 @@
             }
         }
         
-        // 画像クリックイベント設定
+        // 画像クリックイベント設定（デバッグ版）
         document.addEventListener('click', function(e) {
+            console.log('🖱️ クリックイベント検出:', e.target.tagName, e.target);
+            
             // 画像がクリックされた場合のみ処理
             if (e.target.tagName === 'IMG' && e.target.src) {
+                console.log('📸 画像クリック検出:', e.target.src);
+                console.log('画像のクラス:', e.target.className);
+                console.log('親要素:', e.target.parentElement);
+                
                 // 店舗画像かどうか確認（カルーセル内、ポップアップ内、店舗詳細内）
                 const isStoreImage = e.target.closest('.image-slide') || 
                                    e.target.closest('.store-popup') ||
@@ -14086,6 +14092,14 @@
                                    e.target.closest('.store-detail-images') ||
                                    e.target.classList.contains('store-image');
                 
+                console.log('🎯 店舗画像判定:', isStoreImage);
+                console.log('- .image-slide:', !!e.target.closest('.image-slide'));
+                console.log('- .store-popup:', !!e.target.closest('.store-popup'));
+                console.log('- .store-detail-modal:', !!e.target.closest('.store-detail-modal'));
+                console.log('- .store-detail-fullscreen:', !!e.target.closest('.store-detail-fullscreen'));
+                console.log('- .store-detail-images:', !!e.target.closest('.store-detail-images'));
+                console.log('- .store-image class:', e.target.classList.contains('store-image'));
+                
                 // 除外する画像（アバター、ロゴなど）
                 const isExcludedImage = e.target.classList.contains('avatar') ||
                                        e.target.classList.contains('logo') ||
@@ -14093,11 +14107,16 @@
                                        e.target.closest('.hamburger-menu') ||
                                        e.target.closest('.login-modal');
                 
+                console.log('❌ 除外画像判定:', isExcludedImage);
+                
                 // 店舗画像で除外対象でなければ拡大表示
                 if (isStoreImage && !isExcludedImage) {
+                    console.log('✅ 画像拡大表示実行!');
                     e.preventDefault();
                     e.stopPropagation();
                     showImageModal(e.target.src, e.target.alt);
+                } else {
+                    console.log('⚠️ 画像拡大表示スキップ - 店舗画像ではない or 除外対象');
                 }
             }
         });
