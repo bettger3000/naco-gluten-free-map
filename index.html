@@ -12582,6 +12582,45 @@
         
         // ============ Cloudflare プロフィール管理API ============
         
+        // 他ユーザーのプロフィールを取得（レビュー表示用）
+        async function getUserProfile(email) {
+            try {
+                console.log('🔍 [他ユーザー] プロフィール取得開始:', email);
+                
+                // 現在のユーザーの場合は既存プロフィールを返す
+                if (getCurrentUser() === email && currentUserProfile) {
+                    console.log('👤 [他ユーザー] 現在ユーザーのプロフィールを返却');
+                    return currentUserProfile;
+                }
+                
+                // Cloudflareから他ユーザーのプロフィールを取得
+                const response = await fetch(`${AVATAR_WORKER_URL}/profile?email=${encodeURIComponent(email)}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                if (!response.ok) {
+                    console.warn('⚠️ [他ユーザー] Cloudflareプロフィール取得失敗:', response.status);
+                    return null;
+                }
+                
+                const result = await response.json();
+                
+                if (result.profile) {
+                    console.log('✅ [他ユーザー] プロフィール取得成功:', email, result.profile);
+                    return result.profile;
+                }
+                
+                return null;
+                
+            } catch (error) {
+                console.warn('⚠️ [他ユーザー] プロフィール取得例外:', error);
+                return null;
+            }
+        }
+        
         // Cloudflareからプロフィールを取得
         async function loadProfileFromCloudflare(email) {
             try {
@@ -13410,7 +13449,7 @@
                 return getDisplayNickname(currentUserProfile);
             }
             
-            // 他のユーザーの場合はSupabaseから取得
+            // 他のユーザーの場合はCloudflareから取得
             try {
                 const profile = await getUserProfile(email);
                 if (profile && profile.nickname) {
@@ -13452,46 +13491,34 @@
                     }
                 }
                 
-                // 他のユーザーの場合はWorker APIから取得
+                // 他のユーザーの場合はCloudflareプロフィールから取得
                 try {
-                    console.log('🌐 Worker APIからアバター取得中:', email);
-                    const response = await fetch(`${AVATAR_WORKER_URL}/avatar?user_email=${encodeURIComponent(email)}`, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    });
+                    console.log('🌐 [アバター] Cloudflareからプロフィール取得中:', email);
+                    const profile = await getUserProfile(email);
                     
-                    if (response.ok) {
-                        const data = await response.json();
-                        console.log('✅ Worker APIアバター取得成功:', data);
+                    if (profile) {
+                        console.log('✅ [アバター] プロフィール取得成功:', profile);
                         
-                        if (data.avatar_url) {
-                            return data.avatar_url;
-                        } else if (data.avatar_emoji) {
-                            return createEmojiAvatar(data.avatar_emoji);
+                        // アバタータイプに応じて処理
+                        if ((profile.avatarType === 'custom' || profile.avatarType === 'image') && profile.avatarUrl) {
+                            console.log('✅ [アバター] カスタム/アップロードアバター:', profile.avatarUrl);
+                            return profile.avatarUrl;
+                        } else if (profile.avatarType === 'preset' && profile.avatarUrl) {
+                            console.log('✅ [アバター] プリセットアバター:', profile.avatarUrl);
+                            return profile.avatarUrl;
+                        } else if (profile.avatar && profile.avatar !== 'default') {
+                            // 絵文字アバターの場合
+                            console.log('✅ [アバター] 絵文字アバター:', profile.avatar);
+                            return createEmojiAvatar(profile.avatar);
                         }
                     } else {
-                        console.warn('⚠️ Worker APIアバター取得失敗:', response.status);
+                        console.warn('⚠️ [アバター] プロフィール取得失敗:', email);
                     }
-                } catch (workerError) {
-                    console.warn('Worker APIエラー:', workerError);
+                } catch (error) {
+                    console.warn('⚠️ [アバター] プロフィール取得エラー:', error);
                 }
                 
-                // フォールバック: Supabaseプロフィール確認（最小限）
-                const profile = await Promise.race([
-                    loadUserProfile ? loadUserProfile(email) : Promise.resolve(null),
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))
-                ]);
-                
-                console.log('💾 フォールバックプロフィール:', profile);
-                
-                if (profile && profile.avatar && profile.avatar !== 'default') {
-                    console.log('✅ フォールバック絵文字アバター:', profile.avatar);
-                    return createEmojiAvatar(profile.avatar);
-                }
-                
-                console.warn('⚠️ アバターが取得できませんでした:', { email, profile, currentUserProfile });
+                console.warn('⚠️ アバターが取得できませんでした:', { email, currentUserProfile });
             } catch (error) {
                 console.warn('アバター取得エラー:', error);
             }
