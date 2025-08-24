@@ -4058,6 +4058,52 @@
             height: auto;
         }
 
+        /* ピンモード説明のスタイル */
+        .pin-mode-explanation {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 2px solid #fdcb6e;
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .pin-mode-title {
+            color: #e17055;
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+            font-size: 1rem;
+        }
+        
+        .pin-mode-section {
+            margin-bottom: var(--space-md);
+        }
+        
+        .pin-mode-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .pin-mode-section h6 {
+            color: #2d3436;
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+            font-size: 0.9rem;
+        }
+        
+        .pin-mode-list {
+            margin: 0;
+            padding-left: var(--space-lg);
+            color: #636e72;
+        }
+        
+        .pin-mode-list li {
+            margin-bottom: var(--space-xs);
+            line-height: 1.5;
+        }
+        
+        .pin-mode-list strong {
+            color: #2d3436;
+        }
+
         /* 使い方ガイドモーダルスタイル */
         .how-to-use-modal-overlay {
             position: fixed;
@@ -15806,6 +15852,28 @@
                                 <div class="step-detail" id="stepDetail2">
                                     <h4 class="step-detail-title">📱 目的地ピンの詳しい使い方</h4>
                                     <div class="step-detail-content">
+                                        
+                                        <!-- ピンモードON/OFFの説明 -->
+                                        <div class="pin-mode-explanation">
+                                            <h5 class="pin-mode-title">⚠️ まず最初に「ピンモード」をONにしてください</h5>
+                                            <div class="pin-mode-content">
+                                                <div class="pin-mode-section">
+                                                    <h6>🖥️ PC版：「目的地ピン」ボタンの状態</h6>
+                                                    <ul class="pin-mode-list">
+                                                        <li><strong>OFF状態：</strong> グレーのボタン → クリックしてピンクに変更</li>
+                                                        <li><strong>ON状態：</strong> ピンク色のボタン → この状態でマップをクリック</li>
+                                                    </ul>
+                                                </div>
+                                                <div class="pin-mode-section">
+                                                    <h6>📱 スマホ版：「➕」ボタンの状態</h6>
+                                                    <ul class="pin-mode-list">
+                                                        <li><strong>OFF状態：</strong> グレーのボタン → タップしてピンク色に変更</li>
+                                                        <li><strong>ON状態：</strong> ピンク色のボタン → この状態でマップをタップ</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
                                         <div class="device-instructions">
                                             <div class="device-section pc-instructions">
                                                 <h5 class="device-title">🖥️ PC版での操作</h5>
