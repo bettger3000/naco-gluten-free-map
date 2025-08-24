@@ -4079,7 +4079,7 @@
             border-radius: var(--radius-2xl);
             padding: var(--space-xl);
             box-shadow: var(--shadow-xl);
-            max-width: 520px;
+            max-width: 700px;
             width: 90%;
             max-height: 85vh;
             overflow-y: auto;
@@ -4166,9 +4166,8 @@
             margin: var(--space-lg) 0;
         }
         .step-detail-list li {
-            padding: var(--space-lg);
+            padding: var(--space-lg) var(--space-xl);
             border-left: 5px solid var(--accent);
-            padding-left: var(--space-xl);
             margin-bottom: var(--space-lg);
             background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
             border-radius: var(--radius-md);
@@ -4178,6 +4177,8 @@
             font-weight: 600;
             line-height: 1.7;
             border: 1px solid #e2e8f0;
+            word-break: keep-all;
+            overflow-wrap: break-word;
         }
         .step-detail-list li strong {
             color: var(--primary);
