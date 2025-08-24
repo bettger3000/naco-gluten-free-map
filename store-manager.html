@@ -1455,8 +1455,8 @@
             document.getElementById('storeName').select();
         }
         
-        // 店舗保存（エラーハンドリング強化）
-        function saveStore() {
+        // 店舗保存（エラーハンドリング強化 + Cloudflare画像保存）
+        async function saveStore() {
             try {
                 const id = parseInt(document.getElementById('storeId').value);
                 if (!id || isNaN(id)) {
@@ -1475,6 +1475,9 @@
                 // データを更新
                 stores[storeIndex] = formData;
                 
+                // 🖼️ 画像URLがある場合はCloudflareに保存
+                await saveStoreImagesToCloudflare(id, formData);
+                
                 // ローカルストレージに保存
                 localStorage.setItem('editingStores', JSON.stringify(stores));
                 localStorage.setItem('lastSaved', new Date().toISOString());
@@ -1487,6 +1490,57 @@
             } catch (error) {
                 console.error('❌ 店舗保存エラー:', error);
                 showToast(`保存に失敗しました: ${error.message}`, true);
+            }
+        }
+
+        // Cloudflareに店舗画像を保存する関数
+        async function saveStoreImagesToCloudflare(storeId, formData) {
+            try {
+                // 画像URLを収集
+                const imageUrls = [];
+                if (formData.image_url && formData.image_url.trim()) {
+                    imageUrls.push(formData.image_url.trim());
+                }
+                if (formData.image_url2 && formData.image_url2.trim()) {
+                    imageUrls.push(formData.image_url2.trim());
+                }
+                if (formData.image_url3 && formData.image_url3.trim()) {
+                    imageUrls.push(formData.image_url3.trim());
+                }
+                
+                // 画像URLがない場合はスキップ
+                if (imageUrls.length === 0) {
+                    console.log(`📷 店舗${storeId}: 画像URLなし - スキップ`);
+                    return;
+                }
+                
+                console.log(`📷 店舗${storeId}: ${imageUrls.length}枚の画像をCloudflareに保存中...`);
+                
+                // CloudflareWorkerに送信
+                const response = await fetch('https://avatar-upload-worker.bettger1000.workers.dev/store-images', {
+                    method: 'PUT', // 既存画像を完全置き換え
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        store_id: storeId,
+                        image_urls: imageUrls,
+                        uploaded_by: 'admin'
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(`Cloudflare API error: ${response.status} - ${errorData.error || 'Unknown error'}`);
+                }
+                
+                const result = await response.json();
+                console.log(`✅ 店舗${storeId}画像保存成功:`, result.message);
+                
+            } catch (error) {
+                console.error(`❌ 店舗${storeId}画像保存エラー:`, error);
+                // 画像保存エラーは警告のみ（店舗データ保存は継続）
+                showToast(`⚠️ 画像保存に失敗: ${error.message}`, true);
             }
         }
         

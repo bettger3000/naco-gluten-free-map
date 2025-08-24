@@ -9867,40 +9867,56 @@
             console.log('✅ 訪問履歴機能初期化完了');
         }
 
-        // 店舗画像機能初期化
+        // 店舗画像機能初期化（Cloudflare版）
         async function initStoreImages() {
-            console.log('📸 店舗画像機能初期化開始');
+            console.log('📸 店舗画像機能初期化開始 (Cloudflare)');
             
             try {
-                // 全ての店舗の画像を取得
-                const { data: images, error } = await supabaseClient
-                    .from('store_images')
-                    .select('*')
-                    .order('store_id', { ascending: true })
-                    .order('created_at', { ascending: true });
-                
-                if (error) {
-                    console.warn('⚠️ 画像データ取得エラー:', error);
-                    return;
-                }
-                
-                // 店舗IDごとに画像を整理
+                // 全店舗の画像データをCloudflareから取得
                 storeImages.clear();
-                if (images && images.length > 0) {
-                    images.forEach(image => {
-                        if (!storeImages.has(image.store_id)) {
-                            storeImages.set(image.store_id, []);
+                
+                // 埋め込み店舗データから店舗IDを取得
+                const storeIds = embeddedStores.map(store => store.id);
+                
+                console.log(`🔍 ${storeIds.length}店舗の画像データを取得中...`);
+                
+                // 各店舗の画像を並列取得
+                const imagePromises = storeIds.map(async (storeId) => {
+                    try {
+                        const response = await fetch(`${AVATAR_WORKER_URL}/store-images?store_id=${storeId}`);
+                        
+                        if (!response.ok) {
+                            // 404は正常（画像がない店舗）
+                            if (response.status !== 404) {
+                                console.warn(`⚠️ 店舗${storeId}画像取得警告:`, response.status);
+                            }
+                            return null;
                         }
-                        storeImages.get(image.store_id).push(image);
-                    });
-                    
-                    console.log(`✅ ${images.length}枚の画像を${storeImages.size}店舗に整理`);
-                } else {
-                    console.log('📷 画像データなし');
-                }
+                        
+                        const result = await response.json();
+                        const images = result.images || [];
+                        
+                        if (images.length > 0) {
+                            storeImages.set(storeId, images);
+                            console.log(`✅ 店舗${storeId}: ${images.length}枚の画像取得`);
+                        }
+                        
+                        return { storeId, count: images.length };
+                    } catch (error) {
+                        console.warn(`❌ 店舗${storeId}画像取得エラー:`, error);
+                        return null;
+                    }
+                });
+                
+                // 全ての画像取得を並列実行
+                const results = await Promise.all(imagePromises);
+                const successResults = results.filter(r => r && r.count > 0);
+                const totalImages = successResults.reduce((sum, r) => sum + r.count, 0);
+                
+                console.log(`📸 店舗画像データ読み込み完了: ${totalImages}枚 (${successResults.length}店舗)`);
                 
             } catch (error) {
-                console.warn('⚠️ 画像機能初期化エラー:', error);
+                console.error('❌ 店舗画像初期化エラー:', error);
             }
             
             console.log('📸 店舗画像機能初期化完了');

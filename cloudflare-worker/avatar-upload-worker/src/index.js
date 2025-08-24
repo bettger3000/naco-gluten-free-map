@@ -37,6 +37,14 @@ export default {
         return await saveProfile(request, env, corsHeaders);
       } else if (url.pathname === '/profile' && request.method === 'PUT') {
         return await updateProfile(request, env, corsHeaders);
+      } else if (url.pathname === '/store-images' && request.method === 'GET') {
+        return await getStoreImages(request, env, corsHeaders);
+      } else if (url.pathname === '/store-images' && request.method === 'POST') {
+        return await saveStoreImages(request, env, corsHeaders);
+      } else if (url.pathname === '/store-images' && request.method === 'PUT') {
+        return await updateStoreImages(request, env, corsHeaders);
+      } else if (url.pathname === '/store-images' && request.method === 'DELETE') {
+        return await deleteStoreImages(request, env, corsHeaders);
       } else if (url.pathname === '/health') {
         return new Response(JSON.stringify({ status: 'healthy' }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -596,6 +604,221 @@ async function updateProfile(request, env, corsHeaders) {
     });
   } catch (error) {
     console.error('Update profile error:', error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+}
+
+// ============ 店舗画像管理システム ============
+
+// 店舗画像取得
+async function getStoreImages(request, env, corsHeaders) {
+  try {
+    const url = new URL(request.url);
+    const storeId = url.searchParams.get('store_id');
+    
+    if (!storeId) {
+      return new Response(JSON.stringify({ error: 'store_id parameter required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // R2から店舗画像データを取得
+    const key = `store-images/store_${storeId}.json`;
+    const object = await env.R2_BUCKET.get(key);
+    
+    if (!object) {
+      return new Response(JSON.stringify({ images: [] }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
+    const images = await object.json();
+    return new Response(JSON.stringify({ images }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  } catch (error) {
+    console.error('Get store images error:', error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+}
+
+// 店舗画像保存（URLベース）
+async function saveStoreImages(request, env, corsHeaders) {
+  try {
+    const { store_id, image_urls, uploaded_by } = await request.json();
+    
+    // バリデーション
+    if (!store_id || !image_urls || !Array.isArray(image_urls) || image_urls.length === 0) {
+      return new Response(JSON.stringify({ 
+        error: 'store_id and image_urls (array) are required' 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // 画像URL数制限（最大3枚）
+    if (image_urls.length > 3) {
+      return new Response(JSON.stringify({ 
+        error: 'Maximum 3 images allowed' 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // 既存データを取得
+    const key = `store-images/store_${store_id}.json`;
+    const existingObject = await env.R2_BUCKET.get(key);
+    let existingImages = [];
+    
+    if (existingObject) {
+      existingImages = await existingObject.json();
+    }
+    
+    // 新しい画像データを作成
+    const timestamp = new Date().toISOString();
+    const newImages = image_urls.map((url, index) => ({
+      id: `img_${store_id}_${Date.now()}_${index}`,
+      store_id: parseInt(store_id),
+      image_url: url,
+      alt_text: `店舗${store_id}の画像${index + 1}`,
+      uploaded_by: uploaded_by || 'admin',
+      created_at: timestamp,
+      is_primary: index === 0 && existingImages.length === 0
+    }));
+    
+    // 既存画像と結合（重複チェック）
+    const allImages = [...existingImages];
+    newImages.forEach(newImg => {
+      if (!allImages.some(existing => existing.image_url === newImg.image_url)) {
+        allImages.push(newImg);
+      }
+    });
+    
+    // 最大3枚制限
+    const finalImages = allImages.slice(0, 3);
+    
+    // R2に保存
+    await env.R2_BUCKET.put(key, JSON.stringify(finalImages), {
+      httpMetadata: { 'Content-Type': 'application/json' }
+    });
+    
+    console.log(`✅ 店舗${store_id}の画像保存完了: ${finalImages.length}枚`);
+    
+    return new Response(JSON.stringify({ 
+      success: true, 
+      images: finalImages,
+      message: `${finalImages.length}枚の画像を保存しました`
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+    
+  } catch (error) {
+    console.error('Save store images error:', error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+}
+
+// 店舗画像更新
+async function updateStoreImages(request, env, corsHeaders) {
+  try {
+    const { store_id, image_urls } = await request.json();
+    
+    if (!store_id || !image_urls || !Array.isArray(image_urls)) {
+      return new Response(JSON.stringify({ 
+        error: 'store_id and image_urls (array) are required' 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // 画像URL数制限（最大3枚）
+    if (image_urls.length > 3) {
+      return new Response(JSON.stringify({ 
+        error: 'Maximum 3 images allowed' 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // 新しい画像データを作成（完全置き換え）
+    const timestamp = new Date().toISOString();
+    const newImages = image_urls.filter(url => url && url.trim()).map((url, index) => ({
+      id: `img_${store_id}_${Date.now()}_${index}`,
+      store_id: parseInt(store_id),
+      image_url: url.trim(),
+      alt_text: `店舗${store_id}の画像${index + 1}`,
+      uploaded_by: 'admin',
+      created_at: timestamp,
+      updated_at: timestamp,
+      is_primary: index === 0
+    }));
+    
+    // R2に保存（完全置き換え）
+    const key = `store-images/store_${store_id}.json`;
+    await env.R2_BUCKET.put(key, JSON.stringify(newImages), {
+      httpMetadata: { 'Content-Type': 'application/json' }
+    });
+    
+    console.log(`🔄 店舗${store_id}の画像更新完了: ${newImages.length}枚`);
+    
+    return new Response(JSON.stringify({ 
+      success: true, 
+      images: newImages,
+      message: `${newImages.length}枚の画像を更新しました`
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+    
+  } catch (error) {
+    console.error('Update store images error:', error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+}
+
+// 店舗画像削除
+async function deleteStoreImages(request, env, corsHeaders) {
+  try {
+    const { store_id } = await request.json();
+    
+    if (!store_id) {
+      return new Response(JSON.stringify({ error: 'store_id is required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // R2から削除
+    const key = `store-images/store_${store_id}.json`;
+    await env.R2_BUCKET.delete(key);
+    
+    console.log(`🗑️ 店舗${store_id}の画像削除完了`);
+    
+    return new Response(JSON.stringify({ 
+      success: true,
+      message: `店舗${store_id}の画像を削除しました`
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+    
+  } catch (error) {
+    console.error('Delete store images error:', error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
