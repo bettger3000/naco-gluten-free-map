@@ -4806,91 +4806,124 @@
                 font-size: 1rem;
             }
             
-            /* 使い方ガイドのモバイル対応 */
+            /* 使い方ガイドのモバイル対応 - 完全修正 */
             .how-to-use-modal-overlay {
-                padding: var(--space-sm);
-                align-items: flex-start;
+                padding: var(--space-sm) !important;
+                align-items: flex-start !important;
+                box-sizing: border-box !important;
             }
             
             .how-to-use-modal-content {
-                max-width: none;
-                width: calc(100% - var(--space-md));
-                max-height: 95vh;
+                max-width: none !important;
+                width: calc(100vw - 2rem) !important;
+                max-height: 95vh !important;
+                box-sizing: border-box !important;
+                padding: var(--space-md) !important;
+                overflow: hidden !important;
             }
             
-            /* モバイル版でのテキストはみ出し防止 */
-            .step-description,
-            .step-detail-content,
-            .pin-mode-explanation,
-            .usage-examples {
-                word-wrap: break-word;
-                word-break: keep-all;
-                overflow-wrap: break-word;
-                max-width: 100%;
-                width: 100%;
-                box-sizing: border-box;
+            /* 全ての要素に強制的な幅制限を適用 */
+            .how-to-use-modal-content *,
+            .how-to-use-modal-content *::before,
+            .how-to-use-modal-content *::after {
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+                word-wrap: break-word !important;
+                word-break: keep-all !important;
+                overflow-wrap: break-word !important;
             }
             
-            /* ステップ内容の幅制限をより強く */
-            .step-content {
-                max-width: 100%;
-                width: 100%;
-                box-sizing: border-box;
-                overflow: hidden;
-            }
-            
+            /* ステップ要素の完全制御 */
             .how-to-step {
-                width: 100%;
-                max-width: 100%;
-                box-sizing: border-box;
-                overflow: hidden;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+                overflow: hidden !important;
+                margin-bottom: var(--space-md) !important;
+                border: 2px solid var(--primary) !important;
+                border-radius: var(--radius-lg) !important;
+                padding: var(--space-md) !important;
             }
             
-            /* ステップヘッダーのflexレイアウト調整 */
             .step-header {
-                display: flex;
-                align-items: flex-start;
-                width: 100%;
-                max-width: 100%;
-                box-sizing: border-box;
+                display: flex !important;
+                align-items: flex-start !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+                gap: var(--space-sm) !important;
+            }
+            
+            .step-icon {
+                flex-shrink: 0 !important;
+                width: 2.5rem !important;
+                height: 2.5rem !important;
             }
             
             .step-content {
-                flex: 1;
-                min-width: 0; /* flexアイテムの幅を制限 */
-                overflow: hidden;
+                flex: 1 !important;
+                min-width: 0 !important;
+                max-width: calc(100% - 4rem) !important;
+                overflow: hidden !important;
+                box-sizing: border-box !important;
+            }
+            
+            .step-title {
+                font-size: 1rem !important;
+                line-height: 1.4 !important;
+                margin-bottom: var(--space-xs) !important;
+                word-wrap: break-word !important;
+            }
+            
+            .step-description {
+                font-size: 0.9rem !important;
+                line-height: 1.5 !important;
+                word-wrap: break-word !important;
+                word-break: keep-all !important;
+                overflow-wrap: break-word !important;
+                margin: 0 !important;
             }
             
             .step-expand-icon {
-                flex-shrink: 0;
-                margin-left: var(--space-sm);
+                flex-shrink: 0 !important;
+                width: 1.5rem !important;
+                margin-left: var(--space-xs) !important;
+            }
+            
+            /* 詳細セクションの完全制御 */
+            .step-detail {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+                padding: var(--space-md) !important;
+                overflow: hidden !important;
+            }
+            
+            .pin-mode-explanation {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+                padding: var(--space-md) !important;
+                margin-bottom: var(--space-md) !important;
+            }
+            
+            .device-section {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+                padding: var(--space-md) !important;
+                margin-bottom: var(--space-md) !important;
             }
             
             .step-detail-list li,
             .pin-mode-list li {
-                word-wrap: break-word;
-                word-break: keep-all;
-                overflow-wrap: break-word;
-                line-height: 1.6;
-            }
-            
-            /* モバイル版でのステップ詳細の幅制限 */
-            .how-to-step,
-            .device-section,
-            .pin-mode-explanation {
-                box-sizing: border-box;
-                max-width: 100%;
-                overflow: hidden;
-            }
-            
-            /* モバイル版での内容の余白調整 */
-            .device-section {
-                margin-bottom: var(--space-md);
-                padding: var(--space-md);
-            }
-            
-            .pin-mode-explanation {
-                padding: var(--space-md);
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+                word-wrap: break-word !important;
+                word-break: keep-all !important;
+                overflow-wrap: break-word !important;
+                line-height: 1.6 !important;
             }
             
             .how-to-use-title {
