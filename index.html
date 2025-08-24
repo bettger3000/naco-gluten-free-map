@@ -10018,6 +10018,12 @@
             const dots = carousel.querySelectorAll('.carousel-dot');
             console.log(`🎠 Found ${slides.length} slides, ${dots.length} dots`);
             
+            // DOM構造をデバッグ
+            console.log('🎠 Carousel HTML:', carousel.innerHTML.substring(0, 200) + '...');
+            console.log('🎠 All carousel children:', carousel.children);
+            console.log('🎠 Looking for .image-slide in:', carousel.querySelector('.image-slide'));
+            console.log('🎠 Looking for .carousel-dot in:', carousel.querySelector('.carousel-dot'));
+            
             slides.forEach((slide, index) => {
                 const wasActive = slide.classList.contains('active');
                 slide.classList.toggle('active', index === slideIndex);
