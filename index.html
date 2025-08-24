@@ -9899,6 +9899,14 @@
                         if (images.length > 0) {
                             storeImages.set(storeId, images);
                             console.log(`✅ 店舗${storeId}: ${images.length}枚の画像取得`);
+                            
+                            // 🐛 I'm donut店舗の詳細デバッグ
+                            if (storeId === 19) {
+                                console.log('🍩 I\'m donut店舗画像詳細:', images);
+                                images.forEach((img, index) => {
+                                    console.log(`  画像${index + 1}: ${img.image_url}`);
+                                });
+                            }
                         }
                         
                         return { storeId, count: images.length };
