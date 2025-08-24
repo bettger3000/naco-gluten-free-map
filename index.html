@@ -9997,9 +9997,14 @@
         // カルーセル操作関数
         function showSlide(storeId, slideIndex) {
             console.log(`🎠 showSlide called for store ${storeId}, slide ${slideIndex}`);
-            const carousel = document.querySelector(`[data-store-id="${storeId}"]`);
+            const carousel = document.querySelector(`.image-carousel[data-store-id="${storeId}"]`);
             if (!carousel) {
                 console.warn(`❌ Carousel DOM not found for store ${storeId}`);
+                // デバッグ: 利用可能な要素を確認
+                const allCarousels = document.querySelectorAll('.image-carousel');
+                const allStoreElements = document.querySelectorAll(`[data-store-id="${storeId}"]`);
+                console.log(`🎠 Found ${allCarousels.length} .image-carousel elements`);
+                console.log(`🎠 Found ${allStoreElements.length} elements with data-store-id="${storeId}"`);
                 return;
             }
             
@@ -10041,7 +10046,7 @@
 
         function nextSlide(storeId) {
             console.log(`🎠 nextSlide called for store ${storeId}`);
-            const carousel = document.querySelector(`[data-store-id="${storeId}"]`);
+            const carousel = document.querySelector(`.image-carousel[data-store-id="${storeId}"]`);
             if (!carousel) {
                 console.warn(`❌ Carousel not found for store ${storeId}`);
                 return;
@@ -10057,7 +10062,7 @@
 
         function prevSlide(storeId) {
             console.log(`🎠 prevSlide called for store ${storeId}`);
-            const carousel = document.querySelector(`[data-store-id="${storeId}"]`);
+            const carousel = document.querySelector(`.image-carousel[data-store-id="${storeId}"]`);
             if (!carousel) {
                 console.warn(`❌ Carousel not found for store ${storeId}`);
                 return;
