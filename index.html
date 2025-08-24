@@ -9879,26 +9879,38 @@
                 const storeIds = embeddedStores.map(store => store.id);
                 
                 console.log(`🔍 ${storeIds.length}店舗の画像データを取得中...`);
+                console.log('🏪 対象店舗ID一覧:', storeIds.slice(0, 10), storeIds.length > 10 ? `... (全${storeIds.length}店舗)` : '');
+                
+                // I'm donut店舗（ID:19）が含まれているか確認
+                const hasImDonut = storeIds.includes(19);
+                console.log(`🍩 I'm donut店舗(ID:19)が対象に含まれている: ${hasImDonut}`);
                 
                 // 各店舗の画像を並列取得
                 const imagePromises = storeIds.map(async (storeId) => {
                     try {
-                        const response = await fetch(`${AVATAR_WORKER_URL}/store-images?store_id=${storeId}`);
+                        const requestUrl = `${AVATAR_WORKER_URL}/store-images?store_id=${storeId}`;
+                        console.log(`🔄 店舗${storeId}画像取得開始: ${requestUrl}`);
+                        
+                        const response = await fetch(requestUrl);
+                        console.log(`📡 店舗${storeId}レスポンス: ${response.status} ${response.statusText}`);
                         
                         if (!response.ok) {
                             // 404は正常（画像がない店舗）
                             if (response.status !== 404) {
                                 console.warn(`⚠️ 店舗${storeId}画像取得警告:`, response.status);
+                            } else {
+                                console.log(`👁️ 店舗${storeId}: 画像なし (404)`);
                             }
-                            return null;
+                            return { storeId, count: 0 };
                         }
                         
                         const result = await response.json();
                         const images = result.images || [];
+                        console.log(`📦 店舗${storeId}レスポンスデータ:`, result);
                         
                         if (images.length > 0) {
                             storeImages.set(storeId, images);
-                            console.log(`✅ 店舗${storeId}: ${images.length}枚の画像取得`);
+                            console.log(`✅ 店舗${storeId}: ${images.length}枚の画像取得・保存完了`);
                             
                             // 🐛 I'm donut店舗の詳細デバッグ
                             if (storeId === 19) {
@@ -9907,12 +9919,14 @@
                                     console.log(`  画像${index + 1}: ${img.image_url}`);
                                 });
                             }
+                        } else {
+                            console.log(`💭 店舗${storeId}: APIレスポンスあり、画像配列は空`);
                         }
                         
                         return { storeId, count: images.length };
                     } catch (error) {
                         console.warn(`❌ 店舗${storeId}画像取得エラー:`, error);
-                        return null;
+                        return { storeId, count: 0 };
                     }
                 });
                 
