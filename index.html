@@ -5399,7 +5399,7 @@
             align-items: center;
             position: sticky;
             top: 0;
-            z-index: 10;
+            z-index: 100;
             border-bottom: 1px solid rgba(219, 162, 181, 0.15);
             box-shadow: 0 1px 3px rgba(219, 162, 181, 0.08);
         }
@@ -14695,6 +14695,32 @@
                 `;
                 
                 document.body.insertAdjacentHTML('beforeend', modalHTML);
+                
+                // PC版のみ背景クリックで閉じる機能を追加（モバイル版は誤タップ防止のため無効）
+                const modal = document.getElementById('myReviewsModal');
+                if (modal && isDesktop()) {
+                    modal.addEventListener('click', function(e) {
+                        // モーダルの背景部分（親要素）をクリックした場合のみ閉じる
+                        if (e.target === modal) {
+                            closeMyReviews();
+                        }
+                    });
+                    
+                    // PC版ではマウスカーソルを変更してクリック可能であることを示す
+                    modal.style.cursor = 'pointer';
+                    // モーダル内容部分はデフォルトカーソル
+                    const content = modal.querySelector('div');
+                    if (content) {
+                        content.style.cursor = 'default';
+                        // 内容部分のクリックは親に伝播しないよう設定
+                        content.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                        });
+                    }
+                } else if (modal && !isDesktop()) {
+                    // モバイル版では誤タップ防止のため背景クリック無効
+                    modal.style.cursor = 'default';
+                }
                 
                 // マイレビュー専用の強制左寄せ（遅延実行）
                 setTimeout(() => {
