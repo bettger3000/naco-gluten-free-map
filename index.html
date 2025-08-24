@@ -4827,6 +4827,43 @@
                 word-break: keep-all;
                 overflow-wrap: break-word;
                 max-width: 100%;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            
+            /* ステップ内容の幅制限をより強く */
+            .step-content {
+                max-width: 100%;
+                width: 100%;
+                box-sizing: border-box;
+                overflow: hidden;
+            }
+            
+            .how-to-step {
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+                overflow: hidden;
+            }
+            
+            /* ステップヘッダーのflexレイアウト調整 */
+            .step-header {
+                display: flex;
+                align-items: flex-start;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+            
+            .step-content {
+                flex: 1;
+                min-width: 0; /* flexアイテムの幅を制限 */
+                overflow: hidden;
+            }
+            
+            .step-expand-icon {
+                flex-shrink: 0;
+                margin-left: var(--space-sm);
             }
             
             .step-detail-list li,
