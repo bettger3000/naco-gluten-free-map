@@ -4077,11 +4077,11 @@
             background: var(--bg-glass);
             backdrop-filter: blur(20px);
             border-radius: var(--radius-2xl);
-            padding: var(--space-xl);
+            padding: var(--space-lg) var(--space-xl);
             box-shadow: var(--shadow-xl);
-            max-width: 700px;
-            width: 90%;
-            max-height: 85vh;
+            max-width: 800px;
+            width: 95%;
+            max-height: 90vh;
             overflow-y: auto;
             border: 2px solid var(--border-light);
         }
@@ -4104,9 +4104,9 @@
         .how-to-step {
             display: flex;
             align-items: flex-start;
-            gap: var(--space-xl);
-            padding: var(--space-xl);
-            margin-bottom: var(--space-md);
+            gap: var(--space-lg);
+            padding: var(--space-lg) var(--space-xl);
+            margin-bottom: var(--space-lg);
             background: var(--bg-secondary);
             border-radius: var(--radius-lg);
             border: 2px solid var(--border-light);
@@ -4121,11 +4121,12 @@
         }
         .step-expand-icon {
             flex-shrink: 0;
-            width: 30px;
+            width: 24px;
             color: var(--text-light);
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             transition: all 0.3s ease;
             text-align: center;
+            margin-left: var(--space-sm);
         }
         .how-to-step:hover .step-expand-icon {
             color: var(--primary);
@@ -4134,6 +4135,8 @@
         .step-detail {
             display: none;
             margin-top: var(--space-lg);
+            margin-left: calc(60px + var(--space-lg));
+            margin-right: calc(24px + var(--space-sm));
             padding: var(--space-xl);
             background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
             border-radius: var(--radius-xl);
@@ -4241,7 +4244,8 @@
         }
         .step-content {
             flex: 1;
-            max-width: calc(100% - 120px);
+            min-width: 0;
+            max-width: none;
         }
         .step-title {
             font-size: 1.1rem;
