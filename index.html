@@ -7450,9 +7450,13 @@
 
         // 地名検索
         function searchFamousPlaces(query) {
-            if (!query || famousPlaces.length === 0) return [];
+            if (!query || famousPlaces.length === 0) {
+                console.log('🔍 検索スキップ: query=', query, 'famousPlaces.length=', famousPlaces.length);
+                return [];
+            }
             
             const normalizedQuery = query.toLowerCase().trim();
+            console.log('🔍 地名検索実行: ', normalizedQuery, '対象データ数:', famousPlaces.length);
             
             // 特別なマッチング処理（前方一致を優先）
             const results = famousPlaces.filter(place => {
@@ -7495,7 +7499,9 @@
                 return 0;
             });
             
-            return uniqueResults.slice(0, 8); // 最大8件まで表示
+            const finalResults = uniqueResults.slice(0, 8); // 最大8件まで表示
+            console.log('🔍 検索結果:', finalResults.map(p => p.name));
+            return finalResults;
         }
 
         // 検索候補を表示
@@ -7515,9 +7521,12 @@
             
             // クリックイベントを追加
             suggestions.querySelectorAll('.suggestion-item').forEach(item => {
-                item.addEventListener('click', () => {
+                item.addEventListener('click', (e) => {
+                    console.log('🖱️ 候補クリック:', item);
                     const placeData = JSON.parse(item.dataset.place);
+                    console.log('📍 選択された場所:', placeData);
                     selectPlace(placeData);
+                    e.stopPropagation();
                 });
             });
             
@@ -7748,7 +7757,8 @@
 
         // 地名選択時の処理
         function selectPlace(place) {
-            console.log('🗾 地名選択:', place.name);
+            console.log('🗾 地名選択開始:', place);
+            console.log('🗾 場所名:', place.name, '座標:', place.lat, place.lng, 'ズーム:', place.zoom);
             
             // 検索入力をクリア
             const searchInput = document.getElementById('sidebarSearchInput');
