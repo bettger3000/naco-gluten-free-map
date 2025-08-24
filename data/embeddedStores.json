@@ -820,5 +820,22 @@
     "latitude": 35.6600056,
     "longitude": 139.3349333,
     "place_id": ""
+  },
+  {
+    "id": 69,
+    "name": "Cafe & Bar Maru ＠恵花 Gluten free",
+    "category": "カフェ",
+    "address": "京都府京都市下京区斎藤町１２３ RAKUAS木屋町 ３F",
+    "latitude": 35.0031919,
+    "longitude": 135.7680555,
+    "phone": "0755855218",
+    "website": "https://maru.keika.kyoto/bar/",
+    "instagram": "https://www.instagram.com/maru.keika/",
+    "image_url": "https://s3-ap-northeast-1.amazonaws.com/s3.peraichi.com/userData/5d241a80-e318-4291-bb2e-1f210a0000c5/img/ba18b800-62ed-013e-331f-0a58a9feac02/IMG_5983.jpg",
+    "image_url2": "https://s3-ap-northeast-1.amazonaws.com/s3.peraichi.com/userData/5d241a80-e318-4291-bb2e-1f210a0000c5/img/ba1ba700-62ed-013e-3320-0a58a9feac02/IMG_2225.jpg",
+    "image_url3": "",
+    "opening_hours": "日18:00-24:00, 火〜土18:00-2:00",
+    "gluten_free_options": "完全GF",
+    "description": ""
   }
 ]
