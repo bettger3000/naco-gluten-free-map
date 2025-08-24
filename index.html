@@ -4326,6 +4326,64 @@
             line-height: 1.6;
         }
         
+        /* デバイス別説明のスタイル */
+        .device-instructions {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .device-section {
+            margin-bottom: var(--space-lg);
+            padding: var(--space-lg);
+            border-radius: var(--radius-lg);
+            border: 2px solid var(--border-light);
+        }
+        
+        .pc-instructions {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f8f9ff 100%);
+            border-color: #2196f3;
+        }
+        
+        .mobile-instructions {
+            background: linear-gradient(135deg, #f3e5f5 0%, #fdf7ff 100%);
+            border-color: #9c27b0;
+        }
+        
+        .device-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--space-md);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .pc-instructions .device-title {
+            color: #1976d2;
+        }
+        
+        .mobile-instructions .device-title {
+            color: #7b1fa2;
+        }
+        
+        .usage-examples {
+            margin-top: var(--space-lg);
+            padding: var(--space-lg);
+            background: linear-gradient(135deg, #f1f8e9 0%, #f9fff9 100%);
+            border-radius: var(--radius-lg);
+            border: 2px solid #4caf50;
+        }
+        
+        .examples-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #2e7d32;
+            margin-bottom: var(--space-md);
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
         /* マイ統計モーダルスタイル */
         .statistics-modal-overlay {
             position: fixed;
@@ -15717,13 +15775,36 @@
                                 <div class="step-detail" id="stepDetail2">
                                     <h4 class="step-detail-title">📱 目的地ピンの詳しい使い方</h4>
                                     <div class="step-detail-content">
-                                        <ul class="step-detail-list">
-                                            <li><strong>設置方法：</strong> マップの任意の場所を1秒以上長押しすると青いピンが現れます</li>
-                                            <li><strong>移動方法：</strong> 青いピンをドラッグして好きな場所に移動できます</li>
-                                            <li><strong>削除方法：</strong> 青いピンをタップして「ピンを削除」を選択</li>
-                                            <li><strong>活用例：</strong> 待ち合わせ場所、駐車場、今いる場所などをマークしておくと便利です</li>
-                                            <li><strong>便利な使い方：</strong> 旅行先で宿泊先にピンを置いて、周辺のグルテンフリー店を探せます</li>
-                                        </ul>
+                                        <div class="device-instructions">
+                                            <div class="device-section pc-instructions">
+                                                <h5 class="device-title">🖥️ PC版での操作</h5>
+                                                <ul class="step-detail-list">
+                                                    <li><strong>設置方法：</strong> マウスでマップの任意の場所を「右クリック」または「左クリック長押し（1秒以上）」すると青いピンが現れます</li>
+                                                    <li><strong>移動方法：</strong> 青いピンをマウスでドラッグして好きな場所に移動できます</li>
+                                                    <li><strong>削除方法：</strong> 青いピンをクリックして表示される「ピンを削除」ボタンを選択</li>
+                                                </ul>
+                                            </div>
+                                            
+                                            <div class="device-section mobile-instructions">
+                                                <h5 class="device-title">📱 スマホ版での操作</h5>
+                                                <ul class="step-detail-list">
+                                                    <li><strong>設置方法：</strong> 指でマップの任意の場所を「1秒以上長押し」すると青いピンが現れます（軽くタップしただけでは設置されません）</li>
+                                                    <li><strong>移動方法：</strong> 青いピンを指でドラッグして好きな場所に移動できます</li>
+                                                    <li><strong>削除方法：</strong> 青いピンを軽くタップして表示される「ピンを削除」ボタンを選択</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="usage-examples">
+                                            <h5 class="examples-title">💡 活用例</h5>
+                                            <ul class="step-detail-list">
+                                                <li><strong>待ち合わせ場所：</strong> 「ここで待ち合わせしよう」という場所をマーク</li>
+                                                <li><strong>駐車場：</strong> 車を停めた場所を忘れないようにマーク</li>
+                                                <li><strong>宿泊先：</strong> 旅行先でホテルにピンを置いて、周辺のグルテンフリー店を探索</li>
+                                                <li><strong>現在地：</strong> 今いる場所をマークして、近くのお店との距離感を把握</li>
+                                                <li><strong>目標地点：</strong> 今日行きたい場所を決めて、そこを中心にお店選び</li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
