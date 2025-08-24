@@ -837,5 +837,22 @@
     "opening_hours": "日18:00-24:00, 火〜土18:00-2:00",
     "gluten_free_options": "完全GF",
     "description": ""
+  },
+  {
+    "id": 70,
+    "name": "M lab.",
+    "category": "カフェ",
+    "address": "京都府京都市下京区斎藤町１２３ RAKUAS木屋町 ３F",
+    "latitude": null,
+    "longitude": null,
+    "phone": "",
+    "website": "",
+    "instagram": "https://www.instagram.com/glutenfreecafe_mlab/",
+    "image_url": "https://s3-ap-northeast-1.amazonaws.com/s3.peraichi.com/userData/5d241a80-e318-4291-bb2e-1f210a0000c5/img/da34c500-62ee-013e-3343-0a58a9feac02/IMG_6986.jpg",
+    "image_url2": "",
+    "image_url3": "",
+    "opening_hours": "第二日曜日12:00-17:00",
+    "gluten_free_options": "完全GF",
+    "description": "小麦と大豆不使用の米粉バーガー、予約制のグルテンフリーアフタヌーンティーをしています（mikiさんのお店）"
   }
 ]
