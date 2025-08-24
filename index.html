@@ -4816,8 +4816,44 @@
                 max-width: none;
                 width: calc(100% - var(--space-md));
                 max-height: 95vh;
-                margin: var(--space-sm) 0;
-                padding: var(--space-lg);
+            }
+            
+            /* モバイル版でのテキストはみ出し防止 */
+            .step-description,
+            .step-detail-content,
+            .pin-mode-explanation,
+            .usage-examples {
+                word-wrap: break-word;
+                word-break: keep-all;
+                overflow-wrap: break-word;
+                max-width: 100%;
+            }
+            
+            .step-detail-list li,
+            .pin-mode-list li {
+                word-wrap: break-word;
+                word-break: keep-all;
+                overflow-wrap: break-word;
+                line-height: 1.6;
+            }
+            
+            /* モバイル版でのステップ詳細の幅制限 */
+            .how-to-step,
+            .device-section,
+            .pin-mode-explanation {
+                box-sizing: border-box;
+                max-width: 100%;
+                overflow: hidden;
+            }
+            
+            /* モバイル版での内容の余白調整 */
+            .device-section {
+                margin-bottom: var(--space-md);
+                padding: var(--space-md);
+            }
+            
+            .pin-mode-explanation {
+                padding: var(--space-md);
             }
             
             .how-to-use-title {
