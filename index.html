@@ -11374,20 +11374,48 @@
             // ピンマーカーを作成（ドラッグ可能）
             customPinMarker = L.marker(latlng, { 
                 icon: customIcon, 
-                draggable: true 
+                draggable: true,
+                autoPan: true  // ドラッグ時に地図を自動調整
             }).addTo(map);
+            
+            // ドラッグが確実に有効になるよう設定
+            customPinMarker.dragging.enable();
             customPinLocation = latlng;
+            
+            // ドラッグ関連イベントを設定（最初に設定してクリックより優先）
+            let isDragging = false;
+            
+            customPinMarker.on('dragstart', function(e) {
+                isDragging = true;
+                console.log('🖱️ ドラッグ開始');
+            });
+            
+            customPinMarker.on('dragend', function(e) {
+                const newPosition = e.target.getLatLng();
+                customPinLocation = newPosition;
+                console.log('📍 ピン移動完了:', newPosition);
+                
+                // 店舗リストを新しい位置から距離順でソート・更新
+                sortStoresByCustomPin();
+                
+                // ドラッグ完了後少し待ってからクリック処理を有効に戻す
+                setTimeout(() => {
+                    isDragging = false;
+                }, 100);
+            });
             
             // ピンのクリック・ダブルクリックイベントを設定
             if (isDesktop()) {
                 // PC版：ピンモードON時のみ削除可能
                 customPinMarker.on('click', function() {
+                    if (isDragging) return; // ドラッグ中はクリック処理をスキップ
                     if (!pinModeActive) {
                         showPinGuidanceMessage();
                     }
                 });
                 
                 customPinMarker.on('dblclick', function() {
+                    if (isDragging) return; // ドラッグ中はダブルクリック処理をスキップ
                     if (pinModeActive) {
                         removeCustomPin();
                     }
@@ -11396,16 +11424,6 @@
                 // スマホ版：ピンモードに関係なくダブルタップで削除可能
                 setupMobileDoubleTap(customPinMarker);
             }
-            
-            // ドラッグ終了時の処理
-            customPinMarker.on('dragend', function(e) {
-                const newPosition = e.target.getLatLng();
-                customPinLocation = newPosition;
-                console.log('📍 ピン移動完了:', newPosition);
-                
-                // 店舗リストを新しい位置から距離順でソート・更新
-                sortStoresByCustomPin();
-            });
             
             // ピンモードを無効にする
             if (pinModeActive) {
