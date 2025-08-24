@@ -7247,11 +7247,11 @@
             // 4. 訪問履歴データを読み込み
             await initVisitHistory();
             
-            // 5. 店舗画像データを並行で読み込み
-            await initStoreImages();
-            
-            // 6. 店舗データを表示（訪問履歴・画像込み）
+            // 5. 店舗データを表示（訪問履歴・画像込み）
             await loadEmbeddedStores();
+            
+            // 6. 店舗画像データを読み込み（店舗データ読み込み後）
+            await initStoreImages();
             
             // 7. イベントリスナー設定
             setupEventListeners();
