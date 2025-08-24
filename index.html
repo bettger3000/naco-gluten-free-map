@@ -4121,9 +4121,11 @@
         }
         .step-expand-icon {
             flex-shrink: 0;
+            width: 30px;
             color: var(--text-light);
             font-size: 1.2rem;
             transition: all 0.3s ease;
+            text-align: center;
         }
         .how-to-step:hover .step-expand-icon {
             color: var(--primary);
@@ -4239,8 +4241,7 @@
         }
         .step-content {
             flex: 1;
-            min-width: 0;
-            width: 100%;
+            max-width: calc(100% - 120px);
         }
         .step-title {
             font-size: 1.1rem;
