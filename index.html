@@ -4178,6 +4178,36 @@
             color: var(--primary);
             font-weight: 700;
         }
+        
+        /* PC版でのテキスト読みやすさ向上 */
+        @media (min-width: 769px) {
+            .step-detail-content {
+                font-size: 1.05rem;
+                line-height: 1.8;
+            }
+            
+            .step-detail-list li {
+                font-size: 1rem;
+                line-height: 1.7;
+                padding: var(--space-lg);
+                margin-bottom: var(--space-md);
+                font-weight: 500;
+            }
+            
+            .step-description {
+                font-size: 1rem;
+                line-height: 1.6;
+            }
+            
+            .step-title {
+                font-size: 1.2rem;
+            }
+            
+            .step-detail-title {
+                font-size: 1.15rem;
+            }
+        }
+        
         @keyframes slideDown {
             from {
                 opacity: 0;
