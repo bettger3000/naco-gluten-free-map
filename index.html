@@ -9996,21 +9996,36 @@
 
         // カルーセル操作関数
         function showSlide(storeId, slideIndex) {
+            console.log(`🎠 showSlide called for store ${storeId}, slide ${slideIndex}`);
             const carousel = document.querySelector(`[data-store-id="${storeId}"]`);
-            if (!carousel) return;
+            if (!carousel) {
+                console.warn(`❌ Carousel DOM not found for store ${storeId}`);
+                return;
+            }
             
             const images = storeImages.get(storeId) || [];
-            if (slideIndex < 0 || slideIndex >= images.length) return;
+            if (slideIndex < 0 || slideIndex >= images.length) {
+                console.warn(`❌ Invalid slide index ${slideIndex} for ${images.length} images`);
+                return;
+            }
             
             // 現在のスライドを更新
             carousel.dataset.currentSlide = slideIndex;
+            console.log(`🎠 Updated carousel currentSlide to ${slideIndex}`);
             
             // スライドの表示を更新
             const slides = carousel.querySelectorAll('.image-slide');
             const dots = carousel.querySelectorAll('.carousel-dot');
+            console.log(`🎠 Found ${slides.length} slides, ${dots.length} dots`);
             
             slides.forEach((slide, index) => {
+                const wasActive = slide.classList.contains('active');
                 slide.classList.toggle('active', index === slideIndex);
+                if (index === slideIndex) {
+                    console.log(`🎠 Activated slide ${index}`);
+                } else if (wasActive) {
+                    console.log(`🎠 Deactivated slide ${index}`);
+                }
             });
             
             dots.forEach((dot, index) => {
@@ -10019,24 +10034,34 @@
         }
 
         function nextSlide(storeId) {
+            console.log(`🎠 nextSlide called for store ${storeId}`);
             const carousel = document.querySelector(`[data-store-id="${storeId}"]`);
-            if (!carousel) return;
+            if (!carousel) {
+                console.warn(`❌ Carousel not found for store ${storeId}`);
+                return;
+            }
             
             const currentSlide = parseInt(carousel.dataset.currentSlide || '0');
             const images = storeImages.get(storeId) || [];
             const nextIndex = (currentSlide + 1) % images.length;
             
+            console.log(`🎠 Moving from slide ${currentSlide} to ${nextIndex} (total: ${images.length})`);
             showSlide(storeId, nextIndex);
         }
 
         function prevSlide(storeId) {
+            console.log(`🎠 prevSlide called for store ${storeId}`);
             const carousel = document.querySelector(`[data-store-id="${storeId}"]`);
-            if (!carousel) return;
+            if (!carousel) {
+                console.warn(`❌ Carousel not found for store ${storeId}`);
+                return;
+            }
             
             const currentSlide = parseInt(carousel.dataset.currentSlide || '0');
             const images = storeImages.get(storeId) || [];
             const prevIndex = (currentSlide - 1 + images.length) % images.length;
             
+            console.log(`🎠 Moving from slide ${currentSlide} to ${prevIndex} (total: ${images.length})`);
             showSlide(storeId, prevIndex);
         }
 
