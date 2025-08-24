@@ -4111,12 +4111,68 @@
             border-radius: var(--radius-lg);
             border: 2px solid var(--border-light);
             transition: all 0.3s ease;
+            cursor: pointer;
         }
         .how-to-step:hover {
             background: var(--bg-primary);
             border-color: var(--primary);
             box-shadow: 0 4px 12px rgba(255, 143, 171, 0.15);
             transform: translateY(-2px);
+        }
+        .step-expand-icon {
+            margin-left: auto;
+            color: var(--text-light);
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        .how-to-step:hover .step-expand-icon {
+            color: var(--primary);
+            transform: scale(1.2);
+        }
+        .step-detail {
+            display: none;
+            margin-top: var(--space-md);
+            padding: var(--space-lg);
+            background: var(--bg-primary);
+            border-radius: var(--radius-md);
+            border: 2px solid var(--border-light);
+            border-left: 4px solid var(--primary);
+        }
+        .step-detail.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        .step-detail-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: var(--space-sm);
+        }
+        .step-detail-content {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 0.9rem;
+        }
+        .step-detail-list {
+            list-style: none;
+            padding: 0;
+            margin: var(--space-sm) 0;
+        }
+        .step-detail-list li {
+            padding: var(--space-xs) 0;
+            border-left: 3px solid var(--accent);
+            padding-left: var(--space-md);
+            margin-bottom: var(--space-xs);
+        }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         .step-icon {
             font-size: 2.5rem;
@@ -4161,12 +4217,21 @@
             font-size: 1.2rem;
             color: var(--text-secondary);
             transition: all 0.3s ease;
+            z-index: 21000;
         }
         .close-how-to-btn:hover {
             background: var(--primary);
             color: white;
             border-color: var(--primary);
             transform: scale(1.1);
+        }
+        /* モーダル背景クリック対応 */
+        .how-to-use-modal-overlay {
+            cursor: pointer;
+        }
+        .how-to-use-modal-content {
+            cursor: default;
+            position: relative;
         }
         .community-note {
             background: linear-gradient(135deg, var(--primary-alpha) 0%, var(--accent-light) 100%);
@@ -15440,43 +15505,107 @@
                         </div>
 
                         <div class="how-to-steps">
-                            <div class="how-to-step">
+                            <div class="how-to-step" onclick="toggleStepDetail(1)">
                                 <div class="step-icon">🗺️</div>
                                 <div class="step-content">
                                     <h3 class="step-title">マップを見て探そう</h3>
                                     <p class="step-description">お出かけ先で「あ、ここにグルテンフリーのお店があるんだ！」を発見。マップ上のカラフルなピンをタップしてみてください。</p>
                                 </div>
+                                <div class="step-expand-icon">👆</div>
+                                <div class="step-detail" id="stepDetail1">
+                                    <h4 class="step-detail-title">🔍 詳細な使い方</h4>
+                                    <div class="step-detail-content">
+                                        <ul class="step-detail-list">
+                                            <li>☕ カフェは茶色のピン、🍱 和食は緑のピンなど、カテゴリ別に色分けされています</li>
+                                            <li>ピンをタップすると店舗名、住所、評価が表示されます</li>
+                                            <li>「店舗詳細」ボタンで写真やレビューを見ることができます</li>
+                                            <li>マップを拡大縮小して、行きたいエリアを詳しく探索してみましょう</li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="how-to-step">
+                            <div class="how-to-step" onclick="toggleStepDetail(2)">
                                 <div class="step-icon">📍</div>
                                 <div class="step-content">
                                     <h3 class="step-title">目的地ピンで行き先を決めよう</h3>
                                     <p class="step-description">今日はここに行く！マップを長押しして目的地ピンを設置。青いピンがあなたの目標地点になります。</p>
                                 </div>
+                                <div class="step-expand-icon">👆</div>
+                                <div class="step-detail" id="stepDetail2">
+                                    <h4 class="step-detail-title">📱 目的地ピンの詳しい使い方</h4>
+                                    <div class="step-detail-content">
+                                        <ul class="step-detail-list">
+                                            <li><strong>設置方法：</strong> マップの任意の場所を1秒以上長押しすると青いピンが現れます</li>
+                                            <li><strong>移動方法：</strong> 青いピンをドラッグして好きな場所に移動できます</li>
+                                            <li><strong>削除方法：</strong> 青いピンをタップして「ピンを削除」を選択</li>
+                                            <li><strong>活用例：</strong> 待ち合わせ場所、駐車場、今いる場所などをマークしておくと便利です</li>
+                                            <li><strong>便利な使い方：</strong> 旅行先で宿泊先にピンを置いて、周辺のグルテンフリー店を探せます</li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="how-to-step">
+                            <div class="how-to-step" onclick="toggleStepDetail(3)">
                                 <div class="step-icon">🤍</div>
                                 <div class="step-content">
                                     <h3 class="step-title">気になるお店は「行きたい」に</h3>
                                     <p class="step-description">今度行ってみたいな♪ そんなお店は🤍ボタンでマーク。後でマイページから確認できます。</p>
                                 </div>
+                                <div class="step-expand-icon">👆</div>
+                                <div class="step-detail" id="stepDetail3">
+                                    <h4 class="step-detail-title">💖 「行きたい」リストの活用法</h4>
+                                    <div class="step-detail-content">
+                                        <ul class="step-detail-list">
+                                            <li>気になるお店を見つけたら、🤍ボタンを押してお気に入りに追加</li>
+                                            <li>ハンバーガーメニューから「マイ統計」で行きたい店舗数を確認できます</li>
+                                            <li>PC版では左サイドバーの「行きたい」タブでまとめて確認可能</li>
+                                            <li>お友達と「今度一緒に行きたいお店リスト」として共有するのもおすすめ</li>
+                                            <li>🤍をもう一度押すと「行きたい」から外すことができます</li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="how-to-step">
+                            <div class="how-to-step" onclick="toggleStepDetail(4)">
                                 <div class="step-icon">✨</div>
                                 <div class="step-content">
                                     <h3 class="step-title">行ったお店は「行った」に</h3>
                                     <p class="step-description">美味しかった！また行きたい！ そんなお店は✨ボタンでマーク。あなたの素敵な思い出を記録しましょう。</p>
                                 </div>
+                                <div class="step-expand-icon">👆</div>
+                                <div class="step-detail" id="stepDetail4">
+                                    <h4 class="step-detail-title">🌟 「行った」記録の楽しみ方</h4>
+                                    <div class="step-detail-content">
+                                        <ul class="step-detail-list">
+                                            <li>実際に訪問したお店では✨ボタンを押して「行った」記録を残しましょう</li>
+                                            <li>「行った」お店には自動的に⭐マークが付いて、マップで見つけやすくなります</li>
+                                            <li>PC版では「行った」タブで訪問履歴をまとめて確認できます</li>
+                                            <li>マイ統計で「何軒のお店を制覇したか」を確認して達成感を味わえます</li>
+                                            <li>「行きたい」→「行った」に変更すると、素敵な達成感が得られます♪</li>
+                                        </ul>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="how-to-step">
+                            <div class="how-to-step" onclick="toggleStepDetail(5)">
                                 <div class="step-icon">💕</div>
                                 <div class="step-content">
                                     <h3 class="step-title">レビューで仲間と共有</h3>
                                     <p class="step-description">「ここのパンが絶品でした！」温かいレビューでみんなに教えてあげて。コミュニティが育つ大切な一歩です。</p>
+                                </div>
+                                <div class="step-expand-icon">👆</div>
+                                <div class="step-detail" id="stepDetail5">
+                                    <h4 class="step-detail-title">📝 心温まるレビューの書き方</h4>
+                                    <div class="step-detail-content">
+                                        <ul class="step-detail-list">
+                                            <li>店舗詳細ページの「レビューを書く」から気軽にコメントを投稿</li>
+                                            <li>「グルテンフリーパンがふわふわで感動！」など、具体的な感想がおすすめ</li>
+                                            <li>「店員さんが親切で安心できました」など、サービス面の情報も貴重です</li>
+                                            <li>写真を1-3枚添えると、他の方により伝わりやすくなります</li>
+                                            <li>コミュニティの温かさを大切に、思いやりのある表現でレビューしましょう</li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -15492,6 +15621,13 @@
             // モーダルを表示
             document.body.insertAdjacentHTML('beforeend', modalHTML);
             const modal = document.getElementById('howToUseModalOverlay');
+            
+            // 背景クリックで閉じる
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeHowToUseModal();
+                }
+            });
             
             setTimeout(() => {
                 modal.style.display = 'flex';
@@ -15520,6 +15656,33 @@
                 setTimeout(() => {
                     modal.remove();
                 }, 250);
+            }
+        }
+
+        // ステップ詳細の表示切り替え
+        function toggleStepDetail(stepNumber) {
+            const detail = document.getElementById(`stepDetail${stepNumber}`);
+            if (detail) {
+                if (detail.classList.contains('active')) {
+                    detail.classList.remove('active');
+                    setTimeout(() => {
+                        detail.style.display = 'none';
+                    }, 300);
+                } else {
+                    // 他の詳細を閉じる
+                    document.querySelectorAll('.step-detail.active').forEach(activeDetail => {
+                        activeDetail.classList.remove('active');
+                        setTimeout(() => {
+                            activeDetail.style.display = 'none';
+                        }, 300);
+                    });
+                    
+                    // 選択したステップの詳細を開く
+                    detail.style.display = 'block';
+                    setTimeout(() => {
+                        detail.classList.add('active');
+                    }, 10);
+                }
             }
         }
 
