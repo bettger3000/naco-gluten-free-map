@@ -4112,6 +4112,8 @@
             border: 2px solid var(--border-light);
             transition: all 0.3s ease;
             cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
         }
         .how-to-step:hover {
             background: var(--bg-primary);
@@ -4243,9 +4245,8 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         .step-content {
-            flex: 1;
-            min-width: 0;
-            max-width: none;
+            flex: 1 1 0%;
+            width: 100%;
         }
         .step-title {
             font-size: 1.1rem;
