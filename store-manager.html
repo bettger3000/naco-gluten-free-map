@@ -1317,8 +1317,40 @@
             editStore(id);
         }
         
+        // Cloudflareから店舗画像を読み込み
+        async function loadStoreImagesFromCloudflare(storeId) {
+            try {
+                console.log(`📷 店舗${storeId}の画像をCloudflareから読み込み中...`);
+                
+                const response = await fetch(`https://avatar-upload-worker.bettger1000.workers.dev/store-images?store_id=${storeId}`);
+                
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        console.log(`📷 店舗${storeId}: 画像なし`);
+                        return { image_url: '', image_url2: '', image_url3: '' };
+                    }
+                    throw new Error(`API Error: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                const images = result.images || [];
+                
+                console.log(`📷 店舗${storeId}: ${images.length}枚の画像を取得`);
+                
+                return {
+                    image_url: images[0]?.image_url || '',
+                    image_url2: images[1]?.image_url || '',
+                    image_url3: images[2]?.image_url || ''
+                };
+                
+            } catch (error) {
+                console.error(`❌ 店舗${storeId}画像読み込みエラー:`, error);
+                return { image_url: '', image_url2: '', image_url3: '' };
+            }
+        }
+
         // 店舗編集
-        function editStore(id) {
+        async function editStore(id) {
             console.log('編集開始 - 店舗ID:', id);
             const store = stores.find(s => s.id === id);
             if (!store) {
@@ -1363,12 +1395,17 @@
                 if (formElements.storePhone) formElements.storePhone.value = store.phone || '';
                 if (formElements.storeWebsite) formElements.storeWebsite.value = store.website || '';
                 if (formElements.storeInstagram) formElements.storeInstagram.value = store.instagram || '';
-                if (formElements.storeImageUrl1) formElements.storeImageUrl1.value = store.image_url || '';
-                if (formElements.storeImageUrl2) formElements.storeImageUrl2.value = store.image_url2 || '';
-                if (formElements.storeImageUrl3) formElements.storeImageUrl3.value = store.image_url3 || '';
                 if (formElements.storeHours) formElements.storeHours.value = store.opening_hours || '';
                 if (formElements.storeGfOptions) formElements.storeGfOptions.value = store.gluten_free_options || '';
                 if (formElements.storeDescription) formElements.storeDescription.value = store.description || '';
+
+                // 🖼️ Cloudflareから最新の画像データを取得して表示
+                const cloudflareImages = await loadStoreImagesFromCloudflare(store.id);
+                if (formElements.storeImageUrl1) formElements.storeImageUrl1.value = cloudflareImages.image_url;
+                if (formElements.storeImageUrl2) formElements.storeImageUrl2.value = cloudflareImages.image_url2;
+                if (formElements.storeImageUrl3) formElements.storeImageUrl3.value = cloudflareImages.image_url3;
+                
+                console.log(`📷 店舗${store.id}画像フォーム設定完了:`, cloudflareImages);
                 
                 // 編集パネルを表示（visibility確認）
                 const editPanel = document.querySelector('.edit-panel');
