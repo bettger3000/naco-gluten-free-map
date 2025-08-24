@@ -4102,20 +4102,29 @@
             font-size: 0.95rem;
         }
         .how-to-step {
-            display: flex;
-            align-items: flex-start;
-            gap: var(--space-lg);
-            padding: var(--space-lg) var(--space-xl);
+            display: block;
+            padding: 0;
             margin-bottom: var(--space-lg);
-            background: var(--bg-secondary);
-            border-radius: var(--radius-lg);
-            border: 2px solid var(--border-light);
+            background: transparent;
+            border: none;
             transition: all 0.3s ease;
             cursor: pointer;
             width: 100%;
             box-sizing: border-box;
         }
-        .how-to-step:hover {
+        
+        .step-header {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-lg);
+            padding: var(--space-lg) var(--space-xl);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            border: 2px solid var(--border-light);
+            transition: all 0.3s ease;
+        }
+        
+        .step-header:hover {
             background: var(--bg-primary);
             border-color: var(--primary);
             box-shadow: 0 4px 12px rgba(255, 143, 171, 0.15);
@@ -4130,20 +4139,22 @@
             text-align: center;
             margin-left: var(--space-sm);
         }
-        .how-to-step:hover .step-expand-icon {
+        .step-header:hover .step-expand-icon {
             color: var(--primary);
             transform: scale(1.2);
         }
         .step-detail {
             display: none;
             margin-top: var(--space-lg);
-            margin-left: calc(60px + var(--space-lg));
-            margin-right: calc(24px + var(--space-sm));
+            margin-left: 0;
+            margin-right: 0;
             padding: var(--space-xl);
             background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
             border-radius: var(--radius-xl);
             border: 3px solid var(--primary);
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            width: 100%;
+            box-sizing: border-box;
         }
         .step-detail.active {
             display: block;
@@ -15673,12 +15684,14 @@
 
                         <div class="how-to-steps">
                             <div class="how-to-step" onclick="toggleStepDetail(1)">
-                                <div class="step-icon">🗺️</div>
-                                <div class="step-content">
-                                    <h3 class="step-title">マップを見て探そう</h3>
-                                    <p class="step-description">お出かけ先で「あ、ここにグルテンフリーのお店があるんだ！」を発見。マップ上のカラフルなピンをタップしてみてください。</p>
+                                <div class="step-header">
+                                    <div class="step-icon">🗺️</div>
+                                    <div class="step-content">
+                                        <h3 class="step-title">マップを見て探そう</h3>
+                                        <p class="step-description">お出かけ先で「あ、ここにグルテンフリーのお店があるんだ！」を発見。マップ上のカラフルなピンをタップしてみてください。</p>
+                                    </div>
+                                    <div class="step-expand-icon">👆</div>
                                 </div>
-                                <div class="step-expand-icon">👆</div>
                                 <div class="step-detail" id="stepDetail1">
                                     <h4 class="step-detail-title">🔍 詳細な使い方</h4>
                                     <div class="step-detail-content">
@@ -15693,12 +15706,14 @@
                             </div>
 
                             <div class="how-to-step" onclick="toggleStepDetail(2)">
-                                <div class="step-icon">📍</div>
-                                <div class="step-content">
-                                    <h3 class="step-title">目的地ピンで行き先を決めよう</h3>
-                                    <p class="step-description">今日はここに行く！マップを長押しして目的地ピンを設置。青いピンがあなたの目標地点になります。</p>
+                                <div class="step-header">
+                                    <div class="step-icon">📍</div>
+                                    <div class="step-content">
+                                        <h3 class="step-title">目的地ピンで行き先を決めよう</h3>
+                                        <p class="step-description">今日はここに行く！マップを長押しして目的地ピンを設置。青いピンがあなたの目標地点になります。</p>
+                                    </div>
+                                    <div class="step-expand-icon">👆</div>
                                 </div>
-                                <div class="step-expand-icon">👆</div>
                                 <div class="step-detail" id="stepDetail2">
                                     <h4 class="step-detail-title">📱 目的地ピンの詳しい使い方</h4>
                                     <div class="step-detail-content">
@@ -15714,12 +15729,14 @@
                             </div>
 
                             <div class="how-to-step" onclick="toggleStepDetail(3)">
-                                <div class="step-icon">🤍</div>
-                                <div class="step-content">
-                                    <h3 class="step-title">気になるお店は「行きたい」に</h3>
-                                    <p class="step-description">今度行ってみたいな♪ そんなお店は🤍ボタンでマーク。後でマイページから確認できます。</p>
+                                <div class="step-header">
+                                    <div class="step-icon">🤍</div>
+                                    <div class="step-content">
+                                        <h3 class="step-title">気になるお店は「行きたい」に</h3>
+                                        <p class="step-description">今度行ってみたいな♪ そんなお店は🤍ボタンでマーク。後でマイページから確認できます。</p>
+                                    </div>
+                                    <div class="step-expand-icon">👆</div>
                                 </div>
-                                <div class="step-expand-icon">👆</div>
                                 <div class="step-detail" id="stepDetail3">
                                     <h4 class="step-detail-title">💖 「行きたい」リストの活用法</h4>
                                     <div class="step-detail-content">
@@ -15735,12 +15752,14 @@
                             </div>
 
                             <div class="how-to-step" onclick="toggleStepDetail(4)">
-                                <div class="step-icon">✨</div>
-                                <div class="step-content">
-                                    <h3 class="step-title">行ったお店は「行った」に</h3>
-                                    <p class="step-description">美味しかった！また行きたい！ そんなお店は✨ボタンでマーク。あなたの素敵な思い出を記録しましょう。</p>
+                                <div class="step-header">
+                                    <div class="step-icon">✨</div>
+                                    <div class="step-content">
+                                        <h3 class="step-title">行ったお店は「行った」に</h3>
+                                        <p class="step-description">美味しかった！また行きたい！ そんなお店は✨ボタンでマーク。あなたの素敵な思い出を記録しましょう。</p>
+                                    </div>
+                                    <div class="step-expand-icon">👆</div>
                                 </div>
-                                <div class="step-expand-icon">👆</div>
                                 <div class="step-detail" id="stepDetail4">
                                     <h4 class="step-detail-title">🌟 「行った」記録の楽しみ方</h4>
                                     <div class="step-detail-content">
@@ -15756,12 +15775,14 @@
                             </div>
 
                             <div class="how-to-step" onclick="toggleStepDetail(5)">
-                                <div class="step-icon">💕</div>
-                                <div class="step-content">
-                                    <h3 class="step-title">レビューで仲間と共有</h3>
-                                    <p class="step-description">「ここのパンが絶品でした！」温かいレビューでみんなに教えてあげて。コミュニティが育つ大切な一歩です。</p>
+                                <div class="step-header">
+                                    <div class="step-icon">💕</div>
+                                    <div class="step-content">
+                                        <h3 class="step-title">レビューで仲間と共有</h3>
+                                        <p class="step-description">「ここのパンが絶品でした！」温かいレビューでみんなに教えてあげて。コミュニティが育つ大切な一歩です。</p>
+                                    </div>
+                                    <div class="step-expand-icon">👆</div>
                                 </div>
-                                <div class="step-expand-icon">👆</div>
                                 <div class="step-detail" id="stepDetail5">
                                     <h4 class="step-detail-title">📝 心温まるレビューの書き方</h4>
                                     <div class="step-detail-content">
