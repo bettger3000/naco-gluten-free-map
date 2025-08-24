@@ -4132,37 +4132,51 @@
         .step-detail {
             display: none;
             margin-top: var(--space-md);
-            padding: var(--space-lg);
-            background: var(--bg-primary);
-            border-radius: var(--radius-md);
-            border: 2px solid var(--border-light);
-            border-left: 4px solid var(--primary);
+            padding: var(--space-xl);
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-light) 100%);
+            border-radius: var(--radius-lg);
+            border: 2px solid var(--primary);
+            box-shadow: 0 6px 20px rgba(255, 143, 171, 0.1);
         }
         .step-detail.active {
             display: block;
             animation: slideDown 0.3s ease;
         }
         .step-detail-title {
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 1.1rem;
+            font-weight: 700;
             color: var(--primary);
-            margin-bottom: var(--space-sm);
+            margin-bottom: var(--space-lg);
+            text-align: center;
+            background: var(--primary-alpha);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
         }
         .step-detail-content {
-            color: var(--text-secondary);
-            line-height: 1.6;
-            font-size: 0.9rem;
+            color: var(--text-primary);
+            line-height: 1.7;
+            font-size: 1rem;
         }
         .step-detail-list {
             list-style: none;
             padding: 0;
-            margin: var(--space-sm) 0;
+            margin: var(--space-md) 0;
         }
         .step-detail-list li {
-            padding: var(--space-xs) 0;
-            border-left: 3px solid var(--accent);
-            padding-left: var(--space-md);
-            margin-bottom: var(--space-xs);
+            padding: var(--space-md);
+            border-left: 4px solid var(--accent);
+            padding-left: var(--space-lg);
+            margin-bottom: var(--space-md);
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: var(--radius-sm);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        .step-detail-list li strong {
+            color: var(--primary);
+            font-weight: 700;
         }
         @keyframes slideDown {
             from {
