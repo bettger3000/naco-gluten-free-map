@@ -4104,8 +4104,8 @@
         .how-to-step {
             display: flex;
             align-items: flex-start;
-            gap: var(--space-lg);
-            padding: var(--space-lg);
+            gap: var(--space-xl);
+            padding: var(--space-xl);
             margin-bottom: var(--space-md);
             background: var(--bg-secondary);
             border-radius: var(--radius-lg);
@@ -4120,7 +4120,7 @@
             transform: translateY(-2px);
         }
         .step-expand-icon {
-            margin-left: auto;
+            flex-shrink: 0;
             color: var(--text-light);
             font-size: 1.2rem;
             transition: all 0.3s ease;
@@ -4239,6 +4239,8 @@
         }
         .step-content {
             flex: 1;
+            min-width: 0;
+            width: 100%;
         }
         .step-title {
             font-size: 1.1rem;
@@ -4251,6 +4253,9 @@
             line-height: 1.7;
             font-size: 0.95rem;
             font-weight: 500;
+            word-break: keep-all;
+            overflow-wrap: break-word;
+            white-space: normal;
         }
         .close-how-to-btn {
             position: absolute;
