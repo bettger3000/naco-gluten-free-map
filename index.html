@@ -6238,7 +6238,7 @@
         // 🚀 店舗データ（JSONファイルから読み込み）
         let embeddedStores = [];
         
-        // JSONファイルから店舗データを読み込む（パフォーマンス最適化版）
+        // 店舗データを読み込む（Cloudflare KV優先）
         async function loadStores() {
             try {
                 // ローカルファイルの場合はCORSエラーを回避
@@ -6249,18 +6249,41 @@
                     return embeddedStores;
                 }
                 
-                // メインデータを読み込み
+                // 1. Cloudflare KVから最新データを取得（優先）
+                try {
+                    console.log('🌐 Cloudflare KVから店舗データを取得中...');
+                    const response = await fetch('https://avatar-upload-worker.bettger1000.workers.dev/stores', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        if (result.stores && Array.isArray(result.stores) && result.stores.length > 0) {
+                            embeddedStores = result.stores;
+                            console.log('✅ Cloudflare KVから店舗データを取得:', embeddedStores.length, '件');
+                            return embeddedStores;
+                        }
+                    }
+                } catch (kvError) {
+                    console.warn('⚠️ Cloudflare KVからの取得に失敗:', kvError.message);
+                }
+                
+                // 2. フォールバック: JSONファイルから読み込み
+                console.log('📁 JSONファイルから店舗データを読み込み中...');
                 const stores = await loadStoresWithOptimization();
                 embeddedStores = stores;
-                console.log('✅ 店舗データ読み込み完了:', stores.length, '件');
+                console.log('✅ JSONファイルから店舗データを読み込み完了:', stores.length, '件');
                 return stores;
                 
             } catch (error) {
                 console.error('❌ 店舗データの読み込みに失敗:', error);
                 console.log('⚠️ フォールバック: 埋め込みデータを使用');
-                // フォールバック: 埋め込みデータを使用
+                // 最終フォールバック: 埋め込みデータを使用
                 embeddedStores = getEmbeddedStoresData();
-                console.log('✅ 店舗データ読み込み完了:', embeddedStores.length, '件');
+                console.log('✅ 埋め込みデータを使用:', embeddedStores.length, '件');
                 return embeddedStores;
             }
         }

@@ -45,6 +45,10 @@ export default {
         return await updateStoreImages(request, env, corsHeaders);
       } else if (url.pathname === '/store-images' && request.method === 'DELETE') {
         return await deleteStoreImages(request, env, corsHeaders);
+      } else if (url.pathname === '/stores' && request.method === 'GET') {
+        return await getStores(request, env, corsHeaders);
+      } else if (url.pathname === '/stores' && request.method === 'POST') {
+        return await saveStores(request, env, corsHeaders);
       } else if (url.pathname === '/health') {
         return new Response(JSON.stringify({ status: 'healthy' }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -819,6 +823,96 @@ async function deleteStoreImages(request, env, corsHeaders) {
     
   } catch (error) {
     console.error('Delete store images error:', error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+}
+
+// 店舗データ取得
+async function getStores(request, env, corsHeaders) {
+  try {
+    // KVから店舗データを取得
+    const storesData = await env.STORES_KV.get('stores-data');
+    
+    if (!storesData) {
+      // データがない場合は空配列を返す
+      return new Response(JSON.stringify({ stores: [] }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
+    const stores = JSON.parse(storesData);
+    console.log('📍 店舗データ取得成功:', stores.length, '件');
+    
+    return new Response(JSON.stringify({ stores }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  } catch (error) {
+    console.error('Get stores error:', error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+}
+
+// 店舗データ保存・更新
+async function saveStores(request, env, corsHeaders) {
+  try {
+    const { stores } = await request.json();
+    
+    if (!stores || !Array.isArray(stores)) {
+      return new Response(JSON.stringify({ error: 'Invalid stores data' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // データ検証（基本的なチェック）
+    const validStores = stores.filter(store => 
+      store && 
+      typeof store === 'object' && 
+      (store.name || store.id)
+    );
+    
+    if (validStores.length === 0) {
+      return new Response(JSON.stringify({ error: 'No valid stores data' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+    
+    // タイムスタンプ追加
+    const storesWithMeta = {
+      stores: validStores,
+      count: validStores.length,
+      updatedAt: new Date().toISOString(),
+      updatedBy: request.headers.get('X-User-Email') || 'admin'
+    };
+    
+    // KVに保存（メインデータ）
+    await env.STORES_KV.put('stores-data', JSON.stringify(validStores));
+    
+    // メタデータも保存（履歴管理用）
+    await env.STORES_KV.put('stores-meta', JSON.stringify(storesWithMeta));
+    
+    // バックアップ（日付付き）
+    const backupKey = `stores-backup-${new Date().toISOString().split('T')[0]}`;
+    await env.STORES_KV.put(backupKey, JSON.stringify(validStores));
+    
+    console.log('💾 店舗データ保存成功:', validStores.length, '件');
+    
+    return new Response(JSON.stringify({ 
+      success: true, 
+      count: validStores.length,
+      message: `${validStores.length}件の店舗データを保存しました`
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  } catch (error) {
+    console.error('Save stores error:', error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }

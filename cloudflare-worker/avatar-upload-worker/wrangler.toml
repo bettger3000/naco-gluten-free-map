@@ -12,6 +12,11 @@ binding = "PROFILE_KV"
 id = "8301c0acb1bf44ab9364741e142ff417"
 preview_id = "32d65dd59b1f4e5a8fe017e482ad689e"
 
+[[kv_namespaces]]
+binding = "STORES_KV"
+id = "833fb25560d443bc854a38ea1000eb39"
+preview_id = "c43b5cad1c6a4a5ea4e41941529f6c8c"
+
 [vars]
 # 公開URL
 PUBLIC_URL = "https://pub-42410d5d2a514b56a139d945cf8eb47f.r2.dev"
