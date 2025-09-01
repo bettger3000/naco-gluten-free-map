@@ -787,7 +787,7 @@
                         <i class="fab fa-google"></i>
                         Googleマップから追加
                     </button>
-                    <button class="btn btn-success" id="csvUploadBtn" style="width: 100%;">
+                    <button class="btn btn-success" id="csvUploadBtn" style="width: 100%;" onclick="handleCsvButtonClick()">
                         <i class="fas fa-file-csv"></i>
                         CSV一括アップロード
                     </button>
@@ -1864,6 +1864,42 @@
             document.getElementById('embeddedCodeModal').classList.remove('active');
         }
         
+        // CSVボタンクリックハンドラー（直接呼び出し用）
+        function handleCsvButtonClick() {
+            console.log('🔵 handleCsvButtonClick called directly');
+            
+            try {
+                // CSV機能が読み込まれているかチェック
+                if (typeof window.showCsvUploadModal === 'function') {
+                    console.log('✅ window.showCsvUploadModal found, calling it');
+                    window.showCsvUploadModal();
+                } else {
+                    console.log('❌ CSV modal function not found, creating simple modal');
+                    
+                    // 簡易的なCSVアップロードモーダルを表示
+                    const modal = document.createElement('div');
+                    modal.className = 'modal';
+                    modal.style.display = 'block';
+                    modal.innerHTML = `
+                        <div class="modal-content" style="max-width: 600px;">
+                            <div class="modal-header">
+                                <h3><i class="fas fa-file-csv"></i> CSV一括アップロード</h3>
+                                <button class="modal-close" onclick="this.closest('.modal').remove()">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <p>CSV機能を初期化中...</p>
+                                <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">閉じる</button>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                }
+            } catch (error) {
+                console.error('CSV button click error:', error);
+                alert('CSV機能でエラーが発生しました: ' + error.message);
+            }
+        }
+
         // JSONエクスポート
         function exportJSON() {
             const dataStr = JSON.stringify(stores, null, 2);
