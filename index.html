@@ -6246,6 +6246,10 @@
                     console.log('⚠️ ローカルファイルモード: 埋め込みデータを使用');
                     embeddedStores = getEmbeddedStoresData();
                     console.log('✅ 店舗データ読み込み完了:', embeddedStores.length, '件');
+                    
+                    // 店舗数表示を更新
+                    updateStoreCount(embeddedStores.length);
+                    
                     return embeddedStores;
                 }
                 
@@ -6264,6 +6268,10 @@
                         if (result.stores && Array.isArray(result.stores) && result.stores.length > 0) {
                             embeddedStores = result.stores;
                             console.log('✅ Cloudflare KVから店舗データを取得:', embeddedStores.length, '件');
+                            
+                            // 店舗数表示を更新
+                            updateStoreCount(embeddedStores.length);
+                            
                             return embeddedStores;
                         }
                     }
@@ -6276,6 +6284,10 @@
                 const stores = await loadStoresWithOptimization();
                 embeddedStores = stores;
                 console.log('✅ JSONファイルから店舗データを読み込み完了:', stores.length, '件');
+                
+                // 店舗数表示を更新
+                updateStoreCount(stores.length);
+                
                 return stores;
                 
             } catch (error) {
@@ -6284,6 +6296,10 @@
                 // 最終フォールバック: 埋め込みデータを使用
                 embeddedStores = getEmbeddedStoresData();
                 console.log('✅ 埋め込みデータを使用:', embeddedStores.length, '件');
+                
+                // 店舗数表示を更新
+                updateStoreCount(embeddedStores.length);
+                
                 return embeddedStores;
             }
         }
@@ -9413,12 +9429,21 @@
             }
         }
 
-        // 店舗数更新
+        // 店舗数更新（全ての表示箇所を更新）
         function updateStoreCount(count) {
-            const element = document.getElementById('storeCount');
-            if (element) {
-                element.textContent = count;
+            // サイドバーの店舗数
+            const storeCountElement = document.getElementById('storeCount');
+            if (storeCountElement) {
+                storeCountElement.textContent = count;
             }
+            
+            // パネルの店舗数
+            const panelStoreCount = document.getElementById('panelStoreCount');
+            if (panelStoreCount) {
+                panelStoreCount.textContent = `店舗リスト ${count}件`;
+            }
+            
+            console.log('📊 店舗数表示を更新:', count, '件');
         }
 
         // フィルタリング
