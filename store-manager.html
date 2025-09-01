@@ -681,8 +681,14 @@
                             if (csvBtn) {
                                 csvBtn.onclick = function() {
                                     console.log('CSV button clicked via onclick');
-                                    if (typeof window.showCsvUploadModal === 'function') {
+                                    console.log('showCsvUploadModal function exists:', typeof showCsvUploadModal);
+                                    if (typeof showCsvUploadModal === 'function') {
+                                        showCsvUploadModal();
+                                    } else if (typeof window.showCsvUploadModal === 'function') {
                                         window.showCsvUploadModal();
+                                    } else {
+                                        console.error('CSV modal function not found');
+                                        alert('CSV機能の初期化に失敗しました。ページをリロードしてください。');
                                     }
                                 };
                                 console.log('CSV button onclick handler attached');
@@ -1127,11 +1133,15 @@
                     
                     // 新しいイベントリスナーを設定
                     csvBtn.csvClickHandler = function() {
-                        console.log('CSV button clicked - calling showCsvUploadModal');
-                        if (typeof window.showCsvUploadModal === 'function') {
+                        console.log('CSV button clicked - opening CSV upload modal');
+                        console.log('showCsvUploadModal function exists:', typeof showCsvUploadModal);
+                        if (typeof showCsvUploadModal === 'function') {
+                            showCsvUploadModal();
+                        } else if (typeof window.showCsvUploadModal === 'function') {
                             window.showCsvUploadModal();
                         } else {
-                            console.error('showCsvUploadModal function not found');
+                            console.error('CSV modal function not found');
+                            alert('CSV機能の初期化に失敗しました。ページをリロードしてください。');
                         }
                     };
                     csvBtn.addEventListener('click', csvBtn.csvClickHandler);
