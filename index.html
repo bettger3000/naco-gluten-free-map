@@ -1558,6 +1558,8 @@
             font-size: 14px;
             transition: all 0.3s ease;
             opacity: 0;
+            z-index: 10;
+            pointer-events: auto;
         }
         
         .carousel-btn:hover {
@@ -1575,6 +1577,16 @@
         
         .image-carousel:hover .carousel-btn {
             opacity: 1;
+        }
+        
+        /* PC版では常にボタンを薄く表示 */
+        @media (min-width: 768px) {
+            .carousel-btn {
+                opacity: 0.7;
+            }
+            .image-carousel:hover .carousel-btn {
+                opacity: 1;
+            }
         }
         
         .no-images {
@@ -10121,10 +10133,10 @@
             ` : '';
             
             const buttonsHtml = images.length > 1 ? `
-                <button class="carousel-btn prev" onclick="prevSlide(${storeId})">
+                <button class="carousel-btn prev" onclick="console.log('🖱️ Prev button clicked for store ${storeId}'); prevSlide(${storeId}); return false;">
                     <i class="fas fa-chevron-left"></i>
                 </button>
-                <button class="carousel-btn next" onclick="nextSlide(${storeId})">
+                <button class="carousel-btn next" onclick="console.log('🖱️ Next button clicked for store ${storeId}'); nextSlide(${storeId}); return false;">
                     <i class="fas fa-chevron-right"></i>
                 </button>
             ` : '';
