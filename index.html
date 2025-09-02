@@ -7347,10 +7347,10 @@
             await initVisitHistory();
             
             // 5. 店舗データを表示（訪問履歴・画像込み）
-            await loadEmbeddedStores();
+            const loadedStores = await loadEmbeddedStores();
             
             // 6. 店舗画像データを読み込み（店舗データ読み込み後）
-            await initStoreImages();
+            await initStoreImages(loadedStores);
             
             // 7. イベントリスナー設定
             setupEventListeners();
@@ -8788,6 +8788,7 @@
             }
             
             console.log(`✅ ${stores.length}店舗のデータを読み込み完了`);
+            return loadedStores;
         }
 
         // マップ初期化
@@ -10017,18 +10018,20 @@
         }
 
         // 店舗画像機能初期化（Cloudflare版）
-        async function initStoreImages() {
+        async function initStoreImages(storeData = null) {
             console.log('📸 店舗画像機能初期化開始 (Cloudflare)');
             
             try {
                 // 全店舗の画像データをCloudflareから取得
                 storeImages.clear();
                 
-                // 埋め込み店舗データから店舗IDを取得
-                const storeIds = embeddedStores.map(store => store.id);
+                // 店舗データから店舗IDを取得（パラメータ優先、フォールバックで埋め込みデータ）
+                const currentStores = storeData || embeddedStores;
+                const storeIds = currentStores.map(store => store.id);
                 
                 console.log(`🔍 ${storeIds.length}店舗の画像データを取得中...`);
                 console.log('🏪 対象店舗ID一覧:', storeIds.slice(0, 10), storeIds.length > 10 ? `... (全${storeIds.length}店舗)` : '');
+                console.log(`📊 [修正] パラメータから取得: ${storeData ? 'Yes' : 'No'}, embeddedStores: ${embeddedStores.length}件`);
                 
                 // I'm donut店舗（ID:19）が含まれているか確認
                 const hasImDonut = storeIds.includes(19);
