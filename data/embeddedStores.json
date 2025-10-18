@@ -853,5 +853,22 @@
     "opening_hours": "第二日曜日12:00-17:00",
     "gluten_free_options": "完全GF",
     "description": "小麦と大豆不使用の米粉バーガー、予約制のグルテンフリーアフタヌーンティーをしています（mikiさんのお店）"
+  },
+  {
+    "id": 71,
+    "name": "TAKAYAMADO AMATSUGI 新大阪店（髙山堂 甘継）",
+    "category": "スイーツ",
+    "address": "大阪府大阪市淀川区西中島５丁目１６−１ JR 新大阪駅 ３階 改札外",
+    "latitude": 34.73340171471627,
+    "longitude": 135.50012311363028,
+    "phone": "0663073003",
+    "website": "https://www.takayamado.com/",
+    "instagram": "",
+    "image_url": "",
+    "image_url2": "",
+    "image_url3": "",
+    "opening_hours": "",
+    "gluten_free_options": "",
+    "description": ""
   }
 ]
