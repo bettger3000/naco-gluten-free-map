@@ -2704,12 +2704,23 @@
             try {
                 // URLから座標とplace_idを抽出
                 let lat, lng, placeName, placeId;
-                
-                // 座標の抽出（@緯度,経度の形式）
-                const coordMatch = url.match(/@([+-]?\d+\.\d+),([+-]?\d+\.\d+)/);
-                if (coordMatch) {
-                    lat = parseFloat(coordMatch[1]);
-                    lng = parseFloat(coordMatch[2]);
+
+                // 座標の抽出（優先順位: !3d!4d形式 > @形式）
+                // !3d!4d形式：Googleマップの正確なピン位置
+                const exactCoordMatch = url.match(/!3d([+-]?\d+\.?\d*)!4d([+-]?\d+\.?\d*)/);
+                // @形式：地図の表示中心（ピン位置と異なる場合がある）
+                const displayCoordMatch = url.match(/@([+-]?\d+\.\d+),([+-]?\d+\.\d+)/);
+
+                if (exactCoordMatch) {
+                    // より正確な!3d!4d形式を優先
+                    lat = parseFloat(exactCoordMatch[1]);
+                    lng = parseFloat(exactCoordMatch[2]);
+                    console.log('正確な座標を取得（!3d!4d形式）:', lat, lng);
+                } else if (displayCoordMatch) {
+                    // フォールバック：@形式の座標
+                    lat = parseFloat(displayCoordMatch[1]);
+                    lng = parseFloat(displayCoordMatch[2]);
+                    console.log('表示中心座標を取得（@形式）:', lat, lng);
                 }
                 
                 // place_idの抽出
