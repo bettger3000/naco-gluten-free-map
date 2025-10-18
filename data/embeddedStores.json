@@ -870,5 +870,22 @@
     "opening_hours": "",
     "gluten_free_options": "",
     "description": ""
+  },
+  {
+    "id": 72,
+    "name": "ViEAT by Fete le marche",
+    "category": "カフェ",
+    "address": "東京都北区赤羽台１丁目７−１１ 東洋大学赤羽台キャンパス HELSPO HUB3",
+    "latitude": 35.77911046206575,
+    "longitude": 139.71665863899008,
+    "phone": "",
+    "website": "",
+    "instagram": "https://www.instagram.com/vieat.fetelemarche/",
+    "image_url": "",
+    "image_url2": "",
+    "image_url3": "",
+    "opening_hours": "",
+    "gluten_free_options": "",
+    "description": ""
   }
 ]
