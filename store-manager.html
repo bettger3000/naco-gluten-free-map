@@ -884,7 +884,12 @@
                         <label class="form-label">営業時間</label>
                         <input type="text" class="form-input" id="storeHours" placeholder="例: 11:00-20:00">
                     </div>
-                    
+
+                    <div class="form-group">
+                        <label class="form-label">定休日</label>
+                        <input type="text" class="form-input" id="storeClosed" placeholder="例: 月曜日、年末年始">
+                    </div>
+
                     <div class="form-group">
                         <label class="form-label">グルテンフリー対応</label>
                         <textarea class="form-textarea" id="storeGfOptions" placeholder="グルテンフリーメニューの詳細など"></textarea>
@@ -1386,6 +1391,7 @@
                     storeImageUrl2: document.getElementById('storeImageUrl2'),
                     storeImageUrl3: document.getElementById('storeImageUrl3'),
                     storeHours: document.getElementById('storeHours'),
+                    storeClosed: document.getElementById('storeClosed'),
                     storeGfOptions: document.getElementById('storeGfOptions'),
                     storeDescription: document.getElementById('storeDescription')
                 };
@@ -1408,6 +1414,7 @@
                 if (formElements.storeWebsite) formElements.storeWebsite.value = store.website || '';
                 if (formElements.storeInstagram) formElements.storeInstagram.value = store.instagram || '';
                 if (formElements.storeHours) formElements.storeHours.value = store.opening_hours || '';
+                if (formElements.storeClosed) formElements.storeClosed.value = store.closed || '';
                 if (formElements.storeGfOptions) formElements.storeGfOptions.value = store.gluten_free_options || '';
                 if (formElements.storeDescription) formElements.storeDescription.value = store.description || '';
 
@@ -1492,7 +1499,8 @@
                 image_url3: '',
                 description: '',
                 gluten_free_options: '',
-                opening_hours: ''
+                opening_hours: '',
+                closed: ''
             };
             
             stores.push(newStore);
@@ -1619,6 +1627,7 @@
                 image_url2: getValue('storeImageUrl2'),
                 image_url3: getValue('storeImageUrl3'),
                 opening_hours: getValue('storeHours'),
+                closed: getValue('storeClosed'),
                 gluten_free_options: getValue('storeGfOptions'),
                 description: getValue('storeDescription')
             };
@@ -1813,7 +1822,10 @@
                     code += `                    "gluten_free_options": "${escapeString(store.gluten_free_options)}",\n`;
                 }
                 if (store.opening_hours) {
-                    code += `                    "opening_hours": "${escapeString(store.opening_hours)}"\n`;
+                    code += `                    "opening_hours": "${escapeString(store.opening_hours)}",\n`;
+                }
+                if (store.closed) {
+                    code += `                    "closed": "${escapeString(store.closed)}"\n`;
                 } else {
                     // 最後のカンマを削除
                     code = code.replace(/,\n$/, '\n');
