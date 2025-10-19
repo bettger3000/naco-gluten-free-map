@@ -2741,7 +2741,28 @@
                     try {
                         const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=ja`);
                         const data = await response.json();
-                        if (data && data.display_name) {
+                        if (data && data.address) {
+                            // 日本語順に住所を整形（郵便番号と店舗名を除外）
+                            const addr = data.address;
+                            const addressParts = [];
+
+                            // 都道府県
+                            if (addr.state) addressParts.push(addr.state);
+                            // 市区町村
+                            if (addr.city) addressParts.push(addr.city);
+                            // 区（cityに含まれていない場合）
+                            if (addr.suburb && !addr.city?.includes(addr.suburb)) addressParts.push(addr.suburb);
+                            if (addr.town) addressParts.push(addr.town);
+                            // 町名・通り
+                            if (addr.neighbourhood) addressParts.push(addr.neighbourhood);
+                            if (addr.road) addressParts.push(addr.road);
+                            // 番地
+                            if (addr.house_number) addressParts.push(addr.house_number);
+
+                            address = addressParts.join('');
+                            console.log('整形後の住所:', address);
+                        } else if (data && data.display_name) {
+                            // フォールバック：display_nameをそのまま使用
                             address = data.display_name;
                         }
                     } catch (error) {
