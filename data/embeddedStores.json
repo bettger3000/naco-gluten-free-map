@@ -887,5 +887,22 @@
     "opening_hours": "",
     "gluten_free_options": "",
     "description": ""
+  },
+  {
+    "id": 74,
+    "name": "カフェ スマイル コラット",
+    "category": "カフェ",
+    "address": "折尾四丁目, 八幡西区, 北九州市, 福岡県, 807-0861, 日本",
+    "latitude": 33.8654097,
+    "longitude": 130.7114845,
+    "phone": "0938836889",
+    "website": "https://korat.base.shop/",
+    "instagram": "",
+    "image_url": "",
+    "image_url2": "",
+    "image_url3": "",
+    "opening_hours": "",
+    "gluten_free_options": "",
+    "description": ""
   }
 ]
